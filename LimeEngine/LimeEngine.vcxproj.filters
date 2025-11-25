@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{a8929d09-099f-4d1d-b4d6-43af9be243c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime">
+      <UniqueIdentifier>{2efb35cf-98f6-44d3-a503-cc0ec9ece54c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Public">
+      <UniqueIdentifier>{c8369247-bbe1-407b-9d0f-505c161c8dff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime\Modules">
+      <UniqueIdentifier>{62c36766-5f34-40a2-919b-ed56035029c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime\Objects">
+      <UniqueIdentifier>{d0b49c29-438f-4f59-8c12-44d281e5f3b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime\Objects\2D">
+      <UniqueIdentifier>{f0826694-984c-441a-a8bb-ed8e3789d405}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime\Objects\Common">
+      <UniqueIdentifier>{17e08e0e-faf4-4712-9887-ce24ad345180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime\Objects\3D">
+      <UniqueIdentifier>{bf2ca3f4-394d-41b5-94c2-da4102a34b63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime\Core">
+      <UniqueIdentifier>{8c6eb646-9d87-4025-b6a1-751487a83087}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime\Helpers">
+      <UniqueIdentifier>{a0bb8a22-d244-45b8-a0c5-46a5c699a876}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\LimeEngine.h">
+      <Filter>Engine\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Application.h">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Window.h">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DebugConsole.h">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Renderer.h">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\LimeEngine.cpp">
+      <Filter>Engine\Public</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application.cpp">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Window.cpp">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DebugConsole.cpp">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer.cpp">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
