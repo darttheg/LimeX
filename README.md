@@ -1,5 +1,5 @@
 # LimeX
-LimeX is a primarily 3D game framework powered by Lua and Irrlicht.
+LimeX is a 3D game framework powered by Lua and Irrlicht.
 
 ## Requirements
 - CMake 3.x
