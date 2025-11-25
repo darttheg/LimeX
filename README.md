@@ -4,9 +4,6 @@ LimeX is a primarily 3D game framework powered by Lua and Irrlicht.
 ## Requirements
 - CMake 3.x
 - MSVC/Clang/GCC
-- Lua 5.4
-- sol2
-- [IrrLime](https://github.com/darttheg/IrrLime)
 
 ## Building
 * cmake -B build -G "Visual Studio 17 2022"
@@ -15,8 +12,8 @@ LimeX is a primarily 3D game framework powered by Lua and Irrlicht.
 ## Dependencies
 * [Lua 5.4](https://www.lua.org/versions.html#5.4)
 * [sol2](https://github.com/ThePhD/sol2/releases/tag/v3.3.0)
-* [IrrLime](https://github.com/darttheg/IrrLime) (edited Irrlicht 1.8.5)
-...
+* [IrrLime](https://github.com/darttheg/IrrLime) (forked Irrlicht 1.8.5)
+* [GLFW 3.4](https://www.glfw.org/download.html)
 
 ## Running
 1. Create a LimeX project given the empty project in Releases.
