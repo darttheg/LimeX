@@ -1,4 +1,7 @@
 #include "DebugConsole.h"
+
+#include "Application.h"
+
 #include <iostream>
 #include <chrono>
 #include <iomanip>
@@ -42,9 +45,13 @@ void DebugConsole::Create() {
     FILE* fpErr;
     freopen_s(&fpErr, "CONOUT$", "w", stderr);
 
-    SetConsoleTitle(L"LimeX Console");
+    SetConsoleTitle(L"Lime Console");
 
     created = true;
+}
+
+void DebugConsole::SetAppOwner(Application* owner) {
+    app = owner;
 }
 
 const char* getTime() {
@@ -81,6 +88,8 @@ void DebugConsole::Log(const char* msg, MESSAGE_TYPE type) {
         DWORD written;
         WriteConsoleA(hConsole, full.c_str(), (DWORD)strlen(full.c_str()), &written, nullptr);
         WriteConsoleA(hConsole, "\n", 1, &written, nullptr);
+
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
     }
 }
 
@@ -89,17 +98,19 @@ void DebugConsole::Log(std::string msg, MESSAGE_TYPE type) {
 }
 
 void DebugConsole::PostError(const char* msg, bool close) {
-    Log(std::string("LimeX encountered an error: " + std::string(msg)).c_str(), MESSAGE_TYPE::RED);
+    if (endOnError) close = true;
+
+    Log(std::string("Lime encountered an error: " + std::string(msg)).c_str(), MESSAGE_TYPE::RED);
 
     if (close) {
-        std::string src = std::string("LimeX encountered an error:\n" + std::string(msg)).c_str();
+        std::string src = std::string("Lime encountered an error:\n" + std::string(msg)).c_str();
 
         std::wstring wStr = std::wstring(src.begin(), src.end());
         const wchar_t* wCharStr = wStr.c_str();
 
-        MessageBox(nullptr, wStr.c_str(), TEXT("LimeX Error"), MB_ICONEXCLAMATION);
+        MessageBox(nullptr, wStr.c_str(), TEXT("Lime Error"), MB_ICONEXCLAMATION);
 
-        // Close application somehow
+        if (app) app->EndApp();
     }
 }
 
@@ -110,9 +121,11 @@ void DebugConsole::PostError(std::string msg, bool close) {
 void DebugConsole::Update(int memMB) {
     // SetConsoleTitle(); ... fps, mem, driver type
 
-    std::wstring out = L"LimeX | mem: ";
+    std::wstring out = L"Lime | mem: ";
     out += std::to_wstring(memMB);
     out += L" MB";
+
+    memUsed = memMB;
 
     SetConsoleTitle(out.c_str());
 }

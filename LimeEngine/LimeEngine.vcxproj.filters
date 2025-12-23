@@ -31,6 +31,9 @@
     <Filter Include="Engine\Runtime\Helpers">
       <UniqueIdentifier>{a0bb8a22-d244-45b8-a0c5-46a5c699a876}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Runtime\APIs">
+      <UniqueIdentifier>{73ad9b06-4e98-4912-be67-5efe359e0327}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\LimeEngine.h">
@@ -47,6 +50,15 @@
     </ClInclude>
     <ClInclude Include="include\Renderer.h">
       <Filter>Engine\Runtime\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LuaBinder.h">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ModuleWorld.h">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ModuleLime.h">
+      <Filter>Engine\Runtime\Modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -65,5 +77,31 @@
     <ClCompile Include="src\Renderer.cpp">
       <Filter>Engine\Runtime\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\LuaBinder.cpp">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ModuleWorld.cpp">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ModuleLime.cpp">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="api\World.api.inl">
+      <Filter>Engine\Runtime\APIs</Filter>
+    </None>
+    <None Include="api\App.api.inl">
+      <Filter>Engine\Runtime\APIs</Filter>
+    </None>
+    <None Include="api\Lime.api.inl">
+      <Filter>Engine\Runtime\APIs</Filter>
+    </None>
+    <None Include="api\Window.api.inl">
+      <Filter>Engine\Runtime\APIs</Filter>
+    </None>
+    <None Include="api\Enums.api.inl">
+      <Filter>Engine\Runtime\APIs</Filter>
+    </None>
   </ItemGroup>
 </Project>

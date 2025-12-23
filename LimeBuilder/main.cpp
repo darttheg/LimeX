@@ -1,5 +1,5 @@
 // LimePlayer
-// Compiles LimeX projects into a package.
+// Compiles Lime projects into a package.
 
 #include <iostream>
 #include "builder.h"
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 
-	std::cout << "Your LimeX project has been built to\n  " << oDir << "\n";
+	std::cout << "Your Lime project has been built to\n  " << oDir << "\n";
 
 	return 0;
 }

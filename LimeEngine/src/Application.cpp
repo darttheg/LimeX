@@ -6,13 +6,7 @@
 #include "Window.h"
 #include "DebugConsole.h"
 #include "Renderer.h"
-
-Application::Application() {
-}
-
-Application::~Application() {
-	if (lua) lua_close(lua);
-}
+#include "LuaBinder.h"
 
 std::string readFile(const char* path) {
 	std::ifstream file(path);
@@ -80,17 +74,17 @@ bool Application::RunEntry() {
 
 	const std::string& bc = it->second;
 
-	if (luaL_loadbuffer(lua, bc.data(), bc.size(), entryModuleName.c_str()) != LUA_OK) {
-		std::string err = lua_tostring(lua, -1);
-		lua_pop(lua, 1);
-		console->PostError("Lua load error: " + err, true);
+	sol::load_result chunk = lua->load_buffer(it->second.data(), it->second.size(), entryModuleName);
+	if (!chunk.valid()) {
+		sol::error err = chunk;
+		console->PostError("Lua load error:\n" + std::string(err.what()), true);
 		return false;
 	}
 
-	if (lua_pcall(lua, 0, 0, 0) != LUA_OK) {
-		std::string err = lua_tostring(lua, -1);
-		lua_pop(lua, 1);
-		console->PostError("Lua runtime error: " + err, true);
+	sol::protected_function_result result = chunk();
+	if (!result.valid()) {
+		sol::error err = result;
+		console->PostError("Lua entry run error:\n" + std::string(err.what()), true);
 		return false;
 	}
 
@@ -102,9 +96,25 @@ bool Application::Init(const void* data, size_t size) {
 	console = new DebugConsole;
 	console->Create();
 
+	console->Log("Lime started");
+
+	renderer = new Renderer; // Allocate memory for now
+
+	console->SetAppOwner(this);
+
 	// Create new Lua state
-	lua = luaL_newstate();
-	luaL_openlibs(lua);
+	lua = std::make_unique<sol::state>();
+	lua->open_libraries(
+		sol::lib::base,
+		sol::lib::string,
+		sol::lib::os,
+		sol::lib::utf8,
+		sol::lib::io,
+		sol::lib::math,
+		sol::lib::table,
+		sol::lib::package,
+		sol::lib::debug
+	);
 
 	if (!lua) {
 		console->PostError("Failed to create Lua state", true);
@@ -112,14 +122,10 @@ bool Application::Init(const void* data, size_t size) {
 	}
 
 	// Run randomseed using os time
-	std::string out;
-	const char* rseed = "math.randomseed(os.time())\nmath.random()";
-	if (luaL_dostring(lua, rseed) != LUA_OK) {
-		std::string err = lua_tostring(lua, -1);
-		lua_pop(lua, 1);
-		console->PostError("Lua runtime error: " + err, true);
-		return false;
-	}
+	lua->script(R"(
+		math.randomseed(os.time())
+		math.random()
+	)");
 
 	// Bind objects
 	DoLuaBinding();
@@ -156,7 +162,7 @@ int getMemUsed() {
 bool Application::Run() {
 	// Run application loop
 	running = true;
-	if (console) console->Log("LimeX started");
+	if (console) console->Log("Lime is rendering");
 
 	while (running) {
 		console->Update(getMemUsed());
@@ -178,12 +184,38 @@ void Application::EndApp() {
 }
 
 bool Application::Stop() {
-	console->Log("LimeX ended");
+	console->Log("Lime ended");
 
 	console->Close();
 	renderer->Close();
 	window->Close();
 	return false;
+}
+
+void Application::DisplayMessage(std::string msg, std::string title, int icon) {
+	std::wstring nTitle = std::wstring(title.begin(), title.end());
+	const wchar_t* nTitleC = nTitle.c_str();
+
+	std::wstring nMessage = std::wstring(msg.begin(), msg.end());
+	const wchar_t* nMessageC = nMessage.c_str();
+
+	UINT oIcon = MB_OK;
+
+	switch (icon) {
+	case 1:
+		oIcon = MB_ICONWARNING;
+		break;
+	case 2:
+		oIcon = MB_ICONQUESTION;
+		break;
+	case 3:
+		oIcon = MB_ICONINFORMATION;
+		break;
+	default:
+		oIcon = MB_OK;
+	}
+
+	MessageBox(nullptr, nMessageC, nTitleC, oIcon);
 }
 
 bool Application::CreateWindows() {
@@ -193,7 +225,6 @@ bool Application::CreateWindows() {
 		return false;
 	}
 
-	renderer = new Renderer();
 	renderer->SetDebugConsole(console);
 	renderer->SetWindow(window);
 	renderer->Create(4, 640, 480, false);
@@ -223,5 +254,9 @@ bool Application::CreateWindows() {
 }
 
 void Application::DoLuaBinding() {
-	console->Log("Doing Lua bindings...");
+	if (!lua) return;
+
+	LuaBinder* binder = new LuaBinder();
+	binder->BindAll(lua.get(), this);
+	delete binder;
 }

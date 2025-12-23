@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 
 extern "C" {
 	#include "lua.h"
@@ -7,24 +6,33 @@ extern "C" {
 	#include "lauxlib.h"
 }
 
+#include <string>
+#include <sol/sol.hpp>
 #include <unordered_map>
+#include <memory>
 
 class Window;
 class DebugConsole;
 class Renderer;
 
+#define LIME_VERSION "1.0"
+
 class Application {
 public:
-	Application();
-	~Application();
+	Application() = default;
+	~Application() = default;
 
 	bool Init(const void* data, size_t size);
 	bool Run();
 	void EndApp();
+
+	// Do not use to end from user!
 	bool Stop();
 
-	lua_State* GetLuaState() { return lua; }
+	void DisplayMessage(std::string msg, std::string title, int icon);
+
 	DebugConsole* GetDebugConsole() { return console; }
+	Renderer* GetRenderer() { return renderer; }
 	bool IsRunning() { return running; }
 
 private:
@@ -34,7 +42,7 @@ private:
 	bool LoadPackage(const void* data, size_t size);
 
 	// Lua
-	lua_State* lua = nullptr;
+	std::unique_ptr<sol::state> lua;
 	std::string entryModuleName;
 	std::unordered_map<std::string, std::string> modules;
 
@@ -51,7 +59,7 @@ private:
 	bool resizable = true;
 	bool maintainAspect = false;
 	bool vSync = false;
-	std::string title = "LimeX Application";
+	std::string title = "Lime Application";
 	std::string iconPath; // Load in Window
 
 	bool running = false;
