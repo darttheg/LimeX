@@ -227,28 +227,19 @@ bool Application::CreateWindows() {
 
 	renderer->SetDebugConsole(console);
 	renderer->SetWindow(window);
-	renderer->Create(4, 640, 480, false);
+	renderer->Create();
 
 	// Parent windows
 	HWND glfwHWND = window->GetHandle();
-	HWND irrHWND = renderer->GetHandle();
 
-	if (!glfwHWND || !irrHWND) {
+	if (!glfwHWND) {
 		console->PostError("Could not get valid window handle(s)", true);
 		return false;
-	}
-
-	if (irrHWND) {
-		SetParent(irrHWND, glfwHWND);
-		SetWindowLongPtr(irrHWND, GWL_STYLE, WS_CHILD | WS_VISIBLE);
-		SetWindowPos(irrHWND, 0, 0, 0, width, height, SWP_NOZORDER | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 	}
 
 	ShowWindow(glfwHWND, SW_RESTORE);
 	SetForegroundWindow(glfwHWND);
 	SetActiveWindow(glfwHWND);
-	SendMessage(irrHWND, WM_ACTIVATE, WA_ACTIVE, 0);
-	SendMessage(irrHWND, WM_SETFOCUS, 0, 0);
 
 	return true;
 }

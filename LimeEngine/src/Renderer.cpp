@@ -6,19 +6,33 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
-using namespace irr;
-using namespace core;
-using namespace video;
+#include <fstream>
+#include <stdexcept>
+
+#include <OGRE/OgreCamera.h>
+#include <OGRE/OgreColourValue.h>
+#include <OGRE/OgreConfigFile.h>
+#include <OGRE/OgreException.h>
+#include <OGRE/OgreRenderWindow.h>
+#include <OGRE/OgreResourceGroupManager.h>
+#include <OGRE/OgreRoot.h>
+#include <OGRE/OgreSceneManager.h>
+#include <OGRE/OgreStringConverter.h>
+#include <OGRE/OgreViewport.h>
+#include <OGRE/OgreCommon.h>
 
 Renderer::Renderer() {}
 Renderer::~Renderer() {
-	if (device)
-		device->drop();
+	Close();
 }
 
 void Renderer::Close() {
-	if (device)
-		device->drop();
+	isCreated = false;
+	o_Viewport = nullptr;
+	o_Camera = nullptr;
+	o_SceneManager = nullptr;
+	o_Window = nullptr;
+	o_Root.reset();
 }
 
 void Renderer::SetDebugConsole(DebugConsole* d) {
@@ -29,55 +43,47 @@ void Renderer::SetWindow(Window* w) {
 	window = w;
 }
 
-bool Renderer::Create(int vdriver, int w, int h, bool stencil) {
-	if (device) {
-		// Handle drop logic for restarting
+bool Renderer::Create() {
+	if (isCreated) return true;
+
+	try {
+		o_Root = std::make_unique<Ogre::Root>("plugins.cfg");
+
+		auto rs = o_Root->getAvailableRenderers();
+		if (rs.empty()) throw std::runtime_error("No Ogre RenderSystems available.");
+		o_Root->setRenderSystem(rs.front());
+
+		o_Root->initialise(false);
+
+		Ogre::NameValuePairList params;
+		params["externalWindowHandle"] = Ogre::StringConverter::toString((size_t)window->GetHandle());
+		params["vsync"] = "true";
+		o_Window = o_Root->createRenderWindow("LimeOgre", 640, 480, false, &params);
+
+		o_SceneManager = o_Root->createSceneManager();
+		o_Camera = o_SceneManager->createCamera("MainCamera");
+		o_Camera->setNearClipDistance(0.1f);
+		o_Camera->setAutoAspectRatio(true);
+
+		o_Viewport = o_Window->addViewport(o_Camera);
+		o_Viewport->setBackgroundColour(Ogre::ColourValue(0.1f, 0.1f, 0.12f));
+
+		isCreated = true;
+		return isCreated;
+	} catch (const Ogre::Exception& e) {
+		console->PostError(std::string("Ogre exception: ") + e.what(), true);
+	} catch (const std::exception& e) {
+		console->PostError(std::string("Failed to create renderer: ") + e.what(), true);
 	}
 
-	SIrrlichtCreationParameters params;
-	params.DriverType = (E_DRIVER_TYPE)vdriver;
-	params.WindowSize = dimension2d<u32>(w, h);
-	params.Bits = 16;
-	params.Fullscreen = false;
-	params.Stencilbuffer = stencil;
-	params.Vsync = false;
-	params.EventReceiver = nullptr;
-	// params.WindowId = (void*)window->GetHandle();
-
-	device = createDeviceEx(params);
-
-	if (!device) {
-		console->PostError("Could not create Irrlicht device", true);
-		return false;
-	}
-
-	driver = device->getVideoDriver();
-	smgr = device->getSceneManager();
-
-	HWND cur = GetHandle();
-	if (cur) ShowWindow(cur, SW_HIDE);
-
-	return true;
-}
-
-HWND Renderer::GetHandle() {
-	if (!driver || !device) return nullptr;
-
-	irr::video::SExposedVideoData data = driver->getExposedVideoData();
-	if (data.D3D9.HWnd) return (HWND)data.D3D9.HWnd;
-	if (data.D3D8.HWnd) return (HWND)data.D3D8.HWnd;
-	if (data.OpenGLWin32.HWnd) return (HWND)data.OpenGLWin32.HWnd;
-	return nullptr;
+	Close();
+	return false;
 }
 
 bool Renderer::Render() {
-	// Camera queue, etc...
-	// Simple logic for now:
-	if (!device->run()) return false;
+	if (!isCreated || !o_Root || !o_Window) return false;
+	if (o_Window->isClosed()) return false;
 
-	driver->beginScene(true, true, bgColor);
-	smgr->drawAll();
-	driver->endScene();
-
+	o_Root->renderOneFrame();
 	return true;
 }

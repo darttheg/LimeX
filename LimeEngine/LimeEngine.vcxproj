@@ -161,15 +161,15 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;.\api;..\..\irrlicht-1.8.5\include;..\..\glfw-3.4.bin.WIN64\include;..\..\lua-5.4.8\src;..\..\sol2\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;.\api;..\..\glfw-3.4.bin.WIN64\include;..\..\lua-5.4.8\src;..\..\sol2\include;..\..\ogre\build\sdk\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>$(CoreLibraryDependencies);winmm.lib;ws2_32.lib;glfw3.lib;Irrlicht.lib;Lua54.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\irrlicht-1.8.5\lib\Win64-visualStudio;..\..\glfw-3.4.bin.WIN64\lib-vc2022;..\..\Lua54\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);winmm.lib;ws2_32.lib;glfw3.lib;Lua54.lib;OgreMain.lib;OgreBites.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\glfw-3.4.bin.WIN64\lib-vc2022;..\..\Lua54\x64\Release;..\..\ogre\build\sdk\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

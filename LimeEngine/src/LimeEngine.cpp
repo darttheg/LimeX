@@ -2,6 +2,8 @@
 #include "LimeEngine.h"
 #include "Application.h"
 
+#include "Window.h"
+
 extern "C" {
 
 	LimeHandle Lime_Create() {

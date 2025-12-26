@@ -1,9 +1,18 @@
 #pragma once
-#include <irrlicht.h>
 
 #include "GLFW/glfw3.h"
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
+
+#include <memory>
+
+namespace Ogre {
+	class Root;
+	class RenderWindow;
+	class SceneManager;
+	class Camera;
+	class Viewport;
+}
 
 class DebugConsole;
 class Window;
@@ -13,25 +22,19 @@ public:
 	Renderer();
 	~Renderer();
 
-	bool Create(int driver, int w, int h, bool stencil);
+	bool Create();
 	void Close();
 	void SetDebugConsole(DebugConsole* d);
 	void SetWindow(Window* w);
-	HWND GetHandle();
 	bool Render();
 private:
 	DebugConsole* console = nullptr;
 	Window* window = nullptr;
 
-	irr::IrrlichtDevice* device = nullptr;
-	irr::video::IVideoDriver* driver = nullptr;
-	irr::scene::ISceneManager* smgr = nullptr;
-
-	// Generic Scene
-	irr::video::SColor bgColor = irr::video::SColor(255, 255, 0, 0);
-	irr::scene::ISceneNode* skydome = nullptr;
-
-	// Active Camera
-	irr::scene::ICameraSceneNode* activeCamera = nullptr;
-	irr::scene::ISceneNode* activeCameraForward = nullptr;
+	std::unique_ptr<Ogre::Root> o_Root;
+	Ogre::RenderWindow* o_Window = nullptr;
+	Ogre::SceneManager* o_SceneManager = nullptr;
+	Ogre::Camera* o_Camera = nullptr;
+	Ogre::Viewport* o_Viewport = nullptr;
+	bool isCreated = false;
 };
