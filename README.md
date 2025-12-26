@@ -1,5 +1,5 @@
 # LimeX
-LimeX is a 3D game framework powered by Lua and Irrlicht.
+LimeX is a 3D game framework powered by Lua and Ogre3D.
 
 ## Requirements
 - CMake 3.x
@@ -12,7 +12,7 @@ LimeX is a 3D game framework powered by Lua and Irrlicht.
 ## Dependencies
 * [Lua 5.4](https://www.lua.org/versions.html#5.4)
 * [sol2](https://github.com/ThePhD/sol2/releases/tag/v3.3.0)
-* [IrrLime](https://github.com/darttheg/IrrLime) (forked Irrlicht 1.8.5)
+* [Ogre3D](https://www.ogre3d.org/)
 * [GLFW 3.4](https://www.glfw.org/download.html)
 
 ## Running
