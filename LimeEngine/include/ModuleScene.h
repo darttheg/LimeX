@@ -7,7 +7,7 @@ class Renderer;
 class DebugConsole;
 
 namespace Module {
-	namespace World {
+	namespace Scene {
 		void init(Renderer* rend, DebugConsole* deb);
 		void bind(sol::state& lua);
 	}

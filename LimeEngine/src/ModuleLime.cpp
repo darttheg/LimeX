@@ -2,17 +2,21 @@
 
 #include "DebugConsole.h"
 #include "Application.h"
+#include "Renderer.h"
 #include <sol/sol.hpp>
 
 static DebugConsole* d;
 static Application* a;
+static Renderer* r;
 
-void Module::Lime::init(DebugConsole* deb, Application* app) {
+void Module::Lime::init(DebugConsole* deb, Application* app, Renderer* rend) {
 	if (!deb) return;
 	if (!app) return;
+	if (!rend) return;
 
 	d = deb;
 	a = app;
+	r = rend;
 }
 
 void Module::Lime::bind(sol::state& lua) {
@@ -36,6 +40,7 @@ void Module::Lime::bind(sol::state& lua) {
 
 #include "Enums.api.inl"
 #include "Lime.api.inl"
+#include "Renderer.h"
 
 #undef LIME_FUNC
 #undef LIME_DOC
@@ -67,24 +72,33 @@ std::string Module::Lime::GetVersion() {
 }
 
 int Module::Lime::GetTime() {
-	return 0;
+	return r->GetElapsedTime();
 }
 
 float Module::Lime::GetDeltaTime() {
-	return 0.0f;
+	return r->GetDeltaTime();
 }
 
 int Module::Lime::GetFrameRate() {
-	return 0;
+	return r->GetFrameRate();
 }
 
-void Module::Lime::SetFrameRate(int limit) {
-}
-
-std::string Module::Lime::GetPlatform() {
-	return std::string();
+void Module::Lime::SetFrameLimit(int limit) {
+	r->SetFrameLimit(limit);
 }
 
 int Module::Lime::GetMemoryUsage() {
 	return d->GetMemUsed();
+}
+
+void Module::Lime::SetVSync(bool v) {
+	r->SetVSync(v);
+}
+
+void Module::Lime::SetShowDebugger(bool v) {
+	d->SetEnable(v);
+}
+
+void Module::Lime::SetWriteDebugOutput(bool v) {
+	d->SetWriteOutput(v);
 }

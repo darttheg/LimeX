@@ -24,7 +24,7 @@
     <ClInclude Include="include\LimeEngine.h" />
     <ClInclude Include="include\LuaBinder.h" />
     <ClInclude Include="include\ModuleLime.h" />
-    <ClInclude Include="include\ModuleWorld.h" />
+    <ClInclude Include="include\ModuleScene.h" />
     <ClInclude Include="include\Renderer.h" />
     <ClInclude Include="include\Window.h" />
   </ItemGroup>
@@ -34,7 +34,7 @@
     <ClCompile Include="src\LimeEngine.cpp" />
     <ClCompile Include="src\LuaBinder.cpp" />
     <ClCompile Include="src\ModuleLime.cpp" />
-    <ClCompile Include="src\ModuleWorld.cpp" />
+    <ClCompile Include="src\ModuleScene.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
@@ -43,7 +43,10 @@
     <None Include="api\Enums.api.inl" />
     <None Include="api\Lime.api.inl" />
     <None Include="api\Window.api.inl" />
-    <None Include="api\World.api.inl" />
+    <None Include="api\Scene.api.inl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -161,7 +164,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;.\api;..\..\glfw-3.4.bin.WIN64\include;..\..\lua-5.4.8\src;..\..\sol2\include;..\..\ogre\build\sdk\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)thirdparty;$(ProjectDir)api;..\..\glfw-3.4.bin.WIN64\include;..\..\lua-5.4.8\src;..\..\sol2\include;..\..\ogre\build\sdk\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>

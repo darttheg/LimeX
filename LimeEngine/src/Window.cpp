@@ -20,6 +20,7 @@ bool Window::Create(int w, int h, std::string title, bool fullscreen, bool resiz
 	glfwWindowHint(GLFW_DECORATED, !fullscreen ? GLFW_TRUE : GLFW_FALSE);
 	glfwWindowHint(GLFW_FLOATING, GLFW_FALSE);
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
 	glfwWindow = glfwCreateWindow(w, h, title.c_str(), nullptr, nullptr);
 	if (!glfwWindow) return false;
@@ -47,6 +48,7 @@ bool Window::Create(int w, int h, std::string title, bool fullscreen, bool resiz
 
 void Window::PollEvents() {
 	glfwPollEvents();
+	glfwMakeContextCurrent(glfwWindow);
 }
 
 bool Window::ShouldClose() {

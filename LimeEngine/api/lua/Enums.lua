@@ -6,11 +6,13 @@ Lime = Lime or {}
 ---@field Red Lime.PrintColor
 ---@field Green Lime.PrintColor
 ---@field Blue Lime.PrintColor
+---@field Yellow Lime.PrintColor
 Lime.PrintColor = {
 White = 0,
 Red = 1,
 Green = 2,
 Blue = 3,
+Yellow = 4,
 }
 ---@alias Lime.PopUpIcon integer
 ---@class Lime.PopUpIconEnum

@@ -5,10 +5,11 @@
 
 class DebugConsole;
 class Application;
+class Renderer;
 
 namespace Module {
 	namespace Lime {
-		void init(DebugConsole* deb, Application* app);
+		void init(DebugConsole* deb, Application* app, Renderer* rend);
 		void bind(sol::state& lua);
 
 		void Log(std::string msg, int color = 0);
@@ -19,8 +20,10 @@ namespace Module {
 		int GetTime();
 		float GetDeltaTime();
 		int GetFrameRate();
-		void SetFrameRate(int limit);
-		std::string GetPlatform();
+		void SetFrameLimit(int limit);
 		int GetMemoryUsage();
+		void SetVSync(bool v);
+		void SetShowDebugger(bool v);
+		void SetWriteDebugOutput(bool v);
 	}
 }

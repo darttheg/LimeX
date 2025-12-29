@@ -5,6 +5,7 @@ LIME_ENUM(PrintColor,
     LIME_ENUM_VALUE(Red, 1)
     LIME_ENUM_VALUE(Green, 2)
     LIME_ENUM_VALUE(Blue, 3)
+    LIME_ENUM_VALUE(Yellow, 4)
 );
 
 LIME_ENUM(PopUpIcon,

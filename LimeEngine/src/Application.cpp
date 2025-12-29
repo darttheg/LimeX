@@ -94,7 +94,7 @@ bool Application::RunEntry() {
 bool Application::Init(const void* data, size_t size) {
 	// Create debug console
 	console = new DebugConsole;
-	console->Create();
+	// We init it after the window is created
 
 	console->Log("Lime started");
 
@@ -136,12 +136,16 @@ bool Application::Init(const void* data, size_t size) {
 		return false;
 	}
 
-	// Run main file once
-	if (!RunEntry())
-		return false;
-
 	// Create device/true window
 	if (!CreateWindows())
+		return false;
+
+	// Init console/imgui
+	console->Init();
+	// console->Create();
+
+	// Run main file once
+	if (!RunEntry())
 		return false;
 
 	return true;
@@ -164,16 +168,20 @@ bool Application::Run() {
 	running = true;
 	if (console) console->Log("Lime is rendering");
 
+	bool fail = false;
 	while (running) {
-		console->Update(getMemUsed());
 		window->PollEvents();
 
 		// console->Log("running");
+		console->Update(getMemUsed());
 
-		if (window && window->ShouldClose()) break;
-		if (!renderer->Render()) break;
+		if (window && window->ShouldClose()) fail = true;
+		if (!renderer->Render()) fail = true;
+
+		if (fail) break;
 	}
 
+	console->Close();
 	Stop();
 	return true;
 }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <Windows.h>
 
 class Application;
 
@@ -8,7 +10,8 @@ enum struct MESSAGE_TYPE : int {
 	NORMAL = 0,
 	RED = 1,
 	GREEN = 2,
-	BLUE = 3
+	BLUE = 3,
+	YELLOW = 4
 };
 
 class DebugConsole {
@@ -16,24 +19,37 @@ public:
 	DebugConsole();
 	~DebugConsole();
 
-	void Create();
-	void SetAppOwner(Application* owner);
-	void Close();
+	void Init();
+	void Create(); // Create console
+	void Close(bool endApp = false); // Close console
+	void Update(int memMB);
+
+	int GetMemUsed() { return memUsed; }
+	void SetEnable(bool v); // Enable/disable console
+	void Clear(); // Clear lines
+
 	void Log(const char* msg, MESSAGE_TYPE type = MESSAGE_TYPE::NORMAL);
 	void Log(std::string msg, MESSAGE_TYPE type = MESSAGE_TYPE::NORMAL);
 	void PostError(const char* msg, bool close = false);
 	void PostError(std::string msg, bool close = false);
-	void Update(int memMB);
+
 	void WriteOutputLog();
+	void SetWriteOutput(bool v) { writeOutput = v; }
 	void SetEndOnError(bool v) { endOnError = v; }
-	int GetMemUsed() { return memUsed; }
+	void SetAppOwner(Application* owner);
 private:
-	std::string out;
+	Application* app;
+
 	bool created = false;
-	bool doOutput = true;
 	bool writeOutput = true;
 	bool endOnError = false;
 	int memUsed = 0;
 
-	Application* app;
+	struct Line {
+		Line(MESSAGE_TYPE m, std::string c) : type(m), content(std::move(c)) {}
+		MESSAGE_TYPE type;
+		std::string content;
+	};
+
+	std::vector<Line> consoleLines;
 };

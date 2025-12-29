@@ -20,6 +20,19 @@
 #include <OGRE/OgreStringConverter.h>
 #include <OGRE/OgreViewport.h>
 #include <OGRE/OgreCommon.h>
+#include <OGRE/OgreFrameListener.h>
+
+struct Renderer::FrameHook : public Ogre::FrameListener {
+	Renderer* r = nullptr;
+	explicit FrameHook(Renderer* rend) : r(rend) {}
+
+	bool frameRenderingQueued(const Ogre::FrameEvent& evt) override {
+		float dt = (float)evt.timeSinceLastFrame;
+		if (dt > 0.1f) dt = 0.1f;
+		r->deltaTime = dt;
+		return true;
+	}
+};
 
 Renderer::Renderer() {}
 Renderer::~Renderer() {
@@ -28,10 +41,13 @@ Renderer::~Renderer() {
 
 void Renderer::Close() {
 	isCreated = false;
-	o_Viewport = nullptr;
-	o_Camera = nullptr;
 	o_SceneManager = nullptr;
 	o_Window = nullptr;
+
+	if (o_Root && hook)
+		o_Root->removeFrameListener(hook.get());
+	hook.reset();
+
 	o_Root.reset();
 }
 
@@ -59,14 +75,11 @@ bool Renderer::Create() {
 		params["externalWindowHandle"] = Ogre::StringConverter::toString((size_t)window->GetHandle());
 		params["vsync"] = "true";
 		o_Window = o_Root->createRenderWindow("LimeOgre", 640, 480, false, &params);
-
 		o_SceneManager = o_Root->createSceneManager();
-		o_Camera = o_SceneManager->createCamera("MainCamera");
-		o_Camera->setNearClipDistance(0.1f);
-		o_Camera->setAutoAspectRatio(true);
 
-		o_Viewport = o_Window->addViewport(o_Camera);
-		o_Viewport->setBackgroundColour(Ogre::ColourValue(0.1f, 0.1f, 0.12f));
+		// Frame listener
+		hook = std::make_unique<FrameHook>(this);
+		o_Root->addFrameListener(hook.get());
 
 		isCreated = true;
 		return isCreated;
@@ -86,4 +99,26 @@ bool Renderer::Render() {
 
 	o_Root->renderOneFrame();
 	return true;
+}
+
+// ---
+
+int Renderer::GetFrameRate() {
+	return o_Window ? static_cast<int>(o_Window->getStatistics().lastFPS) : 0;
+}
+
+float Renderer::GetDeltaTime() {
+	return deltaTime;
+}
+
+void Renderer::SetFrameLimit(int v) {
+	
+}
+
+void Renderer::SetVSync(bool v) {
+	o_Window->setVSyncEnabled(v);
+}
+
+int Renderer::GetElapsedTime() {
+	return 0;
 }

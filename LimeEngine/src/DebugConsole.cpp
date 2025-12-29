@@ -9,43 +9,42 @@
 #include <sstream>
 #include <fstream>
 
-#include <Windows.h>
-
 DebugConsole::DebugConsole() {
 }
 
 DebugConsole::~DebugConsole() {
+    Close(true);
 }
 
-void DebugConsole::Close() {
-    if (writeOutput) {
-        std::ofstream outFile("output.log");
-        if (outFile) outFile << out << std::endl;
+void DebugConsole::Close(bool endApp) {
+    if (endApp)
+        WriteOutputLog();
+
+    if (!created) return;
+
+    Clear();
+    created = false;
+
+    if (endApp) {
+        // Shutdown
     }
+}
+
+void DebugConsole::SetEnable(bool v) {
+}
+
+void DebugConsole::Clear() {
+    consoleLines.clear();
+}
+
+void DebugConsole::Init() {
+    // Init
+
+    created = true;
 }
 
 void DebugConsole::Create() {
     if (created) return;
-
-    AllocConsole();
-    FILE* consoleOut;
-    freopen_s(&consoleOut, "CONIN$", "r", stdin);
-
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (!out.empty() && hConsole != INVALID_HANDLE_VALUE) {
-        DWORD written;
-        HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-        WriteConsoleA(hConsole, out.c_str(), (DWORD)out.size(), &written, nullptr);
-    }
-
-    FILE* fpIn;
-    freopen_s(&fpIn, "CONIN$", "w", stdin);
-    FILE* fpOut;
-    freopen_s(&fpOut, "CONOUT$", "w", stdout);
-    FILE* fpErr;
-    freopen_s(&fpErr, "CONOUT$", "w", stderr);
-
-    SetConsoleTitle(L"Lime Console");
 
     created = true;
 }
@@ -70,27 +69,7 @@ void DebugConsole::Log(const char* msg, MESSAGE_TYPE type) {
     std::string time = getTime();
     std::string full = time + " " + msg;
 
-    if (doOutput) out = out + full + "\n";
-    if (!created) return;
-
-    WORD cur = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
-    if (type == MESSAGE_TYPE::RED)
-        cur = FOREGROUND_RED | FOREGROUND_INTENSITY;
-    else if (type == MESSAGE_TYPE::GREEN)
-        cur = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
-    else if (type == MESSAGE_TYPE::BLUE)
-        cur = FOREGROUND_BLUE | FOREGROUND_INTENSITY;
-
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (hConsole != INVALID_HANDLE_VALUE) {
-        SetConsoleTextAttribute(hConsole, cur);
-
-        DWORD written;
-        WriteConsoleA(hConsole, full.c_str(), (DWORD)strlen(full.c_str()), &written, nullptr);
-        WriteConsoleA(hConsole, "\n", 1, &written, nullptr);
-
-        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-    }
+    consoleLines.push_back(Line(type, full));
 }
 
 void DebugConsole::Log(std::string msg, MESSAGE_TYPE type) {
@@ -119,19 +98,29 @@ void DebugConsole::PostError(std::string msg, bool close) {
 }
 
 void DebugConsole::Update(int memMB) {
-    // SetConsoleTitle(); ... fps, mem, driver type
-
-    std::wstring out = L"Lime | mem: ";
-    out += std::to_wstring(memMB);
-    out += L" MB";
-
     memUsed = memMB;
+    if (!created) return;
 
-    SetConsoleTitle(out.c_str());
+    std::string out = "Lime | mem: ";
+    out += std::to_string(memMB);
+    out += " MB";
+
+    /*
+    ImGui::Begin("Lime Console");
+    ImGui::Text("Hello Lime!");
+    ImGui::Separator();
+    ImGui::Text("This is a console.");
+    ImGui::End();
+    */
 }
 
 void DebugConsole::WriteOutputLog() {
-    std::ofstream outLog("output.log");
-    if (outLog) outLog << out << std::endl;
+    if (!writeOutput) return;
+    std::ofstream outLog("output.log", std::ios::out | std::ios::trunc);
+    if (!outLog.is_open()) return;
+
+    for (const Line& line : consoleLines)
+        outLog << line.content << "\n";
+
     outLog.close();
 }

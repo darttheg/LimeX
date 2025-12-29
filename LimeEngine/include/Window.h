@@ -18,6 +18,7 @@ public:
 	void SetTitle(std::string path);
 
 	HWND GetHandle() const { return glfwGetWin32Window(glfwWindow); }
+	GLFWwindow* getGLFWWindow() const { return glfwWindow; }
 private:
 	GLFWwindow* glfwWindow = nullptr;
 };
