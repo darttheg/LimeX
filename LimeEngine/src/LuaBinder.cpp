@@ -8,8 +8,7 @@
 //
 
 void LuaBinder::BindAll(sol::state* lua, Application* app) {
-	Module::Lime::init(app->GetDebugConsole(), app, app->GetRenderer());
-	Module::Lime::bind(*lua);
+	Lime::bind(*lua, app);
 
 	//Module::Scene::init(app->GetRenderer(), app->GetDebugConsole());
 	//Module::Scene::bind(*lua);

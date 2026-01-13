@@ -94,13 +94,7 @@
     <None Include="api\Scene.api.inl">
       <Filter>Engine\Runtime\APIs</Filter>
     </None>
-    <None Include="api\App.api.inl">
-      <Filter>Engine\Runtime\APIs</Filter>
-    </None>
     <None Include="api\Lime.api.inl">
-      <Filter>Engine\Runtime\APIs</Filter>
-    </None>
-    <None Include="api\Window.api.inl">
       <Filter>Engine\Runtime\APIs</Filter>
     </None>
     <None Include="api\Enums.api.inl">

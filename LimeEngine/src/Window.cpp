@@ -18,9 +18,9 @@ bool Window::Create(int w, int h, std::string title, bool fullscreen, bool resiz
 
 	glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE);
 	glfwWindowHint(GLFW_DECORATED, !fullscreen ? GLFW_TRUE : GLFW_FALSE);
-	glfwWindowHint(GLFW_FLOATING, GLFW_FALSE);
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	glfwWindow = glfwCreateWindow(w, h, title.c_str(), nullptr, nullptr);
 	if (!glfwWindow) return false;
@@ -39,9 +39,6 @@ bool Window::Create(int w, int h, std::string title, bool fullscreen, bool resiz
 
 	// TODO: Set maximize/restore callbacks
 	// TODO: Set framebuffer size callback (updateIrrRenderRes...)
-
-	glfwHideWindow(glfwWindow);
-	glfwPollEvents();
 
 	return true;
 }

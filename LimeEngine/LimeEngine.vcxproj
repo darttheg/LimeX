@@ -39,10 +39,8 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="api\App.api.inl" />
     <None Include="api\Enums.api.inl" />
     <None Include="api\Lime.api.inl" />
-    <None Include="api\Window.api.inl" />
     <None Include="api\Scene.api.inl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
@@ -160,20 +158,27 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;LIMEENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;LIMEENGINE_EXPORTS;_WINDOWS;_USRDLL;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)thirdparty;$(ProjectDir)api;..\..\glfw-3.4.bin.WIN64\include;..\..\lua-5.4.8\src;..\..\sol2\include;..\..\ogre\build\sdk\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)thirdparty;$(ProjectDir)api;..\..\glfw-3.4.bin.WIN64\include;..\..\lua-5.4.8\src;..\..\sol2\include;..\..\irrlicht-1.8.5\include;..\..\irrKlang-1.6.0\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>$(CoreLibraryDependencies);winmm.lib;ws2_32.lib;glfw3.lib;Lua54.lib;OgreMain.lib;OgreBites.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\glfw-3.4.bin.WIN64\lib-vc2022;..\..\Lua54\x64\Release;..\..\ogre\build\sdk\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);winmm.lib;ws2_32.lib;glfw3.lib;Lua54.lib;opengl32.lib;irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\glfw-3.4.bin.WIN64\lib-vc2022;..\..\Lua54\x64\Release;..\..\irrlicht-1.8.5\lib\Win64-visualStudio;..\..\irrKlang-1.6.0\lib\Winx64-visualStudio</AdditionalLibraryDirectories>
     </Link>
+    <PreBuildEvent>
+      <Command>call "D:\Irrlicht\LimeX\LimeEngine\recompileLuaCompletions.bat"
+call "D:\Irrlicht\LimeX\build.bat"</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Building Lime package...</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -34,12 +34,13 @@ public:
 	DebugConsole* GetDebugConsole() { return console; }
 	Renderer* GetRenderer() { return renderer; }
 	bool IsRunning() { return running; }
+	sol::state& GetLuaState() { return *lua; }
 
 private:
 	bool CreateWindows();
 	void DoLuaBinding();
 	bool RunEntry();
-	bool LoadPackage(const void* data, size_t size);
+	uint16_t LoadPackage(const void* data, size_t size);
 
 	// Lua
 	std::unique_ptr<sol::state> lua;
@@ -53,6 +54,7 @@ private:
 	Window* window = nullptr;
 	Renderer* renderer = nullptr;
 
+	// Window parameters
 	int width = 640;
 	int height = 480;
 	bool maximized = false;
@@ -60,7 +62,6 @@ private:
 	bool maintainAspect = false;
 	bool vSync = false;
 	std::string title = "Lime Application";
-	std::string iconPath; // Load in Window
 
 	bool running = false;
 };

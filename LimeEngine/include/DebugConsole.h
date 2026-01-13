@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 #include <Windows.h>
 
 class Application;
@@ -19,7 +20,6 @@ public:
 	DebugConsole();
 	~DebugConsole();
 
-	void Init();
 	void Create(); // Create console
 	void Close(bool endApp = false); // Close console
 	void Update(int memMB);
@@ -32,6 +32,8 @@ public:
 	void Log(std::string msg, MESSAGE_TYPE type = MESSAGE_TYPE::NORMAL);
 	void PostError(const char* msg, bool close = false);
 	void PostError(std::string msg, bool close = false);
+	void Warn(const char* msg);
+	void Warn(std::string msg);
 
 	void WriteOutputLog();
 	void SetWriteOutput(bool v) { writeOutput = v; }
@@ -52,4 +54,8 @@ private:
 	};
 
 	std::vector<Line> consoleLines;
+
+	void* consoleHandle = nullptr;
+	unsigned short defaultAttr = 0;
+	void AddLineToConsole(Line l);
 };

@@ -14,7 +14,7 @@ std::string readFile(const char* path) {
 	return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 }
 
-bool Application::LoadPackage(const void* data, size_t size) {
+uint16_t Application::LoadPackage(const void* data, size_t size) {
 	modules.clear();
 
 	if (!data || size < sizeof(uint32_t)) return false;
@@ -54,11 +54,9 @@ bool Application::LoadPackage(const void* data, size_t size) {
 		entryModuleName = "main";
 	else if (!modules.empty())
 		entryModuleName = modules.begin()->first;
-	else return false;
+	else return 0;
 
-	if (console) console->Log("Loaded package with " + std::to_string(count) + " modules.");
-
-	return true;
+	return count;
 }
 
 bool Application::RunEntry() {
@@ -96,7 +94,7 @@ bool Application::Init(const void* data, size_t size) {
 	console = new DebugConsole;
 	// We init it after the window is created
 
-	console->Log("Lime started");
+	// console->Log("Lime started");
 
 	renderer = new Renderer; // Allocate memory for now
 
@@ -131,18 +129,19 @@ bool Application::Init(const void* data, size_t size) {
 	DoLuaBinding();
 
 	// Load Lua code
-	if (!LoadPackage(data, size)) {
+	uint16_t modulesAmount = LoadPackage(data, size);
+	if (modulesAmount == 0) {
 		console->PostError("Failed to load Lime package from memory", true);
 		return false;
-	}
+	} else
+		console->Log("Lime started with " + std::to_string(modulesAmount) + " modules loaded");
 
 	// Create device/true window
 	if (!CreateWindows())
 		return false;
 
-	// Init console/imgui
-	console->Init();
-	// console->Create();
+	// Init console
+	console->Create();
 
 	// Run main file once
 	if (!RunEntry())
@@ -166,7 +165,6 @@ int getMemUsed() {
 bool Application::Run() {
 	// Run application loop
 	running = true;
-	if (console) console->Log("Lime is rendering");
 
 	bool fail = false;
 	while (running) {
@@ -181,7 +179,6 @@ bool Application::Run() {
 		if (fail) break;
 	}
 
-	console->Close();
 	Stop();
 	return true;
 }
@@ -194,8 +191,8 @@ void Application::EndApp() {
 bool Application::Stop() {
 	console->Log("Lime ended");
 
-	console->Close();
-	renderer->Close();
+	console->Close(true);
+	renderer->Shutdown();
 	window->Close();
 	return false;
 }
@@ -233,21 +230,17 @@ bool Application::CreateWindows() {
 		return false;
 	}
 
-	renderer->SetDebugConsole(console);
-	renderer->SetWindow(window);
-	renderer->Create();
+	if (!renderer->Init(console, window)) {
+		console->PostError("Failed to create rendering window", true);
+		return false;
+	}
 
-	// Parent windows
 	HWND glfwHWND = window->GetHandle();
 
 	if (!glfwHWND) {
 		console->PostError("Could not get valid window handle(s)", true);
 		return false;
 	}
-
-	ShowWindow(glfwHWND, SW_RESTORE);
-	SetForegroundWindow(glfwHWND);
-	SetActiveWindow(glfwHWND);
 
 	return true;
 }
