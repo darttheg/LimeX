@@ -1,0 +1,135 @@
+#include "Objects/Event.h"
+#include "Application.h"
+#include "DebugConsole.h"
+
+static Application* a;
+static DebugConsole* d;
+
+Event::Event() {
+}
+
+Hook Event::hook(sol::function f) {
+	f.push();
+	int ref = luaL_ref(a->GetLuaState(), LUA_REGISTRYINDEX);
+	funcs.push_back(ref);
+	// We can get the function because it's sitting at the top of the registry after just being called.
+
+	return Hook(shared_from_this(), ref);
+}
+
+bool Event::removeRef(int ref) {
+	auto it = std::find(funcs.begin(), funcs.end(), ref);
+	if (it == funcs.end())
+		return false;
+
+	luaL_unref((a->GetLuaState()), LUA_REGISTRYINDEX, ref);
+	funcs.erase(it);
+	return true;
+}
+
+void Event::clear() {
+	for (int ref : funcs) {
+		luaL_unref(a->GetLuaState(), LUA_REGISTRYINDEX, ref);
+	}
+
+	funcs.clear();
+}
+
+bool Event::empty() {
+	return getSize() == 0;
+}
+
+void Event::run() {
+	int argc = lua_gettop(a->GetLuaState());
+	int passc = (argc >= 1) ? (argc - 1) : 0;
+
+	for (int ref : funcs) {
+		lua_rawgeti((a->GetLuaState()), LUA_REGISTRYINDEX, ref); // Push callback function from registry onto stack
+
+		// Starts at index 2 to exclude self
+		for (int i = 2; i <= argc; ++i)
+			lua_pushvalue(a->GetLuaState(), i);
+
+		// Call Lua function with pushed arguments
+		if (lua_pcall(a->GetLuaState(), passc, 0, 0) != LUA_OK)
+			lua_pop(a->GetLuaState(), 1);
+	}
+
+	if (passc > 0)
+		lua_pop(a->GetLuaState(), passc);
+}
+
+template<class ...Args>
+void Event::engineRun(Args && ...args) {
+	for (int ref : funcs) {
+		lua_rawgeti(a->GetLuaState(), LUA_REGISTRYINDEX, ref);
+		(sol::stack::push(a->GetLuaState(), std::forward<Args>(args)), ...);
+		if (lua_pcall(a->GetLuaState(), sizeof...(Args), 0, 0) != LUA_OK) {
+			size_t n = 0;
+			const char* s = luaL_tolstring(a->GetLuaState(), -1, &n);
+			std::string msg(s, n);
+			lua_pop(a->GetLuaState(), 1);
+			d->PostError(msg);
+		}
+	}
+}
+
+static void bindEvent() {
+	sol::state_view view(a->GetLuaState());
+	sol::usertype<Event> bindType = view.new_usertype<Event>("Event",
+		sol::no_constructor,
+		sol::meta_function::type, [](const Event&) { return "Event"; }
+	);
+
+	bindType["hook"] = &Event::hook;
+	bindType["clear"] = &Event::clear;
+	bindType["run"] = &Event::run;
+	bindType["length"] = &Event::getSize;
+
+	bindType.set_function("new",
+		sol::factories([]() {
+			return std::make_shared<Event>();
+			})
+	);
+
+	bindType[sol::meta_function::call] = &Event::run;
+}
+
+//// Hook ////
+
+Hook::Hook() {
+}
+
+sol::object Hook::unhook() {
+	if (!hooked)
+		return sol::nil;
+
+	if (auto e = myEvent.lock())
+		e->removeRef(ref);
+
+	ref = LUA_NOREF;
+	hooked = false;
+
+	return sol::nil;
+}
+
+static void bindHook() {
+	sol::state_view view(a->GetLuaState());
+	sol::usertype<Hook> bindType = view.new_usertype<Hook>("Hook",
+		sol::constructors<Hook()>(),
+		sol::meta_function::type, [](const Hook&) { return "Hook"; }
+	);
+	// Only receive this object when hooking to an Event so no constructors
+
+	bindType["unhook"] = &Hook::unhook;
+	bindType["getHooked"] = &Hook::isHooked;
+}
+
+namespace EventAndHook {
+	void bind(Application* app) {
+		a = app;
+		d = a->GetDebugConsole();
+		bindEvent();
+		bindHook();
+	}
+}
