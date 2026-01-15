@@ -97,10 +97,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="api\Scene.api.inl">
-      <Filter>Engine\Runtime\APIs</Filter>
-    </None>
-    <None Include="api\Lime.api.inl">
+    <None Include="api\ModuleLime.lua">
       <Filter>Engine\Runtime\APIs</Filter>
     </None>
     <None Include="api\Enums.api.inl">
