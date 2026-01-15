@@ -14,6 +14,7 @@ extern "C" {
 class Window;
 class DebugConsole;
 class Renderer;
+class Event;
 
 #define LIME_VERSION "1.0"
 

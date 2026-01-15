@@ -3,12 +3,10 @@
 #include <sol/forward.hpp>
 #include <string>
 
-class Renderer;
-class DebugConsole;
+class Application;
 
 namespace Module {
 	namespace Scene {
-		void init(Renderer* rend, DebugConsole* deb);
-		void bind(sol::state& lua);
+
 	}
 }
