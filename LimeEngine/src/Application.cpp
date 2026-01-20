@@ -7,6 +7,7 @@
 #include "DebugConsole.h"
 #include "Renderer.h"
 #include "LuaBinder.h"
+#include "Objects/Event.h"
 
 std::string readFile(const char* path) {
 	std::ifstream file(path);
@@ -136,16 +137,19 @@ bool Application::Init(const void* data, size_t size) {
 	} else
 		console->Log("Lime started with " + std::to_string(modulesAmount) + " modules loaded");
 
+	// Run main file once
+	if (!RunEntry())
+		return false;
+
+	// Run Init Event
+	LimeInit.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); });
+
 	// Create device/true window
 	if (!CreateWindows())
 		return false;
 
 	// Init console
 	console->Create();
-
-	// Run main file once
-	if (!RunEntry())
-		return false;
 
 	return true;
 }
@@ -173,11 +177,15 @@ bool Application::Run() {
 		// console->Log("running");
 		console->Update(getMemUsed());
 
+		LimeUpdate.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); });
+
 		if (window && window->ShouldClose()) fail = true;
 		if (!renderer->Render()) fail = true;
 
 		if (fail) break;
 	}
+
+	LimeEnd.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); });
 
 	Stop();
 	return true;

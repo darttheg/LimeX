@@ -62,7 +62,7 @@ void Module::Lime::bind(Application* app) {
 	// Returns string
 	module.set_function("GetVersion", &Module::Lime::Bind::GetVersion);
 
-	module = lua["Lime"]["Events"].get_or_create<sol::table>();
+	// module = lua["Lime"]["Events"].get_or_create<sol::table>();
 	a->LimeInit = std::make_shared<Event>(); // Call with mutable table
 	a->LimeUpdate = std::make_shared<Event>(); // Call with dt
 	a->LimeEnd = std::make_shared<Event>(); // Call with bool isError?

@@ -59,21 +59,6 @@ void Event::run() {
 		lua_pop(a->GetLuaState(), passc);
 }
 
-template<class ...Args>
-void Event::engineRun(Args && ...args) {
-	for (int ref : funcs) {
-		lua_rawgeti(a->GetLuaState(), LUA_REGISTRYINDEX, ref);
-		(sol::stack::push(a->GetLuaState(), std::forward<Args>(args)), ...);
-		if (lua_pcall(a->GetLuaState(), sizeof...(Args), 0, 0) != LUA_OK) {
-			size_t n = 0;
-			const char* s = luaL_tolstring(a->GetLuaState(), -1, &n);
-			std::string msg(s, n);
-			lua_pop(a->GetLuaState(), 1);
-			d->PostError(msg);
-		}
-	}
-}
-
 static void bindEvent() {
 	sol::state_view view(a->GetLuaState());
 	sol::usertype<Event> bindType = view.new_usertype<Event>("Event",

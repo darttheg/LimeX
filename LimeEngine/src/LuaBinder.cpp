@@ -11,9 +11,9 @@
 //
 
 void LuaBinder::BindAll(Application* app) {
-	// Modules
-	Module::Lime::bind(app);
-
 	// Objects
 	EventAndHook::bind(app);
+
+	// Modules
+	Module::Lime::bind(app);
 }
