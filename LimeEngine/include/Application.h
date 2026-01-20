@@ -23,6 +23,10 @@ public:
 	Application() = default;
 	~Application() = default;
 
+	std::shared_ptr<Event> LimeInit = nullptr;
+	std::shared_ptr<Event> LimeUpdate = nullptr;
+	std::shared_ptr<Event> LimeEnd = nullptr;
+
 	bool Init(const void* data, size_t size);
 	bool Run();
 	void EndApp();

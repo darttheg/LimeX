@@ -249,6 +249,6 @@ void Application::DoLuaBinding() {
 	if (!lua) return;
 
 	LuaBinder* binder = new LuaBinder();
-	binder->BindAll(lua.get(), this);
+	binder->BindAll(this);
 	delete binder;
 }

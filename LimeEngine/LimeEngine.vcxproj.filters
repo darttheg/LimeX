@@ -57,14 +57,14 @@
     <ClInclude Include="include\LuaBinder.h">
       <Filter>Engine\Runtime\Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\ModuleScene.h">
-      <Filter>Engine\Runtime\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ModuleLime.h">
-      <Filter>Engine\Runtime\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="include\Objects\Event.h">
       <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Modules\ModuleLime.h">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Modules\ModuleScene.h">
+      <Filter>Engine\Runtime\Modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -86,14 +86,14 @@
     <ClCompile Include="src\LuaBinder.cpp">
       <Filter>Engine\Runtime\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\ModuleScene.cpp">
-      <Filter>Engine\Runtime\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ModuleLime.cpp">
-      <Filter>Engine\Runtime\Modules</Filter>
-    </ClCompile>
     <ClCompile Include="src\Objects\Event.cpp">
       <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\ModuleLime.cpp">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\ModuleScene.cpp">
+      <Filter>Engine\Runtime\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

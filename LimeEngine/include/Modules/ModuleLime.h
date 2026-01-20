@@ -9,7 +9,7 @@ class Renderer;
 
 namespace Module {
 	namespace Lime {
-		void bind(sol::state& lua, Application* app);
+		void bind(Application* app);
 
 		namespace Bind {
 			void Log(std::string msg, int color = 0);

@@ -15,6 +15,6 @@ public:
 	LuaBinder() = default;
 	~LuaBinder() = default;
 
-	void BindAll(sol::state* lua, Application* app);
+	void BindAll(Application* app);
 private:
 };

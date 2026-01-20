@@ -5,6 +5,10 @@
 
 class Application;
 
+namespace EventAndHook {
+	void bind(Application* app);
+}
+
 class Event : public std::enable_shared_from_this<Event> {
 private:
 	std::vector<int> funcs;
@@ -17,7 +21,7 @@ public:
 	Hook hook(sol::function f); // Add a function
 	void clear(); // Clear list
 	void run(); // Run Event
-	int getSize() const { return funcs.size(); }
+	int getSize() const { return (int)funcs.size(); }
 	bool empty();
 
 	template <class... Args>
@@ -36,7 +40,3 @@ public:
 	sol::object unhook();
 	bool isHooked() const { return hooked; }
 };
-
-namespace EventAndHook {
-	void bind(Application* app);
-}

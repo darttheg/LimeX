@@ -1,8 +1,11 @@
-#include "ModuleLime.h"
+#include "Modules/ModuleLime.h"
 
 #include "DebugConsole.h"
 #include "Application.h"
 #include "Renderer.h"
+
+#include "Objects/Event.h"
+
 #include <sol/sol.hpp>
 
 static void bindEnums(sol::state& lua, sol::table module) {
@@ -33,18 +36,45 @@ static DebugConsole* d;
 static Application* a;
 static Renderer* r;
 
-void Module::Lime::bind(sol::state& lua, Application* app) {
+void Module::Lime::bind(Application* app) {
 	a = app;
 	d = app->GetDebugConsole();
 	r = app->GetRenderer();
+	sol::state& lua = app->GetLuaState();
 
+	// Module Lime
 	sol::table module = lua["Lime"].get_or_create<sol::table>();
 	bindEnums(lua, module);
 
+	// Prints a message to console.
+	// string msg, Lime.PrintColor? color
+	// Returns void
 	module.set_function("Log", &Module::Lime::Bind::Log);
+
+	// If set to true, Lime will close on any error. A pop-up will be disclosed prior with error details.
+	// boolean doEnd
 	module.set_function("SetEndOnError", &Module::Lime::Bind::SetEndOnError);
+
+	// Closes the Lime application.
 	module.set_function("Close", &Module::Lime::Bind::Close);
+
+	// Returns the Lime version running.
+	// Returns string
 	module.set_function("GetVersion", &Module::Lime::Bind::GetVersion);
+
+	module = lua["Lime"]["Events"].get_or_create<sol::table>();
+	a->LimeInit = std::make_shared<Event>(); // Call with mutable table
+	a->LimeUpdate = std::make_shared<Event>(); // Call with dt
+	a->LimeEnd = std::make_shared<Event>(); // Call with bool isError?
+
+	// Field Event Init
+	// Field Event Update
+	// Field Event End
+	module["Init"] = a->LimeInit;
+	module["Update"] = a->LimeUpdate;
+	module["End"] = a->LimeEnd;
+
+	// End Module
 }
 
 // Functions

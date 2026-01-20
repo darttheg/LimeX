@@ -2,14 +2,18 @@
 #include <sol/sol.hpp>
 #include "Application.h"
 
-// OBJECT INLCUDES
-#include "ModuleLime.h"
-// #include "ModuleScene.h"
+// MODULE INLCUDES
+#include "Modules/ModuleLime.h"
 //
 
-void LuaBinder::BindAll(sol::state* lua, Application* app) {
-	Module::Lime::bind(*lua, app);
+// OBJECT INCLUDES
+#include "Objects/Event.h"
+//
 
-	//Module::Scene::init(app->GetRenderer(), app->GetDebugConsole());
-	//Module::Scene::bind(*lua);
+void LuaBinder::BindAll(Application* app) {
+	// Modules
+	Module::Lime::bind(app);
+
+	// Objects
+	EventAndHook::bind(app);
 }

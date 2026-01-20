@@ -81,10 +81,25 @@ static void bindEvent() {
 		sol::meta_function::type, [](const Event&) { return "Event"; }
 	);
 
-	bindType["hook"] = &Event::hook;
-	bindType["clear"] = &Event::clear;
-	bindType["run"] = &Event::run;
-	bindType["length"] = &Event::getSize;
+	// Object Event
+
+	// Hook a function to this Event.
+	// function Event
+	// Returns Hook
+	bindType["Hook"] = &Event::hook;
+
+	// Clears all functions hooked to this Event.
+	bindType["Clear"] = &Event::clear;
+
+	// Run this Event.
+	// any ...
+	bindType["Run"] = &Event::run;
+
+	// Returns the number of hooked functions on this Event.
+	// Returns number
+	bindType["Length"] = &Event::getSize;
+
+	// End Object
 
 	bindType.set_function("new",
 		sol::factories([]() {
@@ -121,15 +136,21 @@ static void bindHook() {
 	);
 	// Only receive this object when hooking to an Event so no constructors
 
-	bindType["unhook"] = &Hook::unhook;
-	bindType["getHooked"] = &Hook::isHooked;
+	// Object Hook
+
+	// Unhook a function to this Event.
+	bindType["Unhook"] = &Hook::unhook;
+
+	// Returns true if this hook is still hooked to an Event.
+	// Returns boolean
+	bindType["IsHooked"] = &Hook::isHooked;
+
+	// End Object
 }
 
-namespace EventAndHook {
-	void bind(Application* app) {
-		a = app;
-		d = a->GetDebugConsole();
-		bindEvent();
-		bindHook();
-	}
+void EventAndHook::bind(Application* app) {
+	a = app;
+	d = a->GetDebugConsole();
+	bindEvent();
+	bindHook();
 }
