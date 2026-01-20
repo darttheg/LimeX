@@ -7,9 +7,7 @@ MODULE_RE    = re.compile(r'^\s*//\s*Module\s+(.+?)\s*$')
 ENDMODULE_RE = re.compile(r'^\s*//\s*End\s+Module\s*$')
 OBJECT_RE    = re.compile(r'^\s*//\s*Object\s+(.+?)\s*$')
 ENDOBJECT_RE = re.compile(r'^\s*//\s*End\s+Object\s*$')
-
-FIELD_RE     = re.compile(r'^\s*//\s*Field\s+(\S+)\s+([A-Za-z_]\w*)\s*$')  # // Field <type> <name>
-
+FIELD_RE     = re.compile(r'^\s*//\s*Field\s+(\S+)\s+([A-Za-z_]\w*)\s*(?:,\s*(.*?))?\s*$')
 COMMENT_RE   = re.compile(r'^\s*//\s*(.*?)\s*$')
 RET_LINE_RE  = re.compile(r'^\s*Returns\s+(.+?)\s*$')
 
@@ -34,7 +32,7 @@ def parse_params(raw: str):
             continue
         typ = bits[0]
         name = bits[1]
-        out.append((name, typ))  # (name, type)
+        out.append((name, typ))
     return out
 
 def normalize_varargs(params):
@@ -117,9 +115,9 @@ def parse_doc_triple(docs: list[str]):
     params = normalize_varargs(params)
     return desc, params, ret
 
-def add_field(owner: str, ftype: str, fname: str, fields_map: dict):
+def add_field(owner: str, ftype: str, fname: str, fcomment: str | None, fields_map: dict):
     owner_fields = fields_map.setdefault(owner, {})
-    owner_fields[fname] = ftype
+    owner_fields[fname] = (ftype, (fcomment or "").strip())
 
 def parse_cpp(text: str, kind: str, emitted_tables: set, emitted_obj_classes: set, out_lines: list[str], fields_map: dict):
     lines = text.splitlines()
@@ -160,7 +158,8 @@ def parse_cpp(text: str, kind: str, emitted_tables: set, emitted_obj_classes: se
             had = True
             ftype = fm.group(1)
             fname = fm.group(2)
-            add_field(owner, ftype, fname, fields_map)
+            fcomment = fm.group(3)
+            add_field(owner, ftype, fname, fcomment, fields_map)
             continue
 
         name = extract_binding_name(line)
@@ -200,11 +199,13 @@ def scan(root: Path, kind: str, base: Path, emitted_tables: set, emitted_obj_cla
             for f in funcs:
                 print(f"  {f}")
 
-def build_lime_header(fields_map: dict):
-    lines = ["---@class Lime"]
-    for fname, ftype in sorted(fields_map.get("Lime", {}).items()):
+def emit_owner_field_block(owner: str, fields: dict):
+    lines = [f"---@class {owner}"]
+    for fname, (ftype, fcomment) in sorted(fields.items()):
+        if fcomment:
+            lines.append(f"--- {fcomment}")
         lines.append(f"---@field {fname} {ftype}")
-    lines.append("Lime = Lime or {}")
+    lines.append("")
     return lines
 
 def main():
@@ -220,23 +221,24 @@ def main():
     body_lines: list[str] = []
     emitted_tables = set()
     emitted_obj_classes = set()
-    fields_map = {}  # owner -> {fieldName: fieldType}
+    fields_map = {}
 
     scan(src / "Modules", "module", src, emitted_tables, emitted_obj_classes, body_lines, fields_map)
     scan(src / "Objects", "object", src, emitted_tables, emitted_obj_classes, body_lines, fields_map)
 
-    header_lines = build_lime_header(fields_map)
+    lime_fields = fields_map.get("Lime", {})
+    header_lines = ["---@class Lime"]
+    for fname, (ftype, fcomment) in sorted(lime_fields.items()):
+        if fcomment:
+            header_lines.append(f"--- {fcomment}")
+        header_lines.append(f"---@field {fname} {ftype}")
+    header_lines.append("Lime = Lime or {}")
 
-    # Also inject object/module fields where the owner isn't Lime by emitting @field in their class/table area.
-    # For objects, we already emit their class before methods; we will append @field blocks near the end for simplicity.
     extra_field_blocks = []
     for owner, fields in sorted(fields_map.items()):
         if owner == "Lime":
             continue
-        extra_field_blocks.append(f"---@class {owner}")
-        for fname, ftype in sorted(fields.items()):
-            extra_field_blocks.append(f"---@field {fname} {ftype}")
-        extra_field_blocks.append("")
+        extra_field_blocks.extend(emit_owner_field_block(owner, fields))
 
     out_path = out_dir / "Lime.lua"
     out_path.write_text("\n".join(header_lines + extra_field_blocks + body_lines).rstrip(), encoding="utf-8")

@@ -1,6 +1,9 @@
 ---@class Lime
+--- Event called by Lime once the application ends in any way. This Event is run with a boolean didFail argument, true if the closure is because of an error.
 ---@field End Event
+--- Event called by Lime prior to initializing the window. This Event is run with a mutable table argument. Edit this table to change driver type, window size, and more.
 ---@field Init Event
+--- Event called by Lime every rendering frame. This Event is run with a number delta time argument.
 ---@field Update Event
 Lime = Lime or {}
 
@@ -27,9 +30,9 @@ function Lime.GetVersion() end
 Event = Event or {}
 
 --- Hook a function to this Event.
----@param Event function
+---@param Function function
 ---@return Hook
-function Event:Hook(Event) end
+function Event:Hook(Function) end
 
 --- Clears all functions hooked to this Event.
 ---@return void
