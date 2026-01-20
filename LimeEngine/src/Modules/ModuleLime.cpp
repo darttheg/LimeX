@@ -67,9 +67,9 @@ void Module::Lime::bind(Application* app) {
 	a->LimeUpdate = std::make_shared<Event>(); // Call with dt
 	a->LimeEnd = std::make_shared<Event>(); // Call with bool isError?
 
-	// Field Event Init
-	// Field Event Update
-	// Field Event End
+	// Field Event Init, Event called by Lime prior to initializing the window. This Event is run with a mutable table argument. Edit this table to change driver type, window size, and more.
+	// Field Event Update, Event called by Lime every rendering frame. This Event is run with a number delta time argument.
+	// Field Event End, Event called by Lime once the application ends in any way. This Event is run with a boolean didFail argument, true if the closure is because of an error.
 	module["Init"] = a->LimeInit;
 	module["Update"] = a->LimeUpdate;
 	module["End"] = a->LimeEnd;

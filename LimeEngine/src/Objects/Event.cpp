@@ -84,7 +84,7 @@ static void bindEvent() {
 	// Object Event
 
 	// Hook a function to this Event.
-	// function Event
+	// function Function
 	// Returns Hook
 	bindType["Hook"] = &Event::hook;
 
