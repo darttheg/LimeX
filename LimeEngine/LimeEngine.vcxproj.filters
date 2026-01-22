@@ -66,6 +66,15 @@
     <ClInclude Include="include\Modules\ModuleScene.h">
       <Filter>Engine\Runtime\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\Vec4.h">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Objects\Vec2.h">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Objects\Vec3.h">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -94,6 +103,15 @@
     </ClCompile>
     <ClCompile Include="src\Modules\ModuleScene.cpp">
       <Filter>Engine\Runtime\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Vec4.cpp">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Vec2.cpp">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Vec3.cpp">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

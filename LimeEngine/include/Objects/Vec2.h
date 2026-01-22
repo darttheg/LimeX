@@ -31,6 +31,6 @@ private:
     float x, y = 0.0;
 };
 
-namespace Object::Vec2 {
+namespace Object::Vec2Bind {
     void bind(Application* app);
 }

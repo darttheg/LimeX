@@ -5,7 +5,7 @@
 
 class Application;
 
-namespace Object::Event {
+namespace Object::EventBind {
 	void bind(Application* app);
 }
 

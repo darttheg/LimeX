@@ -6,12 +6,19 @@
 --- Event called by Lime every rendering frame. This Event is run with a number delta time argument.
 ---@field Update Event
 Lime = Lime or {}
+---@class Event
+Event = Event or {}
+
+---@class Hook
+Hook = Hook or {}
+
 ---@class Vec2
 ---@overload fun(): Vec2
 ---@overload fun(x:number, y:number): Vec2
 ---@overload fun(all:number): Vec2
 ---@field x number
 ---@field y number
+Vec2 = Vec2 or {}
 
 
 --- Prints a message to console.
@@ -44,8 +51,6 @@ function Lime.GetVersion() end
 ---@return boolean
 function Lime.SetInitConfig(driver, vSync, frameRate, windowSize, renderSize, scaleRenderToWindow, fullscreen) end
 
----@class Event
-Event = Event or {}
 
 --- Hook a function to this Event.
 ---@param Function function
@@ -65,8 +70,6 @@ function Event:Run(...) end
 ---@return number
 function Event:Length() end
 
----@class Hook
-Hook = Hook or {}
 
 --- Unhook a function to this Event.
 ---@return void
@@ -75,6 +78,3 @@ function Hook:Unhook() end
 --- Returns true if this hook is still hooked to an Event.
 ---@return boolean
 function Hook:IsHooked() end
-
----@class Vec2
-Vec2 = Vec2 or {}

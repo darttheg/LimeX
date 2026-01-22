@@ -13,8 +13,8 @@
 
 void LuaBinder::BindAll(Application* app) {
 	// Objects
-	Object::Event::bind(app);
-	Object::Vec2::bind(app);
+	Object::EventBind::bind(app);
+	Object::Vec2Bind::bind(app);
 
 	// Modules
 	Module::Lime::bind(app);

@@ -13,7 +13,7 @@ Vec2 Vec2::operator*(float scalar) const { return Vec2(getX() * scalar, getY() *
 Vec2 Vec2::operator/(float scalar) const { return Vec2(getX() / scalar, getY() / scalar); }
 bool Vec2::operator==(const Vec2& other) const { return getX() == other.getX() && getY() == other.getY(); }
 
-void Object::Vec2::bind(Application* a) {
+void Object::Vec2Bind::bind(Application* a) {
 	sol::state_view view(a->GetLuaState());
 	sol::usertype<Vec2> obj = view.new_usertype<Vec2>(
 		"Vec2",

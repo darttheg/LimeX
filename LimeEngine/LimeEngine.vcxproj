@@ -26,6 +26,9 @@
     <ClInclude Include="include\Modules\ModuleLime.h" />
     <ClInclude Include="include\Modules\ModuleScene.h" />
     <ClInclude Include="include\Objects\Event.h" />
+    <ClInclude Include="include\Objects\Vec2.h" />
+    <ClInclude Include="include\Objects\Vec3.h" />
+    <ClInclude Include="include\Objects\Vec4.h" />
     <ClInclude Include="include\Renderer.h" />
     <ClInclude Include="include\Window.h" />
   </ItemGroup>
@@ -37,6 +40,9 @@
     <ClCompile Include="src\Modules\ModuleLime.cpp" />
     <ClCompile Include="src\Modules\ModuleScene.cpp" />
     <ClCompile Include="src\Objects\Event.cpp" />
+    <ClCompile Include="src\Objects\Vec2.cpp" />
+    <ClCompile Include="src\Objects\Vec3.cpp" />
+    <ClCompile Include="src\Objects\Vec4.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
