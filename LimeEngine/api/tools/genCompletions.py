@@ -8,14 +8,15 @@ ENDMODULE_RE = re.compile(r'^\s*//\s*End\s+Module\s*$')
 OBJECT_RE    = re.compile(r'^\s*//\s*Object\s+(.+?)\s*$')
 ENDOBJECT_RE = re.compile(r'^\s*//\s*End\s+Object\s*$')
 FIELD_RE     = re.compile(r'^\s*//\s*Field\s+(\S+)\s+([A-Za-z_]\w*)\s*(?:,\s*(.*?))?\s*$')
+CTOR_RE      = re.compile(r'^\s*//\s*Constructor\s*(.*?)\s*$')
 COMMENT_RE   = re.compile(r'^\s*//\s*(.*?)\s*$')
 RET_LINE_RE  = re.compile(r'^\s*Returns\s+(.+?)\s*$')
 
 BIND_PATTERNS = [
-    re.compile(r'\bmodule\.set_function\s*\(\s*"([^"]+)"'),
-    re.compile(r'\bmodule\[\s*"([^"]+)"\s*\]\s*='),
-    re.compile(r'\bbindType\[\s*"([^"]+)"\s*\]\s*='),
-    re.compile(r'\bbindType\.set_function\s*\(\s*"([^"]+)"'),
+    re.compile(r'\bmodule\.set_function\s*\(\s*\"([^\"]+)\"'),
+    re.compile(r'\bmodule\[\s*\"([^\"]+)\"\s*\]\s*='),
+    re.compile(r'\bbindType\[\s*\"([^\"]+)\"\s*\]\s*='),
+    re.compile(r'\bbindType\.set_function\s*\(\s*\"([^\"]+)\"'),
 ]
 
 def parse_params(raw: str):
@@ -83,6 +84,7 @@ def collect_doc_block(lines: list[str], idx: int):
             or text.startswith("Object ")
             or text.startswith("End Object")
             or text.startswith("Field ")
+            or text.startswith("Constructor")
         ):
             break
         if text != "":
@@ -119,7 +121,28 @@ def add_field(owner: str, ftype: str, fname: str, fcomment: str | None, fields_m
     owner_fields = fields_map.setdefault(owner, {})
     owner_fields[fname] = (ftype, (fcomment or "").strip())
 
-def parse_cpp(text: str, kind: str, emitted_tables: set, emitted_obj_classes: set, out_lines: list[str], fields_map: dict):
+def add_ctor(owner: str, params: list[tuple[str, str]], ctors_map: dict):
+    if not owner:
+        return
+    owner_ctors = ctors_map.setdefault(owner, [])
+    owner_ctors.append(params)
+
+def bump_stats(stats_map: dict, kind: str, owner: str, key: str, inc: int = 1):
+    if not owner:
+        return
+    st = stats_map.setdefault((kind, owner), {"constructors": 0, "fields": 0, "functions": 0})
+    st[key] += inc
+
+def parse_cpp(
+    text: str,
+    kind: str,
+    emitted_tables: set,
+    emitted_obj_classes: set,
+    out_lines: list[str],
+    fields_map: dict,
+    ctors_map: dict,
+    stats_map: dict,
+):
     lines = text.splitlines()
     owner = None
     had = False
@@ -160,6 +183,16 @@ def parse_cpp(text: str, kind: str, emitted_tables: set, emitted_obj_classes: se
             fname = fm.group(2)
             fcomment = fm.group(3)
             add_field(owner, ftype, fname, fcomment, fields_map)
+            bump_stats(stats_map, kind, owner, "fields", 1)
+            continue
+
+        cm = CTOR_RE.match(line)
+        if cm:
+            had = True
+            raw = (cm.group(1) or "").strip()
+            params = normalize_varargs(parse_params(raw))
+            add_ctor(owner, params, ctors_map)
+            bump_stats(stats_map, kind, owner, "constructors", 1)
             continue
 
         name = extract_binding_name(line)
@@ -172,6 +205,7 @@ def parse_cpp(text: str, kind: str, emitted_tables: set, emitted_obj_classes: se
 
         desc, params, ret = parse_doc_triple(docs)
         collected_funcs.append(f"{owner}.{name}")
+        bump_stats(stats_map, kind, owner, "functions", 1)
 
         if desc:
             out_lines.append(f"--- {desc}")
@@ -187,26 +221,45 @@ def parse_cpp(text: str, kind: str, emitted_tables: set, emitted_obj_classes: se
 
     return had, collected_funcs
 
-def scan(root: Path, kind: str, base: Path, emitted_tables: set, emitted_obj_classes: set, out_lines: list[str], fields_map: dict):
+def scan(
+    root: Path,
+    kind: str,
+    base: Path,
+    emitted_tables: set,
+    emitted_obj_classes: set,
+    out_lines: list[str],
+    fields_map: dict,
+    ctors_map: dict,
+    stats_map: dict,
+):
     if not root.exists():
         return
     for cpp in sorted(root.rglob("*.cpp")):
-        rel = cpp.relative_to(base)
         text = cpp.read_text(encoding="utf-8", errors="ignore")
-        had, funcs = parse_cpp(text, kind, emitted_tables, emitted_obj_classes, out_lines, fields_map)
-        if had and funcs:
-            print(f"Writing file {rel} completions...")
-            for f in funcs:
-                print(f"  {f}")
+        parse_cpp(text, kind, emitted_tables, emitted_obj_classes, out_lines, fields_map, ctors_map, stats_map)
 
-def emit_owner_field_block(owner: str, fields: dict):
+def emit_owner_block(owner: str, fields: dict, ctors: list[list[tuple[str, str]]] | None):
     lines = [f"---@class {owner}"]
+    if ctors:
+        for params in ctors:
+            arglist = ", ".join(f"{n}:{t}" for n, t in params)
+            # This enables `Owner(...)` autocomplete (instead of `Owner.new(...)`)
+            lines.append(f"---@overload fun({arglist}): {owner}")
     for fname, (ftype, fcomment) in sorted(fields.items()):
         if fcomment:
             lines.append(f"--- {fcomment}")
         lines.append(f"---@field {fname} {ftype}")
     lines.append("")
     return lines
+
+def emit_debug(stats_map: dict):
+    def sort_key(item):
+        (kind, owner), _st = item
+        return (0 if kind == "module" else 1, owner.lower())
+
+    for (kind, owner), st in sorted(stats_map.items(), key=sort_key):
+        label = "Module" if kind == "module" else "Object"
+        print(f"{label} {owner} - {st['constructors']} constructors, {st['fields']} fields, {st['functions']} functions")
 
 def main():
     ap = argparse.ArgumentParser()
@@ -221,27 +274,38 @@ def main():
     body_lines: list[str] = []
     emitted_tables = set()
     emitted_obj_classes = set()
-    fields_map = {}
+    fields_map: dict = {}
+    ctors_map: dict = {}
+    stats_map: dict = {}
 
-    scan(src / "Modules", "module", src, emitted_tables, emitted_obj_classes, body_lines, fields_map)
-    scan(src / "Objects", "object", src, emitted_tables, emitted_obj_classes, body_lines, fields_map)
+    scan(src / "Modules", "module", src, emitted_tables, emitted_obj_classes, body_lines, fields_map, ctors_map, stats_map)
+    scan(src / "Objects", "object", src, emitted_tables, emitted_obj_classes, body_lines, fields_map, ctors_map, stats_map)
+
+    # Debug summary
+    emit_debug(stats_map)
 
     lime_fields = fields_map.get("Lime", {})
+    lime_ctors = ctors_map.get("Lime", [])
+
     header_lines = ["---@class Lime"]
+    if lime_ctors:
+        for params in lime_ctors:
+            arglist = ", ".join(f"{n}:{t}" for n, t in params)
+            header_lines.append(f"---@overload fun({arglist}): Lime")
     for fname, (ftype, fcomment) in sorted(lime_fields.items()):
         if fcomment:
             header_lines.append(f"--- {fcomment}")
         header_lines.append(f"---@field {fname} {ftype}")
     header_lines.append("Lime = Lime or {}")
 
-    extra_field_blocks = []
+    extra_blocks = []
     for owner, fields in sorted(fields_map.items()):
         if owner == "Lime":
             continue
-        extra_field_blocks.extend(emit_owner_field_block(owner, fields))
+        extra_blocks.extend(emit_owner_block(owner, fields, ctors_map.get(owner)))
 
     out_path = out_dir / "Lime.lua"
-    out_path.write_text("\n".join(header_lines + extra_field_blocks + body_lines).rstrip(), encoding="utf-8")
+    out_path.write_text("\n".join(header_lines + extra_blocks + body_lines).rstrip(), encoding="utf-8")
     print(f"Wrote {out_path}")
 
 if __name__ == "__main__":

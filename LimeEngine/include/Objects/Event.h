@@ -5,7 +5,7 @@
 
 class Application;
 
-namespace EventAndHook {
+namespace Object::Event {
 	void bind(Application* app);
 }
 

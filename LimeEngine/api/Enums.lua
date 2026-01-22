@@ -26,3 +26,19 @@ Warning = 1,
 Message = 2,
 Information = 3,
 }
+---@alias Lime.DriverType integer
+---@class Lime.DriverTypeEnum
+---@field None Lime.DriverType
+---@field Software Lime.DriverType
+---@field SoftwarePlus Lime.DriverType
+---@field Direct3D8 Lime.DriverType
+---@field Direct3D9 Lime.DriverType
+---@field OpenGL Lime.DriverType
+Lime.DriverType = {
+None = 0,
+Software = 1,
+SoftwarePlus = 2,
+Direct3D8 = 3,
+Direct3D9 = 4,
+OpenGL = 5,
+}

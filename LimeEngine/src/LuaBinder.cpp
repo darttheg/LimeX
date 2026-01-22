@@ -8,11 +8,13 @@
 
 // OBJECT INCLUDES
 #include "Objects/Event.h"
+#include "Objects/Vec2.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
 	// Objects
-	EventAndHook::bind(app);
+	Object::Event::bind(app);
+	Object::Vec2::bind(app);
 
 	// Modules
 	Module::Lime::bind(app);

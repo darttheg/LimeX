@@ -6,6 +6,13 @@
 --- Event called by Lime every rendering frame. This Event is run with a number delta time argument.
 ---@field Update Event
 Lime = Lime or {}
+---@class Vec2
+---@overload fun(): Vec2
+---@overload fun(x:number, y:number): Vec2
+---@overload fun(all:number): Vec2
+---@field x number
+---@field y number
+
 
 --- Prints a message to console.
 ---@param msg string
@@ -68,3 +75,6 @@ function Hook:Unhook() end
 --- Returns true if this hook is still hooked to an Event.
 ---@return boolean
 function Hook:IsHooked() end
+
+---@class Vec2
+Vec2 = Vec2 or {}

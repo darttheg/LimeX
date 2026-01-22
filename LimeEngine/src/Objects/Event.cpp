@@ -133,7 +133,7 @@ static void bindHook() {
 	// End Object
 }
 
-void EventAndHook::bind(Application* app) {
+void Object::Event::bind(Application* app) {
 	a = app;
 	d = a->GetDebugConsole();
 	bindEvent();
