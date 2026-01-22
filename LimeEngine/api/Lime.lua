@@ -26,6 +26,17 @@ function Lime.Close() end
 ---@return string
 function Lime.GetVersion() end
 
+--- IMPORTANT: This function should always be run prior to window creation (pre-Lime.Update Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
+---@param driver Lime.DriverType
+---@param vSync boolean?
+---@param frameRate number?
+---@param windowSize Vec2?
+---@param renderSize Vec2?
+---@param scaleRenderToWindow boolean?
+---@param fullscreen boolean?
+---@return boolean
+function Lime.SetInitConfig(driver, vSync, frameRate, windowSize, renderSize, scaleRenderToWindow, fullscreen) end
+
 ---@class Event
 Event = Event or {}
 

@@ -6,12 +6,14 @@
 #include "GLFW/glfw3.h"
 #include <GLFW/glfw3native.h>
 
+class Application;
+
 class Window {
 public:
-	Window();
+	Window(Application* app);
 	~Window();
 
-	bool Create(int w, int h, std::string title, bool fullscreen, bool resizable, bool maintainAR);
+	bool Create();
 	void Close();
 	void PollEvents();
 	bool ShouldClose();
@@ -22,4 +24,6 @@ public:
 	GLFWwindow* getGLFWWindow() const { return glfwWindow; }
 private:
 	GLFWwindow* glfwWindow = nullptr;
+
+	Application* a = nullptr;
 };

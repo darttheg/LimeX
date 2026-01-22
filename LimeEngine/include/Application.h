@@ -10,6 +10,7 @@ extern "C" {
 #include <sol/sol.hpp>
 #include <unordered_map>
 #include <memory>
+#include <vector>
 
 class Window;
 class DebugConsole;
@@ -17,6 +18,19 @@ class Renderer;
 class Event;
 
 #define LIME_VERSION "1.0"
+
+struct WindowConfig {
+	int driverType = 0; // OpenGL
+	std::vector<int> windowSize{ 640, 480 };
+	std::vector<int> renderSize{ 640, 480 };
+	int frameRate = 60;
+	bool vSync = false;
+	std::string title = "Lime App";
+	bool maximizable = true;
+	bool resizable = true;
+	bool fullscreen = false;
+	bool scaleRenderToWindow = true;
+};
 
 class Application {
 public:
@@ -41,6 +55,9 @@ public:
 	bool IsRunning() { return running; }
 	sol::state& GetLuaState() { return *lua; }
 
+	WindowConfig GetConfig() { return windowCfg; }
+	void SetConfig(WindowConfig cfg) { windowCfg = cfg; didInitCfg = true; }
+
 private:
 	bool CreateWindows();
 	void DoLuaBinding();
@@ -60,13 +77,7 @@ private:
 	Renderer* renderer = nullptr;
 
 	// Window parameters
-	int width = 640;
-	int height = 480;
-	bool maximized = false;
-	bool resizable = true;
-	bool maintainAspect = false;
-	bool vSync = false;
-	std::string title = "Lime Application";
-
+	WindowConfig windowCfg;
+	bool didInitCfg = false;
 	bool running = false;
 };

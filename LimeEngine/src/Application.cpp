@@ -144,6 +144,9 @@ bool Application::Init(const void* data, size_t size) {
 	// Run Init Event
 	LimeInit.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); });
 
+	if (!didInitCfg)
+		console->Warn("Lime.SetInitConfig was not called. Setting one-time parameters--such as driver type--can only be done via this function.");
+
 	// Create device/true window
 	if (!CreateWindows())
 		return false;
@@ -197,7 +200,12 @@ void Application::EndApp() {
 }
 
 bool Application::Stop() {
-	console->Log("Lime ended");
+	std::string out = "Lime ended with ";
+	out += std::to_string(console->GetWarningCount());
+	out += " warnings, ";
+	out += std::to_string(console->GetErrorCount());
+	out += " errors";
+	console->Log(out.c_str());
 
 	console->Close(true);
 	renderer->Shutdown();
@@ -232,8 +240,8 @@ void Application::DisplayMessage(std::string msg, std::string title, int icon) {
 }
 
 bool Application::CreateWindows() {
-	window = new Window();
-	if (!window->Create(width, height, title, maximized, resizable, maintainAspect)) {
+	window = new Window(this);
+	if (!window->Create()) {
 		console->PostError("Failed to create GLFW window", true);
 		return false;
 	}

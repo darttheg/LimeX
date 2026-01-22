@@ -182,7 +182,7 @@ call "$(SolutionDir)build.bat"</Command>
 call "$(SolutionDir)build.bat"</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Building Lime project...</Message>
+      <Message>Creating Lime completions...</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -39,6 +39,9 @@ public:
 	void SetWriteOutput(bool v) { writeOutput = v; }
 	void SetEndOnError(bool v) { endOnError = v; }
 	void SetAppOwner(Application* owner);
+
+	int GetWarningCount() { return warnCount; }
+	int GetErrorCount() { return errCount; }
 private:
 	Application* app;
 
@@ -46,6 +49,8 @@ private:
 	bool writeOutput = true;
 	bool endOnError = false;
 	int memUsed = 0;
+	int warnCount = 0;
+	int errCount = 0;
 
 	struct Line {
 		Line(MESSAGE_TYPE m, std::string c) : type(m), content(std::move(c)) {}

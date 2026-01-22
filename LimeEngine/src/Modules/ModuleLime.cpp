@@ -62,6 +62,11 @@ void Module::Lime::bind(Application* app) {
 	// Returns string
 	module.set_function("GetVersion", &Module::Lime::Bind::GetVersion);
 
+	// IMPORTANT: This function should always be run prior to window creation (pre-Lime.Update Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
+	// Lime.DriverType driver, boolean? vSync, number? frameRate, Vec2? windowSize, Vec2? renderSize, boolean? scaleRenderToWindow, boolean? fullscreen
+	// Returns boolean
+	module.set_function("SetInitConfig", &Module::Lime::Bind::SetInitConfig);
+
 	// module = lua["Lime"]["Events"].get_or_create<sol::table>();
 	a->LimeInit = std::make_shared<Event>(); // Call with mutable table
 	a->LimeUpdate = std::make_shared<Event>(); // Call with dt
@@ -93,4 +98,18 @@ void Module::Lime::Bind::Close() {
 
 std::string Module::Lime::Bind::GetVersion() {
 	return LIME_VERSION;
+}
+
+bool Module::Lime::Bind::SetInitConfig() {
+	if (a->IsRunning()) {
+		d->Warn("Lime.SetInitConfig was called but the window has already been created.");
+		return false;
+	}
+
+	WindowConfig cfg = a->GetConfig();
+
+	cfg.driverType = 0;
+
+	a->SetConfig(cfg);
+	return true;
 }

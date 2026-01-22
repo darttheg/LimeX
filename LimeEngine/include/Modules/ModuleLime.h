@@ -15,6 +15,7 @@ namespace Module {
 			void Log(std::string msg, int color = 0);
 			void SetEndOnError(bool v);
 			void Close();
+			bool SetInitConfig();
 			std::string GetVersion();
 		}
 	}

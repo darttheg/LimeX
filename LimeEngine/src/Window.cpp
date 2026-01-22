@@ -2,7 +2,11 @@
 #include "stb_image.h"
 #include "Window.h"
 
-Window::Window() {}
+#include "Application.h"
+
+Window::Window(Application* app) {
+	a = app;
+}
 
 Window::~Window() {
 }
@@ -13,27 +17,29 @@ void Window::Close() {
 	glfwTerminate();
 }
 
-bool Window::Create(int w, int h, std::string title, bool fullscreen, bool resizable, bool maintainAR) {
+bool Window::Create() {
 	if (!glfwInit()) return false;
 
-	glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE);
-	glfwWindowHint(GLFW_DECORATED, !fullscreen ? GLFW_TRUE : GLFW_FALSE);
+	WindowConfig cfg = a->GetConfig();
+
+	glfwWindowHint(GLFW_RESIZABLE, cfg.resizable ? GLFW_TRUE : GLFW_FALSE);
+	glfwWindowHint(GLFW_DECORATED, !cfg.fullscreen ? GLFW_TRUE : GLFW_FALSE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	glfwWindow = glfwCreateWindow(w, h, title.c_str(), nullptr, nullptr);
+	glfwWindow = glfwCreateWindow(cfg.windowSize[0], cfg.windowSize[1], cfg.title.c_str(), nullptr, nullptr);
 	if (!glfwWindow) return false;
 
-	if (!fullscreen) {
+	if (!cfg.fullscreen) {
 		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		int x = (mode->width - w) / 2;
-		int y = (mode->height - h) / 2;
+		int x = (mode->width - cfg.windowSize[0]) / 2;
+		int y = (mode->height - cfg.windowSize[1]) / 2;
 		glfwSetWindowPos(glfwWindow, x, y);
 	}
 
-	if (maintainAR)
-		glfwSetWindowAspectRatio(glfwWindow, w, h);
+	if (cfg.scaleRenderToWindow)
+		glfwSetWindowAspectRatio(glfwWindow, cfg.windowSize[0], cfg.windowSize[1]);
 	else
 		glfwSetWindowAspectRatio(glfwWindow, GLFW_DONT_CARE, GLFW_DONT_CARE);
 

@@ -135,7 +135,8 @@ void DebugConsole::Log(std::string msg, MESSAGE_TYPE type) {
 void DebugConsole::PostError(const char* msg, bool close) {
     if (endOnError) close = true;
 
-    Log(std::string("<!> " + std::string(msg)).c_str(), MESSAGE_TYPE::RED);
+    Log(std::string("ERROR: " + std::string(msg)).c_str(), MESSAGE_TYPE::RED);
+    errCount++;
 
     if (close) {
         std::string src = std::string("Lime encountered an error:\n" + std::string(msg)).c_str();
@@ -154,9 +155,10 @@ void DebugConsole::PostError(std::string msg, bool close) {
 }
 
 void DebugConsole::Warn(const char* msg) {
-    std::string full = "<?> ";
+    std::string full = "WARNING: ";
     full += msg;
     Log(full.c_str(), MESSAGE_TYPE::YELLOW);
+    warnCount++;
 }
 
 void DebugConsole::Warn(std::string msg) {
