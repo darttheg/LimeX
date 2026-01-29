@@ -82,6 +82,15 @@ def parse_field_decl(s: str) -> Optional[Tuple[str, str, Optional[str]]]:
 def sig_key(params: List[Param]) -> Tuple[Tuple[str, str], ...]:
     return tuple((p.name, p.typ) for p in params)
 
+def parse_returns_line(s: str) -> Tuple[Optional[str], Optional[str]]:
+    rest = s[len("Returns "):].strip()
+    if not rest:
+        return None, None
+    tokens = rest.split()
+    if len(tokens) == 1 and looks_like_type(tokens[0]):
+        return tokens[0], None
+    return None, rest
+
 def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], List[FunctionDoc]]:
     modules: Dict[str, ModuleDoc] = {}
     objects_by_name: Dict[str, ObjectDoc] = {}
@@ -98,6 +107,12 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], L
     bind_func_re = re.compile(r'\.set_function\s*\(\s*"([^"]+)"')
     module_field_assign_re = re.compile(r'\bmodule\s*\[\s*"([^"]+)"\s*\]\s*=')
 
+    def reset_pending():
+        nonlocal pending_doc, pending_overloads, pending_returns
+        pending_doc = []
+        pending_overloads = []
+        pending_returns = None
+
     for cpp in sorted([p for p in src.rglob("*.cpp") if p.is_file()]):
         try:
             lines = cpp.read_text(encoding="utf-8", errors="ignore").splitlines()
@@ -113,34 +128,28 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], L
                     name = s[len("Module "):].strip()
                     if name:
                         current_module = name
+                        current_object = None
                         modules.setdefault(name, ModuleDoc(name=name))
-                    pending_doc = []
-                    pending_overloads = []
-                    pending_returns = None
+                    reset_pending()
                     continue
 
                 if s == "End Module":
                     current_module = None
-                    pending_doc = []
-                    pending_overloads = []
-                    pending_returns = None
+                    reset_pending()
                     continue
 
                 if s.startswith("Object "):
                     name = s[len("Object "):].strip()
                     if name:
+                        current_module = None
                         current_object = objects_by_name.get(name) or ObjectDoc(name=name)
                         objects_by_name[name] = current_object
-                    pending_doc = []
-                    pending_overloads = []
-                    pending_returns = None
+                    reset_pending()
                     continue
 
                 if s == "End Object":
                     current_object = None
-                    pending_doc = []
-                    pending_overloads = []
-                    pending_returns = None
+                    reset_pending()
                     continue
 
                 if current_module and s.startswith("Field "):
@@ -161,7 +170,11 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], L
                     continue
 
                 if s.startswith("Returns "):
-                    pending_returns = s[len("Returns "):].strip() or None
+                    rtype, rdoc = parse_returns_line(s)
+                    if rtype:
+                        pending_returns = rtype
+                    elif rdoc:
+                        pending_doc.append("Returns " + rdoc)
                     continue
 
                 if s == "Params":
@@ -195,9 +208,7 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], L
                             overloads=list(pending_overloads),
                             returns=pending_returns
                         ))
-                    pending_doc = []
-                    pending_overloads = []
-                    pending_returns = None
+                    reset_pending()
                     continue
 
             if current_module:

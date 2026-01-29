@@ -1,9 +1,9 @@
 ---@class Lime
---- Event called by Lime prior to initializing the window. This Event is run with a mutable table argument. Edit this table to change driver type, window size, and more.
+--- Event called by Lime prior to initializing the window.
 ---@field Init Event
 --- Event called by Lime every rendering frame. This Event is run with a number delta time argument.
 ---@field Update Event
---- Event called by Lime once the application ends in any way. This Event is run with a boolean didFail argument, true if the closure is because of an error.
+--- Event called by Lime once the application ends in any way.
 ---@field End Event
 Lime = Lime or {}
 
@@ -37,7 +37,7 @@ function Event:Clear() end
 ---@return Hook
 function Event:Hook(Function) end
 
----@overload fun(test:number): number
+--- Returns the number of hooked functions on this Event.
 ---@return number
 function Event:Length() end
 
@@ -45,6 +45,7 @@ function Event:Length() end
 ---@param ... any
 function Event:Run(...) end
 
+--- Returns true if this hook is still hooked to an Event.
 ---@return boolean
 function Hook:IsHooked() end
 
@@ -54,6 +55,7 @@ function Hook:Unhook() end
 --- Closes the Lime application.
 function Lime.Close() end
 
+--- Returns the Lime version running.
 ---@return string
 function Lime.GetVersion() end
 
@@ -77,3 +79,54 @@ function Lime.SetEndOnError(doEnd) end
 ---@param fullscreen boolean?
 ---@return boolean
 function Lime.SetInitConfig(driver, vSync, frameRate, windowSize, renderSize, scaleRenderToWindow, fullscreen) end
+
+--- Measures the angle between vectors in degrees
+---@param other Vec2
+---@return number
+function Vec2:Angle(other) end
+
+--- Returns a clamped vector to vectors min and max.
+---@param min Vec2
+---@param max Vec2
+---@return Vec2
+function Vec2:Clamp(min, max) end
+
+--- Measures signed scalar area, indicating clockwise versus counter-clockwise orientation.
+---@param other Vec2
+---@return number
+function Vec2:Cross(other) end
+
+--- Measures alignment of two vectors; >0 - same direction, 0 - perpendicular, <0 - opposite.
+---@param other Vec2
+---@return number
+function Vec2:Dot(other) end
+
+--- Returns the length of the vector.
+---@return number
+function Vec2:GetLength() end
+
+--- Returns the length of the vector save the square root operation.
+---@return number
+function Vec2:GetLengthSqr() end
+
+--- Returns true if the vector is effectively zero.
+---@param epsilon number?
+---@return boolean
+function Vec2:IsNearlyZero(epsilon) end
+
+--- Returns a linearly-lerped vector interpolated from vectors a to b by number t.
+---@param a Vec2
+---@param b Vec2
+---@param t number
+---@return Vec2
+function Vec2:Lerp(a, b, t) end
+
+--- Returns a normalized unit vector.
+---@return Vec2
+function Vec2:Normalize() end
+
+--- Returns a normalied vector scaled to clamp between numbers min and max.
+---@param min number
+---@param max number
+---@return Vec2
+function Vec2:NormalizeRng(min, max) end
