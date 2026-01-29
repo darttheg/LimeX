@@ -69,20 +69,22 @@ static void bindEvent() {
 	// Object Event
 
 	// Hook a function to this Event.
-	// function Function
+	// Params function Function
 	// Returns Hook
-	bindType["Hook"] = &Event::hook;
+	bindType.set_function("Hook", &Event::hook);
 
 	// Clears all functions hooked to this Event.
-	bindType["Clear"] = &Event::clear;
+	bindType.set_function("Clear", &Event::clear);
 
 	// Run this Event.
-	// any ...
-	bindType["Run"] = &Event::run;
+	// Params any ...
+	bindType.set_function("Run", &Event::run);
 
 	// Returns the number of hooked functions on this Event.
+	// Params
+	// Params number test
 	// Returns number
-	bindType["Length"] = &Event::getSize;
+	bindType.set_function("Length", &Event::getSize);
 
 	// End Object
 
@@ -124,11 +126,11 @@ static void bindHook() {
 	// Object Hook
 
 	// Unhook a function to this Event.
-	bindType["Unhook"] = &Hook::unhook;
+	bindType.set_function("Unhook", &Hook::unhook);
 
 	// Returns true if this hook is still hooked to an Event.
 	// Returns boolean
-	bindType["IsHooked"] = &Hook::isHooked;
+	bindType.set_function("IsHooked", &Hook::isHooked);
 
 	// End Object
 }

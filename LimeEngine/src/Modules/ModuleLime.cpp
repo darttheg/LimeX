@@ -47,12 +47,12 @@ void Module::Lime::bind(Application* app) {
 	bindEnums(lua, module);
 
 	// Prints a message to console.
-	// string msg, Lime.PrintColor? color
+	// Params string msg, Lime.PrintColor? color
 	// Returns void
 	module.set_function("Log", &Module::Lime::Bind::Log);
 
 	// If set to true, Lime will close on any error. A pop-up will be disclosed prior with error details.
-	// boolean doEnd
+	// Params boolean doEnd
 	module.set_function("SetEndOnError", &Module::Lime::Bind::SetEndOnError);
 
 	// Closes the Lime application.
@@ -63,7 +63,7 @@ void Module::Lime::bind(Application* app) {
 	module.set_function("GetVersion", &Module::Lime::Bind::GetVersion);
 
 	// IMPORTANT: This function should always be run prior to window creation (pre-Lime.Update Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
-	// Lime.DriverType driver, boolean? vSync, number? frameRate, Vec2? windowSize, Vec2? renderSize, boolean? scaleRenderToWindow, boolean? fullscreen
+	// Params Lime.DriverType driver, boolean? vSync, number? frameRate, Vec2? windowSize, Vec2? renderSize, boolean? scaleRenderToWindow, boolean? fullscreen
 	// Returns boolean
 	module.set_function("SetInitConfig", &Module::Lime::Bind::SetInitConfig);
 
