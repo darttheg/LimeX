@@ -19,6 +19,8 @@ public:
 
     float getLength() const;
     float getLengthSquared() const;
+    float getDistance(const Vec2& other) const;
+    float getDistanceSquared(const Vec2& other) const;
     bool isNearlyZero(float epsilon = 1e-6f) const;
     float dot(const Vec2& other) const;
     float cross(const Vec2& other) const;

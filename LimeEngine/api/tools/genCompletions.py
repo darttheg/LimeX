@@ -225,8 +225,8 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], L
     functions.sort(key=lambda f: (f.owner, f.name, 0 if f.is_method else 1))
     return modules, objects, functions
 
-def ctor_sig(ctor: List[Param]) -> str:
-    return ", ".join([f"{p.name}:{p.typ}" for p in ctor])
+def ctor_sig(params: List[Param]) -> str:
+    return ", ".join([f"{p.name}:{p.typ}" for p in params])
 
 def fn_sig(params: List[Param]) -> str:
     parts: List[str] = []
@@ -254,17 +254,26 @@ def emit_lua(modules: Dict[str, ModuleDoc], objects: List[ObjectDoc], functions:
         out.append(f"{obj.name} = {obj.name} or {{}}")
 
         ctors = obj.ctors or [[]]
-        seen = set()
-        for ctor in ctors:
-            sig = ctor_sig(ctor)
-            if sig in seen:
+        uniq: List[List[Param]] = []
+        seenk = set()
+        for c in ctors:
+            k = sig_key(c)
+            if k in seenk:
                 continue
-            seen.add(sig)
+            seenk.add(k)
+            uniq.append(c)
+
+        base = min(uniq, key=lambda c: len(c))
+        for c in uniq:
+            if sig_key(c) == sig_key(base):
+                continue
+            sig = ctor_sig(c)
             out.append(f"---@overload fun({sig}): {obj.name}" if sig else f"---@overload fun(): {obj.name}")
 
-        base_ctor = min(ctors, key=lambda c: len(c))
+        for p in base:
+            out.append(f"---@param {p.name} {p.typ}")
         out.append(f"---@return {obj.name}")
-        out.append(f"function {obj.name}.new({', '.join([p.name for p in base_ctor])}) end")
+        out.append(f"function {obj.name}.new({', '.join([p.name for p in base])}) end")
         out.append("")
 
     for fn in functions:

@@ -21,6 +21,18 @@ float Vec2::getLengthSquared() const {
 	return getX() * getX() + getY() * getY();
 }
 
+float Vec2::getDistance(const Vec2& other) const {
+	float dx = other.getX() - getX();
+	float dy = other.getY() - getY();
+	return std::sqrt(dx * dx + dy * dy);
+}
+
+float Vec2::getDistanceSquared(const Vec2& other) const {
+	float dx = other.getX() - getX();
+	float dy = other.getY() - getY();
+	return dx * dx + dy * dy;
+}
+
 bool Vec2::isNearlyZero(float epsilon) const {
 	return getLengthSquared() <= (epsilon * epsilon);
 }
@@ -85,14 +97,25 @@ void Object::Vec2Bind::bind(Application* a) {
 
 	// Returns the length of the vector.
 	// Returns number
-	obj.set_function("GetLength", &Vec2::getLength);
+	obj.set_function("Length", &Vec2::getLength);
 
 	// Returns the length of the vector save the square root operation.
 	// Returns number
-	obj.set_function("GetLengthSqr", &Vec2::getLengthSquared);
+	obj.set_function("LengthSqr", &Vec2::getLengthSquared);
+
+	// Returns the distance between two vectors.
+	// Params Vec2 other
+	// Returns number
+	obj.set_function("Distance", &Vec2::getDistance);
+
+	// Returns the distance between two vectors squared.
+	// Params Vec2 other
+	// Returns number
+	obj.set_function("DistanceSqr", &Vec2::getDistanceSquared);
 
 	// Returns true if the vector is effectively zero.
-	// Params number? epsilon
+	// Params
+	// Params number epsilon
 	// Returns boolean
 	obj.set_function("IsNearlyZero", &Vec2::isNearlyZero);
 

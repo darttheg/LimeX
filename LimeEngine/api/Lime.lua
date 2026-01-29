@@ -9,13 +9,11 @@ Lime = Lime or {}
 
 ---@class Event
 Event = Event or {}
----@overload fun(): Event
 ---@return Event
 function Event.new() end
 
 ---@class Hook
 Hook = Hook or {}
----@overload fun(): Hook
 ---@return Hook
 function Hook.new() end
 
@@ -23,7 +21,6 @@ function Hook.new() end
 ---@field x number
 ---@field y number
 Vec2 = Vec2 or {}
----@overload fun(): Vec2
 ---@overload fun(x:number, y:number): Vec2
 ---@overload fun(all:number): Vec2
 ---@return Vec2
@@ -96,23 +93,33 @@ function Vec2:Clamp(min, max) end
 ---@return number
 function Vec2:Cross(other) end
 
+--- Returns the distance between two vectors.
+---@param other Vec2
+---@return number
+function Vec2:Distance(other) end
+
+--- Returns the distance between two vectors squared.
+---@param other Vec2
+---@return number
+function Vec2:DistanceSqr(other) end
+
 --- Measures alignment of two vectors; >0 - same direction, 0 - perpendicular, <0 - opposite.
 ---@param other Vec2
 ---@return number
 function Vec2:Dot(other) end
 
+--- Returns true if the vector is effectively zero.
+---@overload fun(epsilon:number): boolean
+---@return boolean
+function Vec2:IsNearlyZero() end
+
 --- Returns the length of the vector.
 ---@return number
-function Vec2:GetLength() end
+function Vec2:Length() end
 
 --- Returns the length of the vector save the square root operation.
 ---@return number
-function Vec2:GetLengthSqr() end
-
---- Returns true if the vector is effectively zero.
----@param epsilon number?
----@return boolean
-function Vec2:IsNearlyZero(epsilon) end
+function Vec2:LengthSqr() end
 
 --- Returns a linearly-lerped vector interpolated from vectors a to b by number t.
 ---@param a Vec2
