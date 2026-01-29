@@ -3,8 +3,20 @@
 #include <cmath>
 #include <functional>
 
+class Application;
+
 class Vec3 {
 public:
+    Vec3();
+    Vec3(float x);
+    Vec3(float x, float y, float z);
+
+    Vec3 operator+(const Vec3& other) const;
+    Vec3 operator-(const Vec3& other) const;
+    Vec3 operator*(float scalar) const;
+    Vec3 operator/(float scalar) const;
+    bool operator==(const Vec3& other) const;
+
     using Getter = std::function<Vec3()>;
     using Setter = std::function<void(const Vec3&)>;
     Getter get;
@@ -21,3 +33,7 @@ public:
 private:
     float x, y, z = 0.0;
 };
+
+namespace Object::Vec3Bind {
+    void bind(Application* app);
+}

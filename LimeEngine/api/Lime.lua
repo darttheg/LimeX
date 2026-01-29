@@ -26,6 +26,16 @@ Vec2 = Vec2 or {}
 ---@return Vec2
 function Vec2.new() end
 
+---@class Vec3
+---@field x number
+---@field y number
+---@field z number
+Vec3 = Vec3 or {}
+---@overload fun(x:number, y:number, z:number): Vec3
+---@overload fun(all:number): Vec3
+---@return Vec3
+function Vec3.new() end
+
 --- Clears all functions hooked to this Event.
 function Event:Clear() end
 
@@ -109,9 +119,9 @@ function Vec2:DistanceSqr(other) end
 function Vec2:Dot(other) end
 
 --- Returns true if the vector is effectively zero.
----@overload fun(epsilon:number): boolean
+---@param epsilon number?
 ---@return boolean
-function Vec2:IsNearlyZero() end
+function Vec2:IsNearlyZero(epsilon) end
 
 --- Returns the length of the vector.
 ---@return number

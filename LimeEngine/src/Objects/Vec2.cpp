@@ -114,8 +114,7 @@ void Object::Vec2Bind::bind(Application* a) {
 	obj.set_function("DistanceSqr", &Vec2::getDistanceSquared);
 
 	// Returns true if the vector is effectively zero.
-	// Params
-	// Params number epsilon
+	// Params number? epsilon
 	// Returns boolean
 	obj.set_function("IsNearlyZero", &Vec2::isNearlyZero);
 
