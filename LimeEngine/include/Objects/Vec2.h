@@ -17,6 +17,17 @@ public:
     Vec2 operator/(float scalar) const;
     bool operator==(const Vec2& other) const;
 
+    float getLength() const;
+    float getLengthSquared() const;
+    bool isNearlyZero(float epsilon = 1e-6f) const;
+    float dot(const Vec2& other) const;
+    float cross(const Vec2& other) const;
+    float angle(const Vec2& other) const;
+    Vec2 normalize() const;
+    Vec2 normalizeRange(float min, float max) const;
+    Vec2 clamp(const Vec2& min, const Vec2& max) const;
+    Vec2 lerp(const Vec2& a, const Vec2& b, float t) const;
+
     using Getter = std::function<Vec2()>;
     using Setter = std::function<void(const Vec2&)>;
     Getter get;
