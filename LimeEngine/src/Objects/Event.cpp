@@ -81,8 +81,6 @@ static void bindEvent() {
 	bindType.set_function("Run", &Event::run);
 
 	// Returns the number of hooked functions on this Event.
-	// Params
-	// Params number test
 	// Returns number
 	bindType.set_function("Length", &Event::getSize);
 
