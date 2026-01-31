@@ -17,6 +17,19 @@ public:
     Vec3 operator/(float scalar) const;
     bool operator==(const Vec3& other) const;
 
+    float getLength() const;
+    float getLengthSquared() const;
+    float getDistance(const Vec3& other) const;
+    float getDistanceSquared(const Vec3& other) const;
+    bool isNearlyZero(float epsilon = 1e-6f) const;
+    float dot(const Vec3& other) const;
+    Vec3 cross(const Vec3& other) const;
+    float angle(const Vec3& other) const;
+    Vec3 normalize() const;
+    Vec3 normalizeRange(float min, float max) const;
+    Vec3 clamp(const Vec3& min, const Vec3& max) const;
+    Vec3 reflect(const Vec3& dir) const;
+
     using Getter = std::function<Vec3()>;
     using Setter = std::function<void(const Vec3&)>;
     Getter get;

@@ -67,10 +67,6 @@ Vec2 Vec2::clamp(const Vec2& min, const Vec2& max) const {
 	return Vec2(std::clamp(getX(), min.getX(), max.getX()), std::clamp(getY(), min.getY(), max.getY()));
 }
 
-Vec2 Vec2::lerp(const Vec2& a, const Vec2& b, float t) const {
-	return Vec2(a.getX() + (b.getX() - a.getX()) * t, a.getY() + (b.getY() - a.getY()) * t);
-}
-
 void Object::Vec2Bind::bind(Application* a) {
 	sol::state_view view(a->GetLuaState());
 	sol::usertype<Vec2> obj = view.new_usertype<Vec2>(
@@ -146,11 +142,6 @@ void Object::Vec2Bind::bind(Application* a) {
 	// Params Vec2 min, Vec2 max
 	// Returns Vec2
 	obj.set_function("Clamp", &Vec2::clamp);
-
-	// Returns a linearly-lerped vector interpolated from vectors a to b by number t.
-	// Params Vec2 a, Vec2 b, number t
-	// Returns Vec2
-	obj.set_function("Lerp", &Vec2::lerp);
 
 	// End Object
 }

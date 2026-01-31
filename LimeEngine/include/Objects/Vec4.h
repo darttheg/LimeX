@@ -3,8 +3,20 @@
 #include <cmath>
 #include <functional>
 
+class Application;
+
 class Vec4 {
 public:
+    Vec4();
+    Vec4(float x);
+    Vec4(float x, float y, float z, float w);
+
+    Vec4 operator+(const Vec4& other) const;
+    Vec4 operator-(const Vec4& other) const;
+    Vec4 operator*(float scalar) const;
+    Vec4 operator/(float scalar) const;
+    bool operator==(const Vec4& other) const;
+
     using Getter = std::function<Vec4()>;
     using Setter = std::function<void(const Vec4&)>;
     Getter get;
@@ -23,3 +35,7 @@ public:
 private:
     float x, y, z, w = 0.0;
 };
+
+namespace Object::Vec4Bind {
+    void bind(Application* app);
+}

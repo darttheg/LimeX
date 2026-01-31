@@ -36,6 +36,17 @@ Vec3 = Vec3 or {}
 ---@return Vec3
 function Vec3.new() end
 
+---@class Vec4
+---@field x number
+---@field y number
+---@field z number
+---@field w number
+Vec4 = Vec4 or {}
+---@overload fun(x:number, y:number, z:number, w:number): Vec4
+---@overload fun(all:number): Vec4
+---@return Vec4
+function Vec4.new() end
+
 --- Clears all functions hooked to this Event.
 function Event:Clear() end
 
@@ -131,13 +142,6 @@ function Vec2:Length() end
 ---@return number
 function Vec2:LengthSqr() end
 
---- Returns a linearly-lerped vector interpolated from vectors a to b by number t.
----@param a Vec2
----@param b Vec2
----@param t number
----@return Vec2
-function Vec2:Lerp(a, b, t) end
-
 --- Returns a normalized unit vector.
 ---@return Vec2
 function Vec2:Normalize() end
@@ -147,3 +151,57 @@ function Vec2:Normalize() end
 ---@param max number
 ---@return Vec2
 function Vec2:NormalizeRng(min, max) end
+
+--- Measures the angle between vectors in degrees
+---@param other Vec3
+---@return number
+function Vec3:Angle(other) end
+
+--- Returns a clamped vector to vectors min and max.
+---@param min Vec3
+---@param max Vec3
+---@return Vec3
+function Vec3:Clamp(min, max) end
+
+--- Measures signed scalar area, indicating clockwise versus counter-clockwise orientation.
+---@param other Vec3
+---@return Vec3
+function Vec3:Cross(other) end
+
+--- Returns the distance between two vectors.
+---@param other Vec3
+---@return number
+function Vec3:Distance(other) end
+
+--- Returns the distance between two vectors squared.
+---@param other Vec3
+---@return number
+function Vec3:DistanceSqr(other) end
+
+--- Measures alignment of two vectors; >0 - same direction, 0 - perpendicular, <0 - opposite.
+---@param other Vec3
+---@return number
+function Vec3:Dot(other) end
+
+--- Returns true if the vector is effectively zero.
+---@param epsilon number?
+---@return boolean
+function Vec3:IsNearlyZero(epsilon) end
+
+--- Returns the length of the vector.
+---@return number
+function Vec3:Length() end
+
+--- Returns the length of the vector save the square root operation.
+---@return number
+function Vec3:LengthSqr() end
+
+--- Returns a normalized unit vector.
+---@return Vec3
+function Vec3:Normalize() end
+
+--- Returns a normalied vector scaled to clamp between numbers min and max.
+---@param min number
+---@param max number
+---@return Vec3
+function Vec3:NormalizeRng(min, max) end

@@ -2,6 +2,11 @@
 #include <sol/sol.hpp>
 #include "Application.h"
 
+// INTERFACE INCLUDES
+#include "Interfaces/Object2D.h"
+#include "Interfaces/Object3D.h"
+//
+
 // MODULE INLCUDES
 #include "Modules/ModuleLime.h"
 //
@@ -9,13 +14,21 @@
 // OBJECT INCLUDES
 #include "Objects/Event.h"
 #include "Objects/Vec2.h"
+#include "Objects/Vec3.h"
+#include "Objects/Vec4.h"
+#include "Objects/Camera.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
-	// Objects
-	Object::EventBind::bind(app);
-	Object::Vec2Bind::bind(app);
+	// Interfaces
+	// Interface::Object3DBind::bind(app);
 
 	// Modules
 	Module::Lime::bind(app);
+
+	// Objects
+	Object::EventBind::bind(app);
+	Object::Vec2Bind::bind(app);
+	Object::Vec3Bind::bind(app);
+	Object::Vec4Bind::bind(app);
 }

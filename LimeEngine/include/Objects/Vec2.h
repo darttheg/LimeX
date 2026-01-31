@@ -28,7 +28,6 @@ public:
     Vec2 normalize() const;
     Vec2 normalizeRange(float min, float max) const;
     Vec2 clamp(const Vec2& min, const Vec2& max) const;
-    Vec2 lerp(const Vec2& a, const Vec2& b, float t) const;
 
     using Getter = std::function<Vec2()>;
     using Setter = std::function<void(const Vec2&)>;
