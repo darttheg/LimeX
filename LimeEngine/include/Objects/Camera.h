@@ -6,7 +6,7 @@ class Application;
 
 class Camera : public SceneObject, public Object3D {
 public:
-    
+
 private:
 };
 

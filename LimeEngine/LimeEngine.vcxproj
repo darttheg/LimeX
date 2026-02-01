@@ -21,10 +21,14 @@
   <ItemGroup>
     <ClInclude Include="include\Application.h" />
     <ClInclude Include="include\DebugConsole.h" />
+    <ClInclude Include="include\Interfaces\Object2D.h" />
+    <ClInclude Include="include\Interfaces\Object3D.h" />
+    <ClInclude Include="include\Interfaces\SceneObject.h" />
     <ClInclude Include="include\LimeEngine.h" />
     <ClInclude Include="include\LuaBinder.h" />
     <ClInclude Include="include\Modules\ModuleLime.h" />
     <ClInclude Include="include\Modules\ModuleScene.h" />
+    <ClInclude Include="include\Objects\Camera.h" />
     <ClInclude Include="include\Objects\Event.h" />
     <ClInclude Include="include\Objects\Vec2.h" />
     <ClInclude Include="include\Objects\Vec3.h" />
@@ -35,10 +39,14 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\DebugConsole.cpp" />
+    <ClCompile Include="src\Interfaces\Object2D.cpp" />
+    <ClCompile Include="src\Interfaces\Object3D.cpp" />
+    <ClCompile Include="src\Interfaces\SceneObject.cpp" />
     <ClCompile Include="src\LimeEngine.cpp" />
     <ClCompile Include="src\LuaBinder.cpp" />
     <ClCompile Include="src\Modules\ModuleLime.cpp" />
     <ClCompile Include="src\Modules\ModuleScene.cpp" />
+    <ClCompile Include="src\Objects\Camera.cpp" />
     <ClCompile Include="src\Objects\Event.cpp" />
     <ClCompile Include="src\Objects\Vec2.cpp" />
     <ClCompile Include="src\Objects\Vec3.cpp" />

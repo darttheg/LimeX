@@ -93,55 +93,55 @@ void Object::Vec2Bind::bind(Application* a) {
 
 	// Returns the length of the vector.
 	// Returns number
-	obj.set_function("Length", &Vec2::getLength);
+	obj.set_function("length", &Vec2::getLength);
 
 	// Returns the length of the vector save the square root operation.
 	// Returns number
-	obj.set_function("LengthSqr", &Vec2::getLengthSquared);
+	obj.set_function("lengthSqr", &Vec2::getLengthSquared);
 
 	// Returns the distance between two vectors.
 	// Params Vec2 other
 	// Returns number
-	obj.set_function("Distance", &Vec2::getDistance);
+	obj.set_function("distance", &Vec2::getDistance);
 
 	// Returns the distance between two vectors squared.
 	// Params Vec2 other
 	// Returns number
-	obj.set_function("DistanceSqr", &Vec2::getDistanceSquared);
+	obj.set_function("distanceSqr", &Vec2::getDistanceSquared);
 
 	// Returns true if the vector is effectively zero.
 	// Params number? epsilon
 	// Returns boolean
-	obj.set_function("IsNearlyZero", &Vec2::isNearlyZero);
+	obj.set_function("isNearlyZero", &Vec2::isNearlyZero);
 
 	// Measures alignment of two vectors; >0 - same direction, 0 - perpendicular, <0 - opposite.
 	// Params Vec2 other
 	// Returns number
-	obj.set_function("Dot", &Vec2::dot);
+	obj.set_function("dot", &Vec2::dot);
 
 	// Measures signed scalar area, indicating clockwise versus counter-clockwise orientation.
 	// Params Vec2 other
 	// Returns number
-	obj.set_function("Cross", &Vec2::cross);
+	obj.set_function("cross", &Vec2::cross);
 
 	// Measures the angle between vectors in degrees
 	// Params Vec2 other
 	// Returns number
-	obj.set_function("Angle", &Vec2::angle);
+	obj.set_function("angle", &Vec2::angle);
 
 	// Returns a normalized unit vector.
 	// Returns Vec2
-	obj.set_function("Normalize", &Vec2::normalize);
+	obj.set_function("normalize", &Vec2::normalize);
 
 	// Returns a normalied vector scaled to clamp between numbers min and max.
 	// Params number min, number max
 	// Returns Vec2
-	obj.set_function("NormalizeRng", &Vec2::normalizeRange);
+	obj.set_function("normalizeRng", &Vec2::normalizeRange);
 
 	// Returns a clamped vector to vectors min and max.
 	// Params Vec2 min, Vec2 max
 	// Returns Vec2
-	obj.set_function("Clamp", &Vec2::clamp);
+	obj.set_function("clamp", &Vec2::clamp);
 
 	// End Object
 }

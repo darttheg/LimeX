@@ -37,6 +37,9 @@
     <Filter Include="Engine\Runtime\Third Party">
       <UniqueIdentifier>{f07ccaf7-c9a8-4cbd-ba29-0add92f27ef7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Runtime\Interfaces">
+      <UniqueIdentifier>{1a1914ec-b2e4-4a7e-95ab-c1521b8142b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\LimeEngine.h">
@@ -75,6 +78,18 @@
     <ClInclude Include="include\Objects\Vec3.h">
       <Filter>Engine\Runtime\Objects\Common</Filter>
     </ClInclude>
+    <ClInclude Include="include\Interfaces\SceneObject.h">
+      <Filter>Engine\Runtime\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Interfaces\Object2D.h">
+      <Filter>Engine\Runtime\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Interfaces\Object3D.h">
+      <Filter>Engine\Runtime\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Objects\Camera.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -112,6 +127,18 @@
     </ClCompile>
     <ClCompile Include="src\Objects\Vec3.cpp">
       <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Interfaces\SceneObject.cpp">
+      <Filter>Engine\Runtime\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Interfaces\Object2D.cpp">
+      <Filter>Engine\Runtime\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Interfaces\Object3D.cpp">
+      <Filter>Engine\Runtime\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Camera.cpp">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
