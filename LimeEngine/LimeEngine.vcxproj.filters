@@ -90,6 +90,9 @@
     <ClInclude Include="include\Objects\Camera.h">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\Image.h">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -139,6 +142,9 @@
     </ClCompile>
     <ClCompile Include="src\Objects\Camera.cpp">
       <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Image.cpp">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

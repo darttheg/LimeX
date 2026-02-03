@@ -91,15 +91,10 @@ bool Application::RunEntry() {
 }
 
 bool Application::Init(const void* data, size_t size) {
-	// Create debug console
-	console = new DebugConsole;
-	// We init it after the window is created
-
-	// console->Log("Lime started");
-
-	renderer = new Renderer; // Allocate memory for now
-
-	console->SetAppOwner(this);
+	// Allocate memory for now
+	console = new DebugConsole(this);
+	window = new Window(this);
+	renderer = new Renderer(this);
 
 	// Create new Lua state
 	lua = std::make_unique<sol::state>();
@@ -145,7 +140,7 @@ bool Application::Init(const void* data, size_t size) {
 	LimeInit.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); });
 
 	if (!didInitCfg)
-		console->Warn("Lime.SetInitConfig was not called. Setting one-time parameters--such as driver type--can only be done via this function.");
+		console->Warn("Lime.setInitConfig was not called. Setting one-time parameters--such as driver type--can only be done via this function.");
 
 	// Create device/true window
 	if (!CreateWindows())
@@ -172,6 +167,9 @@ int getMemUsed() {
 bool Application::Run() {
 	// Run application loop
 	running = true;
+
+	// Run Start Event
+	LimeStart.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); });
 
 	bool fail = false;
 	while (running) {
@@ -239,14 +237,33 @@ void Application::DisplayMessage(std::string msg, std::string title, int icon) {
 	MessageBox(nullptr, nMessageC, nTitleC, oIcon);
 }
 
+std::string Application::GetLuaLocation() {
+	if (!lua) return "nan";
+	lua_Debug ar{};
+	int lvl = 1;
+
+	if (lua_getstack(lua.get()->lua_state(), lvl, &ar) == 0) return "lime";
+	if (lua_getinfo(lua.get()->lua_state(), "Sl", &ar) == 0) return "lime";
+
+	std::string src = ar.source ? ar.source : "?";
+	if (!src.empty() && src[0] == '@') src.erase(0, 1);
+
+	int line = ar.currentline;
+	if (line < 0) line = 0;
+
+	std::ostringstream oss;
+	oss << "[string \"" << src << "\"]:" << line;
+
+	return oss.str();
+}
+
 bool Application::CreateWindows() {
-	window = new Window(this);
 	if (!window->Create()) {
 		console->PostError("Failed to create GLFW window", true);
 		return false;
 	}
 
-	if (!renderer->Init(console, window)) {
+	if (!renderer->Init()) {
 		console->PostError("Failed to create rendering window", true);
 		return false;
 	}

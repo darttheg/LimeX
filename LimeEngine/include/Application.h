@@ -38,6 +38,7 @@ public:
 	~Application() = default;
 
 	std::shared_ptr<Event> LimeInit = nullptr;
+	std::shared_ptr<Event> LimeStart = nullptr;
 	std::shared_ptr<Event> LimeUpdate = nullptr;
 	std::shared_ptr<Event> LimeEnd = nullptr;
 
@@ -52,8 +53,11 @@ public:
 
 	DebugConsole* GetDebugConsole() { return console; }
 	Renderer* GetRenderer() { return renderer; }
+	Window* GetWindow() { return window; }
 	bool IsRunning() { return running; }
 	sol::state& GetLuaState() { return *lua; }
+	
+	std::string GetLuaLocation();
 
 	WindowConfig GetConfig() { return windowCfg; }
 	void SetConfig(WindowConfig cfg) { windowCfg = cfg; didInitCfg = true; }

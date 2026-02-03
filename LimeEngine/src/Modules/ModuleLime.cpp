@@ -49,35 +49,38 @@ void Module::Lime::bind(Application* app) {
 	// Prints a message to console.
 	// Params string msg, Lime.PrintColor? color
 	// Returns void
-	module.set_function("Log", &Module::Lime::Bind::Log);
+	module.set_function("log", &Module::Lime::Bind::Log);
 
 	// If set to true, Lime will close on any error. A pop-up will be disclosed prior with error details.
 	// Params boolean doEnd
-	module.set_function("SetEndOnError", &Module::Lime::Bind::SetEndOnError);
+	module.set_function("setEndOnError", &Module::Lime::Bind::SetEndOnError);
 
 	// Closes the Lime application.
-	module.set_function("Close", &Module::Lime::Bind::Close);
+	module.set_function("close", &Module::Lime::Bind::Close);
 
 	// Returns the Lime version running.
 	// Returns string
-	module.set_function("GetVersion", &Module::Lime::Bind::GetVersion);
+	module.set_function("getVersion", &Module::Lime::Bind::GetVersion);
 
 	// IMPORTANT: This function should always be run prior to window creation (pre-Lime.Update Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
 	// Params Lime.DriverType driver, boolean? vSync, number? frameRate, Vec2? windowSize, Vec2? renderSize, boolean? scaleRenderToWindow, boolean? fullscreen
 	// Returns boolean
-	module.set_function("SetInitConfig", &Module::Lime::Bind::SetInitConfig);
+	module.set_function("setInitConfig", &Module::Lime::Bind::SetInitConfig);
 
 	// module = lua["Lime"]["Events"].get_or_create<sol::table>();
-	a->LimeInit = std::make_shared<Event>(); // Call with mutable table
+	a->LimeInit = std::make_shared<Event>();
+	a->LimeStart = std::make_shared<Event>();
 	a->LimeUpdate = std::make_shared<Event>(); // Call with dt
 	a->LimeEnd = std::make_shared<Event>(); // Call with bool isError?
 
-	// Field Event Init, Event called by Lime prior to initializing the window.
-	// Field Event Update, Event called by Lime every rendering frame. This Event is run with a number delta time argument.
-	// Field Event End, Event called by Lime once the application ends in any way.
-	module["Init"] = a->LimeInit;
-	module["Update"] = a->LimeUpdate;
-	module["End"] = a->LimeEnd;
+	// Field Event onInit, Event called by Lime prior to initializing the window.
+	// Field Event onStart, Event called by Lime following window creation and rendering services are available.
+	// Field Event onUpdate, Event called by Lime every rendering frame. This Event is run with a number delta time argument.
+	// Field Event onClose, Event called by Lime once the application closes in any way.
+	module["onInit"] = a->LimeInit;
+	module["onStart"] = a->LimeStart;
+	module["onUpdate"] = a->LimeUpdate;
+	module["onClose"] = a->LimeEnd;
 
 	// End Module
 }

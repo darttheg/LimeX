@@ -5,24 +5,57 @@
 #include "GLFW/glfw3.h"
 #include <GLFW/glfw3native.h>
 #include <memory>
+#include <string>
 
-#include "irrlicht.h"
+class Vec2;
+class Vec3;
+class Vec4;
+
+namespace irr {
+	class IrrlichtDevice;
+	namespace scene {
+		class ISceneManager;
+	}
+	namespace video {
+		class IVideoDriver;
+		class IGPUProgrammingServices;
+
+		class ITexture;
+		class IImage;
+	}
+	namespace gui {
+		class IGUIEnvironment;
+	}
+}
 using namespace irr;
 
+class Application;
 class DebugConsole;
 class Window;
 
 class Renderer {
 public:
-	Renderer();
+	Renderer(Application* owner);
 	~Renderer();
 
-	bool Init(DebugConsole* d, Window* w);
+	bool Init();
 	bool Shutdown();
 	bool Render();
+
+	bool guardRenderingCheck();
+
+	irr::video::ITexture* createTexture(int w, int h, const std::string& name = "");
+	irr::video::ITexture* createTexture(const std::string& path);
+	irr::video::ITexture* cropTexture(irr::video::ITexture* tex, const Vec2& pos, const Vec2& dim);
+	irr::video::ITexture* appendTexture(irr::video::ITexture* tex, irr::video::ITexture* toAppend, const Vec2& pos);
+	Vec4 getColor(irr::video::ITexture* tex, const Vec2& pos);
+	irr::video::ITexture* setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color);
+	void keyColor(irr::video::ITexture* tex, const Vec4& color);
+
 private:
-	DebugConsole* console = nullptr;
-	Window* window = nullptr;
+	Application* a = nullptr;
+	DebugConsole* d = nullptr;
+	Window* w = nullptr;
 
 	bool isCreated = false;
 

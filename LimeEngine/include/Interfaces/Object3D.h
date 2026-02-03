@@ -2,7 +2,8 @@
 #include <sol/optional.hpp>
 
 class Application;
-class Vec3;
+
+#include "Objects/Vec3.h"
 
 namespace irr {
 	namespace scene {

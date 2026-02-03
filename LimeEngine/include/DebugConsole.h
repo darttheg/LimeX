@@ -17,7 +17,7 @@ enum struct MESSAGE_TYPE : int {
 
 class DebugConsole {
 public:
-	DebugConsole();
+	DebugConsole(Application* owner);
 	~DebugConsole();
 
 	void Create(); // Create console
@@ -38,7 +38,6 @@ public:
 	void WriteOutputLog();
 	void SetWriteOutput(bool v) { writeOutput = v; }
 	void SetEndOnError(bool v) { endOnError = v; }
-	void SetAppOwner(Application* owner);
 
 	int GetWarningCount() { return warnCount; }
 	int GetErrorCount() { return errCount; }

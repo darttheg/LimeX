@@ -16,12 +16,13 @@
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
+#include "Objects/Image.h"
 #include "Objects/Camera.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
 	// Interfaces
-	// Interface::Object3DBind::bind(app);
+	Interface::Object3DBind::bind(app);
 
 	// Modules
 	Module::Lime::bind(app);
@@ -31,4 +32,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::Vec2Bind::bind(app);
 	Object::Vec3Bind::bind(app);
 	Object::Vec4Bind::bind(app);
+	Object::ImageBind::bind(app);
 }

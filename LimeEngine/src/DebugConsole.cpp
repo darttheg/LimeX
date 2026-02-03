@@ -51,7 +51,8 @@ static WORD getColorFromType(MESSAGE_TYPE type) {
     }
 }
 
-DebugConsole::DebugConsole() {
+DebugConsole::DebugConsole(Application* owner) {
+    app = owner;
 }
 
 DebugConsole::~DebugConsole() {
@@ -107,10 +108,6 @@ void DebugConsole::Create() {
     created = true;
 }
 
-void DebugConsole::SetAppOwner(Application* owner) {
-    app = owner;
-}
-
 void DebugConsole::AddLineToConsole(Line l) {
     SetConsoleTextAttribute(consoleHandle, getColorFromType(l.type));
     DWORD written = 0;
@@ -156,6 +153,7 @@ void DebugConsole::PostError(std::string msg, bool close) {
 
 void DebugConsole::Warn(const char* msg) {
     std::string full = "WARNING: ";
+    full += app->GetLuaLocation() + ": ";
     full += msg;
     Log(full.c_str(), MESSAGE_TYPE::YELLOW);
     warnCount++;
