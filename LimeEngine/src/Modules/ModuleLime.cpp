@@ -47,9 +47,15 @@ void Module::Lime::bind(Application* app) {
 	bindEnums(lua, module);
 
 	// Prints a message to console.
-	// Params string msg, Lime.PrintColor? color
+	// Params any msg, Lime.PrintColor? color
 	// Returns void
-	module.set_function("log", &Module::Lime::Bind::Log);
+	module.set_function("log", [](sol::this_state ts, sol::object obj) {
+		sol::state_view L(ts);
+		sol::function tostringfn = L["tostring"];
+		std::string s = tostringfn(obj);
+
+		Module::Lime::Bind::Log(s);
+	});
 
 	// If set to true, Lime will close on any error. A pop-up will be disclosed prior with error details.
 	// Params boolean doEnd

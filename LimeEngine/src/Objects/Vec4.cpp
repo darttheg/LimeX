@@ -30,6 +30,10 @@ void Object::Vec4Bind::bind(Application* a) {
 		"w", sol::property(&Vec4::getW, &Vec4::setW)
 	);
 
+	obj[sol::meta_function::to_string] = [](const Vec4& v) {
+		return "(" + std::to_string(v.getX()) + ", " + std::to_string(v.getY()) + std::to_string(v.getZ()) + std::to_string(v.getW()) + ")";
+		};
+
 	// Object Vec4
 
 	// Field number x

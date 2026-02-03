@@ -82,6 +82,10 @@ void Object::Vec2Bind::bind(Application* a) {
 		"y", sol::property(&Vec2::getY, &Vec2::setY)
 	);
 
+	obj[sol::meta_function::to_string] = [](const Vec2& v) {
+		return "(" + std::to_string(v.getX()) + ", " + std::to_string(v.getY()) + ")";
+		};
+
 	// Object Vec2
 
 	// Field number x

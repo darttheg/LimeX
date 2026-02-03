@@ -105,6 +105,10 @@ void Object::Vec3Bind::bind(Application* a) {
 		"z", sol::property(&Vec3::getZ, &Vec3::setZ)
 	);
 
+	obj[sol::meta_function::to_string] = [](const Vec3& v) {
+		return "(" + std::to_string(v.getX()) + ", " + std::to_string(v.getY()) + std::to_string(v.getZ()) + ")";
+		};
+
 	// Object Vec3
 
 	// Field number x

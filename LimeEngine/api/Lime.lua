@@ -128,7 +128,7 @@ function Lime.close() end
 function Lime.getVersion() end
 
 --- Prints a message to console.
----@param msg string
+---@param msg any
 ---@param color Lime.PrintColor?
 ---@return void
 function Lime.log(msg, color) end

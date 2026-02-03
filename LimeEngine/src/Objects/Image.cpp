@@ -106,7 +106,7 @@ void Image::key(const Vec4& color) {
 	r->keyColor(texture, color);
 }
 
-std::string Image::getPath() {
+std::string Image::getPath() const {
 	if (!texture) {
 		d->Warn("GetPath failed: There is no valid Image!");
 		return "";
@@ -124,6 +124,10 @@ void Object::ImageBind::bind(Application* a) {
 		"Image",
 		sol::constructors<Image(), Image(const std::string&), Image(int, int, const std::string&)>()
 	);
+
+	obj[sol::meta_function::to_string] = [](const Image& v) {
+		return v.getPath();
+		};
 
 	// Object Image
 

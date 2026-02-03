@@ -25,7 +25,7 @@ public:
 	Vec4 getColor(const Vec2& pos);
 	void setColor(const Vec2& pos, const Vec4& color);
 	void key(const Vec4& color);
-	std::string getPath();
+	std::string getPath() const;
 private:
 	irr::video::ITexture* texture = nullptr;
 };
