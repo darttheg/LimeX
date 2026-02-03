@@ -151,8 +151,8 @@ irr::video::ITexture* Renderer::cropTexture(irr::video::ITexture* tex, const Vec
 	if (!guardRenderingCheck()) return nullptr;
 
 	irr::video::IImage* img = i_driver->createImage(tex, irr::core::vector2di(pos.getX(), pos.getY()), irr::core::dimension2du(dim.getX(), dim.getY()));
-	std::string name = tex->getName().getInternalName().c_str();
-	name += "_cropped";
+	std::string name = "cropped_";
+	name += tex->getName().getInternalName().c_str();
 	irr::video::ITexture* out = i_driver->addTexture(name.c_str(), img);
 
 	return out;
@@ -165,8 +165,8 @@ irr::video::ITexture* Renderer::appendTexture(irr::video::ITexture* tex, irr::vi
 	irr::video::IImage* appendBase = texToImg(i_driver, toAppend);
 
 	appendBase->copyTo(srcBase, irr::core::vector2di(pos.getX(), pos.getY()));
-	std::string op = tex->getName().getInternalName().c_str();
-	op += "_appended";
+	std::string op = "appended_";
+	op += tex->getName().getInternalName().c_str();
 
 	irr::video::ITexture* out = i_driver->addTexture(op.c_str(), srcBase);
 	srcBase->drop();
