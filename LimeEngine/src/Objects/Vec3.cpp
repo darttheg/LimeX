@@ -94,6 +94,8 @@ void Object::Vec3Bind::bind(Application* a) {
 	sol::usertype<Vec3> obj = view.new_usertype<Vec3>(
 		"Vec3",
 		sol::constructors<Vec3(), Vec3(float), Vec3(float, float, float)>(),
+		sol::meta_function::type, [](const Vec3&) { return "Vec3"; },
+
 		sol::meta_function::addition, &Vec3::operator+,
 		sol::meta_function::subtraction, &Vec3::operator-,
 		sol::meta_function::multiplication, &Vec3::operator*,

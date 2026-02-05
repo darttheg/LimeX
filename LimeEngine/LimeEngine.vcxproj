@@ -32,6 +32,7 @@
     <ClInclude Include="include\Objects\Event.h" />
     <ClInclude Include="include\Objects\Image.h" />
     <ClInclude Include="include\Objects\Material.h" />
+    <ClInclude Include="include\Objects\Skydome.h" />
     <ClInclude Include="include\Objects\Vec2.h" />
     <ClInclude Include="include\Objects\Vec3.h" />
     <ClInclude Include="include\Objects\Vec4.h" />
@@ -52,6 +53,7 @@
     <ClCompile Include="src\Objects\Event.cpp" />
     <ClCompile Include="src\Objects\Image.cpp" />
     <ClCompile Include="src\Objects\Material.cpp" />
+    <ClCompile Include="src\Objects\Skydome.cpp" />
     <ClCompile Include="src\Objects\Vec2.cpp" />
     <ClCompile Include="src\Objects\Vec3.cpp" />
     <ClCompile Include="src\Objects\Vec4.cpp" />

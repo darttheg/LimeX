@@ -27,9 +27,16 @@ class ModuleDoc:
     fields: List[Tuple[str, str, Optional[str]]] = field(default_factory=list)
 
 @dataclass
+class InterfaceDoc:
+    name: str
+    fields: List[Tuple[str, str, Optional[str]]] = field(default_factory=list)
+    methods: List[FunctionDoc] = field(default_factory=list)
+
+@dataclass
 class ObjectDoc:
     name: str
     ctor_comment: Optional[str] = None
+    inherits: List[str] = field(default_factory=list)
     fields: List[Tuple[str, str, Optional[str]]] = field(default_factory=list)
     ctors: List[List[Param]] = field(default_factory=list)
 
@@ -108,13 +115,24 @@ def parse_object_header(s: str) -> Tuple[str, Optional[str]]:
         return name, comment
     return rest.strip(), None
 
-def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], List[FunctionDoc]]:
+def parse_inherits_line(s: str) -> List[str]:
+    m = re.match(r"^Inherits\b(.*)$", s.strip())
+    if not m:
+        return []
+    rest = (m.group(1) or "").strip()
+    if not rest:
+        return []
+    return [x.strip() for x in rest.split(",") if x.strip()]
+
+def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, InterfaceDoc], List[ObjectDoc], List[FunctionDoc]]:
     modules: Dict[str, ModuleDoc] = {}
+    interfaces: Dict[str, InterfaceDoc] = {}
     objects_by_name: Dict[str, ObjectDoc] = {}
     functions: List[FunctionDoc] = []
 
     current_module: Optional[str] = None
     current_object: Optional[ObjectDoc] = None
+    current_interface: Optional[InterfaceDoc] = None
 
     pending_doc: List[str] = []
     pending_overloads: List[List[Param]] = []
@@ -146,6 +164,7 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], L
                     if name:
                         current_module = name
                         current_object = None
+                        current_interface = None
                         modules.setdefault(name, ModuleDoc(name=name))
                     reset_pending()
                     continue
@@ -155,10 +174,26 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], L
                     reset_pending()
                     continue
 
+                if s.startswith("Interface "):
+                    name = s[len("Interface "):].strip()
+                    if name:
+                        current_module = None
+                        current_object = None
+                        current_interface = interfaces.get(name) or InterfaceDoc(name=name)
+                        interfaces[name] = current_interface
+                    reset_pending()
+                    continue
+
+                if s == "End Interface":
+                    current_interface = None
+                    reset_pending()
+                    continue
+
                 if s.startswith("Object "):
                     name, comment = parse_object_header(s)
                     if name:
                         current_module = None
+                        current_interface = None
                         current_object = objects_by_name.get(name) or ObjectDoc(name=name)
                         if comment:
                             current_object.ctor_comment = comment
@@ -171,10 +206,22 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], L
                     reset_pending()
                     continue
 
+                if current_object:
+                    inh = parse_inherits_line(s)
+                    if inh:
+                        current_object.inherits = inh
+                        continue
+
                 if current_module and s.startswith("Field "):
                     decl = parse_field_decl(s[len("Field "):])
                     if decl:
                         modules[current_module].fields.append(decl)
+                    continue
+
+                if current_interface and s.startswith("Field "):
+                    decl = parse_field_decl(s[len("Field "):])
+                    if decl:
+                        current_interface.fields.append(decl)
                     continue
 
                 if current_object and s.startswith("Field "):
@@ -212,6 +259,22 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], L
                     pending_doc.append(s.rstrip())
                 continue
 
+            if current_interface:
+                fm = bind_func_re.search(raw)
+                if fm:
+                    fname = fm.group(1).strip()
+                    if fname:
+                        current_interface.methods.append(FunctionDoc(
+                            owner=current_interface.name,
+                            name=fname,
+                            is_method=True,
+                            doc_lines=list(pending_doc),
+                            overloads=list(pending_overloads),
+                            returns=pending_returns
+                        ))
+                    reset_pending()
+                continue
+
             is_method = current_object is not None
             owner = current_object.name if current_object else current_module
             if owner:
@@ -242,7 +305,9 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], L
 
     objects = [objects_by_name[k] for k in sorted(objects_by_name.keys())]
     functions.sort(key=lambda f: (f.owner, f.name, 0 if f.is_method else 1))
-    return modules, objects, functions
+    for idef in interfaces.values():
+        idef.methods.sort(key=lambda f: f.name)
+    return modules, interfaces, objects, functions
 
 def ctor_sig(params: List[Param]) -> str:
     return ", ".join([f"{p.name}:{p.typ}" for p in params])
@@ -256,7 +321,7 @@ def fn_sig(params: List[Param]) -> str:
 def field_line(name: str, typ: str, comment: Optional[str]) -> str:
     return f"---@field {name} {typ} @{comment}" if comment else f"---@field {name} {typ}"
 
-def emit_lua(modules: Dict[str, ModuleDoc], objects: List[ObjectDoc], functions: List[FunctionDoc]) -> str:
+def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc], objects: List[ObjectDoc], functions: List[FunctionDoc]) -> str:
     out: List[str] = []
 
     for mname in sorted(modules.keys()):
@@ -267,10 +332,27 @@ def emit_lua(modules: Dict[str, ModuleDoc], objects: List[ObjectDoc], functions:
         out.append(f"{mname} = {mname} or {{}}")
         out.append("")
 
+    inherited_methods: List[FunctionDoc] = []
+    inherited_set = set()
+
     for obj in objects:
         out.append(f"---@class {obj.name}")
+
+        field_seen = set()
         for name, typ, comment in obj.fields:
+            field_seen.add(name)
             out.append(field_line(name, typ, comment))
+
+        for iname in obj.inherits:
+            idef = interfaces.get(iname)
+            if not idef:
+                continue
+            for name, typ, comment in idef.fields:
+                if name in field_seen:
+                    continue
+                field_seen.add(name)
+                out.append(field_line(name, typ, comment))
+
         out.append(f"{obj.name} = {obj.name} or {{}}")
 
         if obj.ctor_comment:
@@ -299,7 +381,35 @@ def emit_lua(modules: Dict[str, ModuleDoc], objects: List[ObjectDoc], functions:
         out.append(f"function {obj.name}.new({', '.join([p.name for p in base])}) end")
         out.append("")
 
-    for fn in functions:
+        for iname in obj.inherits:
+            idef = interfaces.get(iname)
+            if not idef:
+                continue
+            for m in idef.methods:
+                k = (obj.name, m.name)
+                if k in inherited_set:
+                    continue
+                inherited_set.add(k)
+                inherited_methods.append(FunctionDoc(
+                    owner=obj.name,
+                    name=m.name,
+                    is_method=True,
+                    doc_lines=list(m.doc_lines),
+                    overloads=list(m.overloads),
+                    returns=m.returns
+                ))
+
+    direct_methods = set((f.owner, f.name) for f in functions if f.is_method)
+    merged: List[FunctionDoc] = list(functions)
+
+    for m in inherited_methods:
+        if (m.owner, m.name) in direct_methods:
+            continue
+        merged.append(m)
+
+    merged.sort(key=lambda f: (f.owner, f.name, 0 if f.is_method else 1))
+
+    for fn in merged:
         for line in fn.doc_lines:
             out.append(f"--- {line}")
 
@@ -353,8 +463,8 @@ def main() -> int:
     out_dir = Path(args.out).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    modules, objects, functions = parse_cpp_files(src)
-    (out_dir / "Lime.lua").write_text(emit_lua(modules, objects, functions), encoding="utf-8")
+    modules, interfaces, objects, functions = parse_cpp_files(src)
+    (out_dir / "Lime.lua").write_text(emit_lua(modules, interfaces, objects, functions), encoding="utf-8")
     return 0
 
 if __name__ == "__main__":

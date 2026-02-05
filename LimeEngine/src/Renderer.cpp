@@ -10,6 +10,7 @@
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
+#include "Objects/Image.h"
 
 Renderer::Renderer(Application* owner) {
 	a = owner;
@@ -199,5 +200,13 @@ irr::video::ITexture* Renderer::setColor(irr::video::ITexture* tex, const Vec2& 
 }
 
 void Renderer::keyColor(irr::video::ITexture* tex, const Vec4& color) {
+	if (!guardRenderingCheck()) return;
+
 	i_driver->makeColorKeyTexture(tex, irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()));
+}
+
+irr::scene::ISceneNode* Renderer::createSkydomeNode(irr::video::ITexture* tex) {
+	if (!guardRenderingCheck()) return nullptr;
+
+	return i_smgr->addSkyDomeSceneNode(tex, 16, 8, 1.0, 2.0, 100.0);
 }

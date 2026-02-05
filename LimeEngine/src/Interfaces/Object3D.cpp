@@ -45,7 +45,7 @@ void Object3D::setVisibility(bool v) {
     getNode()->setVisible(v);
 }
 
-bool Object3D::setParent(sol::optional<Object3D*> parent) {
+bool Object3D::parentTo(sol::optional<Object3D*> parent) {
     if (!getNode() || !(*parent)->getNode()) return false;
 
     getNode()->setParent((*parent)->getNode());
@@ -63,23 +63,39 @@ void Object3D::setID(int d) {
 
 void Interface::Object3DBind::bind(Application* a) {
 	sol::state_view view(a->GetLuaState());
+
+    // Interface Object3D
+
 	sol::usertype<Object3D> obj = view.new_usertype<Object3D>(
 		"Object3D",
 
+        // Field Vec3 position, The 3D position of this object in the scene.
         "position", sol::property(
             [](Object3D& c) { return Vec3{ [&] { return c.getPosition(); }, [&](auto v) { c.setPosition(v); } }; },
             [](Object3D& c, const Vec3& v) { c.setPosition(v); }
             ),
+        // Field Vec3 rotation, The 3D rotation of this object in the scene in degrees.
         "rotation", sol::property(
             [](Object3D& c) { return Vec3{ [&] { return c.getRotation(); }, [&](auto v) { c.setRotation(v); } }; },
             [](Object3D& c, const Vec3& v) { c.setRotation(v); }
             ),
+        // Field Vec3 scale, The 3D scale of this object in the scene.
         "scale", sol::property(
             [](Object3D& c) { return Vec3{ [&] { return c.getScale(); }, [&](auto v) { c.setScale(v); } }; },
             [](Object3D& c, const Vec3& v) { c.setScale(v); }
             ),
 
+        // Field boolean visible, Determines the visibility of this object and its children.
         "visible", sol::property(&Object3D::getVisibility, &Object3D::setVisibility),
+
+        // Field number id, The identifier for this object to be used in raycasts and object selection.
         "id", sol::property(&Object3D::getID, &Object3D::setID)
 	);
+
+    // Parents this object to another 3D object.
+    // Params any child
+    // Returns void
+    obj.set_function("parentTo", &Object3D::parentTo);
+
+    // End Interface
 }

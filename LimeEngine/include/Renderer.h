@@ -10,11 +10,13 @@
 class Vec2;
 class Vec3;
 class Vec4;
+class Image;
 
 namespace irr {
 	class IrrlichtDevice;
 	namespace scene {
 		class ISceneManager;
+		class ISceneNode;
 	}
 	namespace video {
 		class IVideoDriver;
@@ -44,6 +46,7 @@ public:
 
 	bool guardRenderingCheck();
 
+	// Textures
 	irr::video::ITexture* createTexture(int w, int h, const std::string& name = "");
 	irr::video::ITexture* createTexture(const std::string& path);
 	irr::video::ITexture* cropTexture(irr::video::ITexture* tex, const Vec2& pos, const Vec2& dim);
@@ -51,6 +54,9 @@ public:
 	Vec4 getColor(irr::video::ITexture* tex, const Vec2& pos);
 	irr::video::ITexture* setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color);
 	void keyColor(irr::video::ITexture* tex, const Vec4& color);
+
+	// Skydome
+	irr::scene::ISceneNode* createSkydomeNode(irr::video::ITexture* tex);
 
 private:
 	Application* a = nullptr;

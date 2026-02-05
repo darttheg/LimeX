@@ -72,6 +72,8 @@ void Object::Vec2Bind::bind(Application* a) {
 	sol::usertype<Vec2> obj = view.new_usertype<Vec2>(
 		"Vec2",
 		sol::constructors<Vec2(), Vec2(float), Vec2(float, float)>(),
+		sol::meta_function::type, [](const Vec2&) { return "Vec2"; },
+
 		sol::meta_function::addition, &Vec2::operator+,
 		sol::meta_function::subtraction, &Vec2::operator-,
 		sol::meta_function::multiplication, &Vec2::operator*,

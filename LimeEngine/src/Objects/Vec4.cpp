@@ -18,6 +18,8 @@ void Object::Vec4Bind::bind(Application* a) {
 	sol::usertype<Vec4> obj = view.new_usertype<Vec4>(
 		"Vec4",
 		sol::constructors<Vec4(), Vec4(float), Vec4(float, float, float, float)>(),
+		sol::meta_function::type, [](const Vec4&) { return "Vec4"; },
+
 		sol::meta_function::addition, &Vec4::operator+,
 		sol::meta_function::subtraction, &Vec4::operator-,
 		sol::meta_function::multiplication, &Vec4::operator*,

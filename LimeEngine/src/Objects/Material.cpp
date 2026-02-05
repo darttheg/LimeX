@@ -290,6 +290,8 @@ void Object::MaterialBind::bind(Application* a) {
 	sol::usertype<Material> obj = view.new_usertype<Material>(
 		"Material",
 		sol::constructors<Material(), Material(const Image& img), Material(const Material& other), Material(int quality)>(),
+		sol::meta_function::type, [](const Material&) { return "Material"; },
+
 		// Field number ID, An ID to identify this Material with, being useful for raycast hit results as those can contain a hit Material ID.
 		"ID", sol::property(&Material::getID, &Material::setID),
 		// Field Lime.MaterialType type, Sets the type of this Material, determing how the layers interact with themselves and the world

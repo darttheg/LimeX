@@ -122,7 +122,8 @@ void Object::ImageBind::bind(Application* a) {
 	sol::state_view view(a->GetLuaState());
 	sol::usertype<Image> obj = view.new_usertype<Image>(
 		"Image",
-		sol::constructors<Image(), Image(const std::string&), Image(int, int, const std::string&)>()
+		sol::constructors<Image(), Image(const std::string&), Image(int, int, const std::string&)>(),
+		sol::meta_function::type, [](const Image&) { return "Image"; }
 	);
 
 	obj[sol::meta_function::to_string] = [](const Image& v) {

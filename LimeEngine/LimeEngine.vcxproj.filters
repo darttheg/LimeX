@@ -96,6 +96,9 @@
     <ClInclude Include="include\Objects\Material.h">
       <Filter>Engine\Runtime\Objects\Common</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\Skydome.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -151,6 +154,9 @@
     </ClCompile>
     <ClCompile Include="src\Objects\Material.cpp">
       <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Skydome.cpp">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

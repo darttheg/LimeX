@@ -54,6 +54,18 @@ Material = Material or {}
 ---@return Material
 function Material.new() end
 
+---@class Skydome
+---@field position Vec3 @The 3D position of this object in the scene.
+---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
+---@field scale Vec3 @The 3D scale of this object in the scene.
+---@field visible boolean @Determines the visibility of this object and its children.
+---@field id number @The identifier for this object to be used in raycasts and object selection.
+Skydome = Skydome or {}
+--- A dome rendered behind all scene objects, like a sky.
+---@overload fun(material:Material): Skydome
+---@return Skydome
+function Skydome.new() end
+
 ---@class Vec2
 ---@field x number
 ---@field y number
@@ -202,6 +214,16 @@ function Material:setImageScale(scale) end
 ---@param vMethod Lime.ImageWrapType
 ---@return void
 function Material:setImageWrapMethod(uMethod, vMethod) end
+
+--- Loads a new Material into this Skydome
+---@param material Material
+---@return void
+function Skydome:loadMaterial(material) end
+
+--- Parents this object to another 3D object.
+---@param child any
+---@return void
+function Skydome:parentTo(child) end
 
 --- Measures the angle between vectors in degrees
 ---@param other Vec2

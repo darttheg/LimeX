@@ -19,6 +19,7 @@
 #include "Objects/Vec4.h"
 #include "Objects/Image.h"
 #include "Objects/Material.h"
+#include "Objects/Skydome.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -36,4 +37,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::Vec4Bind::bind(app);
 	Object::ImageBind::bind(app);
 	Object::MaterialBind::bind(app);
+	Object::SkydomeBind::bind(app);
 }

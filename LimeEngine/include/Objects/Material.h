@@ -84,6 +84,8 @@ public:
 
 	float getShine() const;
 	void setShine(float v);
+
+	irr::video::SMaterial& getMaterial() const { return *material; }
 private:
 	std::unique_ptr<irr::video::SMaterial> material;
 	int m_quality = -1;
