@@ -7,35 +7,42 @@ using namespace irr;
 using namespace scene;
 
 Vec3 Object3D::getPosition() const {
-    return position;
+    if (!getNode()) return Vec3();
+    return Vec3(getNode()->getPosition().X, getNode()->getPosition().Y, getNode()->getPosition().Z);
 }
 
 void Object3D::setPosition(const Vec3& pos) {
-    position = pos;
+    if (!getNode()) return;
+    getNode()->setPosition(irr::core::vector3df(pos.getX(), pos.getY(), pos.getZ()));
 }
 
 Vec3 Object3D::getRotation() const {
-    return rotation;
+    if (!getNode()) return Vec3();
+    return Vec3(getNode()->getRotation().X, getNode()->getRotation().Y, getNode()->getRotation().Z);
 }
 
 void Object3D::setRotation(const Vec3& rot) {
-    rotation = rot;
+    if (!getNode()) return;
+    getNode()->setRotation(irr::core::vector3df(rot.getX(), rot.getY(), rot.getZ()));
 }
 
 Vec3 Object3D::getScale() const {
-    return scale;
+    if (!getNode()) return Vec3();
+    return Vec3(getNode()->getScale().X, getNode()->getScale().Y, getNode()->getScale().Z);
 }
 
 void Object3D::setScale(const Vec3& s) {
-    scale = s;
+    if (!getNode()) return;
+    getNode()->setScale(irr::core::vector3df(s.getX(), s.getY(), s.getZ()));
 }
 
 bool Object3D::getVisibility() const {
-    return visible;
+    return getNode() ? getNode()->isVisible() : false;
 }
 
 void Object3D::setVisibility(bool v) {
-    visible = v;
+    if (!getNode()) return;
+    getNode()->setVisible(v);
 }
 
 bool Object3D::setParent(sol::optional<Object3D*> parent) {
@@ -46,11 +53,12 @@ bool Object3D::setParent(sol::optional<Object3D*> parent) {
 }
 
 int Object3D::getID() const {
-    return id;
+    return getNode() ? getNode()->getID() : 0;
 }
 
 void Object3D::setID(int d) {
-    id = d;
+    if (!getNode()) return;
+    getNode()->setID(d);
 }
 
 void Interface::Object3DBind::bind(Application* a) {

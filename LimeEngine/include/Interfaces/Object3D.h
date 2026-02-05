@@ -34,13 +34,6 @@ public:
 protected:
 
 private:
-	Vec3 position;
-	Vec3 rotation;
-	Vec3 scale;
-	bool visible = true;
-	int id = 0;
-
-	bool dirty = false;
 };
 
 namespace Interface::Object3DBind {
