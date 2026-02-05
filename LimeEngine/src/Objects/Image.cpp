@@ -8,8 +8,8 @@
 #include "Objects/Vec2.h"
 #include "Objects/Vec4.h"
 
-static Renderer* r = nullptr;
-static DebugConsole* d = nullptr;
+static Renderer* r;
+static DebugConsole* d;
 
 Image::Image() {
 	if (!r->guardRenderingCheck()) return;
@@ -129,7 +129,7 @@ void Object::ImageBind::bind(Application* a) {
 		return v.getPath();
 		};
 
-	// Object Image
+	// Object Image, An image that is the foundation for all texturing, for 2D and 3D objects.
 
 	// Constructor
 	// Constructor number w, number h, string? name
@@ -148,7 +148,7 @@ void Object::ImageBind::bind(Application* a) {
 	// Returns void
 	obj.set_function("write", &Image::write);
 
-	// Crops the Image to the dimensions provided.
+	// Crops the Image to the dimensions provided. Cropping creates a new Image in the renderer, so be mindful and free unused and uncropped Images.
 	// Params Vec2 topLeft, Vec2 bottomRight
 	// Returns void
 	obj.set_function("crop", &Image::crop);

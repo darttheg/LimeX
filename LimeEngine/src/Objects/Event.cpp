@@ -66,7 +66,7 @@ static void bindEvent() {
 		sol::meta_function::type, [](const Event&) { return "Event"; }
 	);
 
-	// Object Event
+	// Object Event, A container of functions that will run in sequence when called upon.
 
 	// Hook a function to this Event.
 	// Params function Function
@@ -121,7 +121,7 @@ static void bindHook() {
 	);
 	// Only receive this object when hooking to an Event so no constructors
 
-	// Object Hook
+	// Object Hook, A handle from Event hooking.
 
 	// Unhook a function to this Event.
 	bindType.set_function("unhook", &Hook::unhook);

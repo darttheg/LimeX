@@ -34,7 +34,7 @@ void Object::Vec4Bind::bind(Application* a) {
 		return "(" + std::to_string(v.getX()) + ", " + std::to_string(v.getY()) + std::to_string(v.getZ()) + std::to_string(v.getW()) + ")";
 		};
 
-	// Object Vec4
+	// Object Vec4, A four-dimensional vector object.
 
 	// Field number x
 	// Field number y

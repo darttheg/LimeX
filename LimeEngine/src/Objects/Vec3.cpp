@@ -109,7 +109,7 @@ void Object::Vec3Bind::bind(Application* a) {
 		return "(" + std::to_string(v.getX()) + ", " + std::to_string(v.getY()) + std::to_string(v.getZ()) + ")";
 		};
 
-	// Object Vec3
+	// Object Vec3, A three-dimensional vector object.
 
 	// Field number x
 	// Field number y

@@ -86,7 +86,7 @@ void Object::Vec2Bind::bind(Application* a) {
 		return "(" + std::to_string(v.getX()) + ", " + std::to_string(v.getY()) + ")";
 		};
 
-	// Object Vec2
+	// Object Vec2, A two-dimensional vector object.
 
 	// Field number x
 	// Field number y

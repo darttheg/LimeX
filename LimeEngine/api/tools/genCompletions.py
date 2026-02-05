@@ -29,6 +29,7 @@ class ModuleDoc:
 @dataclass
 class ObjectDoc:
     name: str
+    ctor_comment: Optional[str] = None
     fields: List[Tuple[str, str, Optional[str]]] = field(default_factory=list)
     ctors: List[List[Param]] = field(default_factory=list)
 
@@ -49,6 +50,11 @@ def looks_like_type(t: str) -> bool:
         return True
     return t[0].isupper()
 
+def looks_like_sig_type(t: str) -> bool:
+    if not t:
+        return False
+    return t in KNOWN_TYPES or "." in t or "?" in t
+
 def is_param_signature(s: str) -> bool:
     s = s.strip()
     if not s or s.endswith((".", "?", "!", ":")):
@@ -63,7 +69,7 @@ def is_param_signature(s: str) -> bool:
         typ, name = tokens[0], tokens[1]
         if name.lower() in ARTICLES:
             return False
-        if not looks_like_type(typ):
+        if not looks_like_sig_type(typ):
             return False
     return True
 
@@ -90,6 +96,17 @@ def parse_returns_line(s: str) -> Tuple[Optional[str], Optional[str]]:
     if len(tokens) == 1 and looks_like_type(tokens[0]):
         return tokens[0], None
     return None, rest
+
+def parse_object_header(s: str) -> Tuple[str, Optional[str]]:
+    rest = s[len("Object "):].strip()
+    if not rest:
+        return "", None
+    if "," in rest:
+        name, comment = rest.split(",", 1)
+        name = name.strip()
+        comment = comment.strip() or None
+        return name, comment
+    return rest.strip(), None
 
 def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], List[FunctionDoc]]:
     modules: Dict[str, ModuleDoc] = {}
@@ -139,10 +156,12 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], List[ObjectDoc], L
                     continue
 
                 if s.startswith("Object "):
-                    name = s[len("Object "):].strip()
+                    name, comment = parse_object_header(s)
                     if name:
                         current_module = None
                         current_object = objects_by_name.get(name) or ObjectDoc(name=name)
+                        if comment:
+                            current_object.ctor_comment = comment
                         objects_by_name[name] = current_object
                     reset_pending()
                     continue
@@ -234,6 +253,9 @@ def fn_sig(params: List[Param]) -> str:
         parts.append(f"...:{p.typ}" if p.name == "..." else f"{p.name}:{p.typ}")
     return ", ".join(parts)
 
+def field_line(name: str, typ: str, comment: Optional[str]) -> str:
+    return f"---@field {name} {typ} @{comment}" if comment else f"---@field {name} {typ}"
+
 def emit_lua(modules: Dict[str, ModuleDoc], objects: List[ObjectDoc], functions: List[FunctionDoc]) -> str:
     out: List[str] = []
 
@@ -241,17 +263,18 @@ def emit_lua(modules: Dict[str, ModuleDoc], objects: List[ObjectDoc], functions:
         md = modules[mname]
         out.append(f"---@class {mname}")
         for fname, ftyp, fcomment in md.fields:
-            if fcomment:
-                out.append(f"--- {fcomment}")
-            out.append(f"---@field {fname} {ftyp}")
+            out.append(field_line(fname, ftyp, fcomment))
         out.append(f"{mname} = {mname} or {{}}")
         out.append("")
 
     for obj in objects:
         out.append(f"---@class {obj.name}")
         for name, typ, comment in obj.fields:
-            out.append(f"---@field {name} {typ} {comment}" if comment else f"---@field {name} {typ}")
+            out.append(field_line(name, typ, comment))
         out.append(f"{obj.name} = {obj.name} or {{}}")
+
+        if obj.ctor_comment:
+            out.append(f"--- {obj.ctor_comment}")
 
         ctors = obj.ctors or [[]]
         uniq: List[List[Param]] = []

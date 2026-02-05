@@ -93,6 +93,9 @@
     <ClInclude Include="include\Objects\Image.h">
       <Filter>Engine\Runtime\Objects\Common</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\Material.h">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -144,6 +147,9 @@
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
     <ClCompile Include="src\Objects\Image.cpp">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Material.cpp">
       <Filter>Engine\Runtime\Objects\Common</Filter>
     </ClCompile>
   </ItemGroup>

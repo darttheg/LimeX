@@ -9,6 +9,7 @@
 
 // MODULE INLCUDES
 #include "Modules/ModuleLime.h"
+#include "Modules/ModuleScene.h"
 //
 
 // OBJECT INCLUDES
@@ -17,7 +18,7 @@
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
 #include "Objects/Image.h"
-#include "Objects/Camera.h"
+#include "Objects/Material.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -26,6 +27,7 @@ void LuaBinder::BindAll(Application* app) {
 
 	// Modules
 	Module::Lime::bind(app);
+	Module::Scene::bind(app);
 
 	// Objects
 	Object::EventBind::bind(app);
@@ -33,4 +35,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::Vec3Bind::bind(app);
 	Object::Vec4Bind::bind(app);
 	Object::ImageBind::bind(app);
+	Object::MaterialBind::bind(app);
 }

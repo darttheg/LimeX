@@ -1,35 +1,64 @@
 ---@class Lime
---- Event called by Lime prior to initializing the window.
----@field onInit Event
---- Event called by Lime following window creation and rendering services are available.
----@field onStart Event
---- Event called by Lime every rendering frame. This Event is run with a number delta time argument.
----@field onUpdate Event
---- Event called by Lime once the application closes in any way.
----@field onClose Event
+---@field onInit Event @Event called by Lime prior to initializing the window.
+---@field onStart Event @Event called by Lime following window creation and rendering services are available.
+---@field onUpdate Event @Event called by Lime every rendering frame. This Event is run with a number delta time argument.
+---@field onClose Event @Event called by Lime once the application closes in any way.
 Lime = Lime or {}
+
+---@class Lime.Scene
+Lime.Scene = Lime.Scene or {}
 
 ---@class Event
 Event = Event or {}
+--- A container of functions that will run in sequence when called upon.
 ---@return Event
 function Event.new() end
 
 ---@class Hook
 Hook = Hook or {}
+--- A handle from Event hooking.
 ---@return Hook
 function Hook.new() end
 
 ---@class Image
 Image = Image or {}
+--- An image that is the foundation for all texturing, for 2D and 3D objects.
 ---@overload fun(w:number, h:number, name:string?): Image
 ---@overload fun(path:string): Image
 ---@return Image
 function Image.new() end
 
+---@class Material
+---@field ID number @An ID to identify this Material with, being useful for raycast hit results as those can contain a hit Material ID.
+---@field type Lime.MaterialType @Sets the type of this Material, determing how the layers interact with themselves and the world
+---@field fog boolean @Enables fog for this Material
+---@field lighting boolean @Enables lighting for this Material
+---@field backfaceCulling boolean @Change backface culling behavior for this Material
+---@field frontfaceCulling boolean @Change frontface culling behavior for this Material
+---@field quality Lime.MaterialQuality @Sets the quality of this Material using Lime.MaterialQuality presets, where Low is retro/old-school and Ultra is smooth and high quality
+---@field wireframe boolean @Enables wireframe view for this Material
+---@field zMethod Lime.ZOrderMethod @Sets Z ordering method for this Material using Lime.ZOrderMethod
+---@field opacity number @Sets the opacity of this Material from 0.0 (invisible) to 1.0 (visible), affecting the transparency of objects with this Material applied (NOTE: Will not affect solid Materials)
+---@field mipmaps boolean @Enables the generation of mipmaps
+---@field shine number @Sets the shine for this Material, ranging from 0 (soft and wide shine) to 1 (harsh and small shine)
+---@field writeToDepth boolean @Enables this material writing to the depth buffer on render, where false is common for transparent objects
+---@field ambientColor Vec4 @Sets the ambient color for this Material, the base color
+---@field diffuseColor Vec4 @Sets the diffuse color for this Material, the light-affected base color
+---@field specularColor Vec4 @Sets the specular color for this Material, the shine color
+---@field emissiveColor Vec4 @Sets the emissive color for this Material, the color that is seen through shadows, lighting, and fog
+Material = Material or {}
+--- An object used to hold material parameters for 3D objects. A Material has at most two layers, with Lime.MaterialType allowing for different combinations of said layers.
+---@overload fun(img:Image): Material
+---@overload fun(other:Material): Material
+---@overload fun(quality:Lime.MaterialQuality): Material
+---@return Material
+function Material.new() end
+
 ---@class Vec2
 ---@field x number
 ---@field y number
 Vec2 = Vec2 or {}
+--- A two-dimensional vector object.
 ---@overload fun(x:number, y:number): Vec2
 ---@overload fun(all:number): Vec2
 ---@return Vec2
@@ -40,6 +69,7 @@ function Vec2.new() end
 ---@field y number
 ---@field z number
 Vec3 = Vec3 or {}
+--- A three-dimensional vector object.
 ---@overload fun(x:number, y:number, z:number): Vec3
 ---@overload fun(all:number): Vec3
 ---@return Vec3
@@ -51,6 +81,7 @@ function Vec3.new() end
 ---@field z number
 ---@field w number
 Vec4 = Vec4 or {}
+--- A four-dimensional vector object.
 ---@overload fun(x:number, y:number, z:number, w:number): Vec4
 ---@overload fun(all:number): Vec4
 ---@return Vec4
@@ -85,7 +116,7 @@ function Hook:unhook() end
 ---@return void
 function Image:append(toAppend, pos) end
 
---- Crops the Image to the dimensions provided.
+--- Crops the Image to the dimensions provided. Cropping creates a new Image in the renderer, so be mindful and free unused and uncropped Images.
 ---@param topLeft Vec2
 ---@param bottomRight Vec2
 ---@return void
@@ -147,6 +178,30 @@ function Lime.setEndOnError(doEnd) end
 ---@param fullscreen boolean?
 ---@return boolean
 function Lime.setInitConfig(driver, vSync, frameRate, windowSize, renderSize, scaleRenderToWindow, fullscreen) end
+
+--- Clears the Image in this Material
+---@param layer number?
+---@return void
+function Material:clearImage(layer) end
+
+--- Loads an Image into this Material
+---@overload fun(layer:number, img:Image): void
+---@param img Image
+---@return void
+function Material:loadImage(img) end
+
+--- Sets the scale of an Image's mapping
+---@overload fun(layer:number, scale:Vec2): void
+---@param scale Vec2
+---@return void
+function Material:setImageScale(scale) end
+
+--- Changes the method for Image UV wrapping
+---@overload fun(layer:number, uMethod:Lime.ImageWrapType, vMethod:Lime.ImageWrapType): void
+---@param uMethod Lime.ImageWrapType
+---@param vMethod Lime.ImageWrapType
+---@return void
+function Material:setImageWrapMethod(uMethod, vMethod) end
 
 --- Measures the angle between vectors in degrees
 ---@param other Vec2
