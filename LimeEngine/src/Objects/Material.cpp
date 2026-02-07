@@ -294,50 +294,50 @@ void Object::MaterialBind::bind(Application* a) {
 
 		// Field number ID, An ID to identify this Material with, being useful for raycast hit results as those can contain a hit Material ID.
 		"ID", sol::property(&Material::getID, &Material::setID),
-		// Field Lime.Enum.MaterialType type, Sets the type of this Material, determing how the layers interact with themselves and the world
+		// Field Lime.Enum.MaterialType type, Sets the type of this Material, determing how the layers interact with themselves and the world.
 		"type", sol::property(&Material::getType, &Material::setType),
-		// Field boolean fog, Enables fog for this Material
+		// Field boolean fog, Enables fog for this Material.
 		"fog", sol::property(&Material::getFog, &Material::setFog),
-		// Field boolean lighting, Enables lighting for this Material
+		// Field boolean lighting, Enables lighting for this Material.
 		"lighting", sol::property(&Material::getLighting, &Material::setLighting),
-		// Field boolean backfaceCulling, Change backface culling behavior for this Material
+		// Field boolean backfaceCulling, Change backface culling behavior for this Material.
 		"backfaceCulling", sol::property(&Material::getBFCulling, &Material::setBFCulling),
-		// Field boolean frontfaceCulling, Change frontface culling behavior for this Material
+		// Field boolean frontfaceCulling, Change frontface culling behavior for this Material.
 		"frontfaceCulling", sol::property(&Material::getFFCulling, &Material::setFFCulling),
-		// Field Lime.Enum.MaterialQuality quality, Sets the quality of this Material using Lime.Enum.MaterialQuality presets, where Low is retro/old-school and Ultra is smooth and high quality
+		// Field Lime.Enum.MaterialQuality quality, Sets the quality of this Material using Lime.Enum.MaterialQuality presets, where Low is unfiltered and Ultra is smooth with higher fidelity.
 		"quality", sol::property(&Material::getQuality, &Material::setQuality),
-		// Field boolean wireframe, Enables wireframe view for this Material
+		// Field boolean wireframe, Enables wireframe view for this Material.
 		"wireframe", sol::property(&Material::getWireframe, &Material::setWireframe),
-		// Field Lime.Enum.ZOrderMethod zMethod, Sets Z ordering method for this Material using Lime.Enum.ZOrderMethod
+		// Field Lime.Enum.ZOrderMethod zMethod, Sets Z ordering method for this Material using Lime.Enum.ZOrderMethod.
 		"zMethod", sol::property(&Material::getZOrdering, &Material::setZOrdering),
-		// Field number opacity, Sets the opacity of this Material from 0.0 (invisible) to 1.0 (visible), affecting the transparency of objects with this Material applied (NOTE: Will not affect solid Materials)
+		// Field number opacity, Sets the opacity of this Material from 0.0 (invisible) to 1.0 (visible), affecting the transparency of objects with this Material applied. (NOTE: Will not affect solid Materials)
 		"opacity", sol::property(&Material::getOpacity, &Material::setOpacity),
-		// Field boolean mipmaps, Enables the generation of mipmaps
+		// Field boolean mipmaps, Enables the generation of mipmaps.
 		"mipmaps", sol::property(&Material::getMipMaps, &Material::setMipMaps),
-		// Field number shine, Sets the shine for this Material, ranging from 0 (soft and wide shine) to 1 (harsh and small shine)
+		// Field number shine, Sets the shine for this Material, ranging from 0 (soft and wide shine) to 1 (harsh and small shine).
 		"shine", sol::property(&Material::getShine, &Material::setShine),
-		// Field boolean writeToDepth, Enables this material writing to the depth buffer on render, where false is common for transparent objects
+		// Field boolean writeToDepth, Enables this material writing to the depth buffer on render, where false is common for transparent objects.
 		"writeToDepth", sol::property(&Material::getWriteToDepth, &Material::setWriteToDepth),
 
-		// Field Vec4 ambientColor, Sets the ambient color for this Material, the base color
+		// Field Vec4 ambientColor, Sets the ambient color for this Material, the base color.
 		"ambientColor", sol::property(
 			[](Material& c) { return Vec4{ [&] { return c.getAmbientColor(); }, [&](auto v) { c.setAmbientColor(v); } }; },
 			[](Material& c, const Vec4& v) { c.setAmbientColor(v); }
 		),
 
-		// Field Vec4 diffuseColor, Sets the diffuse color for this Material, the light-affected base color
+		// Field Vec4 diffuseColor, Sets the diffuse color for this Material, the light-affected base color.
 		"diffuseColor", sol::property(
 			[](Material& c) { return Vec4{ [&] { return c.getDiffuseColor(); }, [&](auto v) { c.setDiffuseColor(v); } }; },
 			[](Material& c, const Vec4& v) { c.setDiffuseColor(v); }
 		),
 
-		// Field Vec4 specularColor, Sets the specular color for this Material, the shine color
+		// Field Vec4 specularColor, Sets the specular color for this Material, the shine color.
 		"specularColor", sol::property(
 			[](Material& c) { return Vec4{ [&] { return c.getSpecularColor(); }, [&](auto v) { c.setSpecularColor(v); } }; },
 			[](Material& c, const Vec4& v) { c.setSpecularColor(v); }
 		),
 
-		// Field Vec4 emissiveColor, Sets the emissive color for this Material, the color that is seen through shadows, lighting, and fog
+		// Field Vec4 emissiveColor, Sets the emissive color for this Material, the color that is seen through shadows, lighting, and fog.
 		"emissiveColor", sol::property(
 			[](Material& c) { return Vec4{ [&] { return c.getEmissiveColor(); }, [&](auto v) { c.setEmissiveColor(v); } }; },
 			[](Material& c, const Vec4& v) { c.setEmissiveColor(v); }
@@ -348,7 +348,7 @@ void Object::MaterialBind::bind(Application* a) {
 		return "Material";
 		};
 
-	// Loads an Image into this Material
+	// Loads an Image into this Material.
 	// Params number layer, Image img
 	// Params Image img
 	// Returns void
@@ -358,12 +358,12 @@ void Object::MaterialBind::bind(Application* a) {
 			sol::resolve<void(const Image&)>(&Material::loadImage)
 		));
 
-	// Clears the Image in this Material
+	// Clears the Image in this Material.
 	// Params number? layer
 	// Returns void
 	obj.set_function("clearImage", &Material::clearImage);
 
-	// Changes the method for Image UV wrapping
+	// Changes the method for Image UV wrapping.
 	// Params number layer, Lime.Enum.ImageWrapType uMethod, Lime.Enum.ImageWrapType vMethod
 	// Params Lime.Enum.ImageWrapType uMethod, Lime.Enum.ImageWrapType vMethod
 	// Returns void
@@ -373,7 +373,7 @@ void Object::MaterialBind::bind(Application* a) {
 			sol::resolve<void(int, int)>(&Material::setImageUVWrapBehavior)
 		));
 
-	// Sets the scale of an Image's mapping
+	// Sets the scale of an Image's mapping.
 	// Params number layer, Vec2 scale
 	// Params Vec2 scale
 	// Returns void
