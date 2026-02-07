@@ -17,6 +17,7 @@ namespace irr {
 	namespace scene {
 		class ISceneManager;
 		class ISceneNode;
+		class ICameraSceneNode;
 	}
 	namespace video {
 		class IVideoDriver;
@@ -55,8 +56,14 @@ public:
 	irr::video::ITexture* setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color);
 	void keyColor(irr::video::ITexture* tex, const Vec4& color);
 
+	// Empty
+	irr::scene::ISceneNode* createEmptyNode();
+
 	// Skydome
 	irr::scene::ISceneNode* createSkydomeNode(irr::video::ITexture* tex);
+
+	// Camera
+	irr::scene::ICameraSceneNode* createCameraNode();
 
 private:
 	Application* a = nullptr;

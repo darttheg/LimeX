@@ -8,6 +8,24 @@ Lime = Lime or {}
 ---@class Lime.Scene
 Lime.Scene = Lime.Scene or {}
 
+---@class Camera
+---@field up Vec3 @The up vector of this Camera.
+---@field viewPlanes Vec2 @The near and far clipping planes of this Camera.
+---@field fieldOfView number @The field of view of this Camera in degrees.
+---@field aspectRatio number @The aspect ratio of this Camera.
+---@field orthogonal boolean @Whether or not this Camera renders orthographically or not. (NOTE: If this is true, aspectRatio modifies the zoom factor instead.)
+---@field position Vec3 @The 3D position of this object in the scene.
+---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
+---@field scale Vec3 @The 3D scale of this object in the scene.
+---@field visible boolean @Determines the visibility of this object and its children.
+---@field id number @The identifier for this object to be used in raycasts and object selection.
+Camera = Camera or {}
+--- A viewpoint in the 3D world.
+---@overload fun(pos:Vec3): Camera
+---@overload fun(pos:Vec3, rot:Vec3): Camera
+---@return Camera
+function Camera.new() end
+
 ---@class Event
 Event = Event or {}
 --- A container of functions that will run in sequence when called upon.
@@ -30,14 +48,14 @@ function Image.new() end
 
 ---@class Material
 ---@field ID number @An ID to identify this Material with, being useful for raycast hit results as those can contain a hit Material ID.
----@field type Lime.MaterialType @Sets the type of this Material, determing how the layers interact with themselves and the world
+---@field type Lime.Enum.MaterialType @Sets the type of this Material, determing how the layers interact with themselves and the world
 ---@field fog boolean @Enables fog for this Material
 ---@field lighting boolean @Enables lighting for this Material
 ---@field backfaceCulling boolean @Change backface culling behavior for this Material
 ---@field frontfaceCulling boolean @Change frontface culling behavior for this Material
----@field quality Lime.MaterialQuality @Sets the quality of this Material using Lime.MaterialQuality presets, where Low is retro/old-school and Ultra is smooth and high quality
+---@field quality Lime.Enum.MaterialQuality @Sets the quality of this Material using Lime.Enum.MaterialQuality presets, where Low is retro/old-school and Ultra is smooth and high quality
 ---@field wireframe boolean @Enables wireframe view for this Material
----@field zMethod Lime.ZOrderMethod @Sets Z ordering method for this Material using Lime.ZOrderMethod
+---@field zMethod Lime.Enum.ZOrderMethod @Sets Z ordering method for this Material using Lime.Enum.ZOrderMethod
 ---@field opacity number @Sets the opacity of this Material from 0.0 (invisible) to 1.0 (visible), affecting the transparency of objects with this Material applied (NOTE: Will not affect solid Materials)
 ---@field mipmaps boolean @Enables the generation of mipmaps
 ---@field shine number @Sets the shine for this Material, ranging from 0 (soft and wide shine) to 1 (harsh and small shine)
@@ -47,10 +65,10 @@ function Image.new() end
 ---@field specularColor Vec4 @Sets the specular color for this Material, the shine color
 ---@field emissiveColor Vec4 @Sets the emissive color for this Material, the color that is seen through shadows, lighting, and fog
 Material = Material or {}
---- An object used to hold material parameters for 3D objects. A Material has at most two layers, with Lime.MaterialType allowing for different combinations of said layers.
+--- An object used to hold material parameters for 3D objects. A Material has at most two layers, with Lime.Enum.MaterialType allowing for different combinations of said layers.
 ---@overload fun(img:Image): Material
 ---@overload fun(other:Material): Material
----@overload fun(quality:Lime.MaterialQuality): Material
+---@overload fun(quality:Lime.Enum.MaterialQuality): Material
 ---@return Material
 function Material.new() end
 
@@ -98,6 +116,19 @@ Vec4 = Vec4 or {}
 ---@overload fun(all:number): Vec4
 ---@return Vec4
 function Vec4.new() end
+
+--- Returns the forward vector.
+---@return Vec3
+function Camera:getForward() end
+
+--- Returns the left vector.
+---@return Vec3
+function Camera:getLeft() end
+
+--- Parents this object to another 3D object.
+---@param child any
+---@return void
+function Camera:parentTo(child) end
 
 --- Clears all functions hooked to this Event.
 function Event:clear() end
@@ -172,7 +203,7 @@ function Lime.getVersion() end
 
 --- Prints a message to console.
 ---@param msg any
----@param color Lime.PrintColor?
+---@param color Lime.Enum.PrintColor?
 ---@return void
 function Lime.log(msg, color) end
 
@@ -181,7 +212,7 @@ function Lime.log(msg, color) end
 function Lime.setEndOnError(doEnd) end
 
 --- IMPORTANT: This function should always be run prior to window creation (pre-Lime.Update Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
----@param driver Lime.DriverType
+---@param driver Lime.Enum.DriverType
 ---@param vSync boolean?
 ---@param frameRate number?
 ---@param windowSize Vec2?
@@ -209,9 +240,9 @@ function Material:loadImage(img) end
 function Material:setImageScale(scale) end
 
 --- Changes the method for Image UV wrapping
----@overload fun(layer:number, uMethod:Lime.ImageWrapType, vMethod:Lime.ImageWrapType): void
----@param uMethod Lime.ImageWrapType
----@param vMethod Lime.ImageWrapType
+---@overload fun(layer:number, uMethod:Lime.Enum.ImageWrapType, vMethod:Lime.Enum.ImageWrapType): void
+---@param uMethod Lime.Enum.ImageWrapType
+---@param vMethod Lime.Enum.ImageWrapType
 ---@return void
 function Material:setImageWrapMethod(uMethod, vMethod) end
 

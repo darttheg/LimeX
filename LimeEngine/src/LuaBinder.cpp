@@ -20,6 +20,7 @@
 #include "Objects/Image.h"
 #include "Objects/Material.h"
 #include "Objects/Skydome.h"
+#include "Objects/Camera.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -38,4 +39,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::ImageBind::bind(app);
 	Object::MaterialBind::bind(app);
 	Object::SkydomeBind::bind(app);
+	Object::CameraBind::bind(app);
 }

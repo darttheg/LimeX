@@ -205,8 +205,20 @@ void Renderer::keyColor(irr::video::ITexture* tex, const Vec4& color) {
 	i_driver->makeColorKeyTexture(tex, irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()));
 }
 
+irr::scene::ISceneNode* Renderer::createEmptyNode() {
+	if (!guardRenderingCheck()) return nullptr;
+
+	return i_smgr->addEmptySceneNode();
+}
+
 irr::scene::ISceneNode* Renderer::createSkydomeNode(irr::video::ITexture* tex) {
 	if (!guardRenderingCheck()) return nullptr;
 
 	return i_smgr->addSkyDomeSceneNode(tex, 16, 8, 1.0, 2.0, 100.0);
+}
+
+irr::scene::ICameraSceneNode* Renderer::createCameraNode() {
+	if (!guardRenderingCheck()) return nullptr;
+
+	return i_smgr->addCameraSceneNode();
 }

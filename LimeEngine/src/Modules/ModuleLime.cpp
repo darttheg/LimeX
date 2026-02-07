@@ -47,7 +47,7 @@ void Module::Lime::bind(Application* app) {
 	bindEnums(lua, module);
 
 	// Prints a message to console.
-	// Params any msg, Lime.PrintColor? color
+	// Params any msg, Lime.Enum.PrintColor? color
 	// Returns void
 	module.set_function("log", [](sol::this_state ts, sol::object obj) {
 		sol::state_view L(ts);
@@ -69,7 +69,7 @@ void Module::Lime::bind(Application* app) {
 	module.set_function("getVersion", &Module::Lime::Bind::GetVersion);
 
 	// IMPORTANT: This function should always be run prior to window creation (pre-Lime.Update Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
-	// Params Lime.DriverType driver, boolean? vSync, number? frameRate, Vec2? windowSize, Vec2? renderSize, boolean? scaleRenderToWindow, boolean? fullscreen
+	// Params Lime.Enum.DriverType driver, boolean? vSync, number? frameRate, Vec2? windowSize, Vec2? renderSize, boolean? scaleRenderToWindow, boolean? fullscreen
 	// Returns boolean
 	module.set_function("setInitConfig", &Module::Lime::Bind::SetInitConfig);
 
@@ -111,7 +111,7 @@ std::string Module::Lime::Bind::GetVersion() {
 
 bool Module::Lime::Bind::SetInitConfig() {
 	if (a->IsRunning()) {
-		d->Warn("Lime.SetInitConfig was called but the window has already been created.");
+		d->Warn("Lime.setInitConfig was called but the window has already been created.");
 		return false;
 	}
 

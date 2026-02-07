@@ -1,4 +1,4 @@
-LIME_MODULE(Lime)
+LIME_MODULE(Lime.Enum)
 
 LIME_ENUM(PrintColor,
     LIME_ENUM_VALUE(White, 0)

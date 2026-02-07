@@ -91,7 +91,7 @@ void Interface::Object3DBind::bind(Application* a) {
         // Field number id, The identifier for this object to be used in raycasts and object selection.
         "id", sol::property(&Object3D::getID, &Object3D::setID)
 	);
-
+     
     // Parents this object to another 3D object.
     // Params any child
     // Returns void

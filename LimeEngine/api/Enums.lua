@@ -1,40 +1,42 @@
 ---@class Lime
 Lime = Lime or {}
----@alias Lime.PrintColor integer
----@class Lime.PrintColorEnum
----@field White Lime.PrintColor
----@field Red Lime.PrintColor
----@field Green Lime.PrintColor
----@field Blue Lime.PrintColor
----@field Yellow Lime.PrintColor
-Lime.PrintColor = {
+---@class Lime.Enum
+Lime.Enum = Lime.Enum or {}
+---@alias Lime.Enum.PrintColor integer
+---@class Lime.Enum.PrintColorEnum
+---@field White Lime.Enum.PrintColor
+---@field Red Lime.Enum.PrintColor
+---@field Green Lime.Enum.PrintColor
+---@field Blue Lime.Enum.PrintColor
+---@field Yellow Lime.Enum.PrintColor
+Lime.Enum.PrintColor = {
 White = 0,
 Red = 1,
 Green = 2,
 Blue = 3,
 Yellow = 4,
 }
----@alias Lime.PopUpIcon integer
----@class Lime.PopUpIconEnum
----@field None Lime.PopUpIcon
----@field Warning Lime.PopUpIcon
----@field Message Lime.PopUpIcon
----@field Information Lime.PopUpIcon
-Lime.PopUpIcon = {
+---@alias Lime.Enum.PopUpIcon integer
+---@class Lime.Enum.PopUpIconEnum
+---@field None Lime.Enum.PopUpIcon
+---@field Warning Lime.Enum.PopUpIcon
+---@field Message Lime.Enum.PopUpIcon
+---@field Information Lime.Enum.PopUpIcon
+Lime.Enum.PopUpIcon = {
 None = 0,
 Warning = 1,
 Message = 2,
 Information = 3,
 }
----@alias Lime.DriverType integer
----@class Lime.DriverTypeEnum
----@field None Lime.DriverType
----@field Software Lime.DriverType
----@field SoftwarePlus Lime.DriverType
----@field Direct3D8 Lime.DriverType
----@field Direct3D9 Lime.DriverType
----@field OpenGL Lime.DriverType
-Lime.DriverType = {
+---@alias Lime.Enum.DriverType integer
+---@class Lime.Enum.DriverTypeEnum
+---@field None Lime.Enum.DriverType
+---@field Software Lime.Enum.DriverType
+---@field SoftwarePlus Lime.Enum.DriverType
+---@field Direct3D8 Lime.Enum.DriverType
+---@field Direct3D9 Lime.Enum.DriverType
+---@field OpenGL Lime.Enum.DriverType
+Lime.Enum.DriverType = {
 None = 0,
 Software = 1,
 SoftwarePlus = 2,
@@ -42,16 +44,16 @@ Direct3D8 = 3,
 Direct3D9 = 4,
 OpenGL = 5,
 }
----@alias Lime.MaterialType integer
----@class Lime.MaterialTypeEnum
----@field Solid Lime.MaterialType
----@field SolidMultiplyLayers Lime.MaterialType
----@field Add Lime.MaterialType
----@field AlphaSoft Lime.MaterialType
----@field AlphaHarsh Lime.MaterialType
----@field SphereMap Lime.MaterialType
----@field ReflectMap Lime.MaterialType
-Lime.MaterialType = {
+---@alias Lime.Enum.MaterialType integer
+---@class Lime.Enum.MaterialTypeEnum
+---@field Solid Lime.Enum.MaterialType
+---@field SolidMultiplyLayers Lime.Enum.MaterialType
+---@field Add Lime.Enum.MaterialType
+---@field AlphaSoft Lime.Enum.MaterialType
+---@field AlphaHarsh Lime.Enum.MaterialType
+---@field SphereMap Lime.Enum.MaterialType
+---@field ReflectMap Lime.Enum.MaterialType
+Lime.Enum.MaterialType = {
 Solid = 0,
 SolidMultiplyLayers = 1,
 Add = 12,
@@ -60,15 +62,15 @@ AlphaHarsh = 14,
 SphereMap = 10,
 ReflectMap = 11,
 }
----@alias Lime.ImageWrapType integer
----@class Lime.ImageWrapTypeEnum
----@field Repeat Lime.ImageWrapType
----@field Clamp Lime.ImageWrapType
----@field ClampToEdge Lime.ImageWrapType
----@field Mirror Lime.ImageWrapType
----@field MirrorClamp Lime.ImageWrapType
----@field MirrorClampToEdge Lime.ImageWrapType
-Lime.ImageWrapType = {
+---@alias Lime.Enum.ImageWrapType integer
+---@class Lime.Enum.ImageWrapTypeEnum
+---@field Repeat Lime.Enum.ImageWrapType
+---@field Clamp Lime.Enum.ImageWrapType
+---@field ClampToEdge Lime.Enum.ImageWrapType
+---@field Mirror Lime.Enum.ImageWrapType
+---@field MirrorClamp Lime.Enum.ImageWrapType
+---@field MirrorClampToEdge Lime.Enum.ImageWrapType
+Lime.Enum.ImageWrapType = {
 Repeat = 0,
 Clamp = 1,
 ClampToEdge = 2,
@@ -76,28 +78,28 @@ Mirror = 4,
 MirrorClamp = 5,
 MirrorClampToEdge = 6,
 }
----@alias Lime.MaterialQuality integer
----@class Lime.MaterialQualityEnum
----@field Low Lime.MaterialQuality
----@field Medium Lime.MaterialQuality
----@field High Lime.MaterialQuality
----@field Ultra Lime.MaterialQuality
-Lime.MaterialQuality = {
+---@alias Lime.Enum.MaterialQuality integer
+---@class Lime.Enum.MaterialQualityEnum
+---@field Low Lime.Enum.MaterialQuality
+---@field Medium Lime.Enum.MaterialQuality
+---@field High Lime.Enum.MaterialQuality
+---@field Ultra Lime.Enum.MaterialQuality
+Lime.Enum.MaterialQuality = {
 Low = 0,
 Medium = 1,
 High = 2,
 Ultra = 3,
 }
----@alias Lime.ZOrderMethod integer
----@class Lime.ZOrderMethodEnum
----@field BehindAll Lime.ZOrderMethod
----@field Default Lime.ZOrderMethod
----@field Decal Lime.ZOrderMethod
----@field ExceptDecal Lime.ZOrderMethod
----@field XRay Lime.ZOrderMethod
----@field StrictXRay Lime.ZOrderMethod
----@field OnTop Lime.ZOrderMethod
-Lime.ZOrderMethod = {
+---@alias Lime.Enum.ZOrderMethod integer
+---@class Lime.Enum.ZOrderMethodEnum
+---@field BehindAll Lime.Enum.ZOrderMethod
+---@field Default Lime.Enum.ZOrderMethod
+---@field Decal Lime.Enum.ZOrderMethod
+---@field ExceptDecal Lime.Enum.ZOrderMethod
+---@field XRay Lime.Enum.ZOrderMethod
+---@field StrictXRay Lime.Enum.ZOrderMethod
+---@field OnTop Lime.Enum.ZOrderMethod
+Lime.Enum.ZOrderMethod = {
 BehindAll = 0,
 Default = 1,
 Decal = 2,

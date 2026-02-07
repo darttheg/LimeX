@@ -279,12 +279,12 @@ void Object::MaterialBind::bind(Application* a) {
 	r = a->GetRenderer();
 	d = a->GetDebugConsole();
 
-	// Object Material, An object used to hold material parameters for 3D objects. A Material has at most two layers, with Lime.MaterialType allowing for different combinations of said layers.
+	// Object Material, An object used to hold material parameters for 3D objects. A Material has at most two layers, with Lime.Enum.MaterialType allowing for different combinations of said layers.
 
 	// Constructor
 	// Constructor Image img
 	// Constructor Material other
-	// Constructor Lime.MaterialQuality quality
+	// Constructor Lime.Enum.MaterialQuality quality
 
 	sol::state_view view(a->GetLuaState());
 	sol::usertype<Material> obj = view.new_usertype<Material>(
@@ -294,7 +294,7 @@ void Object::MaterialBind::bind(Application* a) {
 
 		// Field number ID, An ID to identify this Material with, being useful for raycast hit results as those can contain a hit Material ID.
 		"ID", sol::property(&Material::getID, &Material::setID),
-		// Field Lime.MaterialType type, Sets the type of this Material, determing how the layers interact with themselves and the world
+		// Field Lime.Enum.MaterialType type, Sets the type of this Material, determing how the layers interact with themselves and the world
 		"type", sol::property(&Material::getType, &Material::setType),
 		// Field boolean fog, Enables fog for this Material
 		"fog", sol::property(&Material::getFog, &Material::setFog),
@@ -304,11 +304,11 @@ void Object::MaterialBind::bind(Application* a) {
 		"backfaceCulling", sol::property(&Material::getBFCulling, &Material::setBFCulling),
 		// Field boolean frontfaceCulling, Change frontface culling behavior for this Material
 		"frontfaceCulling", sol::property(&Material::getFFCulling, &Material::setFFCulling),
-		// Field Lime.MaterialQuality quality, Sets the quality of this Material using Lime.MaterialQuality presets, where Low is retro/old-school and Ultra is smooth and high quality
+		// Field Lime.Enum.MaterialQuality quality, Sets the quality of this Material using Lime.Enum.MaterialQuality presets, where Low is retro/old-school and Ultra is smooth and high quality
 		"quality", sol::property(&Material::getQuality, &Material::setQuality),
 		// Field boolean wireframe, Enables wireframe view for this Material
 		"wireframe", sol::property(&Material::getWireframe, &Material::setWireframe),
-		// Field Lime.ZOrderMethod zMethod, Sets Z ordering method for this Material using Lime.ZOrderMethod
+		// Field Lime.Enum.ZOrderMethod zMethod, Sets Z ordering method for this Material using Lime.Enum.ZOrderMethod
 		"zMethod", sol::property(&Material::getZOrdering, &Material::setZOrdering),
 		// Field number opacity, Sets the opacity of this Material from 0.0 (invisible) to 1.0 (visible), affecting the transparency of objects with this Material applied (NOTE: Will not affect solid Materials)
 		"opacity", sol::property(&Material::getOpacity, &Material::setOpacity),
@@ -364,8 +364,8 @@ void Object::MaterialBind::bind(Application* a) {
 	obj.set_function("clearImage", &Material::clearImage);
 
 	// Changes the method for Image UV wrapping
-	// Params number layer, Lime.ImageWrapType uMethod, Lime.ImageWrapType vMethod
-	// Params Lime.ImageWrapType uMethod, Lime.ImageWrapType vMethod
+	// Params number layer, Lime.Enum.ImageWrapType uMethod, Lime.Enum.ImageWrapType vMethod
+	// Params Lime.Enum.ImageWrapType uMethod, Lime.Enum.ImageWrapType vMethod
 	// Returns void
 	obj.set_function("setImageWrapMethod",
 		sol::overload(
