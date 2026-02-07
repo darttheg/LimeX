@@ -44,7 +44,8 @@ void Module::Lime::bind(Application* app) {
 
 	// Module Lime
 	sol::table module = lua["Lime"].get_or_create<sol::table>();
-	bindEnums(lua, module);
+	sol::table enums = lua["Lime"]["Enum"].get_or_create<sol::table>();
+	bindEnums(lua, enums);
 
 	// Prints a message to console.
 	// Params any msg, Lime.Enum.PrintColor? color

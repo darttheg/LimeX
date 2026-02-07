@@ -18,9 +18,9 @@ public:
 	// virtual void destroy() = 0;
 
 	Vec3 getPosition() const;
-	void setPosition(const Vec3& pos);
+	virtual void setPosition(const Vec3& pos);
 	Vec3 getRotation() const;
-	void setRotation(const Vec3& rot);
+	virtual void setRotation(const Vec3& rot);
 	Vec3 getScale() const;
 	void setScale(const Vec3& s);
 

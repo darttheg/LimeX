@@ -18,7 +18,7 @@ Camera::Camera() : Camera(Vec3(), Vec3()){
 Camera::Camera(const Vec3& pos) : Camera(pos, Vec3()) {
 }
 
-Camera::Camera(const Vec3& pos, const Vec3& rotation) {
+Camera::Camera(const Vec3& pos, const Vec3& rot) {
 	camera = r->createCameraNode();
 	if (!camera) return;
 
@@ -28,6 +28,27 @@ Camera::Camera(const Vec3& pos, const Vec3& rotation) {
 	forward->setPosition(irr::core::vector3df(0, 0, 1));
 	camera->addChild(left);
 	left->setPosition(irr::core::vector3df(-1, 0, 0));
+
+	setPosition(pos);
+	setRotation(rot);
+	r->updateCameraMatrix(camera);
+}
+
+static void updateLookTarget(irr::scene::ICameraSceneNode* c, irr::scene::ISceneNode* forward) {
+	if (!c) return;
+	c->updateAbsolutePosition();
+	forward->updateAbsolutePosition();
+	c->setTarget(forward->getAbsolutePosition());
+}
+
+void Camera::setPosition(const Vec3& pos) {
+	Object3D::setPosition(pos);
+	updateLookTarget(camera, forward);
+}
+
+void Camera::setRotation(const Vec3& rot) {
+	Object3D::setRotation(rot);
+	updateLookTarget(camera, forward);
 }
 
 Vec3 Camera::getUp() const {
@@ -114,6 +135,17 @@ void Object::CameraBind::bind(Application* a) {
 
 		sol::base_classes, sol::bases<Object3D>(),
 		sol::meta_function::type, [](const Camera&) { return "Camera"; },
+
+		// Field Vec3 position, The 3D position of this object in the scene.
+		"position", sol::property(
+			[](Camera& c) { return Vec3{ [&] { return c.getPosition(); }, [&](auto v) { c.setPosition(v); } }; },
+			[](Camera& c, const Vec3& v) { c.setPosition(v); }
+		),
+		// Field Vec3 rotation, The 3D rotation of this object in the scene in degrees.
+		"rotation", sol::property(
+			[](Camera& c) { return Vec3{ [&] { return c.getRotation(); }, [&](auto v) { c.setRotation(v); } }; },
+			[](Camera& c, const Vec3& v) { c.setRotation(v); }
+		),
 
 		// Field Vec3 up, The up vector of this Camera.
 		"up", sol::property(

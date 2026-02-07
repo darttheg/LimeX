@@ -64,6 +64,7 @@ public:
 
 	// Camera
 	irr::scene::ICameraSceneNode* createCameraNode();
+	void updateCameraMatrix(irr::scene::ICameraSceneNode* c);
 
 private:
 	Application* a = nullptr;

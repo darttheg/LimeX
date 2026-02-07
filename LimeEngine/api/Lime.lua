@@ -9,13 +9,13 @@ Lime = Lime or {}
 Lime.Scene = Lime.Scene or {}
 
 ---@class Camera
+---@field position Vec3 @The 3D position of this object in the scene.
+---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
 ---@field up Vec3 @The up vector of this Camera.
 ---@field viewPlanes Vec2 @The near and far clipping planes of this Camera.
 ---@field fieldOfView number @The field of view of this Camera in degrees.
 ---@field aspectRatio number @The aspect ratio of this Camera.
 ---@field orthogonal boolean @Whether or not this Camera renders orthographically or not. (NOTE: If this is true, aspectRatio modifies the zoom factor instead.)
----@field position Vec3 @The 3D position of this object in the scene.
----@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
 ---@field scale Vec3 @The 3D scale of this object in the scene.
 ---@field visible boolean @Determines the visibility of this object and its children.
 ---@field id number @The identifier for this object to be used in raycasts and object selection.

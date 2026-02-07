@@ -222,3 +222,22 @@ irr::scene::ICameraSceneNode* Renderer::createCameraNode() {
 
 	return i_smgr->addCameraSceneNode();
 }
+
+void Renderer::updateCameraMatrix(irr::scene::ICameraSceneNode* c) {
+	if (!c) return;
+
+	if (c->isTrulyOrthogonal) {
+		irr::core::matrix4 orthoMat;
+		float z = c->getFOV() * 180.0 / irr::core::PI / 5.0;
+		int width = i_driver->getScreenSize().Width;
+		int height = i_driver->getScreenSize().Height;
+		orthoMat.buildProjectionMatrixOrthoLH(width / z, height / z, c->getNearValue(), c->getFarValue());
+		c->setProjectionMatrix(orthoMat, true);
+	} else {
+		irr::core::matrix4 perspectiveMat;
+		float aspectRatio = c->getAspectRatio();
+		perspectiveMat.buildProjectionMatrixPerspectiveFovLH(c->getFOV(), aspectRatio, c->getNearValue(), c->getFarValue());
+
+		c->setProjectionMatrix(perspectiveMat, false);
+	}
+}
