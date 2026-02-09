@@ -16,6 +16,8 @@ namespace Module {
 			void SetEndOnError(bool v);
 			void Close();
 			bool SetInitConfig();
+			void SetManualRendering(bool on = true);
+			int GetElapsedTime();
 			std::string GetVersion();
 		}
 	}

@@ -43,6 +43,8 @@ public:
 	Vec3 getForward() const;
 	Vec3 getLeft() const;
 
+	void setActive() const;
+
 private:
 	irr::scene::ICameraSceneNode* camera = nullptr;
 	irr::scene::ISceneNode* left = nullptr;

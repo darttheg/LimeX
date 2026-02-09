@@ -10,6 +10,7 @@
 // MODULE INLCUDES
 #include "Modules/ModuleLime.h"
 #include "Modules/ModuleScene.h"
+#include "Modules/ModuleWindow.h"
 //
 
 // OBJECT INCLUDES
@@ -30,6 +31,7 @@ void LuaBinder::BindAll(Application* app) {
 	// Modules
 	Module::Lime::bind(app);
 	Module::Scene::bind(app);
+	Module::Window::bind(app);
 
 	// Objects
 	Object::EventBind::bind(app);

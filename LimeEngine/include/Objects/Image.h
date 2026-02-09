@@ -17,6 +17,7 @@ public:
 	Image();
 	Image(int w, int h, const std::string& name = "");
 	Image(const std::string& path);
+	Image(irr::video::ITexture* tex);
 
 	Vec2 getSize();
 	void write(const std::string& outPath);

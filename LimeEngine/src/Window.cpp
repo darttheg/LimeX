@@ -2,10 +2,22 @@
 #include "stb_image.h"
 #include "Window.h"
 
+#include "Objects/Vec2.h"
+#include "Objects/Vec4.h"
+#include "Objects/Image.h"
+
 #include "Application.h"
+#include "DebugConsole.h"
+#include "Renderer.h"
+
+static Application* a;
+static DebugConsole* d;
+static Window* w;
 
 Window::Window(Application* app) {
 	a = app;
+	d = a->GetDebugConsole();
+	w = this;
 }
 
 Window::~Window() {
@@ -17,6 +29,9 @@ void Window::Close() {
 	glfwTerminate();
 }
 
+static WINDOWPLACEMENT wpPrev{ sizeof(wpPrev) };
+static LONG_PTR stylePrev = 0;
+static LONG_PTR exStylePrev = 0;
 bool Window::Create() {
 	if (!glfwInit()) return false;
 
@@ -43,37 +58,152 @@ bool Window::Create() {
 	else
 		glfwSetWindowAspectRatio(glfwWindow, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
-	// TODO: Set maximize/restore callbacks
-	// TODO: Set framebuffer size callback (updateIrrRenderRes...)
+	glfwSetWindowMaximizeCallback(glfwWindow, [](GLFWwindow* win, int maximized) {
+		HWND hwnd = a->GetWindow()->GetHandle();
+
+		if (maximized) {
+			a->GetRenderer()->maximizeDevice();
+			GetWindowPlacement(hwnd, &wpPrev);
+			stylePrev = GetWindowLongPtr(hwnd, GWL_STYLE);
+			exStylePrev = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+
+			SetWindowLongPtr(hwnd, GWL_STYLE, (stylePrev & ~WS_OVERLAPPEDWINDOW) | WS_POPUP | WS_VISIBLE);
+			SetWindowLongPtr(hwnd, GWL_EXSTYLE, (exStylePrev & ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE)));
+
+			HMONITOR mon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+			MONITORINFO mi{ sizeof(mi) };
+			GetMonitorInfo(mon, &mi);
+
+			const RECT r = mi.rcMonitor;
+			SetWindowPos(hwnd, HWND_TOP,
+				r.left, r.top, r.right - r.left, r.bottom - r.top,
+				SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+
+			a->GetRenderer()->updateRenderResolution(r.right - r.left, r.bottom - r.top);
+		}
+		else {
+			a->GetRenderer()->restoreDevice();
+
+			SetWindowLongPtr(hwnd, GWL_STYLE, stylePrev);
+			SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStylePrev);
+			SetWindowPlacement(hwnd, &wpPrev);
+
+			SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
+				SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+		}
+
+		a->GetWindow()->setGLFWCallbackTriggered(true);
+		});
+
+	glfwSetFramebufferSizeCallback(glfwWindow, [](GLFWwindow* window, int width, int height) {
+		w->setSizeSimple(width, height);
+		if (!a->GetWindow()->getGLFWCallbackTriggered())
+			a->GetRenderer()->updateRenderResolution(width, height);
+		else
+			a->GetWindow()->setGLFWCallbackTriggered(false);
+	});
 
 	return true;
 }
 
 void Window::PollEvents() {
-	glfwPollEvents();
 	glfwMakeContextCurrent(glfwWindow);
+	glfwPollEvents();
 }
 
 bool Window::ShouldClose() {
 	return glfwWindowShouldClose(glfwWindow);
 }
 
-bool Window::SetIcon(std::string path) {
-	if (!glfwWindow) return false;
+// ---
 
-	GLFWimage images[1];
-	images[0].pixels = stbi_load(path.c_str(), &images[0].width, &images[0].height, 0, 4);
-	if (images[0].pixels) {
-		glfwSetWindowIcon(glfwWindow, 1, images);
-		stbi_image_free(images[0].pixels);
+bool Window::guardEditCheck() {
+	if (!glfwWindow) {
+		d->Warn("The window cannot be edited until it has been created!");
+		return false;
 	}
-	else { return false; }
-
 	return true;
 }
 
-void Window::SetTitle(std::string path) {
-	if (!glfwWindow) return;
-
+void Window::setTitle(std::string path) {
+	if (!guardEditCheck()) return;
 	glfwSetWindowTitle(glfwWindow, path.c_str());
+}
+
+void Window::doFullscreen(bool v) {
+	if (!guardEditCheck()) return;
+	if (v) {
+		glfwMaximizeWindow(glfwWindow);
+	} else {
+		glfwRestoreWindow(glfwWindow);
+	}
+	isFullscreened = v;
+}
+
+Vec2 Window::getPosition() {
+	if (!guardEditCheck()) return Vec2();
+
+	int x = 0;
+	int y = 0;
+	glfwGetWindowPos(glfwWindow, &x, &y);
+	return Vec2(x, y);
+}
+
+void Window::setPosition(const Vec2& pos) {
+	if (!guardEditCheck()) return;
+	glfwSetWindowPos(glfwWindow, static_cast<int>(pos.getX()), static_cast<int>(pos.getY()));
+}
+
+Vec2 Window::getSize() {
+	if (!guardEditCheck()) return Vec2();
+	return Vec2(windowSize.x, windowSize.y);
+}
+
+void Window::setSize(const Vec2& size) {
+	if (!guardEditCheck()) return;
+	if (size.getX() == windowSize.x && size.getY() == windowSize.y) return;
+
+	windowSize.x = size.getX();
+	windowSize.y = size.getY();
+
+	int winX, winY;
+	glfwGetWindowPos(glfwWindow, &winX, &winY);
+
+	int oldW, oldH;
+	glfwGetWindowSize(glfwWindow, &oldW, &oldH);
+	glfwSetWindowSize(glfwWindow, static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
+
+	int deltaW = static_cast<int>(windowSize.x) - oldW;
+	int deltaH = static_cast<int>(windowSize.y) - oldH;
+	glfwSetWindowPos(glfwWindow, winX - deltaW / 2, winY - deltaH / 2);
+
+	a->GetRenderer()->updateRenderResolution(windowSize.x, windowSize.y);
+
+	// Skip delta on ACTUAL resize
+	glfwGetWindowSize(glfwWindow, &winX, &winY);
+	// if ((winX != oldW) && (winY != oldH))
+		// receiver->skipDeltaOnResize = true;
+}
+
+Vec2 Window::getMonitorSize() {
+	if (!guardEditCheck()) return Vec2();
+
+#ifdef _WIN32
+	return Vec2(
+		static_cast<float>(GetSystemMetrics(SM_CXSCREEN)),
+		static_cast<float>(GetSystemMetrics(SM_CYSCREEN))
+	);
+#endif
+
+	return Vec2();
+}
+
+bool Window::isFocused() {
+	if (!guardEditCheck()) return false;
+	return a->GetRenderer()->isFocused();
+}
+
+void Window::setResizable(bool on) {
+	if (!guardEditCheck()) return;
+	glfwSetWindowAttrib(glfwWindow, GLFW_RESIZABLE, on ? GLFW_TRUE : GLFW_FALSE);
 }

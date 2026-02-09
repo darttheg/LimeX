@@ -83,12 +83,30 @@ MirrorClampToEdge = 6,
 ---@field Low Lime.Enum.MaterialQuality
 ---@field Medium Lime.Enum.MaterialQuality
 ---@field High Lime.Enum.MaterialQuality
----@field Ultra Lime.Enum.MaterialQuality
 Lime.Enum.MaterialQuality = {
 Low = 0,
 Medium = 1,
 High = 2,
-Ultra = 3,
+}
+---@alias Lime.Enum.ImageCreationQuality integer
+---@class Lime.Enum.ImageCreationQualityEnum
+---@field Low Lime.Enum.ImageCreationQuality
+---@field Medium Lime.Enum.ImageCreationQuality
+---@field High Lime.Enum.ImageCreationQuality
+Lime.Enum.ImageCreationQuality = {
+Low = 0,
+Medium = 1,
+High = 2,
+}
+---@alias Lime.Enum.LightManagementType integer
+---@class Lime.Enum.LightManagementTypeEnum
+---@field EightNearest Lime.Enum.LightManagementType
+---@field ThreeClosestToAll Lime.Enum.LightManagementType
+---@field EmptyZones Lime.Enum.LightManagementType
+Lime.Enum.LightManagementType = {
+EightNearest = 0,
+ThreeClosestToAll = 1,
+EmptyZones = 2,
 }
 ---@alias Lime.Enum.ZOrderMethod integer
 ---@class Lime.Enum.ZOrderMethodEnum

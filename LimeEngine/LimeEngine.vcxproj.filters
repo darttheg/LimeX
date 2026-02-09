@@ -99,6 +99,15 @@
     <ClInclude Include="include\Objects\Skydome.h">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClInclude>
+    <ClInclude Include="include\Modules\ModuleWindow.h">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Modules\ModuleGUI.h">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Receiver.h">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -157,6 +166,15 @@
     </ClCompile>
     <ClCompile Include="src\Objects\Skydome.cpp">
       <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\ModuleWindow.cpp">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\ModuleGUI.cpp">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Receiver.cpp">
+      <Filter>Engine\Runtime\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

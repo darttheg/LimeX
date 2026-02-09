@@ -8,14 +8,17 @@ Lime = Lime or {}
 ---@class Lime.Scene
 Lime.Scene = Lime.Scene or {}
 
+---@class Lime.Window
+Lime.Window = Lime.Window or {}
+
 ---@class Camera
 ---@field position Vec3 @The 3D position of this object in the scene.
 ---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
----@field up Vec3 @The up vector of this Camera.
----@field viewPlanes Vec2 @The near and far clipping planes of this Camera.
----@field fieldOfView number @The field of view of this Camera in degrees.
----@field aspectRatio number @The aspect ratio of this Camera.
----@field orthogonal boolean @Whether or not this Camera renders orthographically or not. (NOTE: If this is true, aspectRatio modifies the zoom factor instead.)
+---@field up Vec3 @The up vector of this `Camera`.
+---@field viewPlanes Vec2 @The near and far clipping planes of this `Camera`.
+---@field fieldOfView number @The field of view of this `Camera` in degrees.
+---@field aspectRatio number @The aspect ratio of this `Camera`.
+---@field orthogonal boolean @Whether or not this `Camera` renders orthographically or not. (NOTE: If this is true, `aspectRatio` modifies the zoom factor instead.)
 ---@field scale Vec3 @The 3D scale of this object in the scene.
 ---@field visible boolean @Determines the visibility of this object and its children.
 ---@field id number @The identifier for this object to be used in raycasts and object selection.
@@ -47,25 +50,25 @@ Image = Image or {}
 function Image.new() end
 
 ---@class Material
----@field ID number @An ID to identify this Material with, being useful for raycast hit results as those can contain a hit Material ID.
----@field type Lime.Enum.MaterialType @Sets the type of this Material, determing how the layers interact with themselves and the world.
----@field fog boolean @Enables fog for this Material.
----@field lighting boolean @Enables lighting for this Material.
----@field backfaceCulling boolean @Change backface culling behavior for this Material.
----@field frontfaceCulling boolean @Change frontface culling behavior for this Material.
----@field quality Lime.Enum.MaterialQuality @Sets the quality of this Material using Lime.Enum.MaterialQuality presets, where Low is unfiltered and Ultra is smooth with higher fidelity.
----@field wireframe boolean @Enables wireframe view for this Material.
----@field zMethod Lime.Enum.ZOrderMethod @Sets Z ordering method for this Material using Lime.Enum.ZOrderMethod.
----@field opacity number @Sets the opacity of this Material from 0.0 (invisible) to 1.0 (visible), affecting the transparency of objects with this Material applied. (NOTE: Will not affect solid Materials)
+---@field ID number @An ID to identify this `Material` with, being useful for raycast hit results as those can contain a hit ID.
+---@field type Lime.Enum.MaterialType @Sets the type of this `Material`, determing how the layers interact with themselves and the world.
+---@field fog boolean @Enables fog for this `Material`.
+---@field lighting boolean @Enables lighting for this `Material`.
+---@field backfaceCulling boolean @Change backface culling behavior for this `Material`.
+---@field frontfaceCulling boolean @Change frontface culling behavior for this `Material`.
+---@field quality Lime.Enum.MaterialQuality @Sets the quality of this Material using `Lime.Enum.MaterialQuality` presets, where Low is unfiltered and High is smooth.
+---@field wireframe boolean @Enables wireframe view for this `Material`.
+---@field zMethod Lime.Enum.ZOrderMethod @Sets Z ordering method for this `Material` using `Lime.Enum.ZOrderMethod`.
+---@field opacity number @Sets the opacity of this Material from 0.0 (invisible) to 1.0 (visible), affecting the transparency of objects with this `Material` applied. (NOTE: Will not affect solid types)
 ---@field mipmaps boolean @Enables the generation of mipmaps.
----@field shine number @Sets the shine for this Material, ranging from 0 (soft and wide shine) to 1 (harsh and small shine).
----@field writeToDepth boolean @Enables this material writing to the depth buffer on render, where false is common for transparent objects.
----@field ambientColor Vec4 @Sets the ambient color for this Material, the base color.
----@field diffuseColor Vec4 @Sets the diffuse color for this Material, the light-affected base color.
----@field specularColor Vec4 @Sets the specular color for this Material, the shine color.
----@field emissiveColor Vec4 @Sets the emissive color for this Material, the color that is seen through shadows, lighting, and fog.
+---@field shine number @Sets the shine for this `Material`, ranging from 0 (soft and wide shine) to 1 (harsh and small shine).
+---@field writeToDepth boolean @Enables this `Material` writing to the depth buffer on render, where false is common for transparent objects.
+---@field ambientColor Vec4 @Sets the ambient color for this `Material`, the base color.
+---@field diffuseColor Vec4 @Sets the diffuse color for this `Material`, the light-affected base color.
+---@field specularColor Vec4 @Sets the specular color for this `Material`, the shine color.
+---@field emissiveColor Vec4 @Sets the emissive color for this `Material`, the color that is seen through shadows, lighting, and fog.
 Material = Material or {}
---- An object used to hold material parameters for 3D objects. A Material has at most two layers, with Lime.Enum.MaterialType allowing for different combinations of said layers.
+--- An object used to hold material parameters for 3D objects. A Material has at most two layers, with `Lime.Enum.MaterialType` allowing for different combinations of said layers.
 ---@overload fun(img:Image): Material
 ---@overload fun(other:Material): Material
 ---@overload fun(quality:Lime.Enum.MaterialQuality): Material
@@ -130,6 +133,10 @@ function Camera:getLeft() end
 ---@return void
 function Camera:parentTo(child) end
 
+--- When rendering, this `Camera` will take over as the active rendering viewpoint.
+---@return void
+function Camera:setActive() end
+
 --- Clears all functions hooked to this Event.
 function Event:clear() end
 
@@ -153,49 +160,53 @@ function Hook:isHooked() end
 --- Unhook a function to this Event.
 function Hook:unhook() end
 
---- Appends another Image onto this Image.
+--- Appends another `Image` onto this `Image`.
 ---@param toAppend Image
 ---@param pos Vec2
 ---@return void
 function Image:append(toAppend, pos) end
 
---- Crops the Image to the dimensions provided. Cropping creates a new Image in the renderer, so be mindful and free unused and uncropped Images.
+--- Crops the `Image` to the dimensions provided. Be mindful as cropping creates a new `Image` in the renderer.
 ---@param topLeft Vec2
 ---@param bottomRight Vec2
 ---@return void
 function Image:crop(topLeft, bottomRight) end
 
---- Returns the color of the pixel at a position in this Image.
+--- Returns the color of the pixel at `pos` in this `Image`.
 ---@param pos Vec2
 ---@return Vec4
 function Image:getColor(pos) end
 
---- Returns the path of this Image.
+--- Returns the path of this `Image`.
 ---@return string
 function Image:getPath() end
 
---- Returns the dimensions of this Image.
+--- Returns the dimensions of this `Image`.
 ---@return Vec2
 function Image:getSize() end
 
---- Removes the color keyColor from anywhere in the Image.
+--- Removes the color `keyColor` from anywhere in this `Image`.
 ---@param keyColor Vec4
 ---@return void
 function Image:keyColor(keyColor) end
 
---- Replaces the pixel at the provided position with the color provided.
+--- Replaces the pixel at `pos` with a pixel of color `color`.
 ---@param pos Vec2
 ---@param color Vec4
 ---@return void
 function Image:setColor(pos, color) end
 
---- Writes the Image to a path.
+--- Writes the `Image` to path `path`.
 ---@param path string
 ---@return void
 function Image:write(path) end
 
 --- Closes the Lime application.
 function Lime.close() end
+
+--- Returns the elapsed time the application has been running in milliseconds.
+---@return number
+function Lime.getElapsedTime() end
 
 --- Returns the Lime version running.
 ---@return string
@@ -211,7 +222,7 @@ function Lime.log(msg, color) end
 ---@param doEnd boolean
 function Lime.setEndOnError(doEnd) end
 
---- IMPORTANT: This function should always be run prior to window creation (pre-Lime.Update Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
+--- IMPORTANT: This function should always be run prior to window creation (pre-`Lime.onUpdate` Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
 ---@param driver Lime.Enum.DriverType
 ---@param vSync boolean?
 ---@param frameRate number?
@@ -222,24 +233,123 @@ function Lime.setEndOnError(doEnd) end
 ---@return boolean
 function Lime.setInitConfig(driver, vSync, frameRate, windowSize, renderSize, scaleRenderToWindow, fullscreen) end
 
---- Clears the Image in this Material.
+--- If true, Lime will not render the scene at the end of each `Lime.onUpdate` cycle. Instead, use `Lime.Scene.render` for 3D scene rendering and `Lime.GUI.render` for GUI rendering within the `Lime.onUpdate` Event.
+---@param isManual boolean
+---@return void
+function Lime.setManualRendering(isManual) end
+
+--- Returns an `Image` of a lime and white checkerboard pattern, 2x2. Useful for missing Images and the like.
+---@return Image
+function Lime.Scene.getErrorImage() end
+
+--- Returns the amount of 3D objects in the scene.
+---@return number
+function Lime.Scene.getObjectCount() end
+
+--- Renders the scene using the active `Camera` and current rendering parameters. Clearing the back buffer will replace previously rendered items with the background color. Clearing the Z buffer ensures the previous depth pass is not used. (NOTE: Manual rendering must be on, otherwise this function has no effect. See `Lime.setManualRendering`.)
+---@param clearBackBuffer boolean?
+---@param clearZBuffer boolean?
+---@return void
+function Lime.Scene.render(clearBackBuffer, clearZBuffer) end
+
+--- Sets the ambient color of the scene to `rgba`.
+---@param rgba Vec4
+---@return void
+function Lime.Scene.setAmbientColor(rgba) end
+
+--- Sets the background color of the scene to `rgba`. This color is generally only visible when there is no `Skydome`.
+---@param rgba Vec4
+---@return void
+function Lime.Scene.setBackgroundColor(rgba) end
+
+--- Sets the color of the scene's fog to `rgba`.
+---@param rgba Vec4
+---@return void
+function Lime.Scene.setFogColor(rgba) end
+
+--- Sets where the scene's fog starts and ends.
+---@param planes Vec2
+---@return void
+function Lime.Scene.setFogPlanes(planes) end
+
+--- Sets the default `Image` creation quality using `Lime.Enum.ImageCreationQuality`, where Low is optimized for speed and High is optimized for quality.
+---@return void
+function Lime.Scene.setImageCreationQuality() end
+
+--- Sets the light management type using `Lime.Enum.LightManagementType`.
+---@param type Lime.Enum.LightManagementType
+---@return void
+function Lime.Scene.setLightManagementType(type) end
+
+--- If set to true, the rendering resolution will be that of the window resolution, updating on any window size changes. If false, the rendering resolution will remain the same size but upscale without anti-aliasing to the window resolution.
+---@param doRescale boolean
+---@return void
+function Lime.Scene.setRescaleRenderToWindowSize(doRescale) end
+
+--- Sets the color of shadows in the scene to `rgba`.
+---@param rgba Vec4
+---@return void
+function Lime.Scene.setShadowColor(rgba) end
+
+--- Returns the size of the monitor the window is running on.
+---@return Vec2
+function Lime.Window.getMonitorSize() end
+
+--- Returns the window's position.
+---@return Vec2
+function Lime.Window.getPosition() end
+
+--- Returns the size of the window.
+---@return Vec2
+function Lime.Window.getSize() end
+
+--- Returns true if the window is focused.
+---@return boolean
+function Lime.Window.isFocused() end
+
+--- Toggles fullscreen mode.
+---@param fullscreen boolean
+---@return void
+function Lime.Window.setFullscreen(fullscreen) end
+
+--- Sets the window's position to `pos`.
+---@param pos Vec2
+---@return void
+function Lime.Window.setPosition(pos) end
+
+--- Allows the window to be resizable or locked to its intended size.
+---@param allow boolean
+---@return void
+function Lime.Window.setResizable(allow) end
+
+--- Sets the window's size to `size`.
+---@param size Vec2
+---@return void
+function Lime.Window.setSize(size) end
+
+--- Sets the window's title to `title`.
+---@param title string
+---@return void
+function Lime.Window.setTitle(title) end
+
+--- Clears the `Image` in this `Material`.
 ---@param layer number?
 ---@return void
 function Material:clearImage(layer) end
 
---- Loads an Image into this Material.
+--- Loads an `Image` into this `Material`.
 ---@overload fun(layer:number, img:Image): void
 ---@param img Image
 ---@return void
 function Material:loadImage(img) end
 
---- Sets the scale of an Image's mapping.
+--- Sets the scale of the mapping of an `Image`.
 ---@overload fun(layer:number, scale:Vec2): void
 ---@param scale Vec2
 ---@return void
 function Material:setImageScale(scale) end
 
---- Changes the method for Image UV wrapping.
+--- Changes the method for `Image` UV wrapping.
 ---@overload fun(layer:number, uMethod:Lime.Enum.ImageWrapType, vMethod:Lime.Enum.ImageWrapType): void
 ---@param uMethod Lime.Enum.ImageWrapType
 ---@param vMethod Lime.Enum.ImageWrapType

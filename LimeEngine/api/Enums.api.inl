@@ -47,7 +47,18 @@ LIME_ENUM(MaterialQuality,
     LIME_ENUM_VALUE(Low, 0)
     LIME_ENUM_VALUE(Medium, 1)
     LIME_ENUM_VALUE(High, 2)
-    LIME_ENUM_VALUE(Ultra, 3)
+);
+
+LIME_ENUM(ImageCreationQuality,
+    LIME_ENUM_VALUE(Low, 0)
+    LIME_ENUM_VALUE(Medium, 1)
+    LIME_ENUM_VALUE(High, 2)
+);
+
+LIME_ENUM(LightManagementType,
+    LIME_ENUM_VALUE(EightNearest, 0)
+    LIME_ENUM_VALUE(ThreeClosestToAll, 1)
+    LIME_ENUM_VALUE(EmptyZones, 2)
 );
 
 LIME_ENUM(ZOrderMethod,

@@ -5,9 +5,11 @@
 
 #include "Window.h"
 #include "DebugConsole.h"
+#include "Receiver.h"
 #include "Renderer.h"
 #include "LuaBinder.h"
 #include "Objects/Event.h"
+#include "Objects/Vec2.h"
 
 std::string readFile(const char* path) {
 	std::ifstream file(path);
@@ -95,6 +97,7 @@ bool Application::Init(const void* data, size_t size) {
 	console = new DebugConsole(this);
 	window = new Window(this);
 	renderer = new Renderer(this);
+	receiver = new Receiver(this);
 
 	// Create new Lua state
 	lua = std::make_unique<sol::state>();
@@ -171,9 +174,11 @@ bool Application::Run() {
 	// Run Start Event
 	LimeStart.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); });
 
+	renderer->RenderBGPreUpdate();
 	bool fail = false;
 	while (running) {
 		window->PollEvents();
+		receiver->beginFrame();
 
 		// console->Log("running");
 		console->Update(getMemUsed());
@@ -181,7 +186,9 @@ bool Application::Run() {
 		LimeUpdate.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); });
 
 		if (window && window->ShouldClose()) fail = true;
-		if (!renderer->Render()) fail = true;
+		if (!renderer->RenderFromApp()) fail = true;
+		renderer->EndWholeScene();
+		receiver->endFrame();
 
 		if (fail) break;
 	}

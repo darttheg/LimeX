@@ -8,6 +8,10 @@
 
 class Application;
 
+class Vec2;
+class Vec4;
+class Image;
+
 class Window {
 public:
 	Window(Application* app);
@@ -17,13 +21,28 @@ public:
 	void Close();
 	void PollEvents();
 	bool ShouldClose();
-	bool SetIcon(std::string path);
-	void SetTitle(std::string path);
-
 	HWND GetHandle() const { return glfwGetWin32Window(glfwWindow); }
 	GLFWwindow* getGLFWWindow() const { return glfwWindow; }
-private:
-	GLFWwindow* glfwWindow = nullptr;
+	bool guardEditCheck();
 
-	Application* a = nullptr;
+	void setTitle(std::string path);
+	void doFullscreen(bool v);
+	Vec2 getPosition();
+	void setPosition(const Vec2& pos);
+	Vec2 getSize();
+	void setSize(const Vec2& size);
+	void setSizeSimple(int w, int h) { windowSize.x = w; windowSize.y = h; }
+	Vec2 getMonitorSize();
+	bool isFocused();
+	void setResizable(bool on);
+
+	void setGLFWCallbackTriggered(bool v) { maximizeRestoreCBThisFrame = v; }
+	bool getGLFWCallbackTriggered() { return maximizeRestoreCBThisFrame; }
+private:
+	struct Vec2S { float x, y; };
+
+	bool maximizeRestoreCBThisFrame = false; // Used to ignore frame buffer resize callback
+	bool isFullscreened = false;
+	GLFWwindow* glfwWindow = nullptr;
+	Vec2S windowSize{};
 };

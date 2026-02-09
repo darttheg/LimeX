@@ -6,11 +6,16 @@
 #include "Application.h"
 #include "DebugConsole.h"
 #include "Window.h"
+#include "Receiver.h"
 
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
 #include "Objects/Image.h"
+
+static Application* a = nullptr;
+static DebugConsole* d = nullptr;
+static Window* w = nullptr;
 
 Renderer::Renderer(Application* owner) {
 	a = owner;
@@ -29,6 +34,8 @@ bool Renderer::Init() {
 	params.WindowSize = irr::core::dimension2d<u32>(640, 480);
 	params.Bits = 16;
 	params.Fullscreen = false;
+	// params.Stencilbuffer = true;
+	params.EventReceiver = a->GetReceiver();
 
 	i_device = irr::createDeviceEx(params);
 	if (!i_device) return false;
@@ -82,15 +89,45 @@ bool Renderer::Shutdown() {
 	return true;
 }
 
-bool Renderer::Render() {
+bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
+	if (!guardRenderingCheck()) return false;
 	if (!isCreated || !w->getGLFWWindow()) return false;
 
-	i_driver->beginScene(true, true, irr::video::SColor(255, 25, 25, 30));
-	i_smgr->drawAll();
-	i_gui->drawAll();
+	if (manualRendering && !i_smgr->getActiveCamera()) {
+		d->Warn("Cannot render without an active Camera!");
+		return false;
+	} else if (!i_smgr->getActiveCamera()) {
+		return false;
+	}
+
+	updateFog(); // Update fog params pre-render
+	if (manualRendering) {
+		bool bb = clearBackBuffer;
+		if (!hasBegunNewScene) bb = false;
+		i_driver->beginScene(bb, clearZBuffer, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
+		i_smgr->drawAll();
+	} else {
+		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
+		i_smgr->drawAll();
+		i_gui->drawAll();
+	}
 	i_driver->endScene();
 
+	hasBegunNewScene = true;
+
 	return true;
+}
+
+bool Renderer::RenderFromApp() {
+	if (!manualRendering) return Render();
+	return true;
+}
+
+void Renderer::RenderBGPreUpdate() {
+	if (!manualRendering) return;
+
+	i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
+	i_driver->endScene();
 }
 
 // ---
@@ -109,14 +146,112 @@ irr::video::IImage* texToImg(irr::video::IVideoDriver* driver, irr::video::IText
 	return image;
 }
 
+int getNumChildren(irr::scene::ISceneNode* node) {
+	if (!node) return 0;
+	int total = 1;
+	for (auto* child : node->getChildren())
+		total += getNumChildren(child);
+	return total;
+}
+
+static irr::video::ITexture* getCheckerError(irr::video::IVideoDriver* driver) {
+	irr::video::ITexture* checker = driver->getTexture("limeError");
+	if (!checker) {
+		const irr::video::SColor L(255, 153, 229, 80), W(255, 255, 255, 255);
+		irr::video::IImage* img = driver->createImage(irr::video::ECF_R5G6B5, irr::core::dimension2du(2, 2));
+		img->setPixel(0, 0, L); img->setPixel(1, 0, W);
+		img->setPixel(0, 1, W); img->setPixel(1, 1, L);
+		checker = driver->addTexture("error", img);
+		img->drop();
+	}
+	return checker;
+}
+
 // ---
+
+int Renderer::getElapsedTime() {
+	return isCreated ? i_device->getTimer()->getTime() : 0;
+}
+
+bool Renderer::renderManually(bool clearBackBuffer, bool clearZBuffer) {
+	if (!guardRenderingCheck()) return false;
+	if (!manualRendering) {
+		d->Warn("Manual rendering is not enabled. See Lime.setManualRendering.");
+	}
+
+	return Render(clearBackBuffer, clearZBuffer);
+}
 
 bool Renderer::guardRenderingCheck() {
 	if (!isCreated) {
-		d->Warn("The renderer is not yet created, but an attempt to create a renderable object was made.");
+		d->Warn("Scene objects cannot be created until the Lime window has been created!");
 		return false;
 	}
 	return true;
+}
+
+bool Renderer::maximizeDevice() {
+	if (i_device)
+		i_device->maximizeWindow();
+
+	// updateRenderResolution(w->getSize().getX(), w->getSize().getY());
+
+	return i_device;
+}
+
+bool Renderer::restoreDevice() {
+	if (i_device)
+		i_device->restoreWindow();
+
+	// updateRenderResolution(w->getSize().getX(), w->getSize().getY());
+
+	return i_device;
+}
+
+bool Renderer::isFocused() {
+	return i_device ? i_device->isWindowFocused() : false;
+}
+
+void Renderer::updateRenderResolution(int w, int h) {
+	SetWindowPos(getDeviceVideoData(), nullptr, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+
+	if (doMatchResolution) {
+		irr::core::dimension2d<u32> newSize(static_cast<u32>(w), static_cast<u32>(h));
+		i_driver->OnResize(newSize);
+	}
+
+	if (i_gui) {
+		auto* root = i_gui->getRootGUIElement();
+		root->setRelativePosition(core::rect<s32>(0, 0, (s32)w, (s32)h));
+	}
+
+	if (i_smgr->getActiveCamera())
+	{
+		i_smgr->getActiveCamera()->setAspectRatio((f32)w / (f32)h);
+	}
+}
+
+HWND Renderer::getDeviceVideoData() {
+	return i_device ? reinterpret_cast<HWND>(i_device->getVideoDriver()->getExposedVideoData().OpenGLWin32.HWnd) : nullptr;
+}
+
+int Renderer::getObjectCount() {
+	if (!i_driver) return 0;
+	auto* root = i_smgr->getRootSceneNode();
+	if (!root) return 0;
+
+	return getNumChildren(root) - 1;
+}
+
+void Renderer::setViewort(int x, int y, int w, int h) {
+	if (!i_device) return;
+
+	i_driver->setViewPort(irr::core::rect<irr::s32>(
+		x,
+		y,
+		x + w,
+		y + h
+	));
 }
 
 irr::video::ITexture* Renderer::createTexture(int w, int h, const std::string& name) {
@@ -240,4 +375,69 @@ void Renderer::updateCameraMatrix(irr::scene::ICameraSceneNode* c) {
 
 		c->setProjectionMatrix(perspectiveMat, false);
 	}
+}
+
+void Renderer::setActiveCamera(irr::scene::ICameraSceneNode* c) {
+	if (!guardRenderingCheck()) return;
+
+	i_smgr->setActiveCamera(c);
+}
+
+void Renderer::setAmbientColor(const Vec4& color) {
+	if (!guardRenderingCheck()) return;
+
+	i_smgr->setAmbientLight(irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()));
+}
+
+void Renderer::setBackgroundColor(const Vec4& color) {
+	if (!guardRenderingCheck()) return;
+
+	bgColor.x = color.getX();
+	bgColor.y = color.getY();
+	bgColor.z = color.getZ();
+	bgColor.w = color.getW();
+}
+
+void Renderer::setLightManagementType(int type) {
+	if (!guardRenderingCheck()) return;
+
+	// TODO
+}
+
+void Renderer::setTextureCreationQuality(int quality) {
+	if (!guardRenderingCheck()) return;
+
+	// TODO
+}
+
+void Renderer::setShadowColor(const Vec4& color) {
+	if (!guardRenderingCheck()) return;
+
+	i_smgr->setShadowColor(irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()));
+}
+
+void Renderer::updateFog() {
+	i_driver->setFog(irr::video::SColor(fogColor.w, fogColor.x, fogColor.y, fogColor.z), irr::video::EFT_FOG_LINEAR, fogPlanes.x, fogPlanes.y);
+}
+
+void Renderer::setFogColor(const Vec4& color) {
+	if (!guardRenderingCheck()) return;
+
+	fogColor.x = color.getX();
+	fogColor.y = color.getY();
+	fogColor.z = color.getZ();
+	fogColor.w = color.getW();
+}
+
+void Renderer::setFogPlanes(const Vec2& planes) {
+	if (!guardRenderingCheck()) return;
+
+	fogPlanes.x = planes.getX();
+	fogPlanes.y = planes.getY();
+}
+
+Image Renderer::getErrorImage() {
+	if (!guardRenderingCheck()) return Image();
+
+	return Image(getCheckerError(i_driver));
 }

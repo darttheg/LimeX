@@ -117,6 +117,12 @@ Vec3 Camera::getLeft() const {
 	return Vec3(f.X, f.Y, f.Z);
 }
 
+void Camera::setActive() const {
+	if (!camera) return;
+
+	r->setActiveCamera(camera);
+}
+
 void Object::CameraBind::bind(Application* a) {
 	r = a->GetRenderer();
 	d = a->GetDebugConsole();
@@ -147,22 +153,22 @@ void Object::CameraBind::bind(Application* a) {
 			[](Camera& c, const Vec3& v) { c.setRotation(v); }
 		),
 
-		// Field Vec3 up, The up vector of this Camera.
+		// Field Vec3 up, The up vector of this `Camera`.
 		"up", sol::property(
 			[](Camera& c) { return Vec3{ [&] { return c.getUp(); }, [&](auto v) { c.setUp(v); } }; },
 			[](Camera& c, const Vec3& v) { c.setUp(v); }
 		),
-		// Field Vec2 viewPlanes, The near and far clipping planes of this Camera.
+		// Field Vec2 viewPlanes, The near and far clipping planes of this `Camera`.
 		"viewPlanes", sol::property(
 			[](Camera& c) { return Vec2{ [&] { return c.getViewPlanes(); }, [&](auto v) { c.setViewPlanes(v); } }; },
 			[](Camera& c, const Vec2& v) { c.setViewPlanes(v); }
 		),
 
-		// Field number fieldOfView, The field of view of this Camera in degrees.
+		// Field number fieldOfView, The field of view of this `Camera` in degrees.
 		"fieldOfView", sol::property(&Camera::getFieldOfView, &Camera::setFieldOfView),
-		// Field number aspectRatio, The aspect ratio of this Camera.
+		// Field number aspectRatio, The aspect ratio of this `Camera`.
 		"aspectRatio", sol::property(&Camera::getAspectRatio, &Camera::setAspectRatio),
-		// Field boolean orthogonal, Whether or not this Camera renders orthographically or not. (NOTE: If this is true, aspectRatio modifies the zoom factor instead.)
+		// Field boolean orthogonal, Whether or not this `Camera` renders orthographically or not. (NOTE: If this is true, `aspectRatio` modifies the zoom factor instead.)
 		"orthogonal", sol::property(&Camera::getOrtho, &Camera::setOrtho)
 	);
 
@@ -177,6 +183,10 @@ void Object::CameraBind::bind(Application* a) {
 	// Returns the left vector.
 	// Returns Vec3
 	obj.set_function("getLeft", &Camera::getLeft);
+
+	// When rendering, this `Camera` will take over as the active rendering viewpoint.
+	// Returns void
+	obj.set_function("setActive", &Camera::setActive);
 
 	// End Object
 }

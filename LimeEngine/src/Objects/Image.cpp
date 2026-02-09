@@ -23,6 +23,12 @@ Image::Image(const std::string& path) {
 	texture = r->createTexture(path);
 }
 
+Image::Image(irr::video::ITexture* tex) {
+	if (!r->guardRenderingCheck()) return;
+
+	texture = tex;
+}
+
 Image::Image(int w, int h, const std::string& name) {
 	if (!r->guardRenderingCheck()) return;
 
@@ -136,40 +142,40 @@ void Object::ImageBind::bind(Application* a) {
 	// Constructor number w, number h, string? name
 	// Constructor string path
 
-	// Returns the path of this Image.
+	// Returns the path of this `Image`.
 	// Returns string
 	obj.set_function("getPath", &Image::getPath);
 
-	// Returns the dimensions of this Image.
+	// Returns the dimensions of this `Image`.
 	// Returns Vec2
 	obj.set_function("getSize", &Image::getSize);
 
-	// Writes the Image to a path.
+	// Writes the `Image` to path `path`.
 	// Params string path
 	// Returns void
 	obj.set_function("write", &Image::write);
 
-	// Crops the Image to the dimensions provided. Cropping creates a new Image in the renderer, so be mindful and free unused and uncropped Images.
+	// Crops the `Image` to the dimensions provided. Be mindful as cropping creates a new `Image` in the renderer.
 	// Params Vec2 topLeft, Vec2 bottomRight
 	// Returns void
 	obj.set_function("crop", &Image::crop);
 
-	// Appends another Image onto this Image.
+	// Appends another `Image` onto this `Image`.
 	// Params Image toAppend, Vec2 pos
 	// Returns void
 	obj.set_function("append", &Image::append);
 
-	// Returns the color of the pixel at a position in this Image.
+	// Returns the color of the pixel at `pos` in this `Image`.
 	// Params Vec2 pos
 	// Returns Vec4
 	obj.set_function("getColor", &Image::getColor);
 
-	// Replaces the pixel at the provided position with the color provided.
+	// Replaces the pixel at `pos` with a pixel of color `color`.
 	// Params Vec2 pos, Vec4 color
 	// Returns void
 	obj.set_function("setColor", &Image::setColor);
 
-	// Removes the color keyColor from anywhere in the Image.
+	// Removes the color `keyColor` from anywhere in this `Image`.
 	// Params Vec4 keyColor
 	// Returns void
 	obj.set_function("keyColor", &Image::key);

@@ -16,13 +16,13 @@ class Window;
 class DebugConsole;
 class Renderer;
 class Event;
+class Receiver;
 
 #define LIME_VERSION "1.0"
 
 struct WindowConfig {
 	int driverType = 0; // OpenGL
 	std::vector<int> windowSize{ 640, 480 };
-	std::vector<int> renderSize{ 640, 480 };
 	int frameRate = 60;
 	bool vSync = false;
 	std::string title = "Lime App";
@@ -54,6 +54,7 @@ public:
 	DebugConsole* GetDebugConsole() { return console; }
 	Renderer* GetRenderer() { return renderer; }
 	Window* GetWindow() { return window; }
+	Receiver* GetReceiver() { return receiver; }
 	bool IsRunning() { return running; }
 	sol::state& GetLuaState() { return *lua; }
 	
@@ -84,4 +85,7 @@ private:
 	WindowConfig windowCfg;
 	bool didInitCfg = false;
 	bool running = false;
+
+	// Input
+	Receiver* receiver = nullptr;
 };

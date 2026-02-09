@@ -11,6 +11,7 @@ class Vec2;
 class Vec3;
 class Vec4;
 class Image;
+class Receiver;
 
 namespace irr {
 	class IrrlichtDevice;
@@ -43,9 +44,35 @@ public:
 
 	bool Init();
 	bool Shutdown();
-	bool Render();
+	bool Render(bool clearBackBuffer = false, bool clearZBuffer = true);
+	void EndWholeScene() { hasBegunNewScene = false; }
+	bool RenderFromApp(); // App calls this function, checks if manualRendering is on to ignore render cycle or not.
+	void RenderBGPreUpdate(); // For manual rendering, render the BG just so something is showing before the update loop.
 
 	bool guardRenderingCheck();
+	bool maximizeDevice();
+	bool restoreDevice();
+	bool isFocused();
+	void updateRenderResolution(int w, int h);
+	HWND getDeviceVideoData();
+	bool isManualRenderingOn() { return manualRendering; }
+	void setManualRendering(bool on) { manualRendering = on; }
+	int getObjectCount();
+	void setViewort(int x, int y, int w, int h);
+
+	// Scene
+	int getElapsedTime();
+	bool renderManually(bool clearBackBuffer = false, bool clearZBuffer = false); // User calls this function with manualRendering
+	void setBackgroundColor(const Vec4& color);
+	void setAmbientColor(const Vec4& color);
+	void setShadowColor(const Vec4& color);
+	void setFogColor(const Vec4& color);
+	void setFogPlanes(const Vec2& planes);
+	void setLightManagementType(int type);
+	void setTextureCreationQuality(int quality);
+	Image getErrorImage();
+	void setMatchRes(bool v) { doMatchResolution = v; }
+	bool getMatchRes() { return doMatchResolution; }
 
 	// Textures
 	irr::video::ITexture* createTexture(int w, int h, const std::string& name = "");
@@ -65,16 +92,22 @@ public:
 	// Camera
 	irr::scene::ICameraSceneNode* createCameraNode();
 	void updateCameraMatrix(irr::scene::ICameraSceneNode* c);
+	void setActiveCamera(irr::scene::ICameraSceneNode* c);
 
 private:
-	Application* a = nullptr;
-	DebugConsole* d = nullptr;
-	Window* w = nullptr;
+	struct Vec4S { float x, y, z, w; };
+	struct Vec2S { float x, y; };
 
 	bool isCreated = false;
+	bool hasBegunNewScene = false;
 
 	// Renderer parameters
+	Vec4S bgColor{15,15,25,255};
+	Vec4S fogColor{};
+	Vec2S fogPlanes{};
+	void updateFog();
 	bool doMatchResolution = true; // Hook resolution w/h to window size
+	bool manualRendering = false; // User-controlled rendering
 
 	// Irrlicht
 	irr::IrrlichtDevice* i_device = nullptr;
