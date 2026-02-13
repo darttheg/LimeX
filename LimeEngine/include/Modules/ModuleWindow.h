@@ -27,6 +27,7 @@ namespace Module {
 			Vec2 GetMonitorSize();
 			bool IsFocused();
 			void SetResizable(bool on);
+			void SetMaintainAR(bool on);
 		}
 	}
 }

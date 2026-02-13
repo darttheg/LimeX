@@ -224,14 +224,10 @@ function Lime.setEndOnError(doEnd) end
 
 --- IMPORTANT: This function should always be run prior to window creation (pre-`Lime.onUpdate` Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
 ---@param driver Lime.Enum.DriverType
----@param vSync boolean?
----@param frameRate number?
 ---@param windowSize Vec2?
 ---@param renderSize Vec2?
----@param scaleRenderToWindow boolean?
----@param fullscreen boolean?
 ---@return boolean
-function Lime.setInitConfig(driver, vSync, frameRate, windowSize, renderSize, scaleRenderToWindow, fullscreen) end
+function Lime.setInitConfig(driver, windowSize, renderSize) end
 
 --- If true, Lime will not render the scene at the end of each `Lime.onUpdate` cycle. Instead, use `Lime.Scene.render` for 3D scene rendering and `Lime.GUI.render` for GUI rendering within the `Lime.onUpdate` Event.
 ---@param isManual boolean
@@ -291,6 +287,11 @@ function Lime.Scene.setRescaleRenderToWindowSize(doRescale) end
 ---@return void
 function Lime.Scene.setShadowColor(rgba) end
 
+--- Sets the render size to `size`. If the render size is set to rescale to the window size then this change will not take effect. See `Lime.Scene.setRescaleRenderToWindowSize`.
+---@param size Vec2
+---@return void
+function Lime.Scene.setSize(size) end
+
 --- Returns the size of the monitor the window is running on.
 ---@return Vec2
 function Lime.Window.getMonitorSize() end
@@ -311,6 +312,11 @@ function Lime.Window.isFocused() end
 ---@param fullscreen boolean
 ---@return void
 function Lime.Window.setFullscreen(fullscreen) end
+
+--- Locks the aspect ratio of the raw window size regardless of resizing/maximizing.
+---@param locked boolean
+---@return void
+function Lime.Window.setLockAspectRatio(locked) end
 
 --- Sets the window's position to `pos`.
 ---@param pos Vec2

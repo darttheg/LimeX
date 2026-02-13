@@ -29,6 +29,7 @@ namespace Module {
 			void SetTextureCreationQuality(int quality);
 			void SetMatchRenderResToWindow(bool v);
 			Image GetErrorImage();
+			void SetRenderSize(const Vec2& size);
 
 			//Mesh CreateCubeMesh(int scale);
 			//Mesh CreateRectangleMesh(const Vec3& scale);

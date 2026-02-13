@@ -23,6 +23,7 @@ class Receiver;
 struct WindowConfig {
 	int driverType = 0; // OpenGL
 	std::vector<int> windowSize{ 640, 480 };
+	std::vector<int> renderSize{ 640, 480 };
 	int frameRate = 60;
 	bool vSync = false;
 	std::string title = "Lime App";

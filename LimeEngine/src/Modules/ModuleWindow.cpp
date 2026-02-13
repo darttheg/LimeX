@@ -69,6 +69,11 @@ void Module::Window::bind(Application* app) {
 	// Returns void
 	module.set_function("setResizable", &Module::Window::Bind::SetResizable);
 
+	// Locks the aspect ratio of the raw window size regardless of resizing/maximizing.
+	// Params boolean locked
+	// Returns void
+	module.set_function("setLockAspectRatio", &Module::Window::Bind::SetMaintainAR);
+
 	// End Module
 }
 
@@ -108,4 +113,8 @@ bool Module::Window::Bind::IsFocused() {
 
 void Module::Window::Bind::SetResizable(bool on) {
 	w->setResizable(on);
+}
+
+void Module::Window::Bind::SetMaintainAR(bool on) {
+	w->keepAspectRatio(on);
 }

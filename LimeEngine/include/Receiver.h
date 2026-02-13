@@ -69,6 +69,8 @@ public:
 	bool haveLastMousePos = false;
 	bool firstMouse = true;
 	bool skipDeltaOnResize = false;
+
+	const void setSkipDeltaMouse(bool v) { skipDeltaOnResize = v; }
 private:
 	Mouse mouse{};
 	Keyboard keyboard{};

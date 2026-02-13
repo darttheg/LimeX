@@ -34,7 +34,9 @@ public:
 	void setSizeSimple(int w, int h) { windowSize.x = w; windowSize.y = h; }
 	Vec2 getMonitorSize();
 	bool isFocused();
+	bool getResizable() { return resizable; }
 	void setResizable(bool on);
+	void keepAspectRatio(bool on);
 
 	void setGLFWCallbackTriggered(bool v) { maximizeRestoreCBThisFrame = v; }
 	bool getGLFWCallbackTriggered() { return maximizeRestoreCBThisFrame; }
@@ -45,4 +47,5 @@ private:
 	bool isFullscreened = false;
 	GLFWwindow* glfwWindow = nullptr;
 	Vec2S windowSize{};
+	bool resizable = true;
 };

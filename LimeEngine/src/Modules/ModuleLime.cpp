@@ -5,6 +5,7 @@
 #include "Renderer.h"
 
 #include "Objects/Event.h"
+#include "Objects/Vec2.h"
 
 #include <sol/sol.hpp>
 
@@ -70,7 +71,7 @@ void Module::Lime::bind(Application* app) {
 	module.set_function("getVersion", &Module::Lime::Bind::GetVersion);
 
 	// IMPORTANT: This function should always be run prior to window creation (pre-`Lime.onUpdate` Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
-	// Params Lime.Enum.DriverType driver, boolean? vSync, number? frameRate, Vec2? windowSize, Vec2? renderSize, boolean? scaleRenderToWindow, boolean? fullscreen
+	// Params Lime.Enum.DriverType driver, Vec2? windowSize, Vec2? renderSize
 	// Returns boolean
 	module.set_function("setInitConfig", &Module::Lime::Bind::SetInitConfig);
 
@@ -118,7 +119,7 @@ std::string Module::Lime::Bind::GetVersion() {
 	return LIME_VERSION;
 }
 
-bool Module::Lime::Bind::SetInitConfig() {
+bool Module::Lime::Bind::SetInitConfig(int driverType, const Vec2& windowSize, const Vec2& renderSize) {
 	if (a->IsRunning()) {
 		d->Warn("Lime.setInitConfig was called but the window has already been created.");
 		return false;
@@ -126,7 +127,9 @@ bool Module::Lime::Bind::SetInitConfig() {
 
 	WindowConfig cfg = a->GetConfig();
 
-	cfg.driverType = 0;
+	cfg.driverType = driverType;
+	cfg.windowSize = std::vector<int>(windowSize.getX(), windowSize.getY());
+	cfg.renderSize = std::vector<int>(renderSize.getX(), renderSize.getY());
 
 	a->SetConfig(cfg);
 	return true;

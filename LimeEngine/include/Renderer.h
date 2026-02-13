@@ -53,6 +53,7 @@ public:
 	bool maximizeDevice();
 	bool restoreDevice();
 	bool isFocused();
+	void applyLetterboxViewport(int fbW, int fbH, int baseW, int baseH);
 	void updateRenderResolution(int w, int h);
 	HWND getDeviceVideoData();
 	bool isManualRenderingOn() { return manualRendering; }
@@ -61,6 +62,8 @@ public:
 	void setViewort(int x, int y, int w, int h);
 
 	// Scene
+	Vec2 getRenderSize();
+	void setRenderSize(const Vec2& size);
 	int getElapsedTime();
 	bool renderManually(bool clearBackBuffer = false, bool clearZBuffer = false); // User calls this function with manualRendering
 	void setBackgroundColor(const Vec4& color);
@@ -102,6 +105,7 @@ private:
 	bool hasBegunNewScene = false;
 
 	// Renderer parameters
+	Vec2S renderSize{};
 	Vec4S bgColor{15,15,25,255};
 	Vec4S fogColor{};
 	Vec2S fogPlanes{};

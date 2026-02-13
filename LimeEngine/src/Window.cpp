@@ -9,6 +9,7 @@
 #include "Application.h"
 #include "DebugConsole.h"
 #include "Renderer.h"
+#include "Receiver.h"
 
 static Application* a;
 static DebugConsole* d;
@@ -181,8 +182,8 @@ void Window::setSize(const Vec2& size) {
 
 	// Skip delta on ACTUAL resize
 	glfwGetWindowSize(glfwWindow, &winX, &winY);
-	// if ((winX != oldW) && (winY != oldH))
-		// receiver->skipDeltaOnResize = true;
+	if ((winX != oldW) && (winY != oldH))
+		a->GetReceiver()->setSkipDeltaMouse(true);
 }
 
 Vec2 Window::getMonitorSize() {
@@ -206,4 +207,13 @@ bool Window::isFocused() {
 void Window::setResizable(bool on) {
 	if (!guardEditCheck()) return;
 	glfwSetWindowAttrib(glfwWindow, GLFW_RESIZABLE, on ? GLFW_TRUE : GLFW_FALSE);
+}
+
+void Window::keepAspectRatio(bool on) {
+	if (!guardEditCheck()) return;
+
+	if (on)
+		glfwSetWindowAspectRatio(glfwWindow, windowSize.x, windowSize.y);
+	else
+		glfwSetWindowAspectRatio(glfwWindow, GLFW_DONT_CARE, GLFW_DONT_CARE);
 }

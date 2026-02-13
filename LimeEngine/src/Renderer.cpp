@@ -29,16 +29,22 @@ Renderer::~Renderer() {
 bool Renderer::Init() {
 	if (isCreated) return false;
 
+	WindowConfig cfg = a->GetConfig();
+
 	SIrrlichtCreationParameters params;
-	params.DriverType = irr::video::E_DRIVER_TYPE::EDT_DIRECT3D9;
-	params.WindowSize = irr::core::dimension2d<u32>(640, 480);
+	params.DriverType = (irr::video::E_DRIVER_TYPE)cfg.driverType;
+	params.WindowSize = irr::core::dimension2d<u32>(cfg.renderSize[0], cfg.renderSize[1]);
 	params.Bits = 16;
-	params.Fullscreen = false;
+	params.Vsync = cfg.vSync;
+	params.Fullscreen = cfg.fullscreen;
 	// params.Stencilbuffer = true;
 	params.EventReceiver = a->GetReceiver();
 
 	i_device = irr::createDeviceEx(params);
 	if (!i_device) return false;
+
+	renderSize.x = cfg.renderSize[0];
+	renderSize.y = cfg.renderSize[1];
 
 	i_smgr = i_device->getSceneManager();
 	i_driver = i_device->getVideoDriver();
@@ -155,7 +161,7 @@ int getNumChildren(irr::scene::ISceneNode* node) {
 }
 
 static irr::video::ITexture* getCheckerError(irr::video::IVideoDriver* driver) {
-	irr::video::ITexture* checker = driver->getTexture("limeError");
+	irr::video::ITexture* checker = driver->getTexture("error");
 	if (!checker) {
 		const irr::video::SColor L(255, 153, 229, 80), W(255, 255, 255, 255);
 		irr::video::IImage* img = driver->createImage(irr::video::ECF_R5G6B5, irr::core::dimension2du(2, 2));
@@ -168,6 +174,22 @@ static irr::video::ITexture* getCheckerError(irr::video::IVideoDriver* driver) {
 }
 
 // ---
+
+Vec2 Renderer::getRenderSize() {
+	if (!guardRenderingCheck()) return Vec2();
+	return Vec2(renderSize.x, renderSize.y);
+}
+
+void Renderer::setRenderSize(const Vec2& size) {
+	if (!guardRenderingCheck()) return;
+
+	if (!doMatchResolution) {
+		d->Warn("Changing the render size while the render size is set to match the window size will not show any effect! See `Lime.Scene.setRescaleRenderToWindowSize`.");
+	}
+
+	renderSize.x = size.getX();
+	renderSize.y = size.getY();
+}
 
 int Renderer::getElapsedTime() {
 	return isCreated ? i_device->getTimer()->getTime() : 0;
@@ -210,6 +232,27 @@ bool Renderer::restoreDevice() {
 
 bool Renderer::isFocused() {
 	return i_device ? i_device->isWindowFocused() : false;
+}
+
+void Renderer::applyLetterboxViewport(int fbW, int fbH, int baseW, int baseH) {
+	float target = (float)baseW / (float)baseH;
+	float cur = (float)fbW / (float)fbH;
+
+	int vpW, vpH, vpX, vpY;
+
+	if (cur > target) {
+		vpH = fbH;
+		vpW = (int)(fbH * target + 0.5f);
+		vpX = (fbW - vpW) / 2;
+		vpY = 0;
+	} else {
+		vpW = fbW;
+		vpH = (int)(fbW / target + 0.5f);
+		vpX = 0;
+		vpY = (fbH - vpH) / 2;
+	}
+
+	setViewort(vpX, vpY, vpW, vpH);
 }
 
 void Renderer::updateRenderResolution(int w, int h) {

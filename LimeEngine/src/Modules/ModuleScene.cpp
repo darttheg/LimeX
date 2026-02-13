@@ -78,6 +78,11 @@ void Module::Scene::bind(Application* app) {
 	// Returns void
 	module.set_function("setRescaleRenderToWindowSize", &Module::Scene::Bind::SetMatchRenderResToWindow);
 
+	// Sets the render size to `size`. If the render size is set to rescale to the window size then this change will not take effect. See `Lime.Scene.setRescaleRenderToWindowSize`.
+	// Params Vec2 size
+	// Returns void
+	module.set_function("setSize", &Module::Scene::Bind::SetRenderSize);
+
 	// End Module
 }
 
@@ -125,4 +130,8 @@ void Module::Scene::Bind::SetMatchRenderResToWindow(bool v) {
 
 Image Module::Scene::Bind::GetErrorImage() {
 	return r->getErrorImage();
+}
+
+void Module::Scene::Bind::SetRenderSize(const Vec2& size) {
+	r->setRenderSize(size);
 }

@@ -145,7 +145,7 @@ bool Application::Init(const void* data, size_t size) {
 	if (!didInitCfg)
 		console->Warn("Lime.setInitConfig was not called. Setting one-time parameters--such as driver type--can only be done via this function.");
 
-	// Create device/true window
+	// Create device/true window using windowCfg
 	if (!CreateWindows())
 		return false;
 
