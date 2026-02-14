@@ -31,6 +31,7 @@ struct WindowConfig {
 	bool resizable = true;
 	bool fullscreen = false;
 	bool scaleRenderToWindow = true;
+	bool keepAspectRatio = false;
 };
 
 class Application {

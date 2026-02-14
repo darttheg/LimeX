@@ -128,8 +128,8 @@ bool Module::Lime::Bind::SetInitConfig(int driverType, const Vec2& windowSize, c
 	WindowConfig cfg = a->GetConfig();
 
 	cfg.driverType = driverType;
-	cfg.windowSize = std::vector<int>(windowSize.getX(), windowSize.getY());
-	cfg.renderSize = std::vector<int>(renderSize.getX(), renderSize.getY());
+	cfg.windowSize = std::vector<int>{ (int)windowSize.getX(), (int)windowSize.getY() };
+	cfg.renderSize = std::vector<int>{ (int)renderSize.getX(), (int)renderSize.getY() };
 
 	a->SetConfig(cfg);
 	return true;

@@ -54,7 +54,7 @@ bool Window::Create() {
 		glfwSetWindowPos(glfwWindow, x, y);
 	}
 
-	if (cfg.scaleRenderToWindow)
+	if (cfg.keepAspectRatio)
 		glfwSetWindowAspectRatio(glfwWindow, cfg.windowSize[0], cfg.windowSize[1]);
 	else
 		glfwSetWindowAspectRatio(glfwWindow, GLFW_DONT_CARE, GLFW_DONT_CARE);
