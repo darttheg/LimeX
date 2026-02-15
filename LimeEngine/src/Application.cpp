@@ -10,6 +10,7 @@
 #include "LuaBinder.h"
 #include "Objects/Event.h"
 #include "Objects/Vec2.h"
+#include "FrameLimiter.h"
 
 std::string readFile(const char* path) {
 	std::ifstream file(path);
@@ -171,6 +172,8 @@ bool Application::Run() {
 	// Run application loop
 	running = true;
 
+	limiter = new FrameLimiter(windowCfg.frameRate);
+	limiter->setVSync(windowCfg.vSync);
 	window->Focus();
 
 	// Run Start Event
@@ -178,21 +181,28 @@ bool Application::Run() {
 
 	renderer->RenderBGPreUpdate();
 	bool fail = false;
+	double dt = 0.0f;
 	while (running) {
+		dt = limiter->beginFrame();
+
 		window->PollEvents();
 		receiver->beginFrame();
 
 		// console->Log("running");
 		console->Update(getMemUsed());
 
-		LimeUpdate.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); });
+		LimeUpdate.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); }, dt);
 
 		if (window && window->ShouldClose()) fail = true;
 		if (!renderer->RenderFromApp()) fail = true;
 
+		updateFrameRate();
 		renderer->EndWholeScene();
 		receiver->endFrame();
-		window->EndFrame();
+
+		if (!windowCfg.vSync) limiter->endFrame();
+		window->EndFrame(); // Swap buffers
+		if (windowCfg.vSync) limiter->endFrame();
 
 		if (fail) break;
 	}
@@ -266,6 +276,34 @@ std::string Application::GetLuaLocation() {
 	oss << "[string \"" << src << "\"]:" << line;
 
 	return oss.str();
+}
+
+void Application::setTargetFrameRate(int fps) {
+	if (!limiter) return;
+	windowCfg.frameRate = fps;
+	limiter->setFPS(fps);
+}
+
+int Application::getFrameRate() {
+	if (!limiter) return -1;
+	return curFps;
+}
+
+void Application::updateFrameRate() {
+	if (!GetRenderer()) return;
+	curFps = GetRenderer()->updateFrameRate();
+}
+
+void Application::setVSync(bool on) {
+	if (!limiter) return;
+	window->setSwapInterval(on ? 1 : 0);
+	limiter->setFPS(window->getPrimaryHz());
+	// limiter->setVSync(on);
+	windowCfg.vSync = on;
+}
+
+bool Application::getVSync() {
+	return windowCfg.vSync;
 }
 
 bool Application::CreateWindows() {

@@ -44,6 +44,9 @@ public:
 	void setGLFWCallbackTriggered(bool v) { maximizeRestoreCBThisFrame = v; }
 	bool getGLFWCallbackTriggered() { return maximizeRestoreCBThisFrame; }
 	void setViewport(int x, int y, int w, int h);
+	int getTime();
+	void setSwapInterval(int i);
+	int getPrimaryHz();
 private:
 	struct Vec2S { float x, y; };
 

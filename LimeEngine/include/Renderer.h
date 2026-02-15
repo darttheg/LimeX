@@ -61,6 +61,7 @@ public:
 	int getObjectCount();
 	void setViewort(int x, int y, int w, int h);
 	Vec4 getViewport();
+	int updateFrameRate();
 
 	// Scene
 	Vec2 getRenderSize();
@@ -124,4 +125,7 @@ private:
 	irr::video::IVideoDriver* i_driver = nullptr;
 	irr::gui::IGUIEnvironment* i_gui = nullptr;
 	irr::video::IGPUProgrammingServices* i_gpu = nullptr;
+	int frameCount = 0;
+	int lastTime = 0;
+	int fps = 0;
 };

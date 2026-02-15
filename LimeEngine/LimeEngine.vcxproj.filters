@@ -108,6 +108,9 @@
     <ClInclude Include="include\Receiver.h">
       <Filter>Engine\Runtime\Core</Filter>
     </ClInclude>
+    <ClInclude Include="include\FrameLimiter.h">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">

@@ -84,6 +84,24 @@ void Module::Lime::bind(Application* app) {
 	// Returns number
 	module.set_function("getElapsedTime", &Module::Lime::Bind::GetElapsedTime);
 
+	// Returns the frame rate.
+	// Returns number
+	module.set_function("getFrameRate", &Module::Lime::Bind::GetFrameRate);
+
+	// Sets the target frame rate.
+	// Params number target
+	// Returns void
+	module.set_function("setFrameRate", &Module::Lime::Bind::SetFrameRate);
+
+	// Sets vertical syncronization, matching the frame rate to the primary monitor's refresh rate.
+	// Params boolean vSyncOn
+	// Returns void
+	module.set_function("setVSync", &Module::Lime::Bind::SetVSync);
+
+	// Returns true if vertical syncronization is on.
+	// Returns boolean
+	module.set_function("getVSync", &Module::Lime::Bind::GetVSync);
+
 	a->LimeInit = std::make_shared<Event>();
 	a->LimeStart = std::make_shared<Event>();
 	a->LimeUpdate = std::make_shared<Event>(); // Call with dt
@@ -117,6 +135,22 @@ void Module::Lime::Bind::Close() {
 
 std::string Module::Lime::Bind::GetVersion() {
 	return LIME_VERSION;
+}
+
+int Module::Lime::Bind::GetFrameRate() {
+	return a->getFrameRate();
+}
+
+void Module::Lime::Bind::SetFrameRate(int fps) {
+	a->setTargetFrameRate(fps);
+}
+
+bool Module::Lime::Bind::GetVSync() {
+	return a->getVSync();
+}
+
+void Module::Lime::Bind::SetVSync(bool on) {
+	a->setVSync(on);
 }
 
 bool Module::Lime::Bind::SetInitConfig(int driverType, const Vec2& windowSize, const Vec2& renderSize) {

@@ -17,6 +17,7 @@ class DebugConsole;
 class Renderer;
 class Event;
 class Receiver;
+class FrameLimiter;
 
 #define LIME_VERSION "1.0"
 
@@ -65,6 +66,12 @@ public:
 	WindowConfig GetConfig() { return windowCfg; }
 	void SetConfig(WindowConfig cfg) { windowCfg = cfg; didInitCfg = true; }
 
+	void setTargetFrameRate(int fps);
+	int getFrameRate();
+	void updateFrameRate();
+	void setVSync(bool on);
+	bool getVSync();
+
 private:
 	bool CreateWindows();
 	void DoLuaBinding();
@@ -82,6 +89,8 @@ private:
 	// Window & Renderer
 	Window* window = nullptr;
 	Renderer* renderer = nullptr;
+	FrameLimiter* limiter = nullptr;
+	int curFps = 0;
 
 	// Window parameters
 	WindowConfig windowCfg;

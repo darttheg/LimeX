@@ -107,6 +107,8 @@ bool Window::Create() {
 			w->setGLFWCallbackTriggered(false);
 	});
 
+	glfwSetTime(0.0);
+
 	return true;
 }
 
@@ -247,4 +249,18 @@ void Window::keepAspectRatio(bool on) {
 
 void Window::setViewport(int x, int y, int w, int h) {
 	glViewport(x, y, w, h);
+}
+
+int Window::getTime() {
+	return (int)(glfwGetTime() * 1000.0);
+}
+
+void Window::setSwapInterval(int i) {
+	glfwSwapInterval(i);
+}
+
+int Window::getPrimaryHz() {
+	GLFWmonitor* m = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(m);
+	return mode ? mode->refreshRate : 0;
 }

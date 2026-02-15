@@ -192,7 +192,7 @@ void Renderer::setRenderSize(const Vec2& size) {
 }
 
 int Renderer::getElapsedTime() {
-	return isCreated ? i_device->getTimer()->getTime() : 0;
+	return isCreated ? a->GetWindow()->getTime() : 0;
 }
 
 bool Renderer::renderManually(bool clearBackBuffer, bool clearZBuffer) {
@@ -232,6 +232,19 @@ bool Renderer::restoreDevice() {
 
 bool Renderer::isFocused() {
 	return i_device ? i_device->isWindowFocused() : false;
+}
+
+int Renderer::updateFrameRate() {
+	u32 currentTime = a->GetWindow()->getTime();
+	++frameCount;
+
+	if (currentTime - lastTime >= 1000) {
+		fps = frameCount / ((currentTime - lastTime) / 1000.0f);
+		lastTime = currentTime;
+		frameCount = 0;
+	}
+
+	return fps;
 }
 
 void Renderer::applyLetterboxViewport(int fbW, int fbH, int baseW, int baseH) {

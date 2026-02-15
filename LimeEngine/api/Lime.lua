@@ -208,6 +208,14 @@ function Lime.close() end
 ---@return number
 function Lime.getElapsedTime() end
 
+--- Returns the frame rate.
+---@return number
+function Lime.getFrameRate() end
+
+--- Returns true if vertical syncronization is on.
+---@return boolean
+function Lime.getVSync() end
+
 --- Returns the Lime version running.
 ---@return string
 function Lime.getVersion() end
@@ -222,6 +230,11 @@ function Lime.log(msg, color) end
 ---@param doEnd boolean
 function Lime.setEndOnError(doEnd) end
 
+--- Sets the target frame rate.
+---@param target number
+---@return void
+function Lime.setFrameRate(target) end
+
 --- IMPORTANT: This function should always be run prior to window creation (pre-`Lime.onUpdate` Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
 ---@param driver Lime.Enum.DriverType
 ---@param windowSize Vec2?
@@ -233,6 +246,11 @@ function Lime.setInitConfig(driver, windowSize, renderSize) end
 ---@param isManual boolean
 ---@return void
 function Lime.setManualRendering(isManual) end
+
+--- Sets vertical syncronization, matching the frame rate to the primary monitor's refresh rate.
+---@param vSyncOn boolean
+---@return void
+function Lime.setVSync(vSyncOn) end
 
 --- Returns an `Image` of a lime and white checkerboard pattern, 2x2. Useful for missing Images and the like.
 ---@return Image

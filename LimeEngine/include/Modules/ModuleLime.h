@@ -21,6 +21,10 @@ namespace Module {
 			void SetManualRendering(bool on = true);
 			int GetElapsedTime();
 			std::string GetVersion();
+			int GetFrameRate();
+			void SetFrameRate(int fps);
+			bool GetVSync();
+			void SetVSync(bool on);
 		}
 	}
 }
