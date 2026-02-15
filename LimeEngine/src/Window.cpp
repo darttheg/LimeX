@@ -1,6 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Window.h"
+#include <GL/GL.h>
 
 #include "Objects/Vec2.h"
 #include "Objects/Vec4.h"
@@ -98,10 +99,12 @@ bool Window::Create() {
 
 	glfwSetFramebufferSizeCallback(glfwWindow, [](GLFWwindow* window, int width, int height) {
 		w->setSizeSimple(width, height);
-		if (!a->GetWindow()->getGLFWCallbackTriggered())
-			a->GetRenderer()->updateRenderResolution(width, height);
+		auto* r = a->GetRenderer();
+		auto w = a->GetWindow();
+		if (!w->getGLFWCallbackTriggered())
+			r->updateRenderResolution(width, height);
 		else
-			a->GetWindow()->setGLFWCallbackTriggered(false);
+			w->setGLFWCallbackTriggered(false);
 	});
 
 	return true;
@@ -116,11 +119,31 @@ bool Window::ShouldClose() {
 	return glfwWindowShouldClose(glfwWindow);
 }
 
+void Window::PreUpdateBG() {
+	if (!a->GetRenderer()) return;
+	auto* r = a->GetRenderer();
+	Vec4 vp = r->getViewport();
+
+	glViewport(0, 0, vp.getZ(), vp.getW());
+	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(vp.getX(), vp.getY(), vp.getZ(), vp.getW());
+}
+
+void Window::EndFrame() {
+	glfwSwapBuffers(glfwWindow);
+}
+
 // ---
+
+void Window::Focus() {
+	if (!glfwWindow) return;
+	glfwFocusWindow(glfwWindow);
+}
 
 bool Window::guardEditCheck() {
 	if (!glfwWindow) {
-		d->Warn("The window cannot be edited until it has been created!");
+		d->Warn("The window cannot be modified until it has been created!");
 		return false;
 	}
 	return true;
@@ -205,6 +228,10 @@ bool Window::isFocused() {
 }
 
 void Window::setResizable(bool on) {
+	WindowConfig c = a->GetConfig();
+	c.resizable = on;
+	a->SetConfig(c);
+
 	if (!guardEditCheck()) return;
 	glfwSetWindowAttrib(glfwWindow, GLFW_RESIZABLE, on ? GLFW_TRUE : GLFW_FALSE);
 }
@@ -216,4 +243,8 @@ void Window::keepAspectRatio(bool on) {
 		glfwSetWindowAspectRatio(glfwWindow, windowSize.x, windowSize.y);
 	else
 		glfwSetWindowAspectRatio(glfwWindow, GLFW_DONT_CARE, GLFW_DONT_CARE);
+}
+
+void Window::setViewport(int x, int y, int w, int h) {
+	glViewport(x, y, w, h);
 }

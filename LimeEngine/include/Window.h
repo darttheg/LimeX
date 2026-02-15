@@ -21,8 +21,11 @@ public:
 	void Close();
 	void PollEvents();
 	bool ShouldClose();
+	void PreUpdateBG();
+	void EndFrame();
 	HWND GetHandle() const { return glfwGetWin32Window(glfwWindow); }
 	GLFWwindow* getGLFWWindow() const { return glfwWindow; }
+	void Focus();
 	bool guardEditCheck();
 
 	void setTitle(std::string path);
@@ -40,6 +43,7 @@ public:
 
 	void setGLFWCallbackTriggered(bool v) { maximizeRestoreCBThisFrame = v; }
 	bool getGLFWCallbackTriggered() { return maximizeRestoreCBThisFrame; }
+	void setViewport(int x, int y, int w, int h);
 private:
 	struct Vec2S { float x, y; };
 

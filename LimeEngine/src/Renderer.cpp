@@ -235,6 +235,9 @@ bool Renderer::isFocused() {
 }
 
 void Renderer::applyLetterboxViewport(int fbW, int fbH, int baseW, int baseH) {
+	mFbH = fbW;
+	mFbW = fbH;
+
 	float target = (float)baseW / (float)baseH;
 	float cur = (float)fbW / (float)fbH;
 
@@ -268,8 +271,7 @@ void Renderer::updateRenderResolution(int w, int h) {
 		root->setRelativePosition(core::rect<s32>(0, 0, (s32)w, (s32)h));
 	}
 
-	if (i_smgr->getActiveCamera())
-	{
+	if (i_smgr->getActiveCamera()) {
 		i_smgr->getActiveCamera()->setAspectRatio((f32)w / (f32)h);
 	}
 }
@@ -295,6 +297,13 @@ void Renderer::setViewort(int x, int y, int w, int h) {
 		x + w,
 		y + h
 	));
+
+	vp = { x,y,w,h };
+	a->GetWindow()->setViewport(x, y, w, h);
+}
+
+Vec4 Renderer::getViewport() {
+	return Vec4(vp.x, vp.y, vp.w, vp.h);
 }
 
 irr::video::ITexture* Renderer::createTexture(int w, int h, const std::string& name) {

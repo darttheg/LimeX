@@ -171,6 +171,8 @@ bool Application::Run() {
 	// Run application loop
 	running = true;
 
+	window->Focus();
+
 	// Run Start Event
 	LimeStart.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); });
 
@@ -187,8 +189,10 @@ bool Application::Run() {
 
 		if (window && window->ShouldClose()) fail = true;
 		if (!renderer->RenderFromApp()) fail = true;
+
 		renderer->EndWholeScene();
 		receiver->endFrame();
+		window->EndFrame();
 
 		if (fail) break;
 	}
