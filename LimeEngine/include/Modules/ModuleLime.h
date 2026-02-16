@@ -14,6 +14,7 @@ namespace Module {
 		void bind(Application* app);
 
 		namespace Bind {
+			void SetDebugConfig(bool on, bool write = false);
 			void Log(std::string msg, int color = 0);
 			void SetEndOnError(bool v);
 			void Close();
@@ -25,6 +26,7 @@ namespace Module {
 			void SetFrameRate(int fps);
 			bool GetVSync();
 			void SetVSync(bool on);
+			int GetMemoryUsage();
 		}
 	}
 }

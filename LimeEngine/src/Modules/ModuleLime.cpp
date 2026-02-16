@@ -102,6 +102,15 @@ void Module::Lime::bind(Application* app) {
 	// Returns boolean
 	module.set_function("getVSync", &Module::Lime::Bind::GetVSync);
 
+	// Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory.
+	// Params boolean enable, boolean? writeOutput
+	// Returns void
+	module.set_function("setDebugConfig", &Module::Lime::Bind::SetDebugConfig);
+
+	// Returns the application's memory usage in megabytes.
+	// Returns number
+	module.set_function("getMemoryUsage", &Module::Lime::Bind::GetMemoryUsage);
+
 	a->LimeInit = std::make_shared<Event>();
 	a->LimeStart = std::make_shared<Event>();
 	a->LimeUpdate = std::make_shared<Event>(); // Call with dt
@@ -120,6 +129,10 @@ void Module::Lime::bind(Application* app) {
 }
 
 // Functions
+
+void Module::Lime::Bind::SetDebugConfig(bool on, bool write) {
+	a->setDebugConfig(on, write);
+}
 
 void Module::Lime::Bind::Log(std::string msg, int color) {
 	d->Log(msg.c_str(), (MESSAGE_TYPE)color);
@@ -151,6 +164,10 @@ bool Module::Lime::Bind::GetVSync() {
 
 void Module::Lime::Bind::SetVSync(bool on) {
 	a->setVSync(on);
+}
+
+int Module::Lime::Bind::GetMemoryUsage() {
+	return a->getMemoryUsage();
 }
 
 bool Module::Lime::Bind::SetInitConfig(int driverType, const Vec2& windowSize, const Vec2& renderSize) {

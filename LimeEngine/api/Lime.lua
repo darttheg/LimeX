@@ -212,6 +212,10 @@ function Lime.getElapsedTime() end
 ---@return number
 function Lime.getFrameRate() end
 
+--- Returns the application's memory usage in megabytes.
+---@return number
+function Lime.getMemoryUsage() end
+
 --- Returns true if vertical syncronization is on.
 ---@return boolean
 function Lime.getVSync() end
@@ -225,6 +229,12 @@ function Lime.getVersion() end
 ---@param color Lime.Enum.PrintColor?
 ---@return void
 function Lime.log(msg, color) end
+
+--- Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory.
+---@param enable boolean
+---@param writeOutput boolean?
+---@return void
+function Lime.setDebugConfig(enable, writeOutput) end
 
 --- If set to true, Lime will close on any error. A pop-up will be disclosed prior with error details.
 ---@param doEnd boolean

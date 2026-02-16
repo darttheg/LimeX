@@ -71,6 +71,8 @@ public:
 	void updateFrameRate();
 	void setVSync(bool on);
 	bool getVSync();
+	void setDebugConfig(bool on, bool write = false);
+	int getMemoryUsage();
 
 private:
 	bool CreateWindows();
@@ -84,6 +86,8 @@ private:
 	std::unordered_map<std::string, std::string> modules;
 
 	// Debug console
+	struct DebugConfig { bool on, write; };
+	DebugConfig debugCfg{};
 	DebugConsole* console = nullptr;
 
 	// Window & Renderer

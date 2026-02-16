@@ -151,7 +151,10 @@ bool Application::Init(const void* data, size_t size) {
 		return false;
 
 	// Init console
-	console->Create();
+	if (debugCfg.on) {
+		console->Create();
+		console->SetWriteOutput(debugCfg.write);
+	}
 
 	return true;
 }
@@ -161,7 +164,7 @@ int getMemUsed() {
 	PROCESS_MEMORY_COUNTERS_EX pmc;
 	GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
 	SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
-	int physMemUsedMB = (int)physMemUsedByMe / (1024 * 1024) - 10;
+	int physMemUsedMB = (int)physMemUsedByMe / (1024 * 1024) - 30;
 
 	if (physMemUsedMB < 0) physMemUsedMB = 0;
 	return physMemUsedMB;
@@ -276,6 +279,20 @@ std::string Application::GetLuaLocation() {
 	oss << "[string \"" << src << "\"]:" << line;
 
 	return oss.str();
+}
+
+void Application::setDebugConfig(bool on, bool write) {
+	if (running) {
+		console->Warn("Debug configuration must be called prior to window creation!");
+		return;
+	}
+
+	debugCfg.on = on;
+	debugCfg.write = write;
+}
+
+int Application::getMemoryUsage() {
+	return getMemUsed();
 }
 
 void Application::setTargetFrameRate(int fps) {
