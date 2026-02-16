@@ -1,6 +1,7 @@
 #include "Receiver.h"
 #include "Application.h"
 #include "DebugConsole.h"
+#include "Objects/Event.h"
 
 static Application* a;
 static DebugConsole* d;
@@ -13,6 +14,19 @@ Receiver::Receiver(Application* app) {
 	keyboard.pressed.fill(false);
 	keyboard.released.fill(false);
 	keyboard.repeat.fill(false);
+
+	// Events
+}
+
+const std::string& Receiver::getText() const {
+	if (text.typed.empty()) return "";
+
+	int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, text.typed.data(), (int)text.typed.size(), nullptr, 0, nullptr, nullptr);
+	std::string out(sizeNeeded, 0);
+
+	WideCharToMultiByte(CP_UTF8, 0, text.typed.data(), (int)text.typed.size(), out.data(), sizeNeeded, nullptr, nullptr);
+
+	return out;
 }
 
 void Receiver::beginFrame() {
@@ -53,6 +67,11 @@ void Receiver::syncMouse() {
 	mouse.lastPos = mouse.pos;
 	mouse.delta = { 0, 0 };
 	firstMouse = false;
+}
+
+void Receiver::setMousePosition(int x, int y) {
+	mouse.pos.x = x;
+	mouse.pos.y = y;
 }
 
 bool Receiver::OnEvent(const irr::SEvent& e) {

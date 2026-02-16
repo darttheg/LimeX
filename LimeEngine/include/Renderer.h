@@ -99,6 +99,10 @@ public:
 	void updateCameraMatrix(irr::scene::ICameraSceneNode* c);
 	void setActiveCamera(irr::scene::ICameraSceneNode* c);
 
+	// Misc
+	bool setMouseVisible(bool vis);
+	bool setMousePosition(const Vec2& pos);
+
 private:
 	struct Vec4S { float x, y, z, w; };
 	struct Vec2S { float x, y; };

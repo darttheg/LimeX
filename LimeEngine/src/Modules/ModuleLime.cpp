@@ -84,11 +84,11 @@ void Module::Lime::bind(Application* app) {
 	// Returns number
 	module.set_function("getElapsedTime", &Module::Lime::Bind::GetElapsedTime);
 
-	// Returns the frame rate.
+	// Returns the frame rate in frames per second.
 	// Returns number
 	module.set_function("getFrameRate", &Module::Lime::Bind::GetFrameRate);
 
-	// Sets the target frame rate.
+	// Sets the target frame rate in frames per second.
 	// Params number target
 	// Returns void
 	module.set_function("setFrameRate", &Module::Lime::Bind::SetFrameRate);
@@ -118,7 +118,7 @@ void Module::Lime::bind(Application* app) {
 
 	// Field Event onInit, Event called by Lime prior to initializing the window.
 	// Field Event onStart, Event called by Lime following window creation and rendering services are available.
-	// Field Event onUpdate, Event called by Lime every rendering frame. This Event is run with a number delta time argument.
+	// Field Event onUpdate, Event called by Lime every rendering frame. This Event is run with a number `dt` argument.
 	// Field Event onClose, Event called by Lime once the application closes in any way.
 	module["onInit"] = a->LimeInit;
 	module["onStart"] = a->LimeStart;

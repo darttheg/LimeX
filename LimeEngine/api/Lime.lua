@@ -1,9 +1,18 @@
 ---@class Lime
 ---@field onInit Event @Event called by Lime prior to initializing the window.
 ---@field onStart Event @Event called by Lime following window creation and rendering services are available.
----@field onUpdate Event @Event called by Lime every rendering frame. This Event is run with a number delta time argument.
+---@field onUpdate Event @Event called by Lime every rendering frame. This Event is run with a number `dt` argument.
 ---@field onClose Event @Event called by Lime once the application closes in any way.
 Lime = Lime or {}
+
+---@class Lime.Input
+---@field onKeyPressed Event @Event called by Lime when a key is pressed. This Event is run with a Lime.Enum.Key `key` argument.
+---@field onKeyReleased Event @Event called by Lime when a key is released. This Event is run with a Lime.Enum.Key `key` argument.
+---@field onMouseButtonPressed Event @Event called by Lime when a mouse button is pressed. This Event is run with a Lime.Enum.Mouse `button` argument.
+---@field onMouseButtonReleased Event @Event called by Lime when a mouse button is released. This Event is run with a Lime.Enum.Mouse `button` argument.
+---@field onMouseMoved Event @Event called by Lime when a mouse is moved. This Event is run with a Vec2 `delta` argument.
+---@field onMouseScroll Event @Event called by Lime when the mouse scroll wheel is moved. This Event is run with a number `delta` argument.
+Lime.Input = Lime.Input or {}
 
 ---@class Lime.Scene
 Lime.Scene = Lime.Scene or {}
@@ -208,7 +217,7 @@ function Lime.close() end
 ---@return number
 function Lime.getElapsedTime() end
 
---- Returns the frame rate.
+--- Returns the frame rate in frames per second.
 ---@return number
 function Lime.getFrameRate() end
 
@@ -240,7 +249,7 @@ function Lime.setDebugConfig(enable, writeOutput) end
 ---@param doEnd boolean
 function Lime.setEndOnError(doEnd) end
 
---- Sets the target frame rate.
+--- Sets the target frame rate in frames per second.
 ---@param target number
 ---@return void
 function Lime.setFrameRate(target) end
@@ -261,6 +270,38 @@ function Lime.setManualRendering(isManual) end
 ---@param vSyncOn boolean
 ---@return void
 function Lime.setVSync(vSyncOn) end
+
+--- Returns the change in mouse position within the last frame.
+---@return Vec2
+function Lime.Input.getMouseDelta() end
+
+--- Returns the mouse's position.
+---@return Vec2
+function Lime.Input.getMousePosition() end
+
+--- Returns the typed text within the last frame.
+---@return string
+function Lime.Input.getText() end
+
+--- Returns true if Lime.Enum.Key `key` is currently pressed.
+---@param key Lime.Enum.Key
+---@return boolean
+function Lime.Input.isKeyDown(key) end
+
+--- Returns true if Lime.Enum.Mouse `button` is currently pressed.
+---@param button Lime.Enum.Mouse
+---@return boolean
+function Lime.Input.isMouseButtonDown(button) end
+
+--- Sets the mouse's position.
+---@param pos Vec2
+---@return void
+function Lime.Input.setMousePosition(pos) end
+
+--- Set the visibility of the mouse cursor.
+---@param visible boolean
+---@return void
+function Lime.Input.setMouseVisible(visible) end
 
 --- Returns an `Image` of a lime and white checkerboard pattern, 2x2. Useful for missing Images and the like.
 ---@return Image

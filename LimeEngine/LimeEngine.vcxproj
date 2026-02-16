@@ -28,6 +28,7 @@
     <ClInclude Include="include\LimeEngine.h" />
     <ClInclude Include="include\LuaBinder.h" />
     <ClInclude Include="include\Modules\ModuleGUI.h" />
+    <ClInclude Include="include\Modules\ModuleInput.h" />
     <ClInclude Include="include\Modules\ModuleLime.h" />
     <ClInclude Include="include\Modules\ModuleScene.h" />
     <ClInclude Include="include\Modules\ModuleWindow.h" />
@@ -52,6 +53,7 @@
     <ClCompile Include="src\LimeEngine.cpp" />
     <ClCompile Include="src\LuaBinder.cpp" />
     <ClCompile Include="src\Modules\ModuleGUI.cpp" />
+    <ClCompile Include="src\Modules\ModuleInput.cpp" />
     <ClCompile Include="src\Modules\ModuleLime.cpp" />
     <ClCompile Include="src\Modules\ModuleScene.cpp" />
     <ClCompile Include="src\Modules\ModuleWindow.cpp" />

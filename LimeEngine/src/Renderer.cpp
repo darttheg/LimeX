@@ -506,3 +506,17 @@ Image Renderer::getErrorImage() {
 
 	return Image(getCheckerError(i_driver));
 }
+
+bool Renderer::setMouseVisible(bool vis) {
+	if (!i_device) return false;
+	i_device->getCursorControl()->setVisible(vis);
+	return true;
+}
+
+bool Renderer::setMousePosition(const Vec2& pos) {
+	if (!i_device) return false;
+	i_device->getCursorControl()->setPosition(irr::core::vector2di(pos.getX(), pos.getY()));
+	a->GetReceiver()->setMousePosition(pos.getX() - 1, pos.getY() - 1);
+	a->GetReceiver()->syncMouse();
+	return true;
+}

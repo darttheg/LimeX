@@ -2,10 +2,12 @@
 #include <array>
 #include <algorithm>
 #include <string>
+#include <memory>
 
 #include "IEventReceiver.h"
 
 class Application;
+class Event;
 
 class Receiver : public irr::IEventReceiver {
 public:
@@ -54,12 +56,13 @@ public:
 	void endFrame();
 	void syncMouse();
 	void setSkipDelta() { skipDeltaOnResize = true; }
+	void setMousePosition(int x, int y);
 
 	bool OnEvent(const irr::SEvent& e) override;
 
 	const Mouse& getMouseState() const { return mouse; }
 	const Keyboard& getKeyboardState() const { return keyboard; }
-	const Text& getText() const { return text; }
+	const std::string& getText() const;
 	bool isDown(Key k) const { return keyboard.down[(int)k]; }
 	bool isPressed(Key k) const { return keyboard.pressed[(int)k]; }
 	bool isReleased(Key k) const { return keyboard.released[(int)k]; }
@@ -71,6 +74,13 @@ public:
 	bool skipDeltaOnResize = false;
 
 	const void setSkipDeltaMouse(bool v) { skipDeltaOnResize = v; }
+
+	std::shared_ptr<Event> InputKeyPressed = nullptr;
+	std::shared_ptr<Event> InputKeyReleased = nullptr;
+	std::shared_ptr<Event> InputMouseButtonPressed = nullptr;
+	std::shared_ptr<Event> InputMouseButtonReleased = nullptr;
+	std::shared_ptr<Event> InputMouseMoved = nullptr;
+	std::shared_ptr<Event> InputMouseWheel = nullptr;
 private:
 	Mouse mouse{};
 	Keyboard keyboard{};
