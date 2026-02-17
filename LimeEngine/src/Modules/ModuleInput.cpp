@@ -74,9 +74,20 @@ void Module::Input::bind(Application* app) {
 	// Returns void
 	module.set_function("setMouseVisible", &Module::Input::Bind::setMouseVisible);
 
-	// Returns the typed text within the last frame.
-	// Returns string
-	module.set_function("getText", &Module::Input::Bind::getText);
+	receiver->InputJoystickConnect = std::make_shared<Event>();
+	receiver->InputJoystickDisconnect = std::make_shared<Event>();
+	receiver->InputJoystickButtonPressed = std::make_shared<Event>();
+	receiver->InputJoystickButtonReleased = std::make_shared<Event>();
+
+	// Field Event onJoystickConnect, Event called by Lime when a controller is connected. This Event is run with a number `id` argument.
+	// Field Event onJoystickDisconnect, Event called by Lime when a controller is disconnected. This Event is run with a number `id` argument.
+	// Field Event onJoystickButtonPressed, Event called by Lime when a controller button is pressed. This Event is run with number `id`, Lime.Enum.Joystick `button` arguments.
+	// Field Event onJoystickButtonReleased, Event called by Lime when a controller button is released. This Event is run with number `id`, Lime.Enum.Joystick `button` arguments.
+
+	module["onJoystickConnect"] = receiver->InputJoystickConnect;
+	module["onJoystickDisconnect"] = receiver->InputJoystickDisconnect;
+	module["onJoystickButtonPressed"] = receiver->InputJoystickButtonPressed;
+	module["onJoystickButtonReleased"] = receiver->InputJoystickButtonReleased;
 
 	// End Module
 }
@@ -118,8 +129,4 @@ void Module::Input::Bind::setMouseVisible(bool vis) {
 	if (!renderer->setMouseVisible(vis)) {
 		d->Warn("The window must be created to edit mouse attributes.");
 	}
-}
-
-std::string Module::Input::Bind::getText() {
-	return receiver->getText();
 }

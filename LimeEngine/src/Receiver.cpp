@@ -4,8 +4,16 @@
 #include "Objects/Event.h"
 #include "Objects/Vec2.h"
 
+#include "irrlicht.h"
+
 static Application* a;
 static DebugConsole* d;
+
+struct Receiver::Impl {
+	irr::core::array<irr::SJoystickInfo> joysticks;
+	std::unordered_map<int32_t, irr::SEvent::SJoystickEvent> lastJoystickState;
+	std::unordered_map<int32_t, uint64_t> lastSeenMs;
+};
 
 Receiver::Receiver(Application* app) {
 	a = app;
@@ -16,18 +24,7 @@ Receiver::Receiver(Application* app) {
 	keyboard.released.fill(false);
 	keyboard.repeat.fill(false);
 
-	// Events
-}
-
-const std::string& Receiver::getText() const {
-	if (text.typed.empty()) return "";
-
-	int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, text.typed.data(), (int)text.typed.size(), nullptr, 0, nullptr, nullptr);
-	std::string out(sizeNeeded, 0);
-
-	WideCharToMultiByte(CP_UTF8, 0, text.typed.data(), (int)text.typed.size(), out.data(), sizeNeeded, nullptr, nullptr);
-
-	return out;
+	joystickImpl = std::make_unique<Impl>();
 }
 
 void Receiver::beginFrame() {
@@ -55,13 +52,12 @@ void Receiver::beginFrame() {
 
 	mouse.delta.x = mouse.pos.x - lastMousePos.x;
 	mouse.delta.y = mouse.pos.y - lastMousePos.y;
-
-	text.typed.clear();
 }
 
 void Receiver::endFrame() {
 	mouse.lastPos = mouse.pos;
 	firstMouse = false;
+	pollDisconnectedJoysticks();
 }
 
 void Receiver::syncMouse() {
@@ -112,9 +108,6 @@ void Receiver::handleKey(const irr::SEvent::SKeyInput& k) {
 	keyboard.shift = k.Shift;
 	keyboard.control = k.Control;
 	keyboard.alt = keyboard.down[irr::KEY_MENU];
-
-	if (k.PressedDown && k.Char != 0)
-		text.typed.push_back(k.Char);
 }
 
 #define MOUSE_LEFT 0
@@ -188,5 +181,129 @@ void Receiver::handleMouse(const irr::SEvent::SMouseInput& m) {
 	}
 }
 
+static inline float NormalizeAxisS16(irr::s16 v) {
+	if (v <= -32768) return -1.0f;
+	return (float)v / 32767.0f;
+}
+
+static inline float ApplyDeadzone(float x, float deadzone) {
+	const float ax = std::abs(x);
+	if (ax <= deadzone) return 0.0f;
+
+	const float sign = (x < 0.0f) ? -1.0f : 1.0f;
+	const float t = (ax - deadzone) / (1.0f - deadzone);
+	return sign * t;
+}
+
+static uint64_t NowMs() {
+	using namespace std::chrono;
+	return (uint64_t)duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();
+}
+
+void Receiver::initJoysticks(IrrlichtDevice* device) {
+	if (!device) return;
+	joystickImpl->joysticks.clear();
+	device->activateJoysticks(joystickImpl->joysticks);
+}
+
+void Receiver::pollDisconnectedJoysticks() {
+	const uint64_t t = NowMs();
+	const uint64_t timeoutMs = 1500;
+
+	for (auto it = joystickImpl->lastSeenMs.begin(); it != joystickImpl->lastSeenMs.end(); ) {
+		const int32_t id = it->first;
+		const uint64_t lastSeen = it->second;
+
+		if (t - lastSeen > timeoutMs) {
+			if (InputJoystickDisconnect)
+				InputJoystickDisconnect.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id);
+
+			joystickImpl->lastSeenMs.erase(it++);
+			joystickImpl->lastJoystickState.erase(id);
+		}
+		else {
+			++it;
+		}
+	}
+}
+
 void Receiver::handleJoystick(const irr::SEvent::SJoystickEvent& j) {
+	const int32_t id = (int32_t)j.Joystick;
+
+	const bool firstTime = (joystickImpl->lastJoystickState.find(id) == joystickImpl->lastJoystickState.end());
+
+	if (firstTime) {
+		if (InputJoystickConnect)
+			InputJoystickConnect.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id);
+	}
+
+	if (firstTime)
+		joystickImpl->lastJoystickState[id] = j;
+
+	auto& prevState = joystickImpl->lastJoystickState[id];
+
+	uint32_t btnCount = 32u;
+	if (id >= 0 && id < (int32_t)joystickImpl->joysticks.size())
+		btnCount = joystickImpl->joysticks[(irr::u32)id].Buttons;
+
+	const uint32_t prev = (uint32_t)prevState.ButtonStates;
+	const uint32_t now = (uint32_t)j.ButtonStates;
+
+	const uint32_t pressedMask = (~prev) & now;
+	const uint32_t releasedMask = prev & (~now);
+
+	const uint32_t limit = (btnCount >= 32u) ? 32u : btnCount;
+
+	for (uint32_t i = 0; i < limit; ++i)
+	{
+		const uint32_t bit = 1u << i;
+
+		if ((pressedMask & bit) && InputJoystickButtonPressed)
+			InputJoystickButtonPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id, (int)i);
+
+		if ((releasedMask & bit) && InputJoystickButtonReleased)
+			InputJoystickButtonReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id, (int)i);
+	}
+
+	uint32_t base = 32u;
+	auto povTo4 = [](uint16_t pov, bool& up, bool& right, bool& down, bool& left) {
+		up = right = down = left = false;
+		if (pov == 0xFFFF) return;
+
+		int dir = (int)(((pov + 2250) / 4500) % 8);
+		// 0=N,1=NE,2=E,3=SE,4=S,5=SW,6=W,7=NW
+		up = (dir == 7 || dir == 0 || dir == 1);
+		right = (dir == 1 || dir == 2 || dir == 3);
+		down = (dir == 3 || dir == 4 || dir == 5);
+		left = (dir == 5 || dir == 6 || dir == 7);
+		};
+
+	bool pup, pright, pdown, pleft;
+	bool nup, nright, ndown, nleft;
+	povTo4(prevState.POV, pup, pright, pdown, pleft);
+	povTo4(j.POV, nup, nright, ndown, nleft);
+
+	auto edge = [&](bool was, bool now, int virtualIndex) {
+		if (!was && now && InputJoystickButtonPressed)
+			InputJoystickButtonPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id, virtualIndex);
+		if (was && !now && InputJoystickButtonReleased)
+			InputJoystickButtonReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id, virtualIndex);
+		};
+
+	edge(pup, nup, (int)(base + 0)); // POV_Up
+	edge(pright, nright, (int)(base + 1)); // POV_Right
+	edge(pdown, ndown, (int)(base + 2)); // POV_Down
+	edge(pleft, nleft, (int)(base + 3)); // POV_Left
+
+	const int axisCount = (int)j.NUMBER_OF_AXES;
+	const float deadzone = 0.12f;
+	const float eps = 0.0025f;
+
+	for (int axis = 0; axis < axisCount; ++axis) {
+		float prev = ApplyDeadzone(NormalizeAxisS16(prevState.Axis[axis]), deadzone);
+		float now = ApplyDeadzone(NormalizeAxisS16(j.Axis[axis]), deadzone);
+	}
+
+	joystickImpl->lastJoystickState[id] = j;
+	joystickImpl->lastSeenMs[id] = NowMs();
 }

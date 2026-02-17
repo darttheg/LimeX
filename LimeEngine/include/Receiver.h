@@ -9,6 +9,11 @@
 class Application;
 class Event;
 
+namespace irr {
+	class IrrlichtDevice;
+}
+using namespace irr;
+
 class Receiver : public irr::IEventReceiver {
 public:
 	using Key = irr::EKEY_CODE;
@@ -62,7 +67,6 @@ public:
 
 	const Mouse& getMouseState() const { return mouse; }
 	const Keyboard& getKeyboardState() const { return keyboard; }
-	const std::string& getText() const;
 	bool isDown(Key k) const { return keyboard.down[(int)k]; }
 	bool isPressed(Key k) const { return keyboard.pressed[(int)k]; }
 	bool isReleased(Key k) const { return keyboard.released[(int)k]; }
@@ -81,10 +85,19 @@ public:
 	std::shared_ptr<Event> InputMouseButtonReleased = nullptr;
 	std::shared_ptr<Event> InputMouseMoved = nullptr;
 	std::shared_ptr<Event> InputMouseWheel = nullptr;
+
+	std::shared_ptr<Event> InputJoystickConnect = nullptr;
+	std::shared_ptr<Event> InputJoystickDisconnect = nullptr;
+	std::shared_ptr<Event> InputJoystickButtonPressed = nullptr;
+	std::shared_ptr<Event> InputJoystickButtonReleased = nullptr;
+
+	struct Impl;
+	std::unique_ptr<Impl> joystickImpl;
+	void initJoysticks(IrrlichtDevice* device);
+	void pollDisconnectedJoysticks();
 private:
 	Mouse mouse{};
 	Keyboard keyboard{};
-	Text text{};
 
 	void handleKey(const irr::SEvent::SKeyInput& k);
 	void handleMouse(const irr::SEvent::SMouseInput& m);

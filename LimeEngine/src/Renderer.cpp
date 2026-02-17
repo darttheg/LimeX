@@ -38,7 +38,6 @@ bool Renderer::Init() {
 	params.Vsync = cfg.vSync;
 	params.Fullscreen = cfg.fullscreen;
 	// params.Stencilbuffer = true;
-	params.EventReceiver = a->GetReceiver();
 
 	i_device = irr::createDeviceEx(params);
 	if (!i_device) return false;
@@ -50,6 +49,9 @@ bool Renderer::Init() {
 	i_driver = i_device->getVideoDriver();
 	i_gui = i_device->getGUIEnvironment();
 	i_gpu = i_driver->getGPUProgrammingServices();
+
+	i_device->setEventReceiver(a->GetReceiver());
+	a->GetReceiver()->initJoysticks(i_device);
 
 	HWND hwndIrr = (HWND)i_device->getVideoDriver()->getExposedVideoData().D3D9.HWnd;
 	ShowWindow(hwndIrr, SW_HIDE);

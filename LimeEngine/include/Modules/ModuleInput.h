@@ -18,7 +18,6 @@ namespace Module {
 			Vec2 getMousePosition();
 			void setMousePosition(const Vec2& pos);
 			void setMouseVisible(bool vis);
-			std::string getText();
 		}
 	}
 }
