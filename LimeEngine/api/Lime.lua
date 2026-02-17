@@ -12,10 +12,10 @@ Lime = Lime or {}
 ---@field onMouseButtonReleased Event @Event called by Lime when a mouse button is released. This Event is run with a Lime.Enum.Mouse `button` argument.
 ---@field onMouseMoved Event @Event called by Lime when a mouse is moved. This Event is run with a Vec2 `delta` argument.
 ---@field onMouseScroll Event @Event called by Lime when the mouse scroll wheel is moved. This Event is run with a number `delta` argument.
----@field onJoystickConnect Event @Event called by Lime when a controller is connected. This Event is run with a number `id` argument.
----@field onJoystickDisconnect Event @Event called by Lime when a controller is disconnected. This Event is run with a number `id` argument.
----@field onJoystickButtonPressed Event @Event called by Lime when a controller button is pressed. This Event is run with number `id`, Lime.Enum.Joystick `button` arguments.
----@field onJoystickButtonReleased Event @Event called by Lime when a controller button is released. This Event is run with number `id`, Lime.Enum.Joystick `button` arguments.
+---@field onControllerConnected Event @Event called by Lime when a controller is connected. This Event is run with a number `id` argument.
+---@field onControllerDisconnected Event @Event called by Lime when a controller is disconnected. This Event is run with a number `id` argument.
+---@field onControllerButtonPressed Event @Event called by Lime when a controller button is pressed. This Event is run with number `id`, Lime.Enum.Controller `button` arguments.
+---@field onControllerButtonReleased Event @Event called by Lime when a controller button is released. This Event is run with number `id`, Lime.Enum.Controller `button` arguments.
 Lime.Input = Lime.Input or {}
 
 ---@class Lime.Scene
