@@ -233,12 +233,9 @@ void Receiver::handleJoystick(const irr::SEvent::SJoystickEvent& j) {
 	const bool firstTime = (joystickImpl->lastJoystickState.find(id) == joystickImpl->lastJoystickState.end());
 
 	if (firstTime) {
-		if (InputJoystickConnect)
-			InputJoystickConnect.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id);
-	}
-
-	if (firstTime)
 		joystickImpl->lastJoystickState[id] = j;
+		InputJoystickConnect.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id);
+	}
 
 	auto& prevState = joystickImpl->lastJoystickState[id];
 
@@ -258,10 +255,10 @@ void Receiver::handleJoystick(const irr::SEvent::SJoystickEvent& j) {
 	{
 		const uint32_t bit = 1u << i;
 
-		if ((pressedMask & bit) && InputJoystickButtonPressed)
+		if (pressedMask & bit)
 			InputJoystickButtonPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id, (int)i);
 
-		if ((releasedMask & bit) && InputJoystickButtonReleased)
+		if (releasedMask & bit)
 			InputJoystickButtonReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id, (int)i);
 	}
 
@@ -284,9 +281,9 @@ void Receiver::handleJoystick(const irr::SEvent::SJoystickEvent& j) {
 	povTo4(j.POV, nup, nright, ndown, nleft);
 
 	auto edge = [&](bool was, bool now, int virtualIndex) {
-		if (!was && now && InputJoystickButtonPressed)
+		if (!was && now)
 			InputJoystickButtonPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id, virtualIndex);
-		if (was && !now && InputJoystickButtonReleased)
+		if (was && !now)
 			InputJoystickButtonReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id, virtualIndex);
 		};
 
