@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "DebugConsole.h"
 #include "Objects/Event.h"
+#include "Objects/Vec2.h"
 
 static Application* a;
 static DebugConsole* d;
@@ -96,8 +97,16 @@ void Receiver::handleKey(const irr::SEvent::SKeyInput& k) {
 
 	keyboard.down[idx] = nowDown;
 
-	if (!wasDown && nowDown) keyboard.pressed[idx] = true;
-	if (wasDown && !nowDown) keyboard.released[idx] = true;
+	if (!wasDown && nowDown) {
+		keyboard.pressed[idx] = true;
+		InputKeyPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, idx);
+	}
+
+	if (wasDown && !nowDown) {
+		keyboard.released[idx] = true;
+		InputKeyReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, idx);
+	}
+
 	keyboard.repeat[idx] = nowDown && wasDown;
 
 	keyboard.shift = k.Shift;
@@ -108,6 +117,9 @@ void Receiver::handleKey(const irr::SEvent::SKeyInput& k) {
 		text.typed.push_back(k.Char);
 }
 
+#define MOUSE_LEFT 0
+#define MOUSE_RIGHT 1
+#define MOUSE_MIDDLE 2
 void Receiver::handleMouse(const irr::SEvent::SMouseInput& m) {
 	Vec2S newPos{ m.X, m.Y };
 	mouse.pos = newPos;
@@ -119,35 +131,59 @@ void Receiver::handleMouse(const irr::SEvent::SMouseInput& m) {
 
 	mouse.delta.x += (newPos.x - lastMousePos.x);
 	mouse.delta.y += (newPos.y - lastMousePos.y);
+
+	if (std::abs(mouse.delta.x + mouse.delta.y) >= 0.01f) {
+		InputMouseMoved.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, Vec2(mouse.delta.x, mouse.delta.y));
+	}
+
 	lastMousePos = newPos;
 
 	switch (m.Event) {
 	case irr::EMIE_LMOUSE_PRESSED_DOWN: // LMB pressed
-		if (!mouse.lmbDown) mouse.lmbPressed = true;
+		if (!mouse.lmbDown) {
+			mouse.lmbPressed = true;
+			InputMouseButtonPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, MOUSE_LEFT);
+		}
 		mouse.lmbDown = true;
 		break;
 	case irr::EMIE_LMOUSE_LEFT_UP: // LMB released
-		if (mouse.lmbDown) mouse.lmbReleased = true;
+		if (mouse.lmbDown) {
+			mouse.lmbReleased = true;
+			InputMouseButtonReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, MOUSE_LEFT);
+		}
 		mouse.lmbDown = false;
 		break;
 	case irr::EMIE_RMOUSE_PRESSED_DOWN: // RMB pressed
-		if (!mouse.rmbDown) mouse.rmbPressed = true;
+		if (!mouse.rmbDown) {
+			mouse.rmbPressed = true;
+			InputMouseButtonPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, MOUSE_RIGHT);
+		}
 		mouse.rmbDown = true;
 		break;
 	case irr::EMIE_RMOUSE_LEFT_UP: // RMB released
-		if (mouse.rmbDown) mouse.rmbReleased = true;
+		if (mouse.rmbDown) {
+			mouse.rmbReleased = true;
+			InputMouseButtonReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, MOUSE_RIGHT);
+		}
 		mouse.rmbDown = false;
 		break;
 	case irr::EMIE_MMOUSE_PRESSED_DOWN: // M pressed
-		if (!mouse.mDown) mouse.mPressed = true;
+		if (!mouse.mDown) {
+			mouse.mPressed = true;
+			InputMouseButtonPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, MOUSE_MIDDLE);
+		}
 		mouse.mDown = true;
 		break;
 	case irr::EMIE_MMOUSE_LEFT_UP: // M released
-		if (mouse.mDown) mouse.mReleased = true;
+		if (mouse.mDown) {
+			mouse.mReleased = true;
+			InputMouseButtonReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, MOUSE_MIDDLE);
+		}
 		mouse.mDown = false;
 		break;
 	case irr::EMIE_MOUSE_WHEEL: // M scroll
 		mouse.wheel += m.Wheel;
+		InputMouseWheel.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, m.Wheel);
 		break;
 	}
 }

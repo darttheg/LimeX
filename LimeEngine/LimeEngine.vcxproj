@@ -71,7 +71,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="api\Enums.api.inl" />
-    <None Include="api\ModuleLime.lua" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
