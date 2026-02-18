@@ -197,13 +197,15 @@ static inline float ApplyDeadzone(float x, float deadzone) {
 
 static uint64_t NowMs() {
 	using namespace std::chrono;
-	return (uint64_t)duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();
+	static const steady_clock::time_point start = steady_clock::now();
+	return (uint64_t)duration_cast<milliseconds>(steady_clock::now() - start).count();
 }
 
 void Receiver::initJoysticks(IrrlichtDevice* device) {
 	if (!device) return;
 	joystickImpl->joysticks.clear();
-	device->activateJoysticks(joystickImpl->joysticks);
+	if (!device->activateJoysticks(joystickImpl->joysticks))
+		d->Warn("Could not activate controller support: it is unsupported on this device.");
 }
 
 void Receiver::pollDisconnectedJoysticks() {
@@ -214,16 +216,14 @@ void Receiver::pollDisconnectedJoysticks() {
 		const int32_t id = it->first;
 		const uint64_t lastSeen = it->second;
 
+		d->Log(std::to_string(t - lastSeen), MESSAGE_TYPE::GREEN);
 		if (t - lastSeen > timeoutMs) {
-			if (InputJoystickDisconnect)
-				InputJoystickDisconnect.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id);
+			InputJoystickDisconnect.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id);
 
 			joystickImpl->lastSeenMs.erase(it++);
 			joystickImpl->lastJoystickState.erase(id);
-		}
-		else {
+		} else
 			++it;
-		}
 	}
 }
 
