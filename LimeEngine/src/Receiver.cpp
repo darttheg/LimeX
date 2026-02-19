@@ -210,13 +210,12 @@ void Receiver::initJoysticks(IrrlichtDevice* device) {
 
 void Receiver::pollDisconnectedJoysticks() {
 	const uint64_t t = NowMs();
-	const uint64_t timeoutMs = 1500;
+	const uint64_t timeoutMs = 500;
 
 	for (auto it = joystickImpl->lastSeenMs.begin(); it != joystickImpl->lastSeenMs.end(); ) {
 		const int32_t id = it->first;
 		const uint64_t lastSeen = it->second;
 
-		d->Log(std::to_string(t - lastSeen), MESSAGE_TYPE::GREEN);
 		if (t - lastSeen > timeoutMs) {
 			InputJoystickDisconnect.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id);
 

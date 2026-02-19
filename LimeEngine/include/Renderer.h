@@ -102,6 +102,7 @@ public:
 	// Misc
 	bool setMouseVisible(bool vis);
 	bool setMousePosition(const Vec2& pos);
+	HWND getHandle() { return hwndIrr; }
 
 private:
 	struct Vec4S { float x, y, z, w; };
@@ -132,4 +133,5 @@ private:
 	int frameCount = 0;
 	int lastTime = 0;
 	int fps = 0;
+	HWND hwndIrr;
 };

@@ -53,17 +53,44 @@ bool Renderer::Init() {
 	i_device->setEventReceiver(a->GetReceiver());
 	a->GetReceiver()->initJoysticks(i_device);
 
-	HWND hwndIrr = (HWND)i_device->getVideoDriver()->getExposedVideoData().D3D9.HWnd;
-	ShowWindow(hwndIrr, SW_HIDE);
+	using namespace irr;
+	using namespace video;
+	E_DRIVER_TYPE dout = (E_DRIVER_TYPE)cfg.driverType;
 
-	SetParent(hwndIrr, w->GetHandle());
-	SetWindowLongPtr(hwndIrr, GWL_STYLE, WS_CHILD | WS_VISIBLE);
-	SetWindowPos(hwndIrr, 0, 0, 0, 640, 480, SWP_NOZORDER | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
-	ShowWindow(w->GetHandle(), SW_RESTORE);
-	SetForegroundWindow(w->GetHandle());
-	SetActiveWindow(w->GetHandle());
-	SendMessage(hwndIrr, WM_ACTIVATE, WA_ACTIVE, 0);
-	SendMessage(hwndIrr, WM_SETFOCUS, 0, 0);
+	bool nullWin = false;
+	switch (dout) {
+		case E_DRIVER_TYPE::EDT_DIRECT3D8:
+			hwndIrr = (HWND)i_device->getVideoDriver()->getExposedVideoData().D3D8.HWnd;
+			break;
+		case E_DRIVER_TYPE::EDT_DIRECT3D9:
+			hwndIrr = (HWND)i_device->getVideoDriver()->getExposedVideoData().D3D9.HWnd;
+			break;
+		case E_DRIVER_TYPE::EDT_BURNINGSVIDEO:
+			hwndIrr = (HWND)i_device->getVideoDriver()->getExposedVideoData().OpenGLWin32.HWnd;
+			break;
+		case E_DRIVER_TYPE::EDT_SOFTWARE:
+			hwndIrr = (HWND)i_device->getVideoDriver()->getExposedVideoData().OpenGLWin32.HWnd;
+			break;
+		case E_DRIVER_TYPE::EDT_OPENGL:
+			hwndIrr = (HWND)i_device->getVideoDriver()->getExposedVideoData().OpenGLWin32.HWnd;
+			break;
+		default: // None
+			nullWin = true;
+			break;
+	}
+
+	if (!nullWin && hwndIrr) {
+		ShowWindow(hwndIrr, SW_HIDE);
+
+		SetParent(hwndIrr, w->GetHandle());
+		SetWindowLongPtr(hwndIrr, GWL_STYLE, WS_CHILD | WS_VISIBLE);
+		SetWindowPos(hwndIrr, 0, 0, 0, 640, 480, SWP_NOZORDER | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+		ShowWindow(w->GetHandle(), SW_RESTORE);
+		SetForegroundWindow(w->GetHandle());
+		SetActiveWindow(w->GetHandle());
+		SendMessage(hwndIrr, WM_ACTIVATE, WA_ACTIVE, 0);
+		SendMessage(hwndIrr, WM_SETFOCUS, 0, 0);
+	}
 
 	glfwSetWindowUserPointer(w->getGLFWWindow(), this);
 	glfwSetWindowFocusCallback(w->getGLFWWindow(), [](GLFWwindow* w, int focused) {
@@ -71,17 +98,18 @@ bool Renderer::Init() {
 		if (!renderer || !renderer->i_device) return;
 
 		// Switch on driver type
-		HWND hwndIrr = (HWND)renderer->i_driver->getExposedVideoData().D3D9.HWnd;
+		HWND h = renderer->getHandle();
+		if (!h) return;
 
 		if (focused)
 		{
-			SendMessage(hwndIrr, WM_ACTIVATE, WA_ACTIVE, 0);
-			SendMessage(hwndIrr, WM_SETFOCUS, 0, 0);
+			SendMessage(h, WM_ACTIVATE, WA_ACTIVE, 0);
+			SendMessage(h, WM_SETFOCUS, 0, 0);
 		}
 		else
 		{
-			SendMessage(hwndIrr, WM_ACTIVATE, WA_INACTIVE, 0);
-			SendMessage(hwndIrr, WM_KILLFOCUS, 0, 0);
+			SendMessage(h, WM_ACTIVATE, WA_INACTIVE, 0);
+			SendMessage(h, WM_KILLFOCUS, 0, 0);
 		}
 		});
 
@@ -100,6 +128,11 @@ bool Renderer::Shutdown() {
 bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 	if (!guardRenderingCheck()) return false;
 	if (!isCreated || !w->getGLFWWindow()) return false;
+
+	if (!i_device->run()) {
+		d->Warn("Render device could not be ran!");
+		return false;
+	}
 
 	if (manualRendering && !i_smgr->getActiveCamera()) {
 		d->Warn("Cannot render without an active Camera!");
