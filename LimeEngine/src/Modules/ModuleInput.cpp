@@ -89,22 +89,22 @@ void Module::Input::bind(Application* app) {
 	module["onControllerButtonPressed"] = receiver->InputJoystickButtonPressed;
 	module["onControllerButtonReleased"] = receiver->InputJoystickButtonReleased;
 
-	// Returns true if `button` is currently pressed.
+	// Returns true if controller with id `id` has button `button` pressed down.
 	// Params number id, Lime.Enum.Controller button
 	// Returns boolean
 	module.set_function("isButtonDown", &Module::Input::Bind::isButtonDown);
 
-	// Returns the controller `axis` axis value from -1.0 to 1.0 from controller `id`.
+	// Returns controller with id `id`'s `axis` axis value from -1.0 to 1.0. Triggers are ranged 0.0 to 1.0.
 	// Params number id, Lime.Enum.ControllerAxis axis
 	// Returns number
 	module.set_function("getControllerAxis", &Module::Input::Bind::getControllerAxis);
 
-	// Returns true if controller `id` is connected.
+	// Returns true if controller with id `id` is connected.
 	// Params number id
 	// Returns boolean
 	module.set_function("isControllerConnected", &Module::Input::Bind::isControllerConnected);
 
-	// Returns the name of the controller of `id`.
+	// Returns the name of the controller with id `id`.
 	// Params number id
 	// Returns string
 	module.set_function("getControllerName", &Module::Input::Bind::getControllerName);

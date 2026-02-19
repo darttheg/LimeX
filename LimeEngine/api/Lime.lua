@@ -275,13 +275,13 @@ function Lime.setManualRendering(isManual) end
 ---@return void
 function Lime.setVSync(vSyncOn) end
 
---- Returns the controller `axis` axis value from -1.0 to 1.0 from controller `id`.
+--- Returns controller with id `id`'s `axis` axis value from -1.0 to 1.0. Triggers are ranged 0.0 to 1.0.
 ---@param id number
 ---@param axis Lime.Enum.ControllerAxis
 ---@return number
 function Lime.Input.getControllerAxis(id, axis) end
 
---- Returns the name of the controller of `id`.
+--- Returns the name of the controller with id `id`.
 ---@param id number
 ---@return string
 function Lime.Input.getControllerName(id) end
@@ -294,13 +294,13 @@ function Lime.Input.getMouseDelta() end
 ---@return Vec2
 function Lime.Input.getMousePosition() end
 
---- Returns true if `button` is currently pressed.
+--- Returns true if controller with id `id` has button `button` pressed down.
 ---@param id number
 ---@param button Lime.Enum.Controller
 ---@return boolean
 function Lime.Input.isButtonDown(id, button) end
 
---- Returns true if controller `id` is connected.
+--- Returns true if controller with id `id` is connected.
 ---@param id number
 ---@return boolean
 function Lime.Input.isControllerConnected(id) end
