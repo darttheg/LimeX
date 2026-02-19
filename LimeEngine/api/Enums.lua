@@ -179,10 +179,10 @@ DPadLeft = 35,
 Lime.Enum.ControllerAxis = {
 LeftStickX = 0,
 LeftStickY = 1,
-RightStickX = 2,
-RightStickY = 3,
-LeftTrigger = 4,
-RightTrigger = 5,
+RightStickX = 3,
+RightStickY = 4,
+LeftTrigger = 5,
+RightTrigger = 6,
 }
 ---@alias Lime.Enum.Key integer
 ---@class Lime.Enum.KeyEnum

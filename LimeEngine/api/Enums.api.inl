@@ -97,10 +97,10 @@ LIME_ENUM(ControllerButton,
 LIME_ENUM(ControllerAxis,
     LIME_ENUM_VALUE(LeftStickX, 0)
     LIME_ENUM_VALUE(LeftStickY, 1)
-    LIME_ENUM_VALUE(RightStickX, 2)
-    LIME_ENUM_VALUE(RightStickY, 3)
-    LIME_ENUM_VALUE(LeftTrigger, 4)
-    LIME_ENUM_VALUE(RightTrigger, 5)
+    LIME_ENUM_VALUE(RightStickX, 3)
+    LIME_ENUM_VALUE(RightStickY, 4)
+    LIME_ENUM_VALUE(LeftTrigger, 5)
+    LIME_ENUM_VALUE(RightTrigger, 6)
 );
 
 LIME_ENUM(Key,

@@ -283,13 +283,13 @@ float Receiver::getControllerAxis(int id, int axis) {
 	auto it = joystickImpl->lastJoystickState.find(id);
 	if (it == joystickImpl->lastJoystickState.end()) return 0.0f;
 
-	const int maxAxes = irr::SEvent::SJoystickEvent::NUMBER_OF_AXES;
-	if (axis >= maxAxes) return 0.0f;
+	// const int maxAxes = irr::SEvent::SJoystickEvent::NUMBER_OF_AXES;
+	if (axis > 6) return 0.0f;
 
 	// Triggers
-	if (axis == 4 || axis == 5) {
-		bool left = axis == 4;
+	if (axis == 5 || axis == 6) {
 		float out = getControllerAxis(0, irr::SEvent::SJoystickEvent::AXIS_Z);
+		bool left = axis == 5;
 
 		if (left) {
 			if (out < 0.0f) return 0.0f;
