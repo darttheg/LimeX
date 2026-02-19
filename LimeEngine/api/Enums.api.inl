@@ -77,6 +77,32 @@ LIME_ENUM(Mouse,
     LIME_ENUM_VALUE(Middle, 2)
 );
 
+LIME_ENUM(ControllerButton,
+    LIME_ENUM_VALUE(A, 0)
+    LIME_ENUM_VALUE(B, 1)
+    LIME_ENUM_VALUE(X, 2)
+    LIME_ENUM_VALUE(Y, 3)
+    LIME_ENUM_VALUE(RightBumper, 4)
+    LIME_ENUM_VALUE(LeftBumper, 5)
+    LIME_ENUM_VALUE(Back, 6)
+    LIME_ENUM_VALUE(Start, 7)
+    LIME_ENUM_VALUE(RightStick, 8)
+    LIME_ENUM_VALUE(LeftStick, 9)
+    LIME_ENUM_VALUE(DPadUp, 32)
+    LIME_ENUM_VALUE(DPadRight, 33)
+    LIME_ENUM_VALUE(DPadDown, 34)
+    LIME_ENUM_VALUE(DPadLeft, 35)
+);
+
+LIME_ENUM(ControllerAxis,
+    LIME_ENUM_VALUE(LeftStickX, 0)
+    LIME_ENUM_VALUE(LeftStickY, 1)
+    LIME_ENUM_VALUE(RightStickX, 2)
+    LIME_ENUM_VALUE(RightStickY, 3)
+    LIME_ENUM_VALUE(LeftTrigger, 4)
+    LIME_ENUM_VALUE(RightTrigger, 5)
+);
+
 LIME_ENUM(Key,
     LIME_ENUM_VALUE(Back, 8)
     LIME_ENUM_VALUE(Tab, 9)

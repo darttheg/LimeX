@@ -94,10 +94,17 @@ public:
 	struct Impl;
 	std::unique_ptr<Impl> joystickImpl;
 	void initJoysticks(IrrlichtDevice* device);
+	void pollNewJoysticks();
 	void pollDisconnectedJoysticks();
+
+	bool isButtonDown(int id, int btn);
+	float getControllerAxis(int id, int axis);
+	bool isControllerConnected(int id);
 private:
 	Mouse mouse{};
 	Keyboard keyboard{};
+	uint64_t lastPulsedJoysticks = 0;
+	const uint64_t pulseFreq = 2500;
 
 	void handleKey(const irr::SEvent::SKeyInput& k);
 	void handleMouse(const irr::SEvent::SMouseInput& m);

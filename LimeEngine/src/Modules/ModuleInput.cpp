@@ -46,12 +46,12 @@ void Module::Input::bind(Application* app) {
 	module["onMouseMoved"] = receiver->InputMouseMoved;
 	module["onMouseScroll"] = receiver->InputMouseWheel;
 
-	// Returns true if Lime.Enum.Key `key` is currently pressed.
+	// Returns true if `key` is currently pressed.
 	// Params Lime.Enum.Key key
 	// Returns boolean
 	module.set_function("isKeyDown", &Module::Input::Bind::isKeyDown);
 
-	// Returns true if Lime.Enum.Mouse `button` is currently pressed.
+	// Returns true if `button` is currently pressed.
 	// Params Lime.Enum.Mouse button
 	// Returns boolean
 	module.set_function("isMouseButtonDown", &Module::Input::Bind::isMouseButtonDown);
@@ -88,6 +88,21 @@ void Module::Input::bind(Application* app) {
 	module["onControllerDisconnected"] = receiver->InputJoystickDisconnect;
 	module["onControllerButtonPressed"] = receiver->InputJoystickButtonPressed;
 	module["onControllerButtonReleased"] = receiver->InputJoystickButtonReleased;
+
+	// Returns true if `button` is currently pressed.
+	// Params number id, Lime.Enum.Controller button
+	// Returns boolean
+	module.set_function("isButtonDown", &Module::Input::Bind::isButtonDown);
+
+	// Returns the controller `axis` axis value from -1.0 to 1.0 from controller `id`.
+	// Params number id, Lime.Enum.ControllerAxis axis
+	// Returns number
+	module.set_function("getControllerAxis", &Module::Input::Bind::getControllerAxis);
+
+	// Returns true if controller `id` is connected.
+	// Params number id
+	// Returns boolean
+	module.set_function("isControllerConnected", &Module::Input::Bind::isControllerConnected);
 
 	// End Module
 }
@@ -129,4 +144,16 @@ void Module::Input::Bind::setMouseVisible(bool vis) {
 	if (!renderer->setMouseVisible(vis)) {
 		d->Warn("The window must be created to edit mouse attributes.");
 	}
+}
+
+bool Module::Input::Bind::isButtonDown(int id, int btn) {
+	return receiver->isButtonDown(id, btn);
+}
+
+float Module::Input::Bind::getControllerAxis(int id, int axis) {
+	return receiver->getControllerAxis(id, axis);
+}
+
+bool Module::Input::Bind::isControllerConnected(int id) {
+	return receiver->isControllerConnected(id);
 }

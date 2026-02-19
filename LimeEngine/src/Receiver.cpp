@@ -8,6 +8,7 @@
 
 static Application* a;
 static DebugConsole* d;
+static IrrlichtDevice* device;
 
 struct Receiver::Impl {
 	irr::core::array<irr::SJoystickInfo> joysticks;
@@ -57,6 +58,8 @@ void Receiver::beginFrame() {
 void Receiver::endFrame() {
 	mouse.lastPos = mouse.pos;
 	firstMouse = false;
+
+	pollNewJoysticks();
 	pollDisconnectedJoysticks();
 }
 
@@ -201,22 +204,53 @@ static uint64_t NowMs() {
 	return (uint64_t)duration_cast<milliseconds>(steady_clock::now() - start).count();
 }
 
-void Receiver::initJoysticks(IrrlichtDevice* device) {
-	if (!device) return;
+void Receiver::initJoysticks(IrrlichtDevice* dev) {
+	if (!dev) return;
+	device = dev;
 	joystickImpl->joysticks.clear();
+
 	if (!device->activateJoysticks(joystickImpl->joysticks))
 		d->Warn("Could not activate controller support: it is unsupported on this device.");
 }
 
+void Receiver::pollNewJoysticks() {
+	if (!device) return;
+
+	if (true) return; // Could not set DirectInput device cooperative level error, probably because of GLFW ownership?
+
+	const uint64_t t = NowMs();
+	if (t - lastPulsedJoysticks < pulseFreq) {
+		return;
+	}
+	lastPulsedJoysticks = t;
+
+	irr::core::array<irr::SJoystickInfo> tmp;
+	const bool ok = device->activateJoysticks(tmp);
+	if (!ok) return;
+
+	if (tmp.size() == 0 && joystickImpl->joysticks.size() > 0) return;
+
+	const irr::u32 oldC = joystickImpl->joysticks.size();
+	const irr::u32 newC = tmp.size();
+
+	joystickImpl->joysticks = tmp;
+
+	if (newC > oldC) {
+		for (irr::u32 i = oldC; i < newC; ++i) {
+			const int32_t id = (int32_t)i;
+			InputJoystickConnect.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id);
+		}
+	}
+}
+
 void Receiver::pollDisconnectedJoysticks() {
 	const uint64_t t = NowMs();
-	const uint64_t timeoutMs = 500;
 
 	for (auto it = joystickImpl->lastSeenMs.begin(); it != joystickImpl->lastSeenMs.end(); ) {
 		const int32_t id = it->first;
 		const uint64_t lastSeen = it->second;
 
-		if (t - lastSeen > timeoutMs) {
+		if (t - lastSeen > pulseFreq) {
 			InputJoystickDisconnect.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id);
 
 			joystickImpl->lastSeenMs.erase(it++);
@@ -224,6 +258,58 @@ void Receiver::pollDisconnectedJoysticks() {
 		} else
 			++it;
 	}
+}
+
+bool Receiver::isButtonDown(int id, int btn) {
+	if (id < 0 || btn < 0) return false;
+	if ((irr::u32)id >= joystickImpl->joysticks.size()) return false;
+	auto it = joystickImpl->lastJoystickState.find(id);
+	if (it == joystickImpl->lastJoystickState.end()) return false;
+
+	if (btn >= 32) return false;
+	return it->second.IsButtonPressed((irr::u32)btn);
+}
+
+static inline float SnapToOne(float x) {
+	float eps = 0.01f;
+	if (x >= 1.0f - eps) return 1.0f;
+	if (x <= eps) return 0.0f;
+	return x;
+}
+
+float Receiver::getControllerAxis(int id, int axis) {
+	if (id < 0 || axis < 0) return 0.0f;
+	if ((irr::u32)id >= joystickImpl->joysticks.size()) return 0.0f;
+	auto it = joystickImpl->lastJoystickState.find(id);
+	if (it == joystickImpl->lastJoystickState.end()) return 0.0f;
+
+	const int maxAxes = irr::SEvent::SJoystickEvent::NUMBER_OF_AXES;
+	if (axis >= maxAxes) return 0.0f;
+
+	// Triggers
+	if (axis == 4 || axis == 5) {
+		bool left = axis == 4;
+		float out = getControllerAxis(0, irr::SEvent::SJoystickEvent::AXIS_Z);
+
+		if (left) {
+			if (out < 0.0f) return 0.0f;
+			return SnapToOne(out);
+		}
+		else {
+			if (out > 0.0f) return 0.0f;
+			return SnapToOne(out * -1.0f);
+		}
+	}
+
+	const irr::s16 raw = it->second.Axis[axis];
+	float x = NormalizeAxisS16(raw);
+	if (std::abs(x) <= 0.001) return 0.0f;
+	return NormalizeAxisS16(raw);
+}
+
+bool Receiver::isControllerConnected(int id) {
+	if (id < 0) return false;
+	return (irr::u32)id < joystickImpl->joysticks.size();
 }
 
 void Receiver::handleJoystick(const irr::SEvent::SJoystickEvent& j) {

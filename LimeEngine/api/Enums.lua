@@ -136,6 +136,54 @@ Left = 0,
 Right = 1,
 Middle = 2,
 }
+---@alias Lime.Enum.ControllerButton integer
+---@class Lime.Enum.ControllerButtonEnum
+---@field A Lime.Enum.ControllerButton
+---@field B Lime.Enum.ControllerButton
+---@field X Lime.Enum.ControllerButton
+---@field Y Lime.Enum.ControllerButton
+---@field RightBumper Lime.Enum.ControllerButton
+---@field LeftBumper Lime.Enum.ControllerButton
+---@field Back Lime.Enum.ControllerButton
+---@field Start Lime.Enum.ControllerButton
+---@field RightStick Lime.Enum.ControllerButton
+---@field LeftStick Lime.Enum.ControllerButton
+---@field DPadUp Lime.Enum.ControllerButton
+---@field DPadRight Lime.Enum.ControllerButton
+---@field DPadDown Lime.Enum.ControllerButton
+---@field DPadLeft Lime.Enum.ControllerButton
+Lime.Enum.ControllerButton = {
+A = 0,
+B = 1,
+X = 2,
+Y = 3,
+RightBumper = 4,
+LeftBumper = 5,
+Back = 6,
+Start = 7,
+RightStick = 8,
+LeftStick = 9,
+DPadUp = 32,
+DPadRight = 33,
+DPadDown = 34,
+DPadLeft = 35,
+}
+---@alias Lime.Enum.ControllerAxis integer
+---@class Lime.Enum.ControllerAxisEnum
+---@field LeftStickX Lime.Enum.ControllerAxis
+---@field LeftStickY Lime.Enum.ControllerAxis
+---@field RightStickX Lime.Enum.ControllerAxis
+---@field RightStickY Lime.Enum.ControllerAxis
+---@field LeftTrigger Lime.Enum.ControllerAxis
+---@field RightTrigger Lime.Enum.ControllerAxis
+Lime.Enum.ControllerAxis = {
+LeftStickX = 0,
+LeftStickY = 1,
+RightStickX = 2,
+RightStickY = 3,
+LeftTrigger = 4,
+RightTrigger = 5,
+}
 ---@alias Lime.Enum.Key integer
 ---@class Lime.Enum.KeyEnum
 ---@field Back Lime.Enum.Key

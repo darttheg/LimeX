@@ -275,6 +275,12 @@ function Lime.setManualRendering(isManual) end
 ---@return void
 function Lime.setVSync(vSyncOn) end
 
+--- Returns the controller `axis` axis value from -1.0 to 1.0 from controller `id`.
+---@param id number
+---@param axis Lime.Enum.ControllerAxis
+---@return number
+function Lime.Input.getControllerAxis(id, axis) end
+
 --- Returns the change in mouse position within the last frame.
 ---@return Vec2
 function Lime.Input.getMouseDelta() end
@@ -283,12 +289,23 @@ function Lime.Input.getMouseDelta() end
 ---@return Vec2
 function Lime.Input.getMousePosition() end
 
---- Returns true if Lime.Enum.Key `key` is currently pressed.
+--- Returns true if `button` is currently pressed.
+---@param id number
+---@param button Lime.Enum.Controller
+---@return boolean
+function Lime.Input.isButtonDown(id, button) end
+
+--- Returns true if controller `id` is connected.
+---@param id number
+---@return boolean
+function Lime.Input.isControllerConnected(id) end
+
+--- Returns true if `key` is currently pressed.
 ---@param key Lime.Enum.Key
 ---@return boolean
 function Lime.Input.isKeyDown(key) end
 
---- Returns true if Lime.Enum.Mouse `button` is currently pressed.
+--- Returns true if `button` is currently pressed.
 ---@param button Lime.Enum.Mouse
 ---@return boolean
 function Lime.Input.isMouseButtonDown(button) end
