@@ -281,6 +281,11 @@ function Lime.setVSync(vSyncOn) end
 ---@return number
 function Lime.Input.getControllerAxis(id, axis) end
 
+--- Returns the name of the controller of `id`.
+---@param id number
+---@return string
+function Lime.Input.getControllerName(id) end
+
 --- Returns the change in mouse position within the last frame.
 ---@return Vec2
 function Lime.Input.getMouseDelta() end

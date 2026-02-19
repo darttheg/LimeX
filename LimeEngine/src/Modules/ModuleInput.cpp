@@ -104,6 +104,11 @@ void Module::Input::bind(Application* app) {
 	// Returns boolean
 	module.set_function("isControllerConnected", &Module::Input::Bind::isControllerConnected);
 
+	// Returns the name of the controller of `id`.
+	// Params number id
+	// Returns string
+	module.set_function("getControllerName", &Module::Input::Bind::getControllerName);
+
 	// End Module
 }
 
@@ -156,4 +161,8 @@ float Module::Input::Bind::getControllerAxis(int id, int axis) {
 
 bool Module::Input::Bind::isControllerConnected(int id) {
 	return receiver->isControllerConnected(id);
+}
+
+std::string Module::Input::Bind::getControllerName(int id) {
+	return receiver->getControllerName(id);
 }

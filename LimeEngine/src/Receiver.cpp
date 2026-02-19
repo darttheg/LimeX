@@ -312,6 +312,11 @@ bool Receiver::isControllerConnected(int id) {
 	return (irr::u32)id < joystickImpl->joysticks.size();
 }
 
+std::string Receiver::getControllerName(int id) {
+	if (id > joystickImpl->joysticks.size()) return "";
+	return joystickImpl->joysticks[id].Name.c_str();
+}
+
 void Receiver::handleJoystick(const irr::SEvent::SJoystickEvent& j) {
 	const int32_t id = (int32_t)j.Joystick;
 

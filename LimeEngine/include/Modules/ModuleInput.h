@@ -21,6 +21,7 @@ namespace Module {
 			bool isButtonDown(int id, int btn);
 			float getControllerAxis(int id, int axis);
 			bool isControllerConnected(int id);
+			std::string getControllerName(int id);
 		}
 	}
 }
