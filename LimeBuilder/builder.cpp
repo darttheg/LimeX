@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <regex>
+#include <cstdint>
 #include <Windows.h>
 
 #include "builder.h"
@@ -14,6 +15,112 @@ extern "C" {
 	#include "lualib.h"
 	#include "lauxlib.h"
 }
+
+#ifdef _WIN32
+#pragma pack(push, 1)
+struct ICONDIR {
+	uint16_t idReserved;
+	uint16_t idType;
+	uint16_t idCount;
+};
+struct ICONDIRENTRY {
+	uint8_t  bWidth;
+	uint8_t  bHeight;
+	uint8_t  bColorCount;
+	uint8_t  bReserved;
+	uint16_t wPlanes;
+	uint16_t wBitCount;
+	uint32_t dwBytesInRes;
+	uint32_t dwImageOffset;
+};
+struct GRPICONDIRENTRY {
+	uint8_t  bWidth;
+	uint8_t  bHeight;
+	uint8_t  bColorCount;
+	uint8_t  bReserved;
+	uint16_t wPlanes;
+	uint16_t wBitCount;
+	uint32_t dwBytesInRes;
+	uint16_t nID;
+};
+struct GRPICONDIR {
+	uint16_t idReserved;
+	uint16_t idType;
+	uint16_t idCount;
+};
+#pragma pack(pop)
+
+static std::vector<uint8_t> ReadFileBytes(const std::filesystem::path& p) {
+	std::ifstream f(p, std::ios::binary | std::ios::ate);
+	if (!f.is_open()) return {};
+	std::streamsize sz = f.tellg();
+	f.seekg(0, std::ios::beg);
+	std::vector<uint8_t> data((size_t)sz);
+	if (!f.read((char*)data.data(), sz)) return {};
+	return data;
+}
+
+static void ApplyIcoToExe(const std::filesystem::path& exePath, const std::filesystem::path& icoPath) {
+	auto bytes = ReadFileBytes(icoPath);
+	if (bytes.size() < sizeof(ICONDIR))
+		throw std::runtime_error("Icon file unreadable or too small: " + icoPath.string());
+
+	const ICONDIR* dir = (const ICONDIR*)bytes.data();
+	if (dir->idReserved != 0 || dir->idType != 1 || dir->idCount == 0)
+		throw std::runtime_error("Invalid .ico header: " + icoPath.string());
+
+	size_t need = sizeof(ICONDIR) + (size_t)dir->idCount * sizeof(ICONDIRENTRY);
+	if (bytes.size() < need)
+		throw std::runtime_error("Invalid .ico directory: " + icoPath.string());
+
+	const ICONDIRENTRY* entries = (const ICONDIRENTRY*)(bytes.data() + sizeof(ICONDIR));
+
+	std::vector<uint8_t> group;
+	group.resize(sizeof(GRPICONDIR) + (size_t)dir->idCount * sizeof(GRPICONDIRENTRY));
+	GRPICONDIR* gdir = (GRPICONDIR*)group.data();
+	gdir->idReserved = 0;
+	gdir->idType = 1;
+	gdir->idCount = dir->idCount;
+	GRPICONDIRENTRY* gentries = (GRPICONDIRENTRY*)(group.data() + sizeof(GRPICONDIR));
+
+	HANDLE h = BeginUpdateResourceW(exePath.wstring().c_str(), FALSE);
+	if (!h)
+		throw std::runtime_error("BeginUpdateResource failed: " + exePath.string());
+
+	auto fail = [&](const char* msg) {
+		DWORD e = GetLastError();
+		EndUpdateResourceW(h, TRUE);
+		throw std::runtime_error(std::string(msg) + " (GetLastError=" + std::to_string((unsigned)e) + ")");
+	};
+
+	for (uint16_t i = 0; i < dir->idCount; i++) {
+		const auto& e = entries[i];
+		if ((size_t)e.dwImageOffset + (size_t)e.dwBytesInRes > bytes.size())
+			fail("Corrupt .ico (bad offsets)");
+
+		uint16_t resId = (uint16_t)(i + 1);
+
+		gentries[i].bWidth = e.bWidth;
+		gentries[i].bHeight = e.bHeight;
+		gentries[i].bColorCount = e.bColorCount;
+		gentries[i].bReserved = 0;
+		gentries[i].wPlanes = e.wPlanes;
+		gentries[i].wBitCount = e.wBitCount;
+		gentries[i].dwBytesInRes = e.dwBytesInRes;
+		gentries[i].nID = resId;
+
+		const void* imgPtr = bytes.data() + e.dwImageOffset;
+		if (!UpdateResourceW(h, RT_ICON, MAKEINTRESOURCEW(resId), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), (LPVOID)imgPtr, e.dwBytesInRes))
+			fail("UpdateResource RT_ICON failed");
+	}
+
+	if (!UpdateResourceW(h, RT_GROUP_ICON, MAKEINTRESOURCEW(1), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), group.data(), (DWORD)group.size()))
+		fail("UpdateResource RT_GROUP_ICON failed");
+
+	if (!EndUpdateResourceW(h, FALSE))
+		fail("EndUpdateResource failed");
+}
+#endif
 
 namespace fs = std::filesystem;
 
@@ -187,8 +294,7 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 		try {
 			std::cout << "Compiling " << m.name << "\n";
 			m.bytecode = compileLuaToBC(L, m.code, m.name);
-		}
-		catch (const std::exception& e) {
+		} catch (const std::exception& e) {
 			throw std::runtime_error("Failed to compile module '" + m.name + "': " + e.what());
 		}
 	}
@@ -229,6 +335,18 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 	std::ofstream exe(finalExe, std::ios::binary | std::ios::trunc);
 	exe.write(templateExe.data(), templateExe.size());
 	exe.close();
+
+	#ifdef _WIN32
+	try {
+		fs::path ico = fs::path(pDir) / "icon.ico";
+		if (fs::exists(ico)) {
+			std::cout << "Applying icon: " << ico.string() << "\n";
+			ApplyIcoToExe(finalPath, ico);
+		}
+	} catch (const std::exception& e) {
+		std::cout << "WARNING: Failed to apply icon: " << e.what() << "\n";
+	}
+	#endif
 
 	EmbedPackage(finalExe, outPkg.string());
 

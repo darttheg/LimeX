@@ -15,11 +15,13 @@ AppAlterables parseArgs(int argc, char* argv[]) {
 			throw std::runtime_error("Missing value for argument " + a);
 			};
 
+		/*
 		if (a == "--name") out.name = getVal(i++);
 		else if (a == "--version") out.version = getVal(i++);
 		else if (a == "--desc") out.desc = getVal(i++);
 		else if (a == "--icon") out.iconPath = getVal(i++);
 		else if (a == "--copyright") out.copyright = getVal(i++);
+		*/
 	}
 
 	return out;

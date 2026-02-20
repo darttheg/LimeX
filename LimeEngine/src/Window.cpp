@@ -16,6 +16,31 @@ static Application* a;
 static DebugConsole* d;
 static Window* w;
 
+#ifdef _WIN32
+#include <windows.h>
+
+static void SetMainWindowIcon(HWND hwnd) {
+	HICON hBig = (HICON)LoadImageW(
+		GetModuleHandleW(nullptr),
+		MAKEINTRESOURCEW(1),
+		IMAGE_ICON,
+		32, 32,
+		LR_DEFAULTCOLOR
+	);
+
+	HICON hSmall = (HICON)LoadImageW(
+		GetModuleHandleW(nullptr),
+		MAKEINTRESOURCEW(1),
+		IMAGE_ICON,
+		16, 16,
+		LR_DEFAULTCOLOR
+	);
+
+	if (hBig)   SendMessageW(hwnd, WM_SETICON, ICON_BIG, (LPARAM)hBig);
+	if (hSmall) SendMessageW(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hSmall);
+}
+#endif
+
 Window::Window(Application* app) {
 	a = app;
 	d = a->GetDebugConsole();
@@ -108,6 +133,10 @@ bool Window::Create() {
 	});
 
 	glfwSetTime(0.0);
+
+	#ifdef _WIN32
+	SetMainWindowIcon(GetHandle());
+	#endif
 
 	return true;
 }
