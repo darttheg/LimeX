@@ -74,6 +74,10 @@ void Module::Window::bind(Application* app) {
 	// Returns void
 	module.set_function("setLockAspectRatio", &Module::Window::Bind::SetMaintainAR);
 
+	// Field Event onResize, Event called by Lime once the window is resized in any way.
+	w->WindowResize = std::make_shared<Event>();
+	module["onResize"] = w->WindowResize;
+
 	// End Module
 }
 

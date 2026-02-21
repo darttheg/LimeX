@@ -78,12 +78,12 @@ Mirror = 4,
 MirrorClamp = 5,
 MirrorClampToEdge = 6,
 }
----@alias Lime.Enum.MaterialQuality integer
----@class Lime.Enum.MaterialQualityEnum
----@field Low Lime.Enum.MaterialQuality
----@field Medium Lime.Enum.MaterialQuality
----@field High Lime.Enum.MaterialQuality
-Lime.Enum.MaterialQuality = {
+---@alias Lime.Enum.Quality integer
+---@class Lime.Enum.QualityEnum
+---@field Low Lime.Enum.Quality
+---@field Medium Lime.Enum.Quality
+---@field High Lime.Enum.Quality
+Lime.Enum.Quality = {
 Low = 0,
 Medium = 1,
 High = 2,

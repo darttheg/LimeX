@@ -7,6 +7,7 @@
 #include "DebugConsole.h"
 #include "Window.h"
 #include "Receiver.h"
+#include "GUIManager.h"
 
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
@@ -21,6 +22,7 @@ Renderer::Renderer(Application* owner) {
 	a = owner;
 	d = a->GetDebugConsole();
 	w = a->GetWindow();
+	guiManager = new GUIManager(d, this);
 }
 Renderer::~Renderer() {
 	Shutdown();
@@ -52,6 +54,8 @@ bool Renderer::Init() {
 
 	i_device->setEventReceiver(a->GetReceiver());
 	a->GetReceiver()->initJoysticks(i_device);
+
+	guiManager->SetGUIEnv(i_gui);
 
 	using namespace irr;
 	using namespace video;
@@ -150,7 +154,7 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 	} else {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		i_smgr->drawAll();
-		i_gui->drawAll();
+		guiManager->Render();
 	}
 	i_driver->endScene();
 
@@ -481,6 +485,31 @@ void Renderer::setActiveCamera(irr::scene::ICameraSceneNode* c) {
 	if (!guardRenderingCheck()) return;
 
 	i_smgr->setActiveCamera(c);
+}
+
+void Renderer::setGUIQuality(int q) {
+	auto setFilters = [&](bool bilinear, bool trilinear, u32 aniso) {
+		for (int i = 0; i < 2; i++) {
+			i_driver->getMaterial2D().TextureLayer[0].AnisotropicFilter = aniso;
+			i_driver->getMaterial2D().TextureLayer[0].BilinearFilter = bilinear;
+			i_driver->getMaterial2D().TextureLayer[0].TrilinearFilter = trilinear;
+		}
+	};
+
+	switch (q) {
+	case 1: // Medium
+		i_driver->getMaterial2D().AntiAliasing = irr::video::E_ANTI_ALIASING_MODE::EAAM_SIMPLE;
+		setFilters(true, false, 0);
+		break;
+	case 2: // High
+		i_driver->getMaterial2D().AntiAliasing = irr::video::E_ANTI_ALIASING_MODE::EAAM_QUALITY;
+		setFilters(true, true, 16);
+		break;
+	default: // Low
+		i_driver->getMaterial2D().AntiAliasing = irr::video::E_ANTI_ALIASING_MODE::EAAM_OFF;
+		setFilters(false, false, 0);
+		break;
+	}
 }
 
 void Renderer::setAmbientColor(const Vec4& color) {

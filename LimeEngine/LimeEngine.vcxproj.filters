@@ -114,6 +114,9 @@
     <ClInclude Include="include\Modules\ModuleInput.h">
       <Filter>Engine\Runtime\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="include\GUIManager.h">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -184,6 +187,9 @@
     </ClCompile>
     <ClCompile Include="src\Modules\ModuleInput.cpp">
       <Filter>Engine\Runtime\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUIManager.cpp">
+      <Filter>Engine\Runtime\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

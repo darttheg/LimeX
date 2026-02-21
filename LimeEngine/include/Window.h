@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 
 #define GLFW_INCLUDE_NONE
 #define GLFW_EXPOSE_NATIVE_WIN32
@@ -11,6 +12,7 @@ class Application;
 class Vec2;
 class Vec4;
 class Image;
+class Event;
 
 class Window {
 public:
@@ -47,6 +49,8 @@ public:
 	int getTime();
 	void setSwapInterval(int i);
 	int getPrimaryHz();
+
+	std::shared_ptr<Event> WindowResize = nullptr;
 private:
 	struct Vec2S { float x, y; };
 

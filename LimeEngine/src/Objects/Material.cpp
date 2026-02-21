@@ -280,7 +280,7 @@ void Object::MaterialBind::bind(Application* a) {
 	// Constructor
 	// Constructor Image img
 	// Constructor Material other
-	// Constructor Lime.Enum.MaterialQuality quality
+	// Constructor Lime.Enum.Quality quality
 
 	sol::state_view view(a->GetLuaState());
 	sol::usertype<Material> obj = view.new_usertype<Material>(
@@ -300,7 +300,7 @@ void Object::MaterialBind::bind(Application* a) {
 		"backfaceCulling", sol::property(&Material::getBFCulling, &Material::setBFCulling),
 		// Field boolean frontfaceCulling, Change frontface culling behavior for this `Material`.
 		"frontfaceCulling", sol::property(&Material::getFFCulling, &Material::setFFCulling),
-		// Field Lime.Enum.MaterialQuality quality, Sets the quality of this Material using `Lime.Enum.MaterialQuality` presets, where Low is unfiltered and High is smooth.
+		// Field Lime.Enum.Quality quality, Sets the quality of this Material using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
 		"quality", sol::property(&Material::getQuality, &Material::setQuality),
 		// Field boolean wireframe, Enables wireframe view for this `Material`.
 		"wireframe", sol::property(&Material::getWireframe, &Material::setWireframe),

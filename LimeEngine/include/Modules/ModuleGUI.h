@@ -18,7 +18,11 @@ namespace Module {
 		void bind(Application* app);
 
 		namespace Bind {
-			void Render();
+			bool render();
+			std::string embedFont(const std::string& path);
+			void setDefaultFont(const std::string& name);
+			bool isFontEmbeded(const std::string& name);
+			void setQuality(int q);
 		}
 	}
 }

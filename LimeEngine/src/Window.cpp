@@ -12,6 +12,8 @@
 #include "Renderer.h"
 #include "Receiver.h"
 
+#include "Objects/Event.h"
+
 static Application* a;
 static DebugConsole* d;
 static Window* w;
@@ -130,6 +132,8 @@ bool Window::Create() {
 			r->updateRenderResolution(width, height);
 		else
 			w->setGLFWCallbackTriggered(false);
+
+		w->WindowResize.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); });
 	});
 
 	glfwSetTime(0.0);

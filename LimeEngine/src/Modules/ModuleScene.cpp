@@ -25,7 +25,7 @@ void Module::Scene::bind(Application* app) {
 	// Module Lime.Scene
 	sol::table module = lua["Lime"]["Scene"].get_or_create<sol::table>();
 
-	// Renders the scene using the active `Camera` and current rendering parameters. Clearing the back buffer will replace previously rendered items with the background color. Clearing the Z buffer ensures the previous depth pass is not used. (NOTE: Manual rendering must be on, otherwise this function has no effect. See `Lime.setManualRendering`.)
+	// Renders the scene using the active `Camera` and current rendering parameters. Returns true on success. Clearing the back buffer will replace previously rendered items with the background color. Clearing the Z buffer ensures the previous depth pass is not used. (NOTE: Manual rendering must be on, otherwise this function has no effect. See `Lime.setManualRendering`.)
 	// Params boolean? clearBackBuffer, boolean? clearZBuffer
 	// Returns void
 	module.set_function("render", &Module::Scene::Bind::RenderScene);

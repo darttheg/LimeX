@@ -5,6 +5,9 @@
 ---@field onClose Event @Event called by Lime once the application closes in any way.
 Lime = Lime or {}
 
+---@class Lime.GUI
+Lime.GUI = Lime.GUI or {}
+
 ---@class Lime.Input
 ---@field onKeyPressed Event @Event called by Lime when a key is pressed. This Event is run with a Lime.Enum.Key `key` argument.
 ---@field onKeyReleased Event @Event called by Lime when a key is released. This Event is run with a Lime.Enum.Key `key` argument.
@@ -22,6 +25,7 @@ Lime.Input = Lime.Input or {}
 Lime.Scene = Lime.Scene or {}
 
 ---@class Lime.Window
+---@field onResize Event @Event called by Lime once the window is resized in any way.
 Lime.Window = Lime.Window or {}
 
 ---@class Camera
@@ -69,7 +73,7 @@ function Image.new() end
 ---@field lighting boolean @Enables lighting for this `Material`.
 ---@field backfaceCulling boolean @Change backface culling behavior for this `Material`.
 ---@field frontfaceCulling boolean @Change frontface culling behavior for this `Material`.
----@field quality Lime.Enum.MaterialQuality @Sets the quality of this Material using `Lime.Enum.MaterialQuality` presets, where Low is unfiltered and High is smooth.
+---@field quality Lime.Enum.Quality @Sets the quality of this Material using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
 ---@field wireframe boolean @Enables wireframe view for this `Material`.
 ---@field zMethod Lime.Enum.ZOrderMethod @Sets Z ordering method for this `Material` using `Lime.Enum.ZOrderMethod`.
 ---@field opacity number @Sets the opacity of this Material from 0.0 (invisible) to 1.0 (visible), affecting the transparency of objects with this `Material` applied. (NOTE: Will not affect solid types)
@@ -84,7 +88,7 @@ Material = Material or {}
 --- An object used to hold material parameters for 3D objects. A Material has at most two layers, with `Lime.Enum.MaterialType` allowing for different combinations of said layers.
 ---@overload fun(img:Image): Material
 ---@overload fun(other:Material): Material
----@overload fun(quality:Lime.Enum.MaterialQuality): Material
+---@overload fun(quality:Lime.Enum.Quality): Material
 ---@return Material
 function Material.new() end
 
@@ -275,6 +279,30 @@ function Lime.setManualRendering(isManual) end
 ---@return void
 function Lime.setVSync(vSyncOn) end
 
+--- Embeds a bitmap font from path `path`. Returns the name of this font, cut from `path`. (NOTE: `path` must be the path to a .xml file. The .xml files must be paired by an image file.)
+---@param path string
+---@return string
+function Lime.GUI.embedFont(path) end
+
+--- Returns true if the font `name` is embeded.
+---@param name string
+---@return boolean
+function Lime.GUI.isFontEmbeded(name) end
+
+--- Renders all GUI elements to the screen. Returns true on success. (NOTE: Manual rendering must be on, otherwise this function has no effect. See `Lime.setManualRendering`.)
+---@return boolean
+function Lime.GUI.render() end
+
+--- Sets the default font for new GUI elements to font `name`.
+---@param name string
+---@return void
+function Lime.GUI.setDefaultFont(name) end
+
+--- Sets the quality of all GUI elements using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
+---@param quality Lime.Enum.Quality
+---@return void
+function Lime.GUI.setQuality(quality) end
+
 --- Returns controller with id `id`'s `axis` axis value from -1.0 to 1.0. Triggers are ranged 0.0 to 1.0.
 ---@param id number
 ---@param axis Lime.Enum.ControllerAxis
@@ -333,7 +361,7 @@ function Lime.Scene.getErrorImage() end
 ---@return number
 function Lime.Scene.getObjectCount() end
 
---- Renders the scene using the active `Camera` and current rendering parameters. Clearing the back buffer will replace previously rendered items with the background color. Clearing the Z buffer ensures the previous depth pass is not used. (NOTE: Manual rendering must be on, otherwise this function has no effect. See `Lime.setManualRendering`.)
+--- Renders the scene using the active `Camera` and current rendering parameters. Returns true on success. Clearing the back buffer will replace previously rendered items with the background color. Clearing the Z buffer ensures the previous depth pass is not used. (NOTE: Manual rendering must be on, otherwise this function has no effect. See `Lime.setManualRendering`.)
 ---@param clearBackBuffer boolean?
 ---@param clearZBuffer boolean?
 ---@return void

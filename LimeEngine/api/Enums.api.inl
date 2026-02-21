@@ -43,7 +43,7 @@ LIME_ENUM(ImageWrapType,
     LIME_ENUM_VALUE(MirrorClampToEdge, 6)
 );
 
-LIME_ENUM(MaterialQuality,
+LIME_ENUM(Quality,
     LIME_ENUM_VALUE(Low, 0)
     LIME_ENUM_VALUE(Medium, 1)
     LIME_ENUM_VALUE(High, 2)

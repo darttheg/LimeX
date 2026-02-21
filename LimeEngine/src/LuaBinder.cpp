@@ -12,6 +12,7 @@
 #include "Modules/ModuleScene.h"
 #include "Modules/ModuleWindow.h"
 #include "Modules/ModuleInput.h"
+#include "Modules/ModuleGUI.h"
 //
 
 // OBJECT INCLUDES
@@ -34,6 +35,7 @@ void LuaBinder::BindAll(Application* app) {
 	Module::Scene::bind(app);
 	Module::Window::bind(app);
 	Module::Input::bind(app);
+	Module::GUI::bind(app);
 
 	// Objects
 	Object::EventBind::bind(app);
