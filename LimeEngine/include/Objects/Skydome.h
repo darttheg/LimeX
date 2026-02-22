@@ -3,7 +3,7 @@
 #include "Interfaces/Object3D.h"
 
 class Application;
-class Image;
+class Texture;
 class Material;
 
 namespace irr {

@@ -5,7 +5,7 @@
 #include "Renderer.h"
 
 #include "Objects/Event.h"
-#include "Objects/Image.h"
+#include "Objects/Texture.h"
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
@@ -64,14 +64,14 @@ void Module::Scene::bind(Application* app) {
 	// Returns void
 	module.set_function("setLightManagementType", &Module::Scene::Bind::SetLightManagementType);
 
-	// Sets the default `Image` creation quality using `Lime.Enum.ImageCreationQuality`, where Low is optimized for speed and High is optimized for quality.
-	// Params Lime.Enum.ImageCreationQuality
+	// Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality.
+	// Params Lime.Enum.TextureCreationQuality
 	// Returns void
-	module.set_function("setImageCreationQuality", &Module::Scene::Bind::SetTextureCreationQuality);
+	module.set_function("setTextureCreationQuality", &Module::Scene::Bind::SetTextureCreationQuality);
 
-	// Returns an `Image` of a lime and white checkerboard pattern, 2x2. Useful for missing Images and the like.
-	// Returns Image
-	module.set_function("getErrorImage", &Module::Scene::Bind::GetErrorImage);
+	// Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
+	// Returns Texture
+	module.set_function("getErrorTexture", &Module::Scene::Bind::GetErrorTexture);
 
 	// If set to true, the rendering resolution will be that of the window resolution, updating on any window size changes. If false, the rendering resolution will remain the same size but upscale without anti-aliasing to the window resolution.
 	// Params boolean doRescale
@@ -128,8 +128,8 @@ void Module::Scene::Bind::SetMatchRenderResToWindow(bool v) {
 	r->setMatchRes(v);
 }
 
-Image Module::Scene::Bind::GetErrorImage() {
-	return r->getErrorImage();
+Texture Module::Scene::Bind::GetErrorTexture() {
+	return r->getErrorTexture();
 }
 
 void Module::Scene::Bind::SetRenderSize(const Vec2& size) {

@@ -10,7 +10,7 @@
 class Vec2;
 class Vec3;
 class Vec4;
-class Image;
+class Texture;
 class Receiver;
 class GUIManager;
 
@@ -26,10 +26,11 @@ namespace irr {
 		class IGPUProgrammingServices;
 
 		class ITexture;
-		class IImage;
+		class ITexture;
 	}
 	namespace gui {
 		class IGUIEnvironment;
+		class CGUIColoredText;
 	}
 }
 using namespace irr;
@@ -76,7 +77,7 @@ public:
 	void setFogPlanes(const Vec2& planes);
 	void setLightManagementType(int type);
 	void setTextureCreationQuality(int quality);
-	Image getErrorImage();
+	Texture getErrorTexture();
 	void setMatchRes(bool v) { doMatchResolution = v; }
 	bool getMatchRes() { return doMatchResolution; }
 
@@ -100,8 +101,9 @@ public:
 	void updateCameraMatrix(irr::scene::ICameraSceneNode* c);
 	void setActiveCamera(irr::scene::ICameraSceneNode* c);
 
-	// GUI with driver
+	// GUI
 	void setGUIQuality(int q);
+	irr::gui::CGUIColoredText* createColoredText2D();
 
 	// Misc
 	bool setMouseVisible(bool vis);

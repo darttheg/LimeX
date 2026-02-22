@@ -11,7 +11,7 @@ class Application;
 
 class Vec2;
 class Vec4;
-class Image;
+class Texture;
 class Event;
 
 class Window {

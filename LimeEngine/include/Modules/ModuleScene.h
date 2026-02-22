@@ -10,7 +10,7 @@ class Renderer;
 class Vec2;
 class Vec3;
 class Vec4;
-class Image;
+class Texture;
 //class Mesh;
 
 namespace Module {
@@ -28,7 +28,7 @@ namespace Module {
 			void SetLightManagementType(int type);
 			void SetTextureCreationQuality(int quality);
 			void SetMatchRenderResToWindow(bool v);
-			Image GetErrorImage();
+			Texture GetErrorTexture();
 			void SetRenderSize(const Vec2& size);
 
 			//Mesh CreateCubeMesh(int scale);

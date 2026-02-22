@@ -62,15 +62,15 @@ AlphaHarsh = 14,
 SphereMap = 10,
 ReflectMap = 11,
 }
----@alias Lime.Enum.ImageWrapType integer
----@class Lime.Enum.ImageWrapTypeEnum
----@field Repeat Lime.Enum.ImageWrapType
----@field Clamp Lime.Enum.ImageWrapType
----@field ClampToEdge Lime.Enum.ImageWrapType
----@field Mirror Lime.Enum.ImageWrapType
----@field MirrorClamp Lime.Enum.ImageWrapType
----@field MirrorClampToEdge Lime.Enum.ImageWrapType
-Lime.Enum.ImageWrapType = {
+---@alias Lime.Enum.TextureWrapType integer
+---@class Lime.Enum.TextureWrapTypeEnum
+---@field Repeat Lime.Enum.TextureWrapType
+---@field Clamp Lime.Enum.TextureWrapType
+---@field ClampToEdge Lime.Enum.TextureWrapType
+---@field Mirror Lime.Enum.TextureWrapType
+---@field MirrorClamp Lime.Enum.TextureWrapType
+---@field MirrorClampToEdge Lime.Enum.TextureWrapType
+Lime.Enum.TextureWrapType = {
 Repeat = 0,
 Clamp = 1,
 ClampToEdge = 2,
@@ -88,12 +88,12 @@ Low = 0,
 Medium = 1,
 High = 2,
 }
----@alias Lime.Enum.ImageCreationQuality integer
----@class Lime.Enum.ImageCreationQualityEnum
----@field Low Lime.Enum.ImageCreationQuality
----@field Medium Lime.Enum.ImageCreationQuality
----@field High Lime.Enum.ImageCreationQuality
-Lime.Enum.ImageCreationQuality = {
+---@alias Lime.Enum.TextureCreationQuality integer
+---@class Lime.Enum.TextureCreationQualityEnum
+---@field Low Lime.Enum.TextureCreationQuality
+---@field Medium Lime.Enum.TextureCreationQuality
+---@field High Lime.Enum.TextureCreationQuality
+Lime.Enum.TextureCreationQuality = {
 Low = 0,
 Medium = 1,
 High = 2,
@@ -125,6 +125,20 @@ ExceptDecal = 3,
 XRay = 4,
 StrictXRay = 5,
 OnTop = 6,
+}
+---@alias Lime.Enum.TextAlign integer
+---@class Lime.Enum.TextAlignEnum
+---@field Left Lime.Enum.TextAlign
+---@field Right Lime.Enum.TextAlign
+---@field Center Lime.Enum.TextAlign
+---@field Top Lime.Enum.TextAlign
+---@field Bottom Lime.Enum.TextAlign
+Lime.Enum.TextAlign = {
+Left = 0,
+Right = 1,
+Center = 2,
+Top = 0,
+Bottom = 1,
 }
 ---@alias Lime.Enum.Mouse integer
 ---@class Lime.Enum.MouseEnum

@@ -34,11 +34,14 @@
     <Filter Include="Engine\Runtime\APIs">
       <UniqueIdentifier>{73ad9b06-4e98-4912-be67-5efe359e0327}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Runtime\Third Party">
-      <UniqueIdentifier>{f07ccaf7-c9a8-4cbd-ba29-0add92f27ef7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\Runtime\Interfaces">
       <UniqueIdentifier>{1a1914ec-b2e4-4a7e-95ab-c1521b8142b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime\External">
+      <UniqueIdentifier>{f07ccaf7-c9a8-4cbd-ba29-0add92f27ef7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime\External\ColoredText">
+      <UniqueIdentifier>{383d4052-a3c8-4878-8276-25364953b95a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -90,7 +93,7 @@
     <ClInclude Include="include\Objects\Camera.h">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClInclude>
-    <ClInclude Include="include\Objects\Image.h">
+    <ClInclude Include="include\Objects\Texture.h">
       <Filter>Engine\Runtime\Objects\Common</Filter>
     </ClInclude>
     <ClInclude Include="include\Objects\Material.h">
@@ -116,6 +119,15 @@
     </ClInclude>
     <ClInclude Include="include\GUIManager.h">
       <Filter>Engine\Runtime\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\External\CColoredText3DSceneNode.h">
+      <Filter>Engine\Runtime\External\ColoredText</Filter>
+    </ClInclude>
+    <ClInclude Include="include\External\CGUIColoredText.h">
+      <Filter>Engine\Runtime\External\ColoredText</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Objects\Text2D.h">
+      <Filter>Engine\Runtime\Objects\2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -167,7 +179,7 @@
     <ClCompile Include="src\Objects\Camera.cpp">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
-    <ClCompile Include="src\Objects\Image.cpp">
+    <ClCompile Include="src\Objects\Texture.cpp">
       <Filter>Engine\Runtime\Objects\Common</Filter>
     </ClCompile>
     <ClCompile Include="src\Objects\Material.cpp">
@@ -190,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="src\GUIManager.cpp">
       <Filter>Engine\Runtime\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Text2D.cpp">
+      <Filter>Engine\Runtime\Objects\2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

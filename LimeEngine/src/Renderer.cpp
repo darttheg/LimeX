@@ -12,7 +12,9 @@
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
-#include "Objects/Image.h"
+#include "Objects/Texture.h"
+
+#include "External/CGUIColoredText.h"
 
 static Application* a = nullptr;
 static DebugConsole* d = nullptr;
@@ -245,7 +247,7 @@ bool Renderer::renderManually(bool clearBackBuffer, bool clearZBuffer) {
 
 bool Renderer::guardRenderingCheck() {
 	if (!isCreated) {
-		d->Warn("Scene objects cannot be created until the Lime window has been created!");
+		d->Warn("Rendered objects cannot be created until the Lime window has been created!");
 		return false;
 	}
 	return true;
@@ -512,6 +514,15 @@ void Renderer::setGUIQuality(int q) {
 	}
 }
 
+irr::gui::CGUIColoredText* Renderer::createColoredText2D() {
+	if (!guardRenderingCheck()) return nullptr;
+
+	irr::core::rect<irr::s32> r(0, 0, 200, 160);
+	irr::gui::CGUIColoredText* out = new irr::gui::CGUIColoredText(i_gui, i_gui->getRootGUIElement(), -1, r);
+
+	return out;
+}
+
 void Renderer::setAmbientColor(const Vec4& color) {
 	if (!guardRenderingCheck()) return;
 
@@ -565,10 +576,10 @@ void Renderer::setFogPlanes(const Vec2& planes) {
 	fogPlanes.y = planes.getY();
 }
 
-Image Renderer::getErrorImage() {
-	if (!guardRenderingCheck()) return Image();
+Texture Renderer::getErrorTexture() {
+	if (!guardRenderingCheck()) return Texture();
 
-	return Image(getCheckerError(i_driver));
+	return Texture(getCheckerError(i_driver));
 }
 
 bool Renderer::setMouseVisible(bool vis) {

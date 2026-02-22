@@ -3,7 +3,7 @@
 #include "Application.h"
 #include "Renderer.h"
 #include "DebugConsole.h"
-#include "Objects/Image.h"
+#include "Objects/Texture.h"
 #include "Objects/Material.h"
 
 #include "irrlicht.h"

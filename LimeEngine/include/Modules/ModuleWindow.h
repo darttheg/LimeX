@@ -11,7 +11,7 @@ class Window;
 class Vec2;
 class Vec3;
 class Vec4;
-class Image;
+class Texture;
 
 namespace Module {
 	namespace Window {

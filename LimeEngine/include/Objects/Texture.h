@@ -12,17 +12,17 @@ namespace irr {
 	}
 }
 
-class Image {
+class Texture {
 public:
-	Image();
-	Image(int w, int h, const std::string& name = "");
-	Image(const std::string& path);
-	Image(irr::video::ITexture* tex);
+	Texture();
+	Texture(int w, int h, const std::string& name = "");
+	Texture(const std::string& path);
+	Texture(irr::video::ITexture* tex);
 
 	Vec2 getSize();
 	void write(const std::string& outPath);
 	void crop(const Vec2& tl, const Vec2& br);
-	void append(const Image& other, const Vec2& pos);
+	void append(const Texture& other, const Vec2& pos);
 	Vec4 getColor(const Vec2& pos);
 	void setColor(const Vec2& pos, const Vec4& color);
 	void key(const Vec4& color);
@@ -32,6 +32,6 @@ private:
 	irr::video::ITexture* texture = nullptr;
 };
 
-namespace Object::ImageBind {
+namespace Object::TextureBind {
 	void bind(Application* app);
 }

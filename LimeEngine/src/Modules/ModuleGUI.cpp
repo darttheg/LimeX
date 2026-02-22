@@ -6,7 +6,7 @@
 #include "GUIManager.h"
 
 #include "Objects/Event.h"
-#include "Objects/Image.h"
+#include "Objects/Texture.h"
 
 #include <sol/sol.hpp>
 
@@ -39,10 +39,10 @@ void Module::GUI::bind(Application* app) {
 	// Returns void
 	module.set_function("setDefaultFont", &Module::GUI::Bind::setDefaultFont);
 
-	// Returns true if the font `name` is embeded.
+	// Returns true if the font `name` is embedded.
 	// Params string name
 	// Returns boolean
-	module.set_function("isFontEmbeded", &Module::GUI::Bind::isFontEmbeded);
+	module.set_function("isFontEmbedded", &Module::GUI::Bind::isFontEmbedded);
 
 	// Sets the quality of all GUI elements using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
 	// Params Lime.Enum.Quality quality
@@ -55,7 +55,7 @@ void Module::GUI::bind(Application* app) {
 // Functions
 
 bool Module::GUI::Bind::render() {
-	return g->Render();
+	return g->renderManually();
 }
 
 std::string Module::GUI::Bind::embedFont(const std::string& path) {
@@ -66,8 +66,8 @@ void Module::GUI::Bind::setDefaultFont(const std::string& name) {
 	g->setDefaultFont(name);
 }
 
-bool Module::GUI::Bind::isFontEmbeded(const std::string& name) {
-	return g->isFontEmbeded(name);
+bool Module::GUI::Bind::isFontEmbedded(const std::string& name) {
+	return g->isFontEmbedded(name);
 }
 
 void Module::GUI::Bind::setQuality(int q) {

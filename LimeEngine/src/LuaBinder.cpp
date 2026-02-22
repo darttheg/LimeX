@@ -20,14 +20,16 @@
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
-#include "Objects/Image.h"
+#include "Objects/Texture.h"
 #include "Objects/Material.h"
 #include "Objects/Skydome.h"
 #include "Objects/Camera.h"
+#include "Objects/Text2D.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
 	// Interfaces
+	Interface::Object2DBind::bind(app);
 	Interface::Object3DBind::bind(app);
 
 	// Modules
@@ -42,8 +44,9 @@ void LuaBinder::BindAll(Application* app) {
 	Object::Vec2Bind::bind(app);
 	Object::Vec3Bind::bind(app);
 	Object::Vec4Bind::bind(app);
-	Object::ImageBind::bind(app);
+	Object::TextureBind::bind(app);
 	Object::MaterialBind::bind(app);
 	Object::SkydomeBind::bind(app);
 	Object::CameraBind::bind(app);
+	Object::Text2DBind::bind(app);
 }

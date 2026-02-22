@@ -9,6 +9,7 @@ class Renderer;
 namespace irr {
 	namespace gui {
 		class IGUIEnvironment;
+		class IGUIFont;
 	}
 
 	class IrrlichtDevice;
@@ -25,10 +26,12 @@ public:
 	bool Render();
 
 	bool guardRenderingCheck();
+	bool renderManually();
 	std::string embedFont(const std::string& path);
 	void setDefaultFont(const std::string& name);
-	bool isFontEmbeded(const std::string& name);
+	bool isFontEmbedded(const std::string& name);
 	void setQuality(int q);
+	irr::gui::IGUIFont* getGUIFont(const std::string& name);
 
 private:
 	struct FCache;

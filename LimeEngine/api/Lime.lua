@@ -58,14 +58,6 @@ Hook = Hook or {}
 ---@return Hook
 function Hook.new() end
 
----@class Image
-Image = Image or {}
---- An image that is the foundation for all texturing, for 2D and 3D objects.
----@overload fun(w:number, h:number, name:string?): Image
----@overload fun(path:string): Image
----@return Image
-function Image.new() end
-
 ---@class Material
 ---@field ID number @An ID to identify this `Material` with, being useful for raycast hit results as those can contain a hit ID.
 ---@field type Lime.Enum.MaterialType @Sets the type of this `Material`, determing how the layers interact with themselves and the world.
@@ -86,7 +78,7 @@ function Image.new() end
 ---@field emissiveColor Vec4 @Sets the emissive color for this `Material`, the color that is seen through shadows, lighting, and fog.
 Material = Material or {}
 --- An object used to hold material parameters for 3D objects. A Material has at most two layers, with `Lime.Enum.MaterialType` allowing for different combinations of said layers.
----@overload fun(img:Image): Material
+---@overload fun(img:Texture): Material
 ---@overload fun(other:Material): Material
 ---@overload fun(quality:Lime.Enum.Quality): Material
 ---@return Material
@@ -103,6 +95,27 @@ Skydome = Skydome or {}
 ---@overload fun(material:Material): Skydome
 ---@return Skydome
 function Skydome.new() end
+
+---@class Text2D
+---@field text string @The text content of this object.
+---@field opacity number @The opacity of the text, from 0 to 255. For individual characters being not fully opaque, use color tags with an alpha value.
+---@field position Vec2 @The 2D position of this object on the screen.
+---@field size Vec2 @The 2D size of this object.
+---@field visible boolean @Determines the visibility of this object and its children.
+Text2D = Text2D or {}
+--- A basic 2D object to display text. Text objects support colors and basic styling. Use tags `<#HEX>` for color, `<s>` for strike, `<d>` for drop shadow, `<u>` for underline, `<b>` for bold, and `<r>` to reset styles. Example: `<#6ABE30>This is green! <b>Now, it's green and bold! <r>Now, it's back to normal.`
+---@overload fun(text:string): Text2D
+---@overload fun(pos:Vec2, size:Vec2): Text2D
+---@return Text2D
+function Text2D.new() end
+
+---@class Texture
+Texture = Texture or {}
+--- A texture that is the foundation for all images for 2D and 3D objects.
+---@overload fun(w:number, h:number, name:string?): Texture
+---@overload fun(path:string): Texture
+---@return Texture
+function Texture.new() end
 
 ---@class Vec2
 ---@field x number
@@ -177,47 +190,6 @@ function Hook:isHooked() end
 --- Unhook a function to this Event.
 function Hook:unhook() end
 
---- Appends another `Image` onto this `Image`.
----@param toAppend Image
----@param pos Vec2
----@return void
-function Image:append(toAppend, pos) end
-
---- Crops the `Image` to the dimensions provided. Be mindful as cropping creates a new `Image` in the renderer.
----@param topLeft Vec2
----@param bottomRight Vec2
----@return void
-function Image:crop(topLeft, bottomRight) end
-
---- Returns the color of the pixel at `pos` in this `Image`.
----@param pos Vec2
----@return Vec4
-function Image:getColor(pos) end
-
---- Returns the path of this `Image`.
----@return string
-function Image:getPath() end
-
---- Returns the dimensions of this `Image`.
----@return Vec2
-function Image:getSize() end
-
---- Removes the color `keyColor` from anywhere in this `Image`.
----@param keyColor Vec4
----@return void
-function Image:keyColor(keyColor) end
-
---- Replaces the pixel at `pos` with a pixel of color `color`.
----@param pos Vec2
----@param color Vec4
----@return void
-function Image:setColor(pos, color) end
-
---- Writes the `Image` to path `path`.
----@param path string
----@return void
-function Image:write(path) end
-
 --- Closes the Lime application.
 function Lime.close() end
 
@@ -284,10 +256,10 @@ function Lime.setVSync(vSyncOn) end
 ---@return string
 function Lime.GUI.embedFont(path) end
 
---- Returns true if the font `name` is embeded.
+--- Returns true if the font `name` is embedded.
 ---@param name string
 ---@return boolean
-function Lime.GUI.isFontEmbeded(name) end
+function Lime.GUI.isFontEmbedded(name) end
 
 --- Renders all GUI elements to the screen. Returns true on success. (NOTE: Manual rendering must be on, otherwise this function has no effect. See `Lime.setManualRendering`.)
 ---@return boolean
@@ -353,9 +325,9 @@ function Lime.Input.setMousePosition(pos) end
 ---@return void
 function Lime.Input.setMouseVisible(visible) end
 
---- Returns an `Image` of a lime and white checkerboard pattern, 2x2. Useful for missing Images and the like.
----@return Image
-function Lime.Scene.getErrorImage() end
+--- Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
+---@return Texture
+function Lime.Scene.getErrorTexture() end
 
 --- Returns the amount of 3D objects in the scene.
 ---@return number
@@ -387,10 +359,6 @@ function Lime.Scene.setFogColor(rgba) end
 ---@return void
 function Lime.Scene.setFogPlanes(planes) end
 
---- Sets the default `Image` creation quality using `Lime.Enum.ImageCreationQuality`, where Low is optimized for speed and High is optimized for quality.
----@return void
-function Lime.Scene.setImageCreationQuality() end
-
 --- Sets the light management type using `Lime.Enum.LightManagementType`.
 ---@param type Lime.Enum.LightManagementType
 ---@return void
@@ -410,6 +378,10 @@ function Lime.Scene.setShadowColor(rgba) end
 ---@param size Vec2
 ---@return void
 function Lime.Scene.setSize(size) end
+
+--- Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality.
+---@return void
+function Lime.Scene.setTextureCreationQuality() end
 
 --- Returns the size of the monitor the window is running on.
 ---@return Vec2
@@ -457,29 +429,29 @@ function Lime.Window.setSize(size) end
 ---@return void
 function Lime.Window.setTitle(title) end
 
---- Clears the `Image` in this `Material`.
+--- Clears the `Texture` in this `Material`.
 ---@param layer number?
 ---@return void
-function Material:clearImage(layer) end
+function Material:clearTexture(layer) end
 
---- Loads an `Image` into this `Material`.
----@overload fun(layer:number, img:Image): void
----@param img Image
+--- Loads an `Texture` into this `Material`.
+---@overload fun(layer:number, img:Texture): void
+---@param img Texture
 ---@return void
-function Material:loadImage(img) end
+function Material:loadTexture(img) end
 
---- Sets the scale of the mapping of an `Image`.
+--- Sets the scale of the mapping of an `Texture`.
 ---@overload fun(layer:number, scale:Vec2): void
 ---@param scale Vec2
 ---@return void
-function Material:setImageScale(scale) end
+function Material:setTextureScale(scale) end
 
---- Changes the method for `Image` UV wrapping.
----@overload fun(layer:number, uMethod:Lime.Enum.ImageWrapType, vMethod:Lime.Enum.ImageWrapType): void
----@param uMethod Lime.Enum.ImageWrapType
----@param vMethod Lime.Enum.ImageWrapType
+--- Changes the method for `Texture` UV wrapping.
+---@overload fun(layer:number, uMethod:Lime.Enum.TextureWrapType, vMethod:Lime.Enum.TextureWrapType): void
+---@param uMethod Lime.Enum.TextureWrapType
+---@param vMethod Lime.Enum.TextureWrapType
 ---@return void
-function Material:setImageWrapMethod(uMethod, vMethod) end
+function Material:setTextureWrapMethod(uMethod, vMethod) end
 
 --- Loads a new Material into this Skydome
 ---@param material Material
@@ -490,6 +462,68 @@ function Skydome:loadMaterial(material) end
 ---@param child any
 ---@return void
 function Skydome:parentTo(child) end
+
+--- Parents this object to another 2D object.
+---@param child any
+---@return void
+function Text2D:parentTo(child) end
+
+--- Sets the text's alignment within its bounding box.
+---@overload fun(x:Lime.Enum.TextAlign, y:Lime.Enum.TextAlign): void
+---@param all Lime.Enum.TextAlign
+---@return void
+function Text2D:setAlignment(all) end
+
+--- Sets the font to use for this object. Fonts must first be embedded. See `Lime.GUI.embedFont`.
+---@param name string
+---@return boolean
+function Text2D:setFont(name) end
+
+--- Enables word wrap.
+---@param wrap boolean
+---@return void
+function Text2D:setWordWrap(wrap) end
+
+--- Appends another `Texture` onto this `Texture`.
+---@param toAppend Texture
+---@param pos Vec2
+---@return void
+function Texture:append(toAppend, pos) end
+
+--- Crops the `Texture` to the dimensions provided. Be mindful as cropping creates a new `Texture` in the renderer.
+---@param topLeft Vec2
+---@param bottomRight Vec2
+---@return void
+function Texture:crop(topLeft, bottomRight) end
+
+--- Returns the color of the pixel at `pos` in this `Texture`.
+---@param pos Vec2
+---@return Vec4
+function Texture:getColor(pos) end
+
+--- Returns the path of this `Texture`.
+---@return string
+function Texture:getPath() end
+
+--- Returns the dimensions of this `Texture`.
+---@return Vec2
+function Texture:getSize() end
+
+--- Removes the color `keyColor` from anywhere in this `Texture`.
+---@param keyColor Vec4
+---@return void
+function Texture:keyColor(keyColor) end
+
+--- Replaces the pixel at `pos` with a pixel of color `color`.
+---@param pos Vec2
+---@param color Vec4
+---@return void
+function Texture:setColor(pos, color) end
+
+--- Writes the `Texture` to path `path`.
+---@param path string
+---@return void
+function Texture:write(path) end
 
 --- Measures the angle between vectors in degrees
 ---@param other Vec2
@@ -598,3 +632,7 @@ function Vec3:normalize() end
 ---@param max number
 ---@return Vec3
 function Vec3:normalizeRng(min, max) end
+
+--- Returns the HEX code for this object. This is useful for converting RGBA to HEX color.
+---@return string
+function Vec4:getHEX() end

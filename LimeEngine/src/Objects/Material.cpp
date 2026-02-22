@@ -10,7 +10,7 @@
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
-#include "Objects/Image.h"
+#include "Objects/Texture.h"
 
 static DebugConsole* d;
 static Renderer* r;
@@ -20,9 +20,9 @@ Material::Material() {
 	setQuality(1);
 }
 
-Material::Material(const Image& img) {
+Material::Material(const Texture& img) {
 	material = std::make_unique<irr::video::SMaterial>();
-	loadImage(img);
+	loadTexture(img);
 	setQuality(1);
 }
 
@@ -43,67 +43,67 @@ void Material::setID(int v) {
 	material->ID = v;
 }
 
-Vec2 Material::getImageScroll(int layer) const {
+Vec2 Material::getTextureScroll(int layer) const {
 	if (layer < 0) layer = 0;
 	auto& m = material->getTextureMatrix(layer);
 	return Vec2(m.getTranslation().X, m.getTranslation().Y);
 }
 
-void Material::setImageScroll(int layer, const Vec2& coords) {
+void Material::setTextureScroll(int layer, const Vec2& coords) {
 	if (layer < 0) layer = 0;
 	auto& m = material->getTextureMatrix(layer);
 	m.setTextureTranslate(coords.getX(), coords.getY());
 	material->setTextureMatrix(layer, m);
 }
 
-void Material::setImageScroll(const Vec2& coords) {
-	setImageScroll(0, coords);
+void Material::setTextureScroll(const Vec2& coords) {
+	setTextureScroll(0, coords);
 }
 
-void Material::loadImage(int layer, const Image& img) {
+void Material::loadTexture(int layer, const Texture& img) {
 	if (layer < 0) layer = 0;
 	material->setTexture(layer, img.getTexture());
 }
 
-void Material::loadImage(const Image& img) {
-	loadImage(0, img);
+void Material::loadTexture(const Texture& img) {
+	loadTexture(0, img);
 }
 
-void Material::clearImage(int layer) {
+void Material::clearTexture(int layer) {
 	if (layer < 0) layer = 0;
 	material->setTexture(layer, nullptr);
 }
 
-Vec2 Material::getImageUVWrapBehavior(int layer) const {
+Vec2 Material::getTextureUVWrapBehavior(int layer) const {
 	if (layer < 0) layer = 0;
 	return Vec2(material->TextureLayer[layer].TextureWrapU, material->TextureLayer[layer].TextureWrapV);
 }
 
-void Material::setImageUVWrapBehavior(int layer, int u, int v) {
+void Material::setTextureUVWrapBehavior(int layer, int u, int v) {
 	if (layer < 0) layer = 0;
 	material->TextureLayer[layer].TextureWrapU = u;
 	material->TextureLayer[layer].TextureWrapV = v;
 }
 
-void Material::setImageUVWrapBehavior(int u, int v) {
-	setImageUVWrapBehavior(0, u, v);
+void Material::setTextureUVWrapBehavior(int u, int v) {
+	setTextureUVWrapBehavior(0, u, v);
 }
 
-Vec2 Material::getImageScale(int layer) const {
+Vec2 Material::getTextureScale(int layer) const {
 	if (layer < 0) layer = 0;
 	auto& m = material->getTextureMatrix(layer);
 	return Vec2(m.getScale().X, m.getScale().Y);
 }
 
-void Material::setImageScale(int layer, const Vec2& scale) {
+void Material::setTextureScale(int layer, const Vec2& scale) {
 	if (layer < 0) layer = 0;
 	auto& m = material->getTextureMatrix(layer);
 	m.setTextureScale(scale.getX(), scale.getY());
 	material->setTextureMatrix(layer, m);
 }
 
-void Material::setImageScale(const Vec2& scale) {
-	setImageScale(0, scale);
+void Material::setTextureScale(const Vec2& scale) {
+	setTextureScale(0, scale);
 }
 
 int Material::getType() const {
@@ -278,14 +278,14 @@ void Object::MaterialBind::bind(Application* a) {
 	// Object Material, An object used to hold material parameters for 3D objects. A Material has at most two layers, with `Lime.Enum.MaterialType` allowing for different combinations of said layers.
 
 	// Constructor
-	// Constructor Image img
+	// Constructor Texture img
 	// Constructor Material other
 	// Constructor Lime.Enum.Quality quality
 
 	sol::state_view view(a->GetLuaState());
 	sol::usertype<Material> obj = view.new_usertype<Material>(
 		"Material",
-		sol::constructors<Material(), Material(const Image& img), Material(const Material& other), Material(int quality)>(),
+		sol::constructors<Material(), Material(const Texture& img), Material(const Material& other), Material(int quality)>(),
 		sol::meta_function::type, [](const Material&) { return "Material"; },
 
 		// Field number ID, An ID to identify this `Material` with, being useful for raycast hit results as those can contain a hit ID.
@@ -344,39 +344,39 @@ void Object::MaterialBind::bind(Application* a) {
 		return "Material";
 		};
 
-	// Loads an `Image` into this `Material`.
-	// Params number layer, Image img
-	// Params Image img
+	// Loads an `Texture` into this `Material`.
+	// Params number layer, Texture img
+	// Params Texture img
 	// Returns void
-	obj.set_function("loadImage",
+	obj.set_function("loadTexture",
 		sol::overload(
-			sol::resolve<void(int, const Image&)>(&Material::loadImage),
-			sol::resolve<void(const Image&)>(&Material::loadImage)
+			sol::resolve<void(int, const Texture&)>(&Material::loadTexture),
+			sol::resolve<void(const Texture&)>(&Material::loadTexture)
 		));
 
-	// Clears the `Image` in this `Material`.
+	// Clears the `Texture` in this `Material`.
 	// Params number? layer
 	// Returns void
-	obj.set_function("clearImage", &Material::clearImage);
+	obj.set_function("clearTexture", &Material::clearTexture);
 
-	// Changes the method for `Image` UV wrapping.
-	// Params number layer, Lime.Enum.ImageWrapType uMethod, Lime.Enum.ImageWrapType vMethod
-	// Params Lime.Enum.ImageWrapType uMethod, Lime.Enum.ImageWrapType vMethod
+	// Changes the method for `Texture` UV wrapping.
+	// Params number layer, Lime.Enum.TextureWrapType uMethod, Lime.Enum.TextureWrapType vMethod
+	// Params Lime.Enum.TextureWrapType uMethod, Lime.Enum.TextureWrapType vMethod
 	// Returns void
-	obj.set_function("setImageWrapMethod",
+	obj.set_function("setTextureWrapMethod",
 		sol::overload(
-			sol::resolve<void(int, int, int)>(&Material::setImageUVWrapBehavior),
-			sol::resolve<void(int, int)>(&Material::setImageUVWrapBehavior)
+			sol::resolve<void(int, int, int)>(&Material::setTextureUVWrapBehavior),
+			sol::resolve<void(int, int)>(&Material::setTextureUVWrapBehavior)
 		));
 
-	// Sets the scale of the mapping of an `Image`.
+	// Sets the scale of the mapping of an `Texture`.
 	// Params number layer, Vec2 scale
 	// Params Vec2 scale
 	// Returns void
-	obj.set_function("setImageScale",
+	obj.set_function("setTextureScale",
 		sol::overload(
-			sol::resolve<void(int, const Vec2&)>(&Material::setImageScale),
-			sol::resolve<void(const Vec2&)>(&Material::setImageScale)
+			sol::resolve<void(int, const Vec2&)>(&Material::setTextureScale),
+			sol::resolve<void(const Vec2&)>(&Material::setTextureScale)
 		));
 
 	// End Object

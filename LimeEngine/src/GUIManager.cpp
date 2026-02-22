@@ -36,7 +36,7 @@ void GUIManager::SetGUIEnv(irr::gui::IGUIEnvironment* g) {
 }
 
 bool GUIManager::Render() {
-	if (!guardRenderingCheck()) return "";
+	if (!guardRenderingCheck()) return false;
 
 	guienv->drawAll();
 
@@ -49,6 +49,16 @@ bool GUIManager::guardRenderingCheck() {
 		return false;
 	}
 	return true;
+}
+
+bool GUIManager::renderManually() {
+	if (!guardRenderingCheck()) return false;
+	if (!r->isManualRenderingOn()) {
+		d->Warn("Manual rendering is not enabled. See Lime.setManualRendering.");
+		return false;
+	}
+
+	Render();
 }
 
 // ---
@@ -100,7 +110,7 @@ void GUIManager::setDefaultFont(const std::string& name) {
 	skin->setFont(fontCache->cache.find(name)->second);
 }
 
-bool GUIManager::isFontEmbeded(const std::string& name) {
+bool GUIManager::isFontEmbedded(const std::string& name) {
 	return fontCache->cache.find(name) != fontCache->cache.end();
 }
 
@@ -108,4 +118,15 @@ void GUIManager::setQuality(int q) {
 	if (!guardRenderingCheck()) return;
 
 	r->setGUIQuality(q);
+}
+
+irr::gui::IGUIFont* GUIManager::getGUIFont(const std::string& name) {
+	if (!guardRenderingCheck()) return nullptr;
+
+	auto it = fontCache->cache.find(name);
+	if (it != fontCache->cache.end()) {
+		return it->second;
+	}
+
+	return nullptr;
 }

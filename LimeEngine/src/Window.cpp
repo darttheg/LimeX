@@ -5,7 +5,7 @@
 
 #include "Objects/Vec2.h"
 #include "Objects/Vec4.h"
-#include "Objects/Image.h"
+#include "Objects/Texture.h"
 
 #include "Application.h"
 #include "DebugConsole.h"

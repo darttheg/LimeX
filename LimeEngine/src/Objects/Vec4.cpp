@@ -1,6 +1,8 @@
 #include "Objects/Vec4.h"
 #include "Application.h"
 
+#include <iomanip>
+
 #define PI 3.14159265358979323846
 
 Vec4::Vec4() : x(0), y(0) {}
@@ -12,6 +14,22 @@ Vec4 Vec4::operator-(const Vec4& other) const { return Vec4(getX() - other.getX(
 Vec4 Vec4::operator*(float scalar) const { return Vec4(getX() * scalar, getY() * scalar, getZ() * scalar, getW() * scalar); }
 Vec4 Vec4::operator/(float scalar) const { return Vec4(getX() / scalar, getY() / scalar, getZ() / scalar, getW() / scalar); }
 bool Vec4::operator==(const Vec4& other) const { return getX() == other.getX() && getY() == other.getY() && getZ() == other.getZ() && getW() == other.getW(); }
+
+std::string Vec4::getHex() {
+	auto clamp = [](int v) {
+		return std::clamp(v, 0, 255);
+	};
+
+	std::ostringstream out;
+	out << '#'
+		<< std::uppercase << std::hex << std::setfill('0')
+		<< std::setw(2) << clamp(getX())
+		<< std::setw(2) << clamp(getY())
+		<< std::setw(2) << clamp(getZ())
+		<< std::setw(2) << clamp(getW());
+
+	return out.str();
+}
 
 void Object::Vec4Bind::bind(Application* a) {
 	sol::state_view view(a->GetLuaState());
@@ -46,6 +64,10 @@ void Object::Vec4Bind::bind(Application* a) {
 	// Constructor
 	// Constructor number x, number y, number z, number w
 	// Constructor number all
+
+	// Returns the HEX code for this object. This is useful for converting RGBA to HEX color.
+	// Returns string
+	obj.set_function("getHEX", &Vec4::getHex);
 
 	// End Object
 }

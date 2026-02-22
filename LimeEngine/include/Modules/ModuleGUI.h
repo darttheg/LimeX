@@ -10,7 +10,7 @@ class Renderer;
 class Vec2;
 class Vec3;
 class Vec4;
-class Image;
+class Texture;
 //class Mesh;
 
 namespace Module {
@@ -21,7 +21,7 @@ namespace Module {
 			bool render();
 			std::string embedFont(const std::string& path);
 			void setDefaultFont(const std::string& name);
-			bool isFontEmbeded(const std::string& name);
+			bool isFontEmbedded(const std::string& name);
 			void setQuality(int q);
 		}
 	}

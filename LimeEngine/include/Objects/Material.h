@@ -6,7 +6,7 @@ class Application;
 
 class Vec2;
 class Vec4;
-class Image;
+class Texture;
 
 namespace irr {
 	namespace video {
@@ -17,28 +17,28 @@ namespace irr {
 class Material {
 public:
 	Material();
-	Material(const Image& img);
+	Material(const Texture& img);
 	Material(const Material& other);
 	Material(int quality);
 
 	int getID() const;
 	void setID(int v);
 
-	Vec2 getImageScroll(int layer = 0) const;
-	void setImageScroll(int layer, const Vec2& coords);
-	void setImageScroll(const Vec2& coords);
+	Vec2 getTextureScroll(int layer = 0) const;
+	void setTextureScroll(int layer, const Vec2& coords);
+	void setTextureScroll(const Vec2& coords);
 
-	void loadImage(int layer, const Image& img);
-	void loadImage(const Image& img);
-	void clearImage(int layer = 0);
+	void loadTexture(int layer, const Texture& img);
+	void loadTexture(const Texture& img);
+	void clearTexture(int layer = 0);
 
-	Vec2 getImageUVWrapBehavior(int layer = 0) const;
-	void setImageUVWrapBehavior(int layer, int u, int v);
-	void setImageUVWrapBehavior(int u, int v);
+	Vec2 getTextureUVWrapBehavior(int layer = 0) const;
+	void setTextureUVWrapBehavior(int layer, int u, int v);
+	void setTextureUVWrapBehavior(int u, int v);
 
-	Vec2 getImageScale(int layer = 0) const;
-	void setImageScale(int layer, const Vec2& scale);
-	void setImageScale(const Vec2& scale);
+	Vec2 getTextureScale(int layer = 0) const;
+	void setTextureScale(int layer, const Vec2& scale);
+	void setTextureScale(const Vec2& scale);
 
 	int getType() const;
 	void setType(int v);

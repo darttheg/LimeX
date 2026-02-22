@@ -34,7 +34,7 @@ LIME_ENUM(MaterialType,
     LIME_ENUM_VALUE(ReflectMap, 11)
 );
 
-LIME_ENUM(ImageWrapType,
+LIME_ENUM(TextureWrapType,
     LIME_ENUM_VALUE(Repeat, 0)
     LIME_ENUM_VALUE(Clamp, 1)
     LIME_ENUM_VALUE(ClampToEdge, 2)
@@ -49,7 +49,7 @@ LIME_ENUM(Quality,
     LIME_ENUM_VALUE(High, 2)
 );
 
-LIME_ENUM(ImageCreationQuality,
+LIME_ENUM(TextureCreationQuality,
     LIME_ENUM_VALUE(Low, 0)
     LIME_ENUM_VALUE(Medium, 1)
     LIME_ENUM_VALUE(High, 2)
@@ -69,6 +69,14 @@ LIME_ENUM(ZOrderMethod,
     LIME_ENUM_VALUE(XRay, 4)
     LIME_ENUM_VALUE(StrictXRay, 5)
     LIME_ENUM_VALUE(OnTop, 6)
+);
+
+LIME_ENUM(TextAlign,
+    LIME_ENUM_VALUE(Left, 0)
+    LIME_ENUM_VALUE(Right, 1)
+    LIME_ENUM_VALUE(Center, 2)
+    LIME_ENUM_VALUE(Top, 0)
+    LIME_ENUM_VALUE(Bottom, 1)
 );
 
 LIME_ENUM(Mouse,

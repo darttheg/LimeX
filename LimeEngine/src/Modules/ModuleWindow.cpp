@@ -6,7 +6,7 @@
 #include "Window.h"
 
 #include "Objects/Event.h"
-#include "Objects/Image.h"
+#include "Objects/Texture.h"
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"

@@ -3,7 +3,6 @@
 #include "Application.h"
 #include "Renderer.h"
 #include "DebugConsole.h"
-#include "Interfaces/Object3D.h"
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 

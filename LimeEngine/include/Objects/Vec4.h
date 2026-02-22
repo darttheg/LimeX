@@ -32,6 +32,8 @@ public:
     void setW(float v) { if (get) { auto t = get(); t.w = v; set(t); } else w = v; }
 
     Vec4(Getter g, Setter s) : get(std::move(g)), set(std::move(s)) {}
+
+    std::string getHex();
 private:
     float x, y, z, w = 0.0;
 };
