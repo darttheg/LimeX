@@ -157,12 +157,9 @@ bool Window::ShouldClose() {
 void Window::PreUpdateBG() {
 	if (!a->GetRenderer()) return;
 	auto* r = a->GetRenderer();
-	Vec4 vp = r->getViewport();
 
-	glViewport(0, 0, vp.getZ(), vp.getW());
 	glClearColor(0.f, 0.f, 0.f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glViewport(vp.getX(), vp.getY(), vp.getZ(), vp.getW());
 }
 
 void Window::EndFrame() {

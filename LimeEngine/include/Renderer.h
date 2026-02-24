@@ -27,8 +27,6 @@ namespace irr {
 	namespace video {
 		class IVideoDriver;
 		class IGPUProgrammingServices;
-
-		class ITexture;
 		class ITexture;
 	}
 	namespace gui {
@@ -61,14 +59,12 @@ public:
 	bool maximizeDevice();
 	bool restoreDevice();
 	bool isFocused();
-	void applyLetterboxViewport(int fbW, int fbH, int baseW, int baseH);
 	void updateRenderResolution(int w, int h);
 	HWND getDeviceVideoData();
 	bool isManualRenderingOn() { return manualRendering; }
 	void setManualRendering(bool on) { manualRendering = on; }
 	int getObjectCount();
 	void setViewort(int x, int y, int w, int h);
-	Vec4 getViewport();
 	int updateFrameRate();
 
 	// Scene
@@ -139,10 +135,6 @@ private:
 	void updateFog();
 	bool doMatchResolution = true; // Hook resolution w/h to window size
 	bool manualRendering = false; // User-controlled rendering
-
-	struct Viewport { int x = 0, y = 0, w = 0, h = 0; };
-	Viewport vp;
-	int mFbW = 0, mFbH = 0;
 
 	// Irrlicht
 	irr::IrrlichtDevice* i_device = nullptr;

@@ -92,7 +92,7 @@ bool Renderer::Init() {
 
 		SetParent(hwndIrr, w->GetHandle());
 		SetWindowLongPtr(hwndIrr, GWL_STYLE, WS_CHILD | WS_VISIBLE);
-		SetWindowPos(hwndIrr, 0, 0, 0, 640, 480, SWP_NOZORDER | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+		SetWindowPos(hwndIrr, 0, 0, 0, renderSize.x, renderSize.y, SWP_NOZORDER | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 		ShowWindow(w->GetHandle(), SW_RESTORE);
 		SetForegroundWindow(w->GetHandle());
 		SetActiveWindow(w->GetHandle());
@@ -150,6 +150,10 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 	}
 
 	updateFog(); // Update fog params pre-render
+
+	// Update to use a quad! Will make post processing easier in the future,
+	// but it will also enable better rescaling of the viewport when you don't want it to match resolutions to the window resolution.
+
 	if (manualRendering) {
 		bool bb = clearBackBuffer;
 		if (!hasBegunNewScene) bb = false;
@@ -301,30 +305,6 @@ int Renderer::updateFrameRate() {
 	return fps;
 }
 
-void Renderer::applyLetterboxViewport(int fbW, int fbH, int baseW, int baseH) {
-	mFbH = fbW;
-	mFbW = fbH;
-
-	float target = (float)baseW / (float)baseH;
-	float cur = (float)fbW / (float)fbH;
-
-	int vpW, vpH, vpX, vpY;
-
-	if (cur > target) {
-		vpH = fbH;
-		vpW = (int)(fbH * target + 0.5f);
-		vpX = (fbW - vpW) / 2;
-		vpY = 0;
-	} else {
-		vpW = fbW;
-		vpH = (int)(fbW / target + 0.5f);
-		vpX = 0;
-		vpY = (fbH - vpH) / 2;
-	}
-
-	setViewort(vpX, vpY, vpW, vpH);
-}
-
 void Renderer::updateRenderResolution(int w, int h) {
 	SetWindowPos(getDeviceVideoData(), nullptr, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 
@@ -365,12 +345,7 @@ void Renderer::setViewort(int x, int y, int w, int h) {
 		y + h
 	));
 
-	vp = { x,y,w,h };
 	a->GetWindow()->setViewport(x, y, w, h);
-}
-
-Vec4 Renderer::getViewport() {
-	return Vec4(vp.x, vp.y, vp.w, vp.h);
 }
 
 irr::video::ITexture* Renderer::createTexture(int w, int h, const std::string& name) {

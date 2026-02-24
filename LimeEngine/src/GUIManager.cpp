@@ -65,7 +65,7 @@ bool GUIManager::renderManually() {
 		return false;
 	}
 
-	Render();
+	return Render();
 }
 
 // ---
