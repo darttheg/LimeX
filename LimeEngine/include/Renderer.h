@@ -6,6 +6,7 @@
 #include <GLFW/glfw3native.h>
 #include <memory>
 #include <string>
+#include <functional>
 
 class Vec2;
 class Vec3;
@@ -13,6 +14,8 @@ class Vec4;
 class Texture;
 class Receiver;
 class GUIManager;
+class Event;
+class Object2D;
 
 namespace irr {
 	class IrrlichtDevice;
@@ -116,6 +119,10 @@ public:
 	bool setMousePosition(const Vec2& pos);
 	HWND getHandle() { return hwndIrr; }
 	GUIManager* getGUIManager() { return guiManager; }
+	bool runEventFromGUI(std::shared_ptr<Event> e, std::function<void(const std::string&)> onError);
+	void addButtonPair(const Object2D& o);
+	void removeButtonPair(const Object2D& o);
+	bool isElementHovered(const Object2D& o);
 
 private:
 	struct Vec4S { float x, y, z, w; };

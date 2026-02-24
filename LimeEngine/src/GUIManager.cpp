@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <unordered_map>
 #include "Objects/Event.h"
+#include "Interfaces/Object2D.h"
 
 #include "irrlicht.h"
 
@@ -17,12 +18,8 @@ struct GUIManager::FCache {
 };
 
 struct GUIManager::ButtonPair {
-	std::shared_ptr<Event> onHover;
+	std::shared_ptr<Event> onHovered;
 	std::shared_ptr<Event> onPressed;
-};
-
-struct GUIManager::ButtonCallbacks {
-	std::unordered_map<irr::gui::IGUIElement*, ButtonPair> callbacks;
 };
 
 GUIManager::GUIManager(DebugConsole* de, Renderer* re) {
@@ -141,6 +138,34 @@ irr::gui::IGUIFont* GUIManager::getGUIFont(const std::string& name) {
 	return nullptr;
 }
 
+void GUIManager::addButtonPair(const Object2D& o) {
+	auto it = buttonCallbacks.find(o.getButton());
+	if (it != buttonCallbacks.end()) return;
+
+	ButtonPair pb{ o.onHovered, o.onPressed };
+	buttonCallbacks.emplace(o.getButton(), pb);
+}
+
+void GUIManager::removeButtonPair(const Object2D& o) {
+	auto it = buttonCallbacks.find(o.getButton());
+	if (it != buttonCallbacks.end())
+		buttonCallbacks.erase(o.getButton());
+}
+
 void GUIManager::handleGUIEvent(irr::gui::IGUIElement* caller, irr::gui::IGUIElement* element, int eventType) {
-	
+	auto it = buttonCallbacks.find(caller);
+	if (it != buttonCallbacks.end()) {
+		irr::gui::EGUI_EVENT_TYPE type = static_cast<irr::gui::EGUI_EVENT_TYPE>(eventType);
+
+		switch (type) {
+		case irr::gui::EGUI_EVENT_TYPE::EGET_BUTTON_CLICKED:
+			if (!r->runEventFromGUI(it->second.onPressed, [&](const std::string& msg) { d->PostError(msg); }))
+				d->Warn("Could not run onPressed Event: Event is not valid!");
+			break;
+		case irr::gui::EGUI_EVENT_TYPE::EGET_ELEMENT_HOVERED:
+			if (!r->runEventFromGUI(it->second.onHovered, [&](const std::string& msg) { d->PostError(msg); }))
+				d->Warn("Could not run onHovered Event: Event is not valid!");
+			break;
+		}
+	}
 }

@@ -18,6 +18,7 @@ class Object2D {
 public:
 	virtual ~Object2D() = default;
 	virtual irr::gui::IGUIElement* getNode() const = 0;
+	irr::gui::IGUIElement* getButton() const;
 	// virtual void destroy() = 0;
 
 	Vec2 getPosition() const;
@@ -43,14 +44,14 @@ public:
 	void createButton();
 	void removeButton();
 	void checkButtonState();
-
+	bool isHovered() const;
 	bool hovered = false;
 	bool pressed = false;
 	void createEvents();
 	std::shared_ptr<Event> onPressed = nullptr;
-	std::shared_ptr<Event> onHover = nullptr;
+	std::shared_ptr<Event> onHovered = nullptr;
 
-	std::shared_ptr<Event> getHoverEvent() { return onHover; }
+	std::shared_ptr<Event> getHoverEvent() { return onHovered; }
 	std::shared_ptr<Event> getPressedEvent() { return onPressed; }
 	void setHoverEvent(std::shared_ptr<Event> e);
 	void setPressedEvent(std::shared_ptr<Event> e);

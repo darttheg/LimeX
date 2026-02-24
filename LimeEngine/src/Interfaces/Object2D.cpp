@@ -11,6 +11,10 @@ using namespace scene;
 
 static Renderer* r = nullptr;
 
+irr::gui::IGUIElement* Object2D::getButton() const {
+    return button;
+}
+
 Vec2 Object2D::getPosition() const {
     if (!getNode()) return Vec2();
     
@@ -116,7 +120,7 @@ bool Object2D::parentTo(sol::optional<Object2D*> parent) {
 }
 
 void Object2D::setHoverEvent(std::shared_ptr<Event> e) {
-    onHover = std::move(e);
+    onHovered = std::move(e);
 }
 
 void Object2D::setPressedEvent(std::shared_ptr<Event> e) {
@@ -171,26 +175,33 @@ void Object2D::createButton() {
     updateButtonDimensions();
     button->setEnabled(btnEnabled);
     // button->setVisible(false);
+
+    r->addButtonPair(*this);
 }
 
 void Object2D::removeButton() {
     if (!button) return;
+    r->removeButtonPair(*this);
     button->remove();
 }
 
 void Object2D::checkButtonState() {
-    int sz = onHover->getSize() + onPressed->getSize();
+    int sz = onHovered->getSize() + onPressed->getSize();
     if (!button && sz > 0)
         createButton();
     else if (button && sz == 0)
         removeButton();
 }
 
+bool Object2D::isHovered() const {
+    return r->isElementHovered(*this);
+}
+
 void Object2D::createEvents() {
-    onHover = std::make_shared<Event>();
+    onHovered = std::make_shared<Event>();
     onPressed = std::make_shared<Event>();
 
-    onHover->setOnLengthChanged([this]() {
+    onHovered->setOnLengthChanged([this]() {
         checkButtonState();
     });
 
@@ -236,7 +247,7 @@ void Interface::Object2DBind::bind(Application* a) {
         "enabled", sol::property(&Object2D::getBorder, &Object2D::setBorder),
 
         // Field Event onHovered, Event called by Lime when this object is hovered.
-        "onHovered", &Object2D::onHover,
+        "onHovered", &Object2D::onHovered,
         // Field Event onPressed, Event called by Lime when this object is pressed.
         "onPressed", &Object2D::onPressed
     );
@@ -245,6 +256,10 @@ void Interface::Object2DBind::bind(Application* a) {
     // Params any child
     // Returns void
     obj.set_function("parentTo", &Object2D::parentTo);
+
+    // Returns true if this object is currently hovered.
+    // Returns boolean
+    obj.set_function("isHovered", &Object2D::isHovered);
 
     // Moves this object to the front in terms of z ordering. (Rendered last, overlaps all other objects)
     // Returns boolean

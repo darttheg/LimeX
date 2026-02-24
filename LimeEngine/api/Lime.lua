@@ -212,6 +212,10 @@ function Hook:isHooked() end
 --- Unhook a function to this Event.
 function Hook:unhook() end
 
+--- Returns true if this object is currently hovered.
+---@return boolean
+function Image2D:isHovered() end
+
 --- Loads `texture` into this object.
 ---@param texture Texture
 ---@return boolean
@@ -506,6 +510,10 @@ function Skydome:loadMaterial(material) end
 ---@param child any
 ---@return void
 function Skydome:parentTo(child) end
+
+--- Returns true if this object is currently hovered.
+---@return boolean
+function Text2D:isHovered() end
 
 --- Moves this object to the back in terms of z ordering. (Rendered first, all other objects then overlap)
 ---@return boolean

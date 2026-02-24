@@ -19,11 +19,13 @@
 static Application* a = nullptr;
 static DebugConsole* d = nullptr;
 static Window* w = nullptr;
+static Receiver* r = nullptr;
 
 Renderer::Renderer(Application* owner) {
 	a = owner;
 	d = a->GetDebugConsole();
 	w = a->GetWindow();
+	r = a->GetReceiver();
 	guiManager = new GUIManager(d, this);
 }
 Renderer::~Renderer() {
@@ -650,5 +652,27 @@ bool Renderer::setMousePosition(const Vec2& pos) {
 	i_device->getCursorControl()->setPosition(irr::core::vector2di(pos.getX(), pos.getY()));
 	a->GetReceiver()->setMousePosition(pos.getX() - 1, pos.getY() - 1);
 	a->GetReceiver()->syncMouse();
+	return true;
+}
+
+#include "Interfaces/Object2D.h"
+void Renderer::addButtonPair(const Object2D& o) {
+	guiManager->addButtonPair(o);
+}
+
+void Renderer::removeButtonPair(const Object2D& o) {
+	guiManager->removeButtonPair(o);
+}
+
+bool Renderer::isElementHovered(const Object2D& o) {
+	if (!o.getNode()) return false;
+	return o.getNode()->isPointInside(irr::core::vector2di(r->getMouseState().pos.x, r->getMouseState().pos.y));
+}
+
+#include "Objects/Event.h"
+bool Renderer::runEventFromGUI(std::shared_ptr<Event> e, std::function<void(const std::string&)> onError) {
+	if (!e)
+		return false;
+	e.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); });
 	return true;
 }

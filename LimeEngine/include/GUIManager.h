@@ -2,9 +2,11 @@
 #include <array>
 #include <string>
 #include <memory>
+#include <unordered_map>
 
 class DebugConsole;
 class Renderer;
+class Object2D;
 
 namespace irr {
 	namespace gui {
@@ -32,14 +34,14 @@ public:
 	bool isFontEmbedded(const std::string& name);
 	void setQuality(int q);
 	irr::gui::IGUIFont* getGUIFont(const std::string& name);
+	void addButtonPair(const Object2D& o);
+	void removeButtonPair(const Object2D& o);
 	void handleGUIEvent(irr::gui::IGUIElement* caller, irr::gui::IGUIElement* element, int eventType);
 
 private:
 	struct FCache;
 	std::unique_ptr<FCache> fontCache;
 
-	struct ButtonCallbacks;
-	std::unique_ptr<ButtonCallbacks> btnCallbacks;
-
 	struct ButtonPair;
+	std::unordered_map<irr::gui::IGUIElement*, ButtonPair> buttonCallbacks;
 };

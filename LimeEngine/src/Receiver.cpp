@@ -401,26 +401,5 @@ void Receiver::handleJoystick(const irr::SEvent::SJoystickEvent& j) {
 }
 
 void Receiver::handleGUI(const irr::SEvent::SGUIEvent& ge) {
-	switch (ge.EventType) {
-	case irr::gui::EGUI_EVENT_TYPE::EGET_BUTTON_CLICKED:
-		d->Warn("Clicked");
-		break;
-	case irr::gui::EGUI_EVENT_TYPE::EGET_ELEMENT_HOVERED:
-		d->Warn("Hovered");
-		break;
-	}
 	g->handleGUIEvent(ge.Caller, ge.Element, ge.EventType);
-	/*
-	auto it = guiElements.find(event.GUIEvent.Caller);
-	if (it != guiElements.end()) {
-		switch (event.GUIEvent.EventType) {
-		case EGUI_EVENT_TYPE::EGET_ELEMENT_HOVERED:
-			it->second.hoverEvent.get()->engineRun();
-			break;
-		case EGUI_EVENT_TYPE::EGET_BUTTON_CLICKED:
-			it->second.pressedEvent.get()->engineRun();
-			break;
-		}
-	}
-	*/
 }
