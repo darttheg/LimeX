@@ -10,6 +10,7 @@ public:
     Vec4();
     Vec4(float x);
     Vec4(float x, float y, float z, float w);
+    Vec4(const std::string& hex);
 
     Vec4 operator+(const Vec4& other) const;
     Vec4 operator-(const Vec4& other) const;

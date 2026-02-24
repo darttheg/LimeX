@@ -4,6 +4,7 @@
 
 #include <filesystem>
 #include <unordered_map>
+#include "Objects/Event.h"
 
 #include "irrlicht.h"
 
@@ -13,6 +14,15 @@ static Renderer* r = nullptr;
 
 struct GUIManager::FCache {
 	std::unordered_map<std::string, irr::gui::IGUIFont*> cache;
+};
+
+struct GUIManager::ButtonPair {
+	std::shared_ptr<Event> onHover;
+	std::shared_ptr<Event> onPressed;
+};
+
+struct GUIManager::ButtonCallbacks {
+	std::unordered_map<irr::gui::IGUIElement*, ButtonPair> callbacks;
 };
 
 GUIManager::GUIManager(DebugConsole* de, Renderer* re) {
@@ -129,4 +139,8 @@ irr::gui::IGUIFont* GUIManager::getGUIFont(const std::string& name) {
 	}
 
 	return nullptr;
+}
+
+void GUIManager::handleGUIEvent(irr::gui::IGUIElement* caller, irr::gui::IGUIElement* element, int eventType) {
+	
 }

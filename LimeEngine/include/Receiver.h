@@ -7,6 +7,7 @@
 #include "IEventReceiver.h"
 
 class Application;
+class GUIManager;
 class Event;
 
 namespace irr {
@@ -55,7 +56,7 @@ public:
 		std::basic_string<wchar_t> typed;
 	};
 
-	Receiver(Application* app);
+	Receiver(Application* app, GUIManager* gui);
 
 	void beginFrame();
 	void endFrame();
@@ -110,4 +111,5 @@ private:
 	void handleKey(const irr::SEvent::SKeyInput& k);
 	void handleMouse(const irr::SEvent::SMouseInput& m);
 	void handleJoystick(const irr::SEvent::SJoystickEvent& j);
+	void handleGUI(const irr::SEvent::SGUIEvent& g);
 };

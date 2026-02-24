@@ -98,7 +98,8 @@ bool Application::Init(const void* data, size_t size) {
 	console = new DebugConsole(this);
 	window = new Window(this);
 	renderer = new Renderer(this);
-	receiver = new Receiver(this);
+	receiver = new Receiver(this, renderer->getGUIManager()); // Kind of odd, hopefully no issues in the future
+	// Context: Without this ^, button events have to go from receiver, up to application, then through renderer to GUIManager...
 
 	// Create new Lua state
 	lua = std::make_unique<sol::state>();

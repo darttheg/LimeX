@@ -25,6 +25,7 @@
 #include "Objects/Skydome.h"
 #include "Objects/Camera.h"
 #include "Objects/Text2D.h"
+#include "Objects/Image2D.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -49,4 +50,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::SkydomeBind::bind(app);
 	Object::CameraBind::bind(app);
 	Object::Text2DBind::bind(app);
+	Object::Image2DBind::bind(app);
 }

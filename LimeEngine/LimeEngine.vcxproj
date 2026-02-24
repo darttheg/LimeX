@@ -36,6 +36,7 @@
     <ClInclude Include="include\Modules\ModuleWindow.h" />
     <ClInclude Include="include\Objects\Camera.h" />
     <ClInclude Include="include\Objects\Event.h" />
+    <ClInclude Include="include\Objects\Image2D.h" />
     <ClInclude Include="include\Objects\Texture.h" />
     <ClInclude Include="include\Objects\Material.h" />
     <ClInclude Include="include\Objects\Skydome.h" />
@@ -63,6 +64,7 @@
     <ClCompile Include="src\Modules\ModuleWindow.cpp" />
     <ClCompile Include="src\Objects\Camera.cpp" />
     <ClCompile Include="src\Objects\Event.cpp" />
+    <ClCompile Include="src\Objects\Image2D.cpp" />
     <ClCompile Include="src\Objects\Texture.cpp" />
     <ClCompile Include="src\Objects\Material.cpp" />
     <ClCompile Include="src\Objects\Skydome.cpp" />

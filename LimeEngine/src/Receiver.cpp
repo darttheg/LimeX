@@ -1,5 +1,6 @@
 #include "Receiver.h"
 #include "Application.h"
+#include "GUIManager.h"
 #include "DebugConsole.h"
 #include "Objects/Event.h"
 #include "Objects/Vec2.h"
@@ -8,6 +9,7 @@
 
 static Application* a;
 static DebugConsole* d;
+static GUIManager* g;
 static IrrlichtDevice* device;
 
 struct Receiver::Impl {
@@ -16,10 +18,10 @@ struct Receiver::Impl {
 	std::unordered_map<int32_t, uint64_t> lastSeenMs;
 };
 
-Receiver::Receiver(Application* app) {
+Receiver::Receiver(Application* app, GUIManager* gui) {
 	a = app;
 	d = a->GetDebugConsole();
-
+	g = gui;
 	keyboard.down.fill(false);
 	keyboard.pressed.fill(false);
 	keyboard.released.fill(false);
@@ -84,6 +86,9 @@ bool Receiver::OnEvent(const irr::SEvent& e) {
 			return false;
 		case irr::EET_JOYSTICK_INPUT_EVENT:
 			handleJoystick(e.JoystickEvent);
+			return false;
+		case irr::EET_GUI_EVENT:
+			handleGUI(e.GUIEvent);
 			return false;
 		default: return false;
 	}
@@ -393,4 +398,29 @@ void Receiver::handleJoystick(const irr::SEvent::SJoystickEvent& j) {
 
 	joystickImpl->lastJoystickState[id] = j;
 	joystickImpl->lastSeenMs[id] = NowMs();
+}
+
+void Receiver::handleGUI(const irr::SEvent::SGUIEvent& ge) {
+	switch (ge.EventType) {
+	case irr::gui::EGUI_EVENT_TYPE::EGET_BUTTON_CLICKED:
+		d->Warn("Clicked");
+		break;
+	case irr::gui::EGUI_EVENT_TYPE::EGET_ELEMENT_HOVERED:
+		d->Warn("Hovered");
+		break;
+	}
+	g->handleGUIEvent(ge.Caller, ge.Element, ge.EventType);
+	/*
+	auto it = guiElements.find(event.GUIEvent.Caller);
+	if (it != guiElements.end()) {
+		switch (event.GUIEvent.EventType) {
+		case EGUI_EVENT_TYPE::EGET_ELEMENT_HOVERED:
+			it->second.hoverEvent.get()->engineRun();
+			break;
+		case EGUI_EVENT_TYPE::EGET_BUTTON_CLICKED:
+			it->second.pressedEvent.get()->engineRun();
+			break;
+		}
+	}
+	*/
 }

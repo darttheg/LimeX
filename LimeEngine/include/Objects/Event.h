@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include "sol/sol.hpp"
+#include <functional>
 
 class Application;
 
@@ -15,6 +16,10 @@ private:
 
 	friend class Hook;
 	bool removeRef(int ref);
+
+	std::function<void()> onLengthChanged;
+	int lastLen = 0;
+	void updateLen();
 public:
 	Event();
 
@@ -23,6 +28,11 @@ public:
 	void run(); // Run Event
 	int getSize() const { return (int)funcs.size(); }
 	bool empty();
+
+	void setOnLengthChanged(std::function<void()> cb) {
+		onLengthChanged = std::move(cb);
+		lastLen = (int)funcs.size();
+	}
 
 	template<class ...Args>
 	void engineRun(lua_State* L, std::function<void(const std::string&)> onError, Args&&... args);

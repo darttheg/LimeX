@@ -6,6 +6,7 @@
 #include "DebugConsole.h"
 #include "GUIManager.h"
 #include "Renderer.h"
+#include "Objects/Vec2.h"
 
 static DebugConsole* d = nullptr;
 static Renderer* r = nullptr;
@@ -19,6 +20,8 @@ Text2D::Text2D() {
 	}
 
 	text->setText(L"Text");
+
+	Object2D::createEvents();
 }
 
 Text2D::Text2D(const std::string& tx) : Text2D() {

@@ -129,6 +129,9 @@
     <ClInclude Include="include\Objects\Text2D.h">
       <Filter>Engine\Runtime\Objects\2D</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\Image2D.h">
+      <Filter>Engine\Runtime\Objects\2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -204,6 +207,9 @@
       <Filter>Engine\Runtime\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Objects\Text2D.cpp">
+      <Filter>Engine\Runtime\Objects\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Image2D.cpp">
       <Filter>Engine\Runtime\Objects\2D</Filter>
     </ClCompile>
   </ItemGroup>

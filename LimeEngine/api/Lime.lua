@@ -58,6 +58,22 @@ Hook = Hook or {}
 ---@return Hook
 function Hook.new() end
 
+---@class Image2D
+---@field position Vec2 @The 2D position of this object on the screen.
+---@field size Vec2 @The 2D size of this object.
+---@field visible boolean @Determines the visibility of this object and its children.
+---@field border boolean @Displays a border outlining this object's bounding box on the screen.
+---@field backgroundColor Vec4 @The RGBA background color of this object.
+---@field enabled boolean @Determines if this object is hoverable and clickable.
+---@field onHovered Event @Event called by Lime when this object is hovered.
+---@field onPressed Event @Event called by Lime when this object is pressed.
+Image2D = Image2D or {}
+--- A basic 2D object to display images. Without loading a Texture, this object can be used as a container for other GUI objects if parented together.
+---@overload fun(tex:Texture): Image2D
+---@overload fun(pos:Vec2, size:Vec2): Image2D
+---@return Image2D
+function Image2D.new() end
+
 ---@class Material
 ---@field ID number @An ID to identify this `Material` with, being useful for raycast hit results as those can contain a hit ID.
 ---@field type Lime.Enum.MaterialType @Sets the type of this `Material`, determing how the layers interact with themselves and the world.
@@ -102,6 +118,11 @@ function Skydome.new() end
 ---@field position Vec2 @The 2D position of this object on the screen.
 ---@field size Vec2 @The 2D size of this object.
 ---@field visible boolean @Determines the visibility of this object and its children.
+---@field border boolean @Displays a border outlining this object's bounding box on the screen.
+---@field backgroundColor Vec4 @The RGBA background color of this object.
+---@field enabled boolean @Determines if this object is hoverable and clickable.
+---@field onHovered Event @Event called by Lime when this object is hovered.
+---@field onPressed Event @Event called by Lime when this object is pressed.
 Text2D = Text2D or {}
 --- A basic 2D object to display text. Text objects support colors and basic styling. Use tags `<#HEX>` for color, `<s>` for strike, `<d>` for drop shadow, `<u>` for underline, `<b>` for bold, and `<r>` to reset styles. Example: `<#6ABE30>This is green! <b>Now, it's green and bold! <r>Now, it's back to normal.`
 ---@overload fun(text:string): Text2D
@@ -147,6 +168,7 @@ Vec4 = Vec4 or {}
 --- A four-dimensional vector object.
 ---@overload fun(x:number, y:number, z:number, w:number): Vec4
 ---@overload fun(all:number): Vec4
+---@overload fun(HEX:string): Vec4
 ---@return Vec4
 function Vec4.new() end
 
@@ -189,6 +211,28 @@ function Hook:isHooked() end
 
 --- Unhook a function to this Event.
 function Hook:unhook() end
+
+--- Loads `texture` into this object.
+---@param texture Texture
+---@return boolean
+function Image2D:loadTexture(texture) end
+
+--- Moves this object to the back in terms of z ordering. (Rendered first, all other objects then overlap)
+---@return boolean
+function Image2D:moveToBack() end
+
+--- Moves this object to the front in terms of z ordering. (Rendered last, overlaps all other objects)
+---@return boolean
+function Image2D:moveToFront() end
+
+--- Parents this object to another 2D object.
+---@param child any
+---@return void
+function Image2D:parentTo(child) end
+
+--- In the case that the z ordering of the background for this object is above its children, this will update its z ordering to be correct.
+---@return void
+function Image2D:updateBackgroundZ() end
 
 --- Closes the Lime application.
 function Lime.close() end
@@ -463,6 +507,14 @@ function Skydome:loadMaterial(material) end
 ---@return void
 function Skydome:parentTo(child) end
 
+--- Moves this object to the back in terms of z ordering. (Rendered first, all other objects then overlap)
+---@return boolean
+function Text2D:moveToBack() end
+
+--- Moves this object to the front in terms of z ordering. (Rendered last, overlaps all other objects)
+---@return boolean
+function Text2D:moveToFront() end
+
 --- Parents this object to another 2D object.
 ---@param child any
 ---@return void
@@ -483,6 +535,10 @@ function Text2D:setFont(name) end
 ---@param wrap boolean
 ---@return void
 function Text2D:setWordWrap(wrap) end
+
+--- In the case that the z ordering of the background for this object is above its children, this will update its z ordering to be correct.
+---@return void
+function Text2D:updateBackgroundZ() end
 
 --- Appends another `Texture` onto this `Texture`.
 ---@param toAppend Texture

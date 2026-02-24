@@ -2,12 +2,15 @@
 #include <sol/optional.hpp>
 
 class Application;
-
-#include "Objects/Vec2.h"
+class Vec2;
+class Vec4;
+class Event;
 
 namespace irr {
 	namespace gui {
 		class IGUIElement;
+		class IGUIStaticText;
+		class IGUIButton;
 	}
 }
 
@@ -24,10 +27,50 @@ public:
 	Vec2 getSize() const;
 	void setSize(const Vec2& size);
 
-	bool parentTo(sol::optional<Object2D*> parent);
-protected:
+	bool getBorder() const;
+	void setBorder(bool enable);
+	Vec4 getBackgroundColor() const;
+	void setBackgroundColor(const Vec4& c);
 
+	bool bringToFront() const;
+	bool sendToBack() const;
+	int getZOrder() const;
+	void setZOrder(int z);
+	void updateBackgroundZ();
+
+	bool parentTo(sol::optional<Object2D*> parent);
+
+	void createButton();
+	void removeButton();
+	void checkButtonState();
+
+	bool hovered = false;
+	bool pressed = false;
+	void createEvents();
+	std::shared_ptr<Event> onPressed = nullptr;
+	std::shared_ptr<Event> onHover = nullptr;
+
+	std::shared_ptr<Event> getHoverEvent() { return onHover; }
+	std::shared_ptr<Event> getPressedEvent() { return onPressed; }
+	void setHoverEvent(std::shared_ptr<Event> e);
+	void setPressedEvent(std::shared_ptr<Event> e);
+
+	bool getEnabled() const;
+	void setEnabled(bool v);
+protected:
+	irr::gui::IGUIStaticText* bgBorder = nullptr;
+	void updateBorderDimensions(const Vec2& sz);
+	void updateButtonDimensions();
+
+	irr::gui::IGUIButton* button = nullptr;
 private:
+	struct Vec4S { int x, y, z, w; };
+	Vec4S backgroundColor{ 0, 0, 0, 0 };
+	bool hasBorder = false;
+	bool hasBackground = false;
+	bool btnEnabled = true; // If button is active, this toggles its enabled state
+
+	void setBGBorder();
 };
 
 namespace Interface::Object2DBind {

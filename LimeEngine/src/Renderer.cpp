@@ -214,6 +214,17 @@ static irr::video::ITexture* getCheckerError(irr::video::IVideoDriver* driver) {
 	return checker;
 }
 
+static irr::video::ITexture* getAlphaBlank(irr::video::IVideoDriver* driver) {
+	irr::video::ITexture* blank = driver->getTexture("alpha");
+	if (!blank) {
+		const irr::video::SColor L(0, 0, 0, 0);
+		irr::video::IImage* img = driver->createImage(irr::video::ECF_R5G6B5, irr::core::dimension2du(1, 1));
+		blank = driver->addTexture("blank", img);
+		img->drop();
+	}
+	return blank;
+}
+
 // ---
 
 Vec2 Renderer::getRenderSize() {
@@ -517,10 +528,30 @@ void Renderer::setGUIQuality(int q) {
 irr::gui::CGUIColoredText* Renderer::createColoredText2D() {
 	if (!guardRenderingCheck()) return nullptr;
 
-	irr::core::rect<irr::s32> r(0, 0, 200, 160);
+	irr::core::rect<irr::s32> r(0, 0, 128, 64);
 	irr::gui::CGUIColoredText* out = new irr::gui::CGUIColoredText(i_gui, i_gui->getRootGUIElement(), -1, r);
 
 	return out;
+}
+
+irr::gui::IGUIStaticText* Renderer::createStaticText() {
+	if (!guardRenderingCheck()) return nullptr;
+
+	return i_gui->addStaticText(L"", irr::core::recti(0, 0, 64, 64));
+}
+
+irr::gui::IGUIImage* Renderer::createGUIImage() {
+	if (!guardRenderingCheck()) return nullptr;
+
+	irr::gui::IGUIImage* img = i_gui->addImage(irr::core::recti(0, 0, 64, 64));
+	img->setImage(getAlphaBlank(i_driver));
+
+	return img;
+}
+
+irr::gui::IGUIButton* Renderer::createButton() {
+	if (!guardRenderingCheck()) return nullptr;
+	return i_gui->addButton(irr::core::recti());
 }
 
 void Renderer::setAmbientColor(const Vec4& color) {
@@ -541,13 +572,39 @@ void Renderer::setBackgroundColor(const Vec4& color) {
 void Renderer::setLightManagementType(int type) {
 	if (!guardRenderingCheck()) return;
 
-	// TODO
+	/*
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	*/
 }
 
 void Renderer::setTextureCreationQuality(int quality) {
 	if (!guardRenderingCheck()) return;
 
-	// TODO
+	/*
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	TODO
+	*/
 }
 
 void Renderer::setShadowColor(const Vec4& color) {

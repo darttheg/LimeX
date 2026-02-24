@@ -31,6 +31,9 @@ namespace irr {
 	namespace gui {
 		class IGUIEnvironment;
 		class CGUIColoredText;
+		class IGUIStaticText;
+		class IGUIImage;
+		class IGUIButton;
 	}
 }
 using namespace irr;
@@ -104,6 +107,9 @@ public:
 	// GUI
 	void setGUIQuality(int q);
 	irr::gui::CGUIColoredText* createColoredText2D();
+	irr::gui::IGUIStaticText* createStaticText();
+	irr::gui::IGUIImage* createGUIImage();
+	irr::gui::IGUIButton* createButton();
 
 	// Misc
 	bool setMouseVisible(bool vis);

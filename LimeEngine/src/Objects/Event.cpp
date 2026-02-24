@@ -13,8 +13,15 @@ Hook Event::hook(sol::function f) {
 	int ref = luaL_ref(a->GetLuaState(), LUA_REGISTRYINDEX);
 	funcs.push_back(ref);
 	// We can get the function because it's sitting at the top of the registry after just being called.
-
+	updateLen();
 	return Hook(shared_from_this(), ref);
+}
+
+void Event::updateLen() {
+	const int len = (int)funcs.size();
+	if (len == lastLen) return;
+	lastLen = len;
+	if (onLengthChanged) onLengthChanged();
 }
 
 bool Event::removeRef(int ref) {
@@ -24,6 +31,7 @@ bool Event::removeRef(int ref) {
 
 	luaL_unref((a->GetLuaState()), LUA_REGISTRYINDEX, ref);
 	funcs.erase(it);
+	updateLen();
 	return true;
 }
 
@@ -33,6 +41,7 @@ void Event::clear() {
 	}
 
 	funcs.clear();
+	updateLen();
 }
 
 bool Event::empty() {
