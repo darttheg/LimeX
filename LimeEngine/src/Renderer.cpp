@@ -162,11 +162,13 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 
 	qr->beginInternal();
 	i_smgr->drawAll();
-	guiManager->Render();
+	// guiManager->Render();
 	qr->endInternal();
 
 	i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 	qr->presentToWindow();
+	// Move GUI to its own quad, with bilinear filtering disabled.
+	guiManager->Render();
 	i_driver->endScene();
 
 	hasBegunNewScene = true;

@@ -44,7 +44,6 @@ void GUIManager::SetGUIEnv(irr::gui::IGUIEnvironment* g) {
 
 bool GUIManager::Render() {
 	if (!guardRenderingCheck()) return false;
-
 	guienv->drawAll();
 
 	return true;

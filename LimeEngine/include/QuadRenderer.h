@@ -21,6 +21,8 @@ public:
 
 	irr::video::ITexture* getRenderTarget() const { return rt; }
 
+	irr::core::recti getViewport() { return vp; }
+
 private:
 	irr::video::IVideoDriver* driver = nullptr;
 
@@ -34,6 +36,8 @@ private:
 	irr::video::SMaterial qMat;
 	bool qBuilt = false;
 	bool matchWR = true;
+
+	irr::core::recti vp;
 
 	int timeToRecreate = 0;
 	bool didRecreate = true;

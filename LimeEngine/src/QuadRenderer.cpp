@@ -81,9 +81,11 @@ void QuadRenderer::presentToWindow()
         const int x0 = (winW - dstW) / 2;
         const int y0 = (winH - dstH) / 2;
 
-        driver->setViewPort({ x0, y0, x0 + dstW, y0 + dstH });
+        vp = { x0, y0, x0 + dstW, y0 + dstH };
+        driver->setViewPort(vp);
     } else {
-        driver->setViewPort({ 0, 0, (int)winW, (int)winH });
+        vp = { 0, 0, (int)winW, (int)winH };
+        driver->setViewPort(vp);
     }
 
     irr::core::matrix4 I; I.makeIdentity();
@@ -128,7 +130,7 @@ void QuadRenderer::buildQuad()
     qMat.BackfaceCulling = false;
     qMat.MaterialType = irr::video::EMT_SOLID;
 
-    qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, false);
+    qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, true);
     qMat.setFlag(irr::video::EMF_TRILINEAR_FILTER, false);
     qMat.setFlag(irr::video::EMF_ANISOTROPIC_FILTER, false);
     qMat.setFlag(irr::video::EMF_USE_MIP_MAPS, false);
