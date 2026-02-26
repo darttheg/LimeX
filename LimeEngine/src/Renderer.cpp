@@ -8,6 +8,7 @@
 #include "Window.h"
 #include "Receiver.h"
 #include "GUIManager.h"
+#include "QuadRenderer.h"
 
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
@@ -121,6 +122,10 @@ bool Renderer::Init() {
 		}
 		});
 
+	qr = new QuadRenderer();
+	qr->init(i_driver);
+	qr->setInternalResolution(renderSize.x, renderSize.y);
+
 	isCreated = true;
 	return true;
 }
@@ -151,19 +156,13 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 
 	updateFog(); // Update fog params pre-render
 
-	// Update to use a quad! Will make post processing easier in the future,
-	// but it will also enable better rescaling of the viewport when you don't want it to match resolutions to the window resolution.
+	qr->beginInternal();
+	i_smgr->drawAll();
+	guiManager->Render();
+	qr->endInternal();
 
-	if (manualRendering) {
-		bool bb = clearBackBuffer;
-		if (!hasBegunNewScene) bb = false;
-		i_driver->beginScene(bb, clearZBuffer, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
-		i_smgr->drawAll();
-	} else {
-		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
-		i_smgr->drawAll();
-		guiManager->Render();
-	}
+	i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
+	qr->presentToWindow();
 	i_driver->endScene();
 
 	hasBegunNewScene = true;
@@ -224,7 +223,7 @@ static irr::video::ITexture* getAlphaBlank(irr::video::IVideoDriver* driver) {
 	irr::video::ITexture* blank = driver->getTexture("alpha");
 	if (!blank) {
 		const irr::video::SColor L(0, 0, 0, 0);
-		irr::video::IImage* img = driver->createImage(irr::video::ECF_R5G6B5, irr::core::dimension2du(1, 1));
+		irr::video::IImage* img = driver->createImage(irr::video::ECF_A1R5G5B5, irr::core::dimension2du(1, 1));
 		blank = driver->addTexture("blank", img);
 		img->drop();
 	}
@@ -241,12 +240,14 @@ Vec2 Renderer::getRenderSize() {
 void Renderer::setRenderSize(const Vec2& size) {
 	if (!guardRenderingCheck()) return;
 
-	if (!doMatchResolution) {
+	if (doMatchResolution) {
 		d->Warn("Changing the render size while the render size is set to match the window size will not show any effect! See `Lime.Scene.setRescaleRenderToWindowSize`.");
 	}
 
 	renderSize.x = size.getX();
 	renderSize.y = size.getY();
+
+	qr->setInternalResolution(renderSize.x, renderSize.y);
 }
 
 int Renderer::getElapsedTime() {
@@ -305,22 +306,10 @@ int Renderer::updateFrameRate() {
 	return fps;
 }
 
-void Renderer::updateRenderResolution(int w, int h) {
-	SetWindowPos(getDeviceVideoData(), nullptr, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
-
-	if (doMatchResolution) {
-		irr::core::dimension2d<u32> newSize(static_cast<u32>(w), static_cast<u32>(h));
-		i_driver->OnResize(newSize);
-	}
-
-	if (i_gui) {
-		auto* root = i_gui->getRootGUIElement();
-		root->setRelativePosition(core::rect<s32>(0, 0, (s32)w, (s32)h));
-	}
-
-	if (i_smgr->getActiveCamera()) {
-		i_smgr->getActiveCamera()->setAspectRatio((f32)w / (f32)h);
-	}
+void Renderer::updateWindowSize(int w, int h) {
+	qr->setWindowResolution(w, h);
+	MoveWindow(getHandle(), 0, 0, w, h, TRUE);
+	qr->prepareToRecreateRt();
 }
 
 HWND Renderer::getDeviceVideoData() {
@@ -333,19 +322,6 @@ int Renderer::getObjectCount() {
 	if (!root) return 0;
 
 	return getNumChildren(root) - 1;
-}
-
-void Renderer::setViewort(int x, int y, int w, int h) {
-	if (!i_device) return;
-
-	i_driver->setViewPort(irr::core::rect<irr::s32>(
-		x,
-		y,
-		x + w,
-		y + h
-	));
-
-	a->GetWindow()->setViewport(x, y, w, h);
 }
 
 irr::video::ITexture* Renderer::createTexture(int w, int h, const std::string& name) {
@@ -544,6 +520,8 @@ void Renderer::setBackgroundColor(const Vec4& color) {
 	bgColor.y = color.getY();
 	bgColor.z = color.getZ();
 	bgColor.w = color.getW();
+
+	qr->setClearColor(bgColor.x, bgColor.y, bgColor.z, bgColor.w);
 }
 
 void Renderer::setLightManagementType(int type) {
@@ -614,6 +592,11 @@ Texture Renderer::getErrorTexture() {
 	if (!guardRenderingCheck()) return Texture();
 
 	return Texture(getCheckerError(i_driver));
+}
+
+void Renderer::setMatchRes(bool v) {
+	qr->setMatchWindowRender(v);
+	doMatchResolution = v;
 }
 
 bool Renderer::setMouseVisible(bool vis) {

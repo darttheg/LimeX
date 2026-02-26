@@ -72,7 +72,9 @@ bool Window::Create() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	glfwWindow = glfwCreateWindow(cfg.windowSize[0], cfg.windowSize[1], cfg.title.c_str(), nullptr, nullptr);
+	windowSize.x = cfg.windowSize[0];
+	windowSize.y = cfg.windowSize[1];
+	glfwWindow = glfwCreateWindow(windowSize.x, windowSize.y, cfg.title.c_str(), nullptr, nullptr);
 	if (!glfwWindow) return false;
 
 	if (!cfg.fullscreen) {
@@ -89,6 +91,7 @@ bool Window::Create() {
 
 	glfwSetWindowMaximizeCallback(glfwWindow, [](GLFWwindow* win, int maximized) {
 		HWND hwnd = a->GetWindow()->GetHandle();
+		auto* d = a->GetDebugConsole();
 
 		if (maximized) {
 			a->GetRenderer()->maximizeDevice();
@@ -107,8 +110,6 @@ bool Window::Create() {
 			SetWindowPos(hwnd, HWND_TOP,
 				r.left, r.top, r.right - r.left, r.bottom - r.top,
 				SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-
-			a->GetRenderer()->updateRenderResolution(r.right - r.left, r.bottom - r.top);
 		}
 		else {
 			a->GetRenderer()->restoreDevice();
@@ -119,20 +120,16 @@ bool Window::Create() {
 
 			SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
 				SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+			d->Warn("TODO");
 		}
-
-		a->GetWindow()->setGLFWCallbackTriggered(true);
-		});
+	});
 
 	glfwSetFramebufferSizeCallback(glfwWindow, [](GLFWwindow* window, int width, int height) {
-		w->setSizeSimple(width, height);
 		auto* r = a->GetRenderer();
-		auto w = a->GetWindow();
-		if (!w->getGLFWCallbackTriggered())
-			r->updateRenderResolution(width, height);
-		else
-			w->setGLFWCallbackTriggered(false);
+		auto* w = a->GetWindow();
+		w->setSizeSimple(width, height);
 
+		r->updateWindowSize(width, height);
 		w->WindowResize.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); });
 	});
 
@@ -233,8 +230,6 @@ void Window::setSize(const Vec2& size) {
 	int deltaH = static_cast<int>(windowSize.y) - oldH;
 	glfwSetWindowPos(glfwWindow, winX - deltaW / 2, winY - deltaH / 2);
 
-	a->GetRenderer()->updateRenderResolution(windowSize.x, windowSize.y);
-
 	// Skip delta on ACTUAL resize
 	glfwGetWindowSize(glfwWindow, &winX, &winY);
 	if ((winX != oldW) && (winY != oldH))
@@ -277,8 +272,8 @@ void Window::keepAspectRatio(bool on) {
 		glfwSetWindowAspectRatio(glfwWindow, GLFW_DONT_CARE, GLFW_DONT_CARE);
 }
 
-void Window::setViewport(int x, int y, int w, int h) {
-	glViewport(x, y, w, h);
+Vec2 Window::getRawWinSize() const {
+	return Vec2(windowSize.x, windowSize.y);
 }
 
 int Window::getTime() {

@@ -16,6 +16,7 @@ class Receiver;
 class GUIManager;
 class Event;
 class Object2D;
+class QuadRenderer;
 
 namespace irr {
 	class IrrlichtDevice;
@@ -59,13 +60,12 @@ public:
 	bool maximizeDevice();
 	bool restoreDevice();
 	bool isFocused();
-	void updateRenderResolution(int w, int h);
 	HWND getDeviceVideoData();
 	bool isManualRenderingOn() { return manualRendering; }
 	void setManualRendering(bool on) { manualRendering = on; }
 	int getObjectCount();
-	void setViewort(int x, int y, int w, int h);
 	int updateFrameRate();
+	void updateWindowSize(int w, int h);
 
 	// Scene
 	Vec2 getRenderSize();
@@ -80,7 +80,7 @@ public:
 	void setLightManagementType(int type);
 	void setTextureCreationQuality(int quality);
 	Texture getErrorTexture();
-	void setMatchRes(bool v) { doMatchResolution = v; }
+	void setMatchRes(bool v);
 	bool getMatchRes() { return doMatchResolution; }
 
 	// Textures
@@ -146,6 +146,7 @@ private:
 	int lastTime = 0;
 	int fps = 0;
 	HWND hwndIrr = nullptr;
+	QuadRenderer* qr = nullptr;
 
 	// GUI Environment
 	GUIManager* guiManager = nullptr;

@@ -43,9 +43,9 @@ public:
 	void setResizable(bool on);
 	void keepAspectRatio(bool on);
 
-	void setGLFWCallbackTriggered(bool v) { maximizeRestoreCBThisFrame = v; }
-	bool getGLFWCallbackTriggered() { return maximizeRestoreCBThisFrame; }
-	void setViewport(int x, int y, int w, int h);
+	// To get the raw window size
+	Vec2 getRawWinSize() const;
+
 	int getTime();
 	void setSwapInterval(int i);
 	int getPrimaryHz();
@@ -54,7 +54,6 @@ public:
 private:
 	struct Vec2S { float x, y; };
 
-	bool maximizeRestoreCBThisFrame = false; // Used to ignore frame buffer resize callback
 	bool isFullscreened = false;
 	GLFWwindow* glfwWindow = nullptr;
 	Vec2S windowSize{};
