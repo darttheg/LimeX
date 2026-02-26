@@ -71,22 +71,20 @@ void QuadRenderer::presentToWindow()
     if (!driver || !rt)
         return;
 
-    const float sx = winW / (float)resW;
-    const float sy = winH / (float)resH;
-    float s = 0;
+    if (!matchWR) {
+        const float sx = winW / (float)resW;
+        const float sy = winH / (float)resH;
+        const float s = std::min(sx, sy);
+        const int dstW = (int)std::lround(resW * s);
+        const int dstH = (int)std::lround(resH * s);
 
-    if (!matchWR)
-        s = std::min(sx, sy);
-    else
-        s = std::max(sx, sy);
+        const int x0 = (winW - dstW) / 2;
+        const int y0 = (winH - dstH) / 2;
 
-    const int dstW = (int)std::lround(resW * s);
-    const int dstH = (int)std::lround(resH * s);
-
-    const int x0 = (winW - dstW) / 2;
-    const int y0 = (winH - dstH) / 2;
-
-    driver->setViewPort({ x0, y0, x0 + dstW, y0 + dstH });
+        driver->setViewPort({ x0, y0, x0 + dstW, y0 + dstH });
+    } else {
+        driver->setViewPort({ 0, 0, (int)winW, (int)winH });
+    }
 
     irr::core::matrix4 I; I.makeIdentity();
     driver->setTransform(irr::video::ETS_WORLD, I);

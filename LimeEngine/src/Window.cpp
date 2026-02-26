@@ -276,6 +276,10 @@ Vec2 Window::getRawWinSize() const {
 	return Vec2(windowSize.x, windowSize.y);
 }
 
+float Window::getWinAR() const {
+	return (float)windowSize.x / (float)windowSize.y;
+}
+
 int Window::getTime() {
 	return (int)(glfwGetTime() * 1000.0);
 }

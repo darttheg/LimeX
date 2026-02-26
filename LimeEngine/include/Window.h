@@ -45,6 +45,7 @@ public:
 
 	// To get the raw window size
 	Vec2 getRawWinSize() const;
+	float getWinAR() const;
 
 	int getTime();
 	void setSwapInterval(int i);

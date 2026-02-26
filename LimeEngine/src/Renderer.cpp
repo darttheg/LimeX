@@ -156,6 +156,10 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 
 	updateFog(); // Update fog params pre-render
 
+	if (doMatchResolution && i_smgr->getActiveCamera()) {
+		i_smgr->getActiveCamera()->setAspectRatio(w->getWinAR());
+	}
+
 	qr->beginInternal();
 	i_smgr->drawAll();
 	guiManager->Render();
