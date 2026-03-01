@@ -140,7 +140,7 @@ bool Window::Create() {
 	#endif
 
 	// Temporary? Set window size limits to avoid weird letterboxing.
-	glfwSetWindowSizeLimits(glfwWindow, cfg.renderSize[0], cfg.renderSize[1], GLFW_DONT_CARE, GLFW_DONT_CARE);
+	setSizeLimit(cfg.renderSize[0], cfg.renderSize[1]);
 
 	return true;
 }
@@ -273,6 +273,12 @@ void Window::keepAspectRatio(bool on) {
 		glfwSetWindowAspectRatio(glfwWindow, windowSize.x, windowSize.y);
 	else
 		glfwSetWindowAspectRatio(glfwWindow, GLFW_DONT_CARE, GLFW_DONT_CARE);
+}
+
+void Window::setSizeLimit(int w, int h) {
+	if (!glfwWindow) return;
+
+	glfwSetWindowSizeLimits(glfwWindow, w, h, GLFW_DONT_CARE, GLFW_DONT_CARE);
 }
 
 Vec2 Window::getRawWinSize() const {

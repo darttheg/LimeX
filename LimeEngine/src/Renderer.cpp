@@ -242,6 +242,7 @@ void Renderer::setRenderSize(const Vec2& size) {
 	renderSize.y = size.getY();
 
 	qr->setInternalResolution(renderSize.x, renderSize.y);
+	w->setSizeLimit(renderSize.x, renderSize.y);
 }
 
 int Renderer::getElapsedTime() {
