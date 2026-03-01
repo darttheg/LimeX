@@ -139,6 +139,9 @@ bool Window::Create() {
 	SetMainWindowIcon(GetHandle());
 	#endif
 
+	// Temporary? Set window size limits to avoid weird letterboxing.
+	glfwSetWindowSizeLimits(glfwWindow, cfg.renderSize[0], cfg.renderSize[1], GLFW_DONT_CARE, GLFW_DONT_CARE);
+
 	return true;
 }
 
