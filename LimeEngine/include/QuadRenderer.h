@@ -9,7 +9,7 @@ public:
 	void init(irr::video::IVideoDriver* driver);
 	void setInternalResolution(std::uint32_t w, std::uint32_t h);
 	void setWindowResolution(std::uint32_t w, std::uint32_t h);
-	void setMatchWindowRender(bool m) { matchWR = m; }
+	void setMatchWindowRender(bool m);
 	void setClearColor(std::uint32_t r, std::uint32_t g, std::uint32_t b, std::uint32_t a);
 
 	void beginInternal();

@@ -31,6 +31,13 @@ void QuadRenderer::setWindowResolution(std::uint32_t w, std::uint32_t h) {
     driver->OnResize(irr::core::dimension2du((irr::u32)w, (irr::u32)h));
 }
 
+void QuadRenderer::setMatchWindowRender(bool m) {
+    if (matchWR == m) return;
+
+    matchWR = m;
+    recreateRt();
+}
+
 void QuadRenderer::setClearColor(std::uint32_t br, std::uint32_t bg, std::uint32_t bb, std::uint32_t ba) {
     clear.set(ba, br, bg, bb);
 }
