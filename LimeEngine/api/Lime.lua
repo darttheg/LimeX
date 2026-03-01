@@ -289,11 +289,6 @@ function Lime.setFrameRate(target) end
 ---@return boolean
 function Lime.setInitConfig(driver, windowSize, renderSize) end
 
---- If true, Lime will not render the scene at the end of each `Lime.onUpdate` cycle. Instead, use `Lime.Scene.render` for 3D scene rendering and `Lime.GUI.render` for GUI rendering within the `Lime.onUpdate` Event.
----@param isManual boolean
----@return void
-function Lime.setManualRendering(isManual) end
-
 --- Sets vertical syncronization, matching the frame rate to the primary monitor's refresh rate.
 ---@param vSyncOn boolean
 ---@return void
@@ -308,10 +303,6 @@ function Lime.GUI.embedFont(path) end
 ---@param name string
 ---@return boolean
 function Lime.GUI.isFontEmbedded(name) end
-
---- Renders all GUI elements to the screen. Returns true on success. (NOTE: Manual rendering must be on, otherwise this function has no effect. See `Lime.setManualRendering`.)
----@return boolean
-function Lime.GUI.render() end
 
 --- Sets the default font for new GUI elements to font `name`.
 ---@param name string
@@ -380,12 +371,6 @@ function Lime.Scene.getErrorTexture() end
 --- Returns the amount of 3D objects in the scene.
 ---@return number
 function Lime.Scene.getObjectCount() end
-
---- Renders the scene using the active `Camera` and current rendering parameters. Returns true on success. Clearing the back buffer will replace previously rendered items with the background color. Clearing the Z buffer ensures the previous depth pass is not used. (NOTE: Manual rendering must be on, otherwise this function has no effect. See `Lime.setManualRendering`.)
----@param clearBackBuffer boolean?
----@param clearZBuffer boolean?
----@return void
-function Lime.Scene.render(clearBackBuffer, clearZBuffer) end
 
 --- Sets the ambient color of the scene to `rgba`.
 ---@param rgba Vec4

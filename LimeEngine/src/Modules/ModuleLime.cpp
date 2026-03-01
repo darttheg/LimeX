@@ -75,11 +75,6 @@ void Module::Lime::bind(Application* app) {
 	// Returns boolean
 	module.set_function("setInitConfig", &Module::Lime::Bind::SetInitConfig);
 
-	// If true, Lime will not render the scene at the end of each `Lime.onUpdate` cycle. Instead, use `Lime.Scene.render` for 3D scene rendering and `Lime.GUI.render` for GUI rendering within the `Lime.onUpdate` Event.
-	// Params boolean isManual
-	// Returns void
-	module.set_function("setManualRendering", &Module::Lime::Bind::SetManualRendering);
-
 	// Returns the elapsed time the application has been running in milliseconds.
 	// Returns number
 	module.set_function("getElapsedTime", &Module::Lime::Bind::GetElapsedTime);
@@ -184,10 +179,6 @@ bool Module::Lime::Bind::SetInitConfig(int driverType, const Vec2& windowSize, c
 
 	a->SetConfig(cfg);
 	return true;
-}
-
-void Module::Lime::Bind::SetManualRendering(bool on) {
-	r->setManualRendering(on);
 }
 
 int Module::Lime::Bind::GetElapsedTime() {

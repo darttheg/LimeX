@@ -25,10 +25,6 @@ void Module::GUI::bind(Application* app) {
 	// Module Lime.GUI
 	sol::table module = lua["Lime"]["GUI"].get_or_create<sol::table>();
 
-	// Renders all GUI elements to the screen. Returns true on success. (NOTE: Manual rendering must be on, otherwise this function has no effect. See `Lime.setManualRendering`.)
-	// Returns boolean
-	module.set_function("render", &Module::GUI::Bind::render);
-
 	// Embeds a bitmap font from path `path`. Returns the name of this font, cut from `path`. (NOTE: `path` must be the path to a .xml file. The .xml files must be paired by an image file.)
 	// Params string path
 	// Returns string
@@ -53,10 +49,6 @@ void Module::GUI::bind(Application* app) {
 }
 
 // Functions
-
-bool Module::GUI::Bind::render() {
-	return g->renderManually();
-}
 
 std::string Module::GUI::Bind::embedFont(const std::string& path) {
 	return g->embedFont(path);

@@ -198,7 +198,7 @@ bool Application::Run() {
 		LimeUpdate.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); }, dt);
 
 		if (window && window->ShouldClose()) fail = true;
-		if (!renderer->RenderFromApp()) fail = true;
+		if (!renderer->Render()) fail = true;
 
 		updateFrameRate();
 		renderer->EndWholeScene();

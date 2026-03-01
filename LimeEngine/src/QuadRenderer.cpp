@@ -39,22 +39,26 @@ void QuadRenderer::beginInternal()
 {
     if (!driver) return;
 
-    if (rt && timeToRecreate >= 0 && !didRecreate) {
+    if (rtScene && timeToRecreate >= 0 && !didRecreate) {
         didRecreate = true;
         recreateRt();
     }
 
     if (timeToRecreate >= 0) timeToRecreate = 0;
 
-    if (!rt) recreateRt();
+    if (!rtScene) recreateRt();
 
-    driver->setRenderTarget(rt, true, true, clear);
+    driver->setRenderTarget(rtScene, true, true, clear);
 
     irr::s32 oW = matchWR ? winW : resW;
     irr::s32 oH = matchWR ? winH : resH;
     driver->setViewPort(irr::core::rect<irr::s32>(0, 0, oW, oH));
-    // std::cout << std::to_string(oW) << ", " << std::to_string(oH) << "\n";
-    // Scaling window smaller than render resolution causes weird viewport issues, but no numbers seem off.
+}
+
+void QuadRenderer::beginGUIPass() {
+    qMat.setTexture(0, rtGUI);
+
+    driver->setRenderTarget(rtGUI, false, false);
 }
 
 void QuadRenderer::endInternal()
@@ -68,33 +72,29 @@ void QuadRenderer::endInternal()
 
 void QuadRenderer::presentToWindow()
 {
-    if (!driver || !rt)
+    if (!driver || !rtScene)
         return;
 
-    if (!matchWR) {
-        const float sx = winW / (float)resW;
-        const float sy = winH / (float)resH;
-        const float s = std::min(sx, sy);
-        const int dstW = (int)std::lround(resW * s);
-        const int dstH = (int)std::lround(resH * s);
+    setVp();
 
-        const int x0 = (winW - dstW) / 2;
-        const int y0 = (winH - dstH) / 2;
+    // Scene
+    qMat.setTexture(0, rtScene);
+    qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, true);
+    qMat.MaterialType = irr::video::EMT_SOLID;
+    driver->setMaterial(qMat);
 
-        vp = { x0, y0, x0 + dstW, y0 + dstH };
-        driver->setViewPort(vp);
-    } else {
-        vp = { 0, 0, (int)winW, (int)winH };
-        driver->setViewPort(vp);
-    }
+    driver->drawVertexPrimitiveList(
+        qVerts, 4,
+        qIndices, 2,
+        irr::video::EVT_STANDARD,
+        irr::scene::EPT_TRIANGLES,
+        irr::video::EIT_16BIT
+    );
 
-    irr::core::matrix4 I; I.makeIdentity();
-    driver->setTransform(irr::video::ETS_WORLD, I);
-    driver->setTransform(irr::video::ETS_VIEW, I);
-    driver->setTransform(irr::video::ETS_PROJECTION, I);
-
-    qMat.setTexture(0, rt);
-
+    // GUI
+    qMat.setTexture(0, rtGUI);
+    qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, false);
+    qMat.MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
     driver->setMaterial(qMat);
 
     driver->drawVertexPrimitiveList(
@@ -113,8 +113,6 @@ void QuadRenderer::prepareToRecreateRt() {
 
 void QuadRenderer::buildQuad()
 {
-    if (qBuilt) return;
-
     qVerts[0] = irr::video::S3DVertex(-1.f, -1.f, 0.f, 0, 0, 1, 0xFFFFFFFF, 0.f, 1.f);
     qVerts[1] = irr::video::S3DVertex(1.f, -1.f, 0.f, 0, 0, 1, 0xFFFFFFFF, 1.f, 1.f);
     qVerts[2] = irr::video::S3DVertex(1.f, 1.f, 0.f, 0, 0, 1, 0xFFFFFFFF, 1.f, 0.f);
@@ -138,28 +136,64 @@ void QuadRenderer::buildQuad()
 
     qMat.TextureLayer[0].TextureWrapU = irr::video::ETC_CLAMP_TO_EDGE;
     qMat.TextureLayer[0].TextureWrapV = irr::video::ETC_CLAMP_TO_EDGE;
-
-    qBuilt = true;
 }
 
 void QuadRenderer::recreateRt()
 {
     if (!driver) return;
 
-    if (rt) {
-        rt->drop();
-        driver->removeTexture(rt);
-        rt = nullptr;
+    if (rtScene) {
+        rtScene->drop();
+        driver->removeTexture(rtScene);
+        rtScene = nullptr;
+    }
+
+    if (rtGUI) {
+        rtGUI->drop();
+        driver->removeTexture(rtGUI);
+        rtGUI = nullptr;
     }
 
     irr::s32 oW = matchWR ? winW : resW;
     irr::s32 oH = matchWR ? winH : resH;
 
     const irr::core::dimension2du res(oW, oH);
-    rt = driver->addRenderTargetTexture(res, "rt", irr::video::ECF_A8R8G8B8);
+    rtScene = driver->addRenderTargetTexture(res, "rtScene", irr::video::ECF_A8R8G8B8);
+    rtGUI = driver->addRenderTargetTexture(res, "rtGUI", irr::video::ECF_A8R8G8B8);
 
-    if (rt) {
-        rt->grab();
-        qMat.setTexture(0, rt);
+    if (rtScene) {
+        rtScene->grab();
+        qMat.setTexture(0, rtScene);
     }
+
+    if (rtGUI)
+        rtGUI->grab();
+}
+
+void QuadRenderer::setVp() {
+    if (!driver || !rtScene)
+        return;
+
+    if (!matchWR) {
+        const float sx = winW / (float)resW;
+        const float sy = winH / (float)resH;
+        const float s = std::min(sx, sy);
+        const int dstW = (int)std::lround(resW * s);
+        const int dstH = (int)std::lround(resH * s);
+
+        const int x0 = (winW - dstW) / 2;
+        const int y0 = (winH - dstH) / 2;
+
+        vp = { x0, y0, x0 + dstW, y0 + dstH };
+        driver->setViewPort(vp);
+    }
+    else {
+        vp = { 0, 0, (int)winW, (int)winH };
+        driver->setViewPort(vp);
+    }
+
+    irr::core::matrix4 I; I.makeIdentity();
+    driver->setTransform(irr::video::ETS_WORLD, I);
+    driver->setTransform(irr::video::ETS_VIEW, I);
+    driver->setTransform(irr::video::ETS_PROJECTION, I);
 }

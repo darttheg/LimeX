@@ -57,16 +57,6 @@ bool GUIManager::guardRenderingCheck() {
 	return true;
 }
 
-bool GUIManager::renderManually() {
-	if (!guardRenderingCheck()) return false;
-	if (!r->isManualRenderingOn()) {
-		d->Warn("Manual rendering is not enabled. See Lime.setManualRendering.");
-		return false;
-	}
-
-	return Render();
-}
-
 // ---
 
 std::string GUIManager::embedFont(const std::string& path) {

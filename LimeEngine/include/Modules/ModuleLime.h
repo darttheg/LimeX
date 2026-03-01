@@ -19,7 +19,6 @@ namespace Module {
 			void SetEndOnError(bool v);
 			void Close();
 			bool SetInitConfig(int driverType, const Vec2& windowSize, const Vec2& renderSize);
-			void SetManualRendering(bool on = true);
 			int GetElapsedTime();
 			std::string GetVersion();
 			int GetFrameRate();

@@ -147,12 +147,8 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 		return false;
 	}
 
-	if (manualRendering && !i_smgr->getActiveCamera()) {
-		d->Warn("Cannot render without an active Camera!");
+	if (!i_smgr->getActiveCamera()) // Is it appropriate to prematurely not render even a background?
 		return false;
-	} else if (!i_smgr->getActiveCamera()) {
-		return false;
-	}
 
 	updateFog(); // Update fog params pre-render
 
@@ -161,14 +157,13 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 	}
 
 	qr->beginInternal();
-	i_smgr->drawAll();
-	// guiManager->Render();
+	i_smgr->drawAll(); // Draw scene objects to rtScene
+	qr->beginGUIPass();
+	guiManager->Render(); // Draw GUI objects to rtGUI
 	qr->endInternal();
 
 	i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 	qr->presentToWindow();
-	// Move GUI to its own quad, with bilinear filtering disabled.
-	guiManager->Render();
 	i_driver->endScene();
 
 	hasBegunNewScene = true;
@@ -176,14 +171,7 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 	return true;
 }
 
-bool Renderer::RenderFromApp() {
-	if (!manualRendering) return Render();
-	return true;
-}
-
 void Renderer::RenderBGPreUpdate() {
-	if (!manualRendering) return;
-
 	i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 	i_driver->endScene();
 }
@@ -258,15 +246,6 @@ void Renderer::setRenderSize(const Vec2& size) {
 
 int Renderer::getElapsedTime() {
 	return isCreated ? a->GetWindow()->getTime() : 0;
-}
-
-bool Renderer::renderManually(bool clearBackBuffer, bool clearZBuffer) {
-	if (!guardRenderingCheck()) return false;
-	if (!manualRendering) {
-		d->Warn("Manual rendering is not enabled. See Lime.setManualRendering.");
-	}
-
-	return Render(clearBackBuffer, clearZBuffer);
 }
 
 bool Renderer::guardRenderingCheck() {

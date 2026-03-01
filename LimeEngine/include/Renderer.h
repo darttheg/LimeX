@@ -53,7 +53,6 @@ public:
 	bool Shutdown();
 	bool Render(bool clearBackBuffer = false, bool clearZBuffer = true);
 	void EndWholeScene() { hasBegunNewScene = false; }
-	bool RenderFromApp(); // App calls this function, checks if manualRendering is on to ignore render cycle or not.
 	void RenderBGPreUpdate(); // For manual rendering, render the BG just so something is showing before the update loop.
 
 	bool guardRenderingCheck();
@@ -61,8 +60,6 @@ public:
 	bool restoreDevice();
 	bool isFocused();
 	HWND getDeviceVideoData();
-	bool isManualRenderingOn() { return manualRendering; }
-	void setManualRendering(bool on) { manualRendering = on; }
 	int getObjectCount();
 	int updateFrameRate();
 	void updateWindowSize(int w, int h);
@@ -71,7 +68,6 @@ public:
 	Vec2 getRenderSize();
 	void setRenderSize(const Vec2& size);
 	int getElapsedTime();
-	bool renderManually(bool clearBackBuffer = false, bool clearZBuffer = false); // User calls this function with manualRendering
 	void setBackgroundColor(const Vec4& color);
 	void setAmbientColor(const Vec4& color);
 	void setShadowColor(const Vec4& color);
@@ -134,7 +130,6 @@ private:
 	Vec2S fogPlanes{};
 	void updateFog();
 	bool doMatchResolution = true; // Hook resolution w/h to window size
-	bool manualRendering = false; // User-controlled rendering
 
 	// Irrlicht
 	irr::IrrlichtDevice* i_device = nullptr;

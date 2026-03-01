@@ -28,7 +28,6 @@ public:
 	bool Render();
 
 	bool guardRenderingCheck();
-	bool renderManually();
 	std::string embedFont(const std::string& path);
 	void setDefaultFont(const std::string& name);
 	bool isFontEmbedded(const std::string& name);
