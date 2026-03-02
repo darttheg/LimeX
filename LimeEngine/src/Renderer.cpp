@@ -157,15 +157,22 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 		i_smgr->getActiveCamera()->setAspectRatio(w->getWinAR());
 	}
 
-	qr->beginInternal();
-	i_smgr->drawAll(); // Draw scene objects to rtScene
-	qr->beginGUIPass();
-	guiManager->Render(); // Draw GUI objects to rtGUI
-	qr->endInternal();
+	if (doMatchResolution) {
+		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
+		i_smgr->drawAll();
+		guiManager->Render();
+		i_driver->endScene();
+	} else {
+		qr->beginInternal();
+		i_smgr->drawAll(); // Draw scene objects to rtScene
+		qr->beginGUIPass();
+		guiManager->Render(); // Draw GUI objects to rtGUI
+		qr->endInternal();
 
-	i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
-	qr->presentToWindow();
-	i_driver->endScene();
+		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
+		qr->presentToWindow();
+		i_driver->endScene();
+	}
 
 	hasBegunNewScene = true;
 

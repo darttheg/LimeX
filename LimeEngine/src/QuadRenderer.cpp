@@ -65,7 +65,7 @@ void QuadRenderer::beginInternal()
 void QuadRenderer::beginGUIPass() {
     qMat.setTexture(0, rtGUI);
 
-    driver->setRenderTarget(rtGUI, true, true);
+    driver->setRenderTarget(rtGUI, true, true, irr::video::SColor(255,0,0,0));
 }
 
 void QuadRenderer::endInternal()
@@ -87,6 +87,7 @@ void QuadRenderer::presentToWindow()
     // Scene
     qMat.setTexture(0, rtScene);
     qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, highQuality);
+    qMat.setFlag(irr::video::EMF_ANTI_ALIASING, highQuality ? irr::video::E_ANTI_ALIASING_MODE::EAAM_LINE_SMOOTH : irr::video::E_ANTI_ALIASING_MODE::EAAM_OFF);
     qMat.MaterialType = irr::video::EMT_SOLID;
     driver->setMaterial(qMat);
 
@@ -101,6 +102,7 @@ void QuadRenderer::presentToWindow()
     // GUI
     qMat.setTexture(0, rtGUI);
     qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, false);
+    qMat.setFlag(irr::video::EMF_ANTI_ALIASING, irr::video::E_ANTI_ALIASING_MODE::EAAM_OFF);
     qMat.MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
     driver->setMaterial(qMat);
 
@@ -143,7 +145,7 @@ void QuadRenderer::buildQuad()
     qMat.setFlag(irr::video::EMF_TRILINEAR_FILTER, false);
     qMat.setFlag(irr::video::EMF_ANISOTROPIC_FILTER, false);
     qMat.setFlag(irr::video::EMF_USE_MIP_MAPS, false);
-    qMat.setFlag(irr::video::EMF_ANTI_ALIASING, irr::video::E_ANTI_ALIASING_MODE::EAAM_OFF);
+    qMat.setFlag(irr::video::EMF_ANTI_ALIASING, irr::video::E_ANTI_ALIASING_MODE::EAAM_LINE_SMOOTH);
 
     qMat.TextureLayer[0].TextureWrapU = irr::video::ETC_CLAMP_TO_EDGE;
     qMat.TextureLayer[0].TextureWrapV = irr::video::ETC_CLAMP_TO_EDGE;
