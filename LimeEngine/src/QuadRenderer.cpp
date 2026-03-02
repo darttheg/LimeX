@@ -86,7 +86,7 @@ void QuadRenderer::presentToWindow()
 
     // Scene
     qMat.setTexture(0, rtScene);
-    qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, true);
+    qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, highQuality);
     qMat.MaterialType = irr::video::EMT_SOLID;
     driver->setMaterial(qMat);
 
@@ -116,6 +116,10 @@ void QuadRenderer::presentToWindow()
 void QuadRenderer::prepareToRecreateRt() {
     timeToRecreate = -1;
     didRecreate = false;
+}
+
+void QuadRenderer::setSceneRenderQuality(int q) {
+    if (q == 0) highQuality = false; else highQuality = true;
 }
 
 void QuadRenderer::buildQuad()

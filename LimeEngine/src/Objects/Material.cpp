@@ -344,7 +344,7 @@ void Object::MaterialBind::bind(Application* a) {
 		return "Material";
 		};
 
-	// Loads an `Texture` into this `Material`.
+	// Loads a `Texture` into this `Material`.
 	// Params number layer, Texture img
 	// Params Texture img
 	// Returns void

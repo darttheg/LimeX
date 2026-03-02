@@ -24,6 +24,8 @@ public:
 
 	irr::core::recti getViewport() { return vp; }
 
+	void setSceneRenderQuality(int q);
+
 private:
 	irr::video::IVideoDriver* driver = nullptr;
 
@@ -42,6 +44,7 @@ private:
 
 	int timeToRecreate = 0;
 	bool didRecreate = true;
+	bool highQuality = true;
 
 	void buildQuad();
 	void recreateRt();

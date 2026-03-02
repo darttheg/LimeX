@@ -135,6 +135,9 @@
     <ClInclude Include="include\QuadRenderer.h">
       <Filter>Engine\Runtime\Core</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\Billboard.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -217,6 +220,9 @@
     </ClCompile>
     <ClCompile Include="src\QuadRenderer.cpp">
       <Filter>Engine\Runtime\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Billboard.cpp">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

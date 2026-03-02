@@ -28,6 +28,19 @@ Lime.Scene = Lime.Scene or {}
 ---@field onResize Event @Event called by Lime once the window is resized in any way.
 Lime.Window = Lime.Window or {}
 
+---@class Billboard
+---@field size Vec2 @The width and height of this Billboard.
+---@field position Vec3 @The 3D position of this object in the scene.
+---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
+---@field scale Vec3 @The 3D scale of this object in the scene.
+---@field visible boolean @Determines the visibility of this object and its children.
+---@field id number @The identifier for this object to be used in raycasts and object selection.
+Billboard = Billboard or {}
+--- A plane that faces the active camera.
+---@overload fun(material:Material): Billboard
+---@return Billboard
+function Billboard.new() end
+
 ---@class Camera
 ---@field position Vec3 @The 3D position of this object in the scene.
 ---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
@@ -171,6 +184,16 @@ Vec4 = Vec4 or {}
 ---@overload fun(HEX:string): Vec4
 ---@return Vec4
 function Vec4.new() end
+
+--- Loads a `Material` into this `Billboard`.
+---@param material Material
+---@return void
+function Billboard:loadMaterial(material) end
+
+--- Parents this object to another 3D object.
+---@param child any
+---@return void
+function Billboard:parentTo(child) end
 
 --- Returns the forward vector.
 ---@return Vec3
@@ -397,6 +420,11 @@ function Lime.Scene.setFogPlanes(planes) end
 ---@return void
 function Lime.Scene.setLightManagementType(type) end
 
+--- Sets the render quality of the scene using `Lime.Enum.Quality`.
+---@param quality Lime.Enum.Quality
+---@return void
+function Lime.Scene.setRenderQuality(quality) end
+
 --- If set to true, the rendering resolution will be that of the window resolution, updating on any window size changes. If false, the rendering resolution will remain the same size but upscale without anti-aliasing to the window resolution.
 ---@param doRescale boolean
 ---@return void
@@ -467,7 +495,7 @@ function Lime.Window.setTitle(title) end
 ---@return void
 function Material:clearTexture(layer) end
 
---- Loads an `Texture` into this `Material`.
+--- Loads a `Texture` into this `Material`.
 ---@overload fun(layer:number, img:Texture): void
 ---@param img Texture
 ---@return void

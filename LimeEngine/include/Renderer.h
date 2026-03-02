@@ -24,6 +24,7 @@ namespace irr {
 		class ISceneManager;
 		class ISceneNode;
 		class ICameraSceneNode;
+		class IBillboardSceneNode;
 	}
 	namespace video {
 		class IVideoDriver;
@@ -78,6 +79,7 @@ public:
 	Texture getErrorTexture();
 	void setMatchRes(bool v);
 	bool getMatchRes() { return doMatchResolution; }
+	void setSceneRenderQuality(int q);
 
 	// Textures
 	irr::video::ITexture* createTexture(int w, int h, const std::string& name = "");
@@ -88,11 +90,10 @@ public:
 	irr::video::ITexture* setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color);
 	void keyColor(irr::video::ITexture* tex, const Vec4& color);
 
-	// Empty
+	// Misc. Nodes
 	irr::scene::ISceneNode* createEmptyNode();
-
-	// Skydome
 	irr::scene::ISceneNode* createSkydomeNode(irr::video::ITexture* tex);
+	irr::scene::IBillboardSceneNode* createBillboardNode();
 
 	// Camera
 	irr::scene::ICameraSceneNode* createCameraNode();

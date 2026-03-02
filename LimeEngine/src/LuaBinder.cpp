@@ -26,6 +26,7 @@
 #include "Objects/Camera.h"
 #include "Objects/Text2D.h"
 #include "Objects/Image2D.h"
+#include "Objects/Billboard.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -51,4 +52,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::CameraBind::bind(app);
 	Object::Text2DBind::bind(app);
 	Object::Image2DBind::bind(app);
+	Object::BillboardBind::bind(app);
 }

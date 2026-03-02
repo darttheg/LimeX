@@ -408,6 +408,12 @@ irr::scene::ISceneNode* Renderer::createSkydomeNode(irr::video::ITexture* tex) {
 	return i_smgr->addSkyDomeSceneNode(tex, 16, 8, 1.0, 2.0, 100.0);
 }
 
+irr::scene::IBillboardSceneNode* Renderer::createBillboardNode() {
+	if (!guardRenderingCheck()) return nullptr;
+
+	return i_smgr->addBillboardSceneNode();
+}
+
 irr::scene::ICameraSceneNode* Renderer::createCameraNode() {
 	if (!guardRenderingCheck()) return nullptr;
 
@@ -437,6 +443,12 @@ void Renderer::setActiveCamera(irr::scene::ICameraSceneNode* c) {
 	if (!guardRenderingCheck()) return;
 
 	i_smgr->setActiveCamera(c);
+}
+
+void Renderer::setSceneRenderQuality(int q) {
+	if (!guardRenderingCheck()) return;
+
+	qr->setSceneRenderQuality(q);
 }
 
 void Renderer::setGUIQuality(int q) {

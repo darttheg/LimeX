@@ -78,6 +78,11 @@ void Module::Scene::bind(Application* app) {
 	// Returns void
 	module.set_function("setSize", &Module::Scene::Bind::SetRenderSize);
 
+	// Sets the render quality of the scene using `Lime.Enum.Quality`.
+	// Params Lime.Enum.Quality quality
+	// Returns void
+	module.set_function("setRenderQuality", &Module::Scene::Bind::SetRenderQuality);
+
 	// End Module
 }
 
@@ -125,4 +130,8 @@ Texture Module::Scene::Bind::GetErrorTexture() {
 
 void Module::Scene::Bind::SetRenderSize(const Vec2& size) {
 	r->setRenderSize(size);
+}
+
+void Module::Scene::Bind::SetRenderQuality(int q) {
+	r->setSceneRenderQuality(q);
 }

@@ -36,7 +36,6 @@ public:
 	void addButtonPair(const Object2D& o);
 	void removeButtonPair(const Object2D& o);
 	void handleGUIEvent(irr::gui::IGUIElement* caller, irr::gui::IGUIElement* element, int eventType);
-
 private:
 	struct FCache;
 	std::unique_ptr<FCache> fontCache;

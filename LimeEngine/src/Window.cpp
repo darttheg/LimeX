@@ -110,6 +110,7 @@ bool Window::Create() {
 			SetWindowPos(hwnd, HWND_TOP,
 				r.left, r.top, r.right - r.left, r.bottom - r.top,
 				SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+			d->Warn("TODO");
 		}
 		else {
 			a->GetRenderer()->restoreDevice();

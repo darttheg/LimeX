@@ -18,7 +18,6 @@ namespace Module {
 		void bind(Application* app);
 
 		namespace Bind {
-			bool RenderScene(bool clearBackBuffer = false, bool clearZBuffer = true);
 			int GetObjectCount();
 			void SetBackgroundColor(const Vec4& color);
 			void SetFogColor(const Vec4& color);
@@ -30,6 +29,7 @@ namespace Module {
 			void SetMatchRenderResToWindow(bool v);
 			Texture GetErrorTexture();
 			void SetRenderSize(const Vec2& size);
+			void SetRenderQuality(int q);
 
 			//Mesh CreateCubeMesh(int scale);
 			//Mesh CreateRectangleMesh(const Vec3& scale);
