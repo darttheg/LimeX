@@ -16,6 +16,7 @@
 #include "Objects/Texture.h"
 
 #include "External/CGUIColoredText.h"
+#include "External/CTextAnchorSceneNode.h"
 
 static Application* a = nullptr;
 static DebugConsole* d = nullptr;
@@ -412,6 +413,12 @@ irr::scene::IBillboardSceneNode* Renderer::createBillboardNode() {
 	if (!guardRenderingCheck()) return nullptr;
 
 	return i_smgr->addBillboardSceneNode();
+}
+
+irr::scene::CTextAnchorSceneNode* Renderer::createText3DNode(irr::gui::CGUIColoredText* src) {
+	if (!guardRenderingCheck()) return nullptr;
+
+	return new CTextAnchorSceneNode(i_smgr->getRootSceneNode(), i_smgr, i_gui, src);
 }
 
 irr::scene::ICameraSceneNode* Renderer::createCameraNode() {

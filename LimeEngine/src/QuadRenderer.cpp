@@ -65,7 +65,7 @@ void QuadRenderer::beginInternal()
 void QuadRenderer::beginGUIPass() {
     qMat.setTexture(0, rtGUI);
 
-    driver->setRenderTarget(rtGUI, false, false);
+    driver->setRenderTarget(rtGUI, true, true);
 }
 
 void QuadRenderer::endInternal()

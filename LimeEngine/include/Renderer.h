@@ -25,6 +25,7 @@ namespace irr {
 		class ISceneNode;
 		class ICameraSceneNode;
 		class IBillboardSceneNode;
+		class CTextAnchorSceneNode;
 	}
 	namespace video {
 		class IVideoDriver;
@@ -94,6 +95,7 @@ public:
 	irr::scene::ISceneNode* createEmptyNode();
 	irr::scene::ISceneNode* createSkydomeNode(irr::video::ITexture* tex);
 	irr::scene::IBillboardSceneNode* createBillboardNode();
+	irr::scene::CTextAnchorSceneNode* createText3DNode(irr::gui::CGUIColoredText* src);
 
 	// Camera
 	irr::scene::ICameraSceneNode* createCameraNode();

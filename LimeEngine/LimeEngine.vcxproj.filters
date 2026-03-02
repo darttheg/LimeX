@@ -120,7 +120,7 @@
     <ClInclude Include="include\GUIManager.h">
       <Filter>Engine\Runtime\Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\External\CColoredText3DSceneNode.h">
+    <ClInclude Include="include\External\CTextAnchorSceneNode.h">
       <Filter>Engine\Runtime\External\ColoredText</Filter>
     </ClInclude>
     <ClInclude Include="include\External\CGUIColoredText.h">
@@ -136,6 +136,9 @@
       <Filter>Engine\Runtime\Core</Filter>
     </ClInclude>
     <ClInclude Include="include\Objects\Billboard.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Objects\Text3D.h">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClInclude>
   </ItemGroup>
@@ -222,6 +225,9 @@
       <Filter>Engine\Runtime\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Objects\Billboard.cpp">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Text3D.cpp">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
   </ItemGroup>

@@ -143,6 +143,21 @@ Text2D = Text2D or {}
 ---@return Text2D
 function Text2D.new() end
 
+---@class Text3D
+---@field text string @The text content of this object.
+---@field opacity number @The opacity of the text, from 0 to 255. For individual characters being not fully opaque, use color tags with an alpha value.
+---@field size Vec2 @The size of the 2D text box.
+---@field position Vec3 @The 3D position of this object in the scene.
+---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
+---@field scale Vec3 @The 3D scale of this object in the scene.
+---@field visible boolean @Determines the visibility of this object and its children.
+---@field id number @The identifier for this object to be used in raycasts and object selection.
+Text3D = Text3D or {}
+--- A basic 3D object to display text. This object is essentially a `Text2D` tied to a 3D scene node. Text objects support colors and basic styling. Use tags `<#HEX>` for color, `<s>` for strike, `<d>` for drop shadow, `<u>` for underline, `<b>` for bold, and `<r>` to reset styles. Example: `<#6ABE30>This is green! <b>Now, it's green and bold! <r>Now, it's back to normal.`
+---@overload fun(text:string): Text3D
+---@return Text3D
+function Text3D.new() end
+
 ---@class Texture
 Texture = Texture or {}
 --- A texture that is the foundation for all images for 2D and 3D objects.
@@ -560,6 +575,27 @@ function Text2D:setWordWrap(wrap) end
 --- In the case that the z ordering of the background for this object is above its children, this will update its z ordering to be correct.
 ---@return void
 function Text2D:updateBackgroundZ() end
+
+--- Parents this object to another 3D object.
+---@param child any
+---@return void
+function Text3D:parentTo(child) end
+
+--- Sets the text's alignment within its bounding box.
+---@overload fun(x:Lime.Enum.TextAlign, y:Lime.Enum.TextAlign): void
+---@param all Lime.Enum.TextAlign
+---@return void
+function Text3D:setAlignment(all) end
+
+--- Sets the font to use for this object. Fonts must first be embedded. See `Lime.GUI.embedFont`.
+---@param name string
+---@return boolean
+function Text3D:setFont(name) end
+
+--- Enables word wrap.
+---@param wrap boolean
+---@return void
+function Text3D:setWordWrap(wrap) end
 
 --- Appends another `Texture` onto this `Texture`.
 ---@param toAppend Texture

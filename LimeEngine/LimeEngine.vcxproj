@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClInclude Include="include\Application.h" />
     <ClInclude Include="include\DebugConsole.h" />
-    <ClInclude Include="include\External\CColoredText3DSceneNode.h" />
+    <ClInclude Include="include\External\CTextAnchorSceneNode.h" />
     <ClInclude Include="include\External\CGUIColoredText.h" />
     <ClInclude Include="include\FrameLimiter.h" />
     <ClInclude Include="include\Interfaces\Object2D.h" />
@@ -38,6 +38,7 @@
     <ClInclude Include="include\Objects\Camera.h" />
     <ClInclude Include="include\Objects\Event.h" />
     <ClInclude Include="include\Objects\Image2D.h" />
+    <ClInclude Include="include\Objects\Text3D.h" />
     <ClInclude Include="include\Objects\Texture.h" />
     <ClInclude Include="include\Objects\Material.h" />
     <ClInclude Include="include\Objects\Skydome.h" />
@@ -68,6 +69,7 @@
     <ClCompile Include="src\Objects\Camera.cpp" />
     <ClCompile Include="src\Objects\Event.cpp" />
     <ClCompile Include="src\Objects\Image2D.cpp" />
+    <ClCompile Include="src\Objects\Text3D.cpp" />
     <ClCompile Include="src\Objects\Texture.cpp" />
     <ClCompile Include="src\Objects\Material.cpp" />
     <ClCompile Include="src\Objects\Skydome.cpp" />
