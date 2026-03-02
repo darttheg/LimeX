@@ -38,6 +38,7 @@ private:
 	irr::video::S3DVertex qVerts[4];
 	irr::u16 qIndices[6];
 	irr::video::SMaterial qMat;
+	irr::video::SMaterial qBlendMat;
 	bool matchWR = true;
 
 	irr::core::recti vp;

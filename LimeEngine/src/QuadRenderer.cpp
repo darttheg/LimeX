@@ -65,7 +65,7 @@ void QuadRenderer::beginInternal()
 void QuadRenderer::beginGUIPass() {
     qMat.setTexture(0, rtGUI);
 
-    driver->setRenderTarget(rtGUI, true, true, irr::video::SColor(255,0,0,0));
+    driver->setRenderTarget(rtGUI, true, true);
 }
 
 void QuadRenderer::endInternal()
@@ -100,11 +100,8 @@ void QuadRenderer::presentToWindow()
     );
 
     // GUI
-    qMat.setTexture(0, rtGUI);
-    qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, false);
-    qMat.setFlag(irr::video::EMF_ANTI_ALIASING, irr::video::E_ANTI_ALIASING_MODE::EAAM_OFF);
-    qMat.MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-    driver->setMaterial(qMat);
+    qBlendMat.setTexture(0, rtGUI);
+    driver->setMaterial(qBlendMat);
 
     driver->drawVertexPrimitiveList(
         qVerts, 4,
@@ -140,12 +137,29 @@ void QuadRenderer::buildQuad()
     qMat.ZWriteEnable = false;
     qMat.BackfaceCulling = false;
     qMat.MaterialType = irr::video::EMT_SOLID;
-
     qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, true);
     qMat.setFlag(irr::video::EMF_TRILINEAR_FILTER, false);
     qMat.setFlag(irr::video::EMF_ANISOTROPIC_FILTER, false);
     qMat.setFlag(irr::video::EMF_USE_MIP_MAPS, false);
     qMat.setFlag(irr::video::EMF_ANTI_ALIASING, irr::video::E_ANTI_ALIASING_MODE::EAAM_LINE_SMOOTH);
+
+    qBlendMat = irr::video::SMaterial();
+    qBlendMat.Lighting = false;
+    qBlendMat.ZBuffer = false;
+    qBlendMat.ZWriteEnable = false;
+    qBlendMat.BackfaceCulling = false;
+    qBlendMat.MaterialType = irr::video::EMT_ONETEXTURE_BLEND;
+    qBlendMat.setFlag(irr::video::EMF_BILINEAR_FILTER, false);
+    qBlendMat.setFlag(irr::video::EMF_TRILINEAR_FILTER, false);
+    qBlendMat.setFlag(irr::video::EMF_ANISOTROPIC_FILTER, false);
+    qBlendMat.setFlag(irr::video::EMF_USE_MIP_MAPS, false);
+    qBlendMat.setFlag(irr::video::EMF_ANTI_ALIASING, irr::video::E_ANTI_ALIASING_MODE::EAAM_OFF);
+    qBlendMat.MaterialTypeParam = irr::video::pack_textureBlendFunc(
+        irr::video::EBF_ONE,
+        irr::video::EBF_ONE_MINUS_SRC_ALPHA,
+        irr::video::EMFN_MODULATE_1X,
+        irr::video::EAS_TEXTURE
+    );
 
     qMat.TextureLayer[0].TextureWrapU = irr::video::ETC_CLAMP_TO_EDGE;
     qMat.TextureLayer[0].TextureWrapV = irr::video::ETC_CLAMP_TO_EDGE;

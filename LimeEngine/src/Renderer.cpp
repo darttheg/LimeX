@@ -516,7 +516,10 @@ irr::gui::IGUIImage* Renderer::createGUIImage() {
 
 irr::gui::IGUIButton* Renderer::createButton() {
 	if (!guardRenderingCheck()) return nullptr;
-	return i_gui->addButton(irr::core::recti());
+	irr::gui::IGUIButton* out = i_gui->addButton(irr::core::recti());
+	out->setDrawBorder(false);
+
+	return out;
 }
 
 void Renderer::setAmbientColor(const Vec4& color) {
