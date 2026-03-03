@@ -27,6 +27,8 @@ public:
 	bool getVisibility() const;
 	void setVisibility(bool v);
 
+	int getRefCount() const;
+
 	int getID() const;
 	void setID(int d);
 

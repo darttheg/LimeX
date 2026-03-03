@@ -211,6 +211,10 @@ void Object2D::createEvents() {
     });
 }
 
+int Object2D::getRefCount() const {
+    return getNode() ? getNode()->getReferenceCount() : -1;
+}
+
 sol::object Object2D::i_destroy() {
     removeButton();
     setBorder(false);
@@ -278,9 +282,13 @@ void Interface::Object2DBind::bind(Application* app) {
     // Returns boolean
     obj.set_function("moveToBack", &Object2D::sendToBack);
 
-    // In the case that the z ordering of the background for this object is above its children, this will update its z ordering to be correct.
-    // Returns void
-    obj.set_function("updateBackgroundZ", &Object2D::updateBackgroundZ);
+    // Returns the reference count for this object.
+    // Returns number
+    obj.set_function("getReferenceCount", &Object2D::getRefCount);
+
+    // Destroys this object.
+    // Returns nil
+    obj.set_function("destroy", &Object2D::i_destroy);
 
     // End Interface
 }

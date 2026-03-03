@@ -204,6 +204,10 @@ function Vec4.new() end
 ---@return nil
 function Billboard:destroy() end
 
+--- Returns the reference count for this object.
+---@return number
+function Billboard:getReferenceCount() end
+
 --- Loads a `Material` into this `Billboard`.
 ---@param material Material
 ---@return void
@@ -225,6 +229,10 @@ function Camera:getForward() end
 --- Returns the left vector.
 ---@return Vec3
 function Camera:getLeft() end
+
+--- Returns the reference count for this object.
+---@return number
+function Camera:getReferenceCount() end
 
 --- Parents this object to another 3D object.
 ---@param child any
@@ -258,6 +266,14 @@ function Hook:isHooked() end
 --- Unhook a function to this Event.
 function Hook:unhook() end
 
+--- Destroys this object.
+---@return nil
+function Image2D:destroy() end
+
+--- Returns the reference count for this object.
+---@return number
+function Image2D:getReferenceCount() end
+
 --- Returns true if this object is currently hovered.
 ---@return boolean
 function Image2D:isHovered() end
@@ -279,10 +295,6 @@ function Image2D:moveToFront() end
 ---@param child any
 ---@return void
 function Image2D:parentTo(child) end
-
---- In the case that the z ordering of the background for this object is above its children, this will update its z ordering to be correct.
----@return void
-function Image2D:updateBackgroundZ() end
 
 --- Closes the Lime application.
 function Lime.close() end
@@ -541,6 +553,10 @@ function Material:setTextureWrapMethod(uMethod, vMethod) end
 ---@return nil
 function Skydome:destroy() end
 
+--- Returns the reference count for this object.
+---@return number
+function Skydome:getReferenceCount() end
+
 --- Loads a new Material into this Skydome
 ---@param material Material
 ---@return void
@@ -550,6 +566,14 @@ function Skydome:loadMaterial(material) end
 ---@param child any
 ---@return void
 function Skydome:parentTo(child) end
+
+--- Destroys this object.
+---@return nil
+function Text2D:destroy() end
+
+--- Returns the reference count for this object.
+---@return number
+function Text2D:getReferenceCount() end
 
 --- Returns true if this object is currently hovered.
 ---@return boolean
@@ -584,13 +608,13 @@ function Text2D:setFont(name) end
 ---@return void
 function Text2D:setWordWrap(wrap) end
 
---- In the case that the z ordering of the background for this object is above its children, this will update its z ordering to be correct.
----@return void
-function Text2D:updateBackgroundZ() end
-
 --- Destroys this object. A `Mesh` will remain cached unless explicitly removed.
 ---@return nil
 function Text3D:destroy() end
+
+--- Returns the reference count for this object.
+---@return number
+function Text3D:getReferenceCount() end
 
 --- Parents this object to another 3D object.
 ---@param child any
@@ -625,7 +649,7 @@ function Texture:append(toAppend, pos) end
 ---@return void
 function Texture:crop(topLeft, bottomRight) end
 
---- Removes this `Texture` from memory. Objects using this `Texture` will use an engine-defined `Texture` instead. It is suggested to remove all references to this object prior to removal.
+--- Destroys this `Texture`, effectively removing it from memory. Objects using this `Texture` will use an engine-defined `Texture` instead, but it is recommended to remove references to this `Texture` before destruction.
 ---@return nil
 function Texture:destroy() end
 

@@ -47,6 +47,10 @@ void Object3D::setVisibility(bool v) {
     getNode()->setVisible(v);
 }
 
+int Object3D::getRefCount() const {
+    return getNode() ? getNode()->getReferenceCount() : -1;
+}
+
 bool Object3D::parentTo(sol::optional<Object3D*> parent) {
     if (!getNode() || !(*parent)->getNode()) return false;
 
@@ -104,6 +108,10 @@ void Interface::Object3DBind::bind(Application* app) {
     // Params any child
     // Returns void
     obj.set_function("parentTo", &Object3D::parentTo);
+
+    // Returns the reference count for this object.
+    // Returns number
+    obj.set_function("getReferenceCount", &Object3D::getRefCount);
 
     // Destroys this object. A `Mesh` will remain cached unless explicitly removed.
     // Returns nil

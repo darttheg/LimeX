@@ -197,7 +197,7 @@ void Object::TextureBind::bind(Application* app) {
 	// Returns number
 	obj.set_function("getReferenceCount", &Texture::getRefCount);
 
-	// Removes this `Texture` from memory. Objects using this `Texture` will use an engine-defined `Texture` instead. It is suggested to remove all references to this object prior to removal.
+	// Destroys this `Texture`, effectively removing it from memory. Objects using this `Texture` will use an engine-defined `Texture` instead, but it is recommended to remove references to this `Texture` before destruction.
 	// Returns nil
 	obj.set_function("destroy", &Texture::remove);
 

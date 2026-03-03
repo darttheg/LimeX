@@ -41,6 +41,8 @@ public:
 	void setZOrder(int z);
 	void updateBackgroundZ();
 
+	int getRefCount() const;
+
 	bool parentTo(sol::optional<Object2D*> parent);
 
 	void createButton();
