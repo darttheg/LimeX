@@ -52,9 +52,16 @@ int Object3D::getRefCount() const {
 }
 
 bool Object3D::parentTo(sol::optional<Object3D*> parent) {
-    if (!getNode() || !(*parent)->getNode()) return false;
+    if (!getNode()) return false;
 
-    getNode()->setParent((*parent)->getNode());
+    if (!parent || *parent == nullptr) {
+        getNode()->setParent(getNode()->getSceneManager()->getRootSceneNode());
+        return true;
+    }
+
+    Object3D* p = *parent;
+    if (!p->getNode()) return false;
+    getNode()->setParent(p->getNode());
     return true;
 }
 
@@ -105,7 +112,7 @@ void Interface::Object3DBind::bind(Application* app) {
 	);
      
     // Parents this object to another 3D object.
-    // Params any child
+    // Params any parent
     // Returns void
     obj.set_function("parentTo", &Object3D::parentTo);
 

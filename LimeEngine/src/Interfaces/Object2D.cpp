@@ -113,10 +113,21 @@ void Object2D::updateBackgroundZ() {
 }
 
 bool Object2D::parentTo(sol::optional<Object2D*> parent) {
-    if (!getNode() || !(*parent)->getNode()) return false;
+    if (!getNode()) return false;
 
-    (*parent)->getNode()->addChild(getNode());
-    if (bgBorder) (*parent)->getNode()->addChild(bgBorder);
+    if (!parent || *parent == nullptr) {
+        auto* root = r->getGUIRoot();
+        if (!root) return false;
+
+        root->addChild(getNode());
+        if (bgBorder) root->addChild(bgBorder);
+        return true;
+    }
+
+    Object2D* p = *parent;
+    if (!p->getNode()) return false;
+    p->getNode()->addChild(getNode());
+    if (bgBorder) p->getNode()->addChild(bgBorder);
     return true;
 }
 
@@ -266,7 +277,7 @@ void Interface::Object2DBind::bind(Application* app) {
     );
 
     // Parents this object to another 2D object.
-    // Params any child
+    // Params any parent
     // Returns void
     obj.set_function("parentTo", &Object2D::parentTo);
 

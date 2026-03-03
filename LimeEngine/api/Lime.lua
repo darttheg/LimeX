@@ -215,9 +215,9 @@ function Billboard:getReferenceCount() end
 function Billboard:loadMaterial(material) end
 
 --- Parents this object to another 3D object.
----@param child any
+---@param parent any
 ---@return void
-function Billboard:parentTo(child) end
+function Billboard:parentTo(parent) end
 
 --- Destroys this object. A `Mesh` will remain cached unless explicitly removed.
 ---@return nil
@@ -236,9 +236,9 @@ function Camera:getLeft() end
 function Camera:getReferenceCount() end
 
 --- Parents this object to another 3D object.
----@param child any
+---@param parent any
 ---@return void
-function Camera:parentTo(child) end
+function Camera:parentTo(parent) end
 
 --- When rendering, this `Camera` will take over as the active rendering viewpoint.
 ---@return void
@@ -293,9 +293,9 @@ function Image2D:moveToBack() end
 function Image2D:moveToFront() end
 
 --- Parents this object to another 2D object.
----@param child any
+---@param parent any
 ---@return void
-function Image2D:parentTo(child) end
+function Image2D:parentTo(parent) end
 
 --- Closes the Lime application.
 function Lime.close() end
@@ -564,9 +564,9 @@ function Skydome:getReferenceCount() end
 function Skydome:loadMaterial(material) end
 
 --- Parents this object to another 3D object.
----@param child any
+---@param parent any
 ---@return void
-function Skydome:parentTo(child) end
+function Skydome:parentTo(parent) end
 
 --- Destroys this object.
 ---@return nil
@@ -589,9 +589,9 @@ function Text2D:moveToBack() end
 function Text2D:moveToFront() end
 
 --- Parents this object to another 2D object.
----@param child any
+---@param parent any
 ---@return void
-function Text2D:parentTo(child) end
+function Text2D:parentTo(parent) end
 
 --- Sets the text's alignment within its bounding box.
 ---@overload fun(x:Lime.Enum.TextAlign, y:Lime.Enum.TextAlign): void
@@ -618,9 +618,9 @@ function Text3D:destroy() end
 function Text3D:getReferenceCount() end
 
 --- Parents this object to another 3D object.
----@param child any
+---@param parent any
 ---@return void
-function Text3D:parentTo(child) end
+function Text3D:parentTo(parent) end
 
 --- Sets the text's alignment within its bounding box.
 ---@overload fun(x:Lime.Enum.TextAlign, y:Lime.Enum.TextAlign): void

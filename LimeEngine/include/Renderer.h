@@ -39,6 +39,7 @@ namespace irr {
 		class IGUIStaticText;
 		class IGUIImage;
 		class IGUIButton;
+		class IGUIElement;
 	}
 }
 using namespace irr;
@@ -114,6 +115,7 @@ public:
 	irr::gui::IGUIStaticText* createStaticText();
 	irr::gui::IGUIImage* createGUIImage();
 	irr::gui::IGUIButton* createButton();
+	irr::gui::IGUIElement* getGUIRoot();
 
 	// Misc
 	bool setMouseVisible(bool vis);

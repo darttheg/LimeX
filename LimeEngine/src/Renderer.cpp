@@ -661,6 +661,10 @@ irr::gui::IGUIButton* Renderer::createButton() {
 	return out;
 }
 
+irr::gui::IGUIElement* Renderer::getGUIRoot() {
+	return i_gui ? i_gui->getRootGUIElement() : nullptr;
+}
+
 void Renderer::setAmbientColor(const Vec4& color) {
 	if (!guardRenderingCheck()) return;
 
