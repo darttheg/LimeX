@@ -22,6 +22,7 @@ public:
 	Camera(const Vec3& pos, const Vec3& rotation);
 	irr::scene::ISceneNode* getNode() const override { return camera; }
 	void destroy() override;
+	void setDebug(bool v) override;
 
 	void setPosition(const Vec3& pos) override;
 	void setRotation(const Vec3& rot) override;

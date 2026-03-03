@@ -2,8 +2,9 @@
 #include <sol/optional.hpp>
 
 class Application;
-
-#include "Objects/Vec3.h"
+class Vec3;
+class Vec4;
+// #include "Objects/Vec3.h"
 
 namespace irr {
 	namespace scene {
@@ -16,6 +17,7 @@ public:
     virtual ~Object3D() = default;
 	virtual irr::scene::ISceneNode* getNode() const = 0;
 	virtual void destroy() = 0;
+	virtual void setDebug(bool v) = 0;
 
 	Vec3 getPosition() const;
 	virtual void setPosition(const Vec3& pos);
@@ -34,9 +36,15 @@ public:
 
 	bool parentTo(sol::optional<Object3D*> parent);
 
+	Vec4 getBoundingBox() const;
+	bool isPointInside(const Vec3& pos) const;
+
+	bool getDebug() const { return debug; }
+	void i_setDebug(bool v);
+
 	sol::object i_destroy();
 protected:
-
+	bool debug = false;
 private:
 };
 

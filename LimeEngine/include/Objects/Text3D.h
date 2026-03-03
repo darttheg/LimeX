@@ -24,6 +24,7 @@ public:
 	Text3D();
 	Text3D(const std::string& tx);
 	void destroy() override;
+	void setDebug(bool v) override;
 
 	std::string getText();
 	void setText(const std::string& tx);

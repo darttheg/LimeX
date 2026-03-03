@@ -1,6 +1,7 @@
 #include "Interfaces/Object3D.h"
 #include "Application.h"
 #include "Objects/Vec3.h"
+#include "Objects/Vec4.h"
 
 #include "irrlicht.h"
 using namespace irr;
@@ -65,7 +66,15 @@ bool Object3D::parentTo(sol::optional<Object3D*> parent) {
     return true;
 }
 
+void Object3D::i_setDebug(bool v) {
+    if (debug == v) return;
+    setDebug(v);
+    debug = v;
+}
+
 sol::object Object3D::i_destroy() {
+    setDebug(false);
+    debug = false;
     destroy();
     return sol::make_object(a->GetLuaState(), sol::nil);
 }
@@ -77,6 +86,20 @@ int Object3D::getID() const {
 void Object3D::setID(int d) {
     if (!getNode()) return;
     getNode()->setID(d);
+}
+
+Vec4 Object3D::getBoundingBox() const {
+    if (!getNode()) return Vec4();
+
+    irr::core::aabbox3df b = getNode()->getBoundingBox();
+    return Vec4(b.MinEdge.X, b.MinEdge.Y, b.MaxEdge.X, b.MaxEdge.Y);
+}
+
+bool Object3D::isPointInside(const Vec3& pos) const {
+    if (!getNode()) return false;
+
+    irr::core::aabbox3df b = getNode()->getBoundingBox();
+    return b.isPointInside(irr::core::vector3df(pos.getX(), pos.getY(), pos.getZ()));
 }
 
 void Interface::Object3DBind::bind(Application* app) {
@@ -108,7 +131,10 @@ void Interface::Object3DBind::bind(Application* app) {
         "visible", sol::property(&Object3D::getVisibility, &Object3D::setVisibility),
 
         // Field number id, The identifier for this object to be used in raycasts and object selection.
-        "id", sol::property(&Object3D::getID, &Object3D::setID)
+        "id", sol::property(&Object3D::getID, &Object3D::setID),
+
+        // Field boolean debug, Show debug information about this object in the scene.
+        "debug", sol::property(&Object3D::getDebug, &Object3D::i_setDebug)
 	);
      
     // Parents this object to another 3D object.
@@ -123,6 +149,15 @@ void Interface::Object3DBind::bind(Application* app) {
     // Destroys this object.
     // Returns nil
     obj.set_function("destroy", &Object3D::i_destroy);
+
+    // Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+    // Returns Vec4
+    obj.set_function("getBoundingBox", &Object3D::getBoundingBox);
+
+    // Returns true if `pos` is inside this object's bounding box.
+    // Params Vec3 pos
+    // Returns boolean
+    obj.set_function("isPointInside", &Object3D::isPointInside);
 
     // End Interface
 }

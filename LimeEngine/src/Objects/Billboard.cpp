@@ -34,8 +34,7 @@ Vec2 Billboard::getSize() {
 }
 
 void Billboard::setSize(const Vec2& s) {
-	if (!bb);
-
+	if (!bb) return;
 	bb->setSize(s.getY(), s.getX(), s.getX());
 }
 

@@ -35,6 +35,7 @@ Lime.Window = Lime.Window or {}
 ---@field scale Vec3 @The 3D scale of this object in the scene.
 ---@field visible boolean @Determines the visibility of this object and its children.
 ---@field id number @The identifier for this object to be used in raycasts and object selection.
+---@field debug boolean @Show debug information about this object in the scene.
 Billboard = Billboard or {}
 --- A plane that faces the active camera.
 ---@overload fun(material:Material): Billboard
@@ -52,6 +53,7 @@ function Billboard.new() end
 ---@field scale Vec3 @The 3D scale of this object in the scene.
 ---@field visible boolean @Determines the visibility of this object and its children.
 ---@field id number @The identifier for this object to be used in raycasts and object selection.
+---@field debug boolean @Show debug information about this object in the scene.
 Camera = Camera or {}
 --- A viewpoint in the 3D world.
 ---@overload fun(pos:Vec3): Camera
@@ -65,6 +67,7 @@ function Camera.new() end
 ---@field scale Vec3 @The 3D scale of this object in the scene.
 ---@field visible boolean @Determines the visibility of this object and its children.
 ---@field id number @The identifier for this object to be used in raycasts and object selection.
+---@field debug boolean @Show debug information about this object in the scene.
 Empty = Empty or {}
 --- An invisible object used to mark locations, parent objects, and more.
 ---@overload fun(pos:Vec3): Empty
@@ -132,6 +135,7 @@ function Material.new() end
 ---@field scale Vec3 @The 3D scale of this object in the scene.
 ---@field visible boolean @Determines the visibility of this object and its children.
 ---@field id number @The identifier for this object to be used in raycasts and object selection.
+---@field debug boolean @Show debug information about this object in the scene.
 Skydome = Skydome or {}
 --- A dome rendered behind all scene objects, like a sky.
 ---@overload fun(material:Material): Skydome
@@ -165,6 +169,7 @@ function Text2D.new() end
 ---@field scale Vec3 @The 3D scale of this object in the scene.
 ---@field visible boolean @Determines the visibility of this object and its children.
 ---@field id number @The identifier for this object to be used in raycasts and object selection.
+---@field debug boolean @Show debug information about this object in the scene.
 Text3D = Text3D or {}
 --- A basic 3D object to display text. This object is essentially a `Text2D` tied to a 3D scene node. Text objects support colors and basic styling. Use tags `<#HEX>` for color, `<s>` for strike, `<d>` for drop shadow, `<u>` for underline, `<b>` for bold, and `<r>` to reset styles. Example: `<#6ABE30>This is green! <b>Now, it's green and bold! <r>Now, it's back to normal.`
 ---@overload fun(text:string): Text3D
@@ -217,9 +222,18 @@ function Vec4.new() end
 ---@return nil
 function Billboard:destroy() end
 
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+---@return Vec4
+function Billboard:getBoundingBox() end
+
 --- Returns the reference count for this object.
 ---@return number
 function Billboard:getReferenceCount() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+---@param pos Vec3
+---@return boolean
+function Billboard:isPointInside(pos) end
 
 --- Loads a `Material` into this `Billboard`.
 ---@param material Material
@@ -235,6 +249,10 @@ function Billboard:parentTo(parent) end
 ---@return nil
 function Camera:destroy() end
 
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+---@return Vec4
+function Camera:getBoundingBox() end
+
 --- Returns the forward vector.
 ---@return Vec3
 function Camera:getForward() end
@@ -246,6 +264,11 @@ function Camera:getLeft() end
 --- Returns the reference count for this object.
 ---@return number
 function Camera:getReferenceCount() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+---@param pos Vec3
+---@return boolean
+function Camera:isPointInside(pos) end
 
 --- Parents this object to another 3D object.
 ---@param parent any
@@ -260,9 +283,18 @@ function Camera:setActive() end
 ---@return nil
 function Empty:destroy() end
 
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+---@return Vec4
+function Empty:getBoundingBox() end
+
 --- Returns the reference count for this object.
 ---@return number
 function Empty:getReferenceCount() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+---@param pos Vec3
+---@return boolean
+function Empty:isPointInside(pos) end
 
 --- Parents this object to another 3D object.
 ---@param parent any
@@ -579,9 +611,18 @@ function Material:setTextureWrapMethod(uMethod, vMethod) end
 ---@return nil
 function Skydome:destroy() end
 
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+---@return Vec4
+function Skydome:getBoundingBox() end
+
 --- Returns the reference count for this object.
 ---@return number
 function Skydome:getReferenceCount() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+---@param pos Vec3
+---@return boolean
+function Skydome:isPointInside(pos) end
 
 --- Loads a new Material into this Skydome
 ---@param material Material
@@ -638,9 +679,18 @@ function Text2D:setWordWrap(wrap) end
 ---@return nil
 function Text3D:destroy() end
 
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+---@return Vec4
+function Text3D:getBoundingBox() end
+
 --- Returns the reference count for this object.
 ---@return number
 function Text3D:getReferenceCount() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+---@param pos Vec3
+---@return boolean
+function Text3D:isPointInside(pos) end
 
 --- Parents this object to another 3D object.
 ---@param parent any

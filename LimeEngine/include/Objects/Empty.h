@@ -19,6 +19,7 @@ public:
     Empty();
     Empty(const Vec3& pos);
     void destroy() override;
+    void setDebug(bool v) override;
 
     irr::scene::ISceneNode* getNode() const override;
 private:

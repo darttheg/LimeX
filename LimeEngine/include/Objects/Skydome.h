@@ -17,6 +17,7 @@ public:
     Skydome();
     Skydome(const Material& mat);
     void destroy() override;
+    void setDebug(bool v) override;
 
     void loadMaterial(const Material& mat);
 
