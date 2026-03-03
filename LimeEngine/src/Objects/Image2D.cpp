@@ -43,6 +43,15 @@ bool Image2D::loadTexture(const Texture& tx) {
 	return true;
 }
 
+bool Image2D::getScaledFit() const {
+	return img ? img->isImageScaled() : false;
+}
+
+void Image2D::setScaledFit(bool v) {
+	if (img)
+		img->setScaleImage(v);
+}
+
 irr::gui::IGUIElement* Image2D::getNode() const {
 	return img;
 }
@@ -64,7 +73,10 @@ void Object::Image2DBind::bind(Application* a) {
 		sol::constructors<Image2D(), Image2D(const Texture& t), Image2D(const Vec2& pos, const Vec2& sz)>(),
 
 		sol::base_classes, sol::bases<Object2D>(),
-		sol::meta_function::type, [](const Image2D&) { return "Image2D"; }
+		sol::meta_function::type, [](const Image2D&) { return "Image2D"; },
+
+		// Field boolean scaleToFit, Determines whether or not this `Image2D` scales to its size boundaries or not.
+		"scaleToFit", sol::property(&Image2D::getScaledFit, &Image2D::setScaledFit)
 	);
 
 	obj[sol::meta_function::to_string] = [](const Image2D& v) {

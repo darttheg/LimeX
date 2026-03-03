@@ -72,6 +72,7 @@ Hook = Hook or {}
 function Hook.new() end
 
 ---@class Image2D
+---@field scaleToFit boolean @Determines whether or not this `Image2D` scales to its size boundaries or not.
 ---@field position Vec2 @The 2D position of this object on the screen.
 ---@field size Vec2 @The 2D size of this object.
 ---@field visible boolean @Determines the visibility of this object and its children.

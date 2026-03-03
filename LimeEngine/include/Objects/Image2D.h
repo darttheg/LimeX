@@ -20,6 +20,8 @@ public:
 	void destroy() override;
 
 	bool loadTexture(const Texture& tx);
+	bool getScaledFit() const;
+	void setScaledFit(bool v);
 
 	irr::gui::IGUIElement* getNode() const override;
 private:

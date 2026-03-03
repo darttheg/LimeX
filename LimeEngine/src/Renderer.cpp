@@ -489,7 +489,7 @@ bool Renderer::removeTexture(irr::video::ITexture* tex) {
 		return false;
 	}
 
-	bool safe = tex->getReferenceCount() == 0;
+	bool safe = tex->getReferenceCount() == 1; // Texture obj still owns it so ref == 1
 
 	if (!safe) {
 		std::string out = "UNSAFE TEXTURE REMOVAL: Texture is being called for removal but has ";
@@ -498,6 +498,8 @@ bool Renderer::removeTexture(irr::video::ITexture* tex) {
 		out += tex->getName().getPath().c_str();
 		out += ")";
 		d->Warn(out);
+
+		// Scene
 		core::array<ISceneNode*> stack;
 		if (ISceneNode* root = i_smgr->getRootSceneNode()) stack.push_back(root);
 
@@ -518,6 +520,26 @@ bool Renderer::removeTexture(irr::video::ITexture* tex) {
 				mat.setFlag(irr::video::E_MATERIAL_FLAG::EMF_BILINEAR_FILTER, false);
 				mat.setFlag(irr::video::E_MATERIAL_FLAG::EMF_LIGHTING, false);
 				mat.setFlag(irr::video::E_MATERIAL_FLAG::EMF_FOG_ENABLE, false);
+			}
+		}
+
+		// GUI
+		if (tex->getReferenceCount() > 1) {
+			core::array<irr::gui::IGUIElement*> stackG;
+			if (irr::gui::IGUIElement* root = i_gui->getRootGUIElement()) stackG.push_back(root);
+
+			while (!stackG.empty()) {
+				irr::gui::IGUIElement* node = stackG.getLast();
+				stackG.erase(stackG.size() - 1);
+				for (auto* c : node->getChildren()) stackG.push_back(c);
+
+				if (!(node->getType() == irr::gui::EGUIET_IMAGE)) continue;
+
+				auto* img = static_cast<irr::gui::IGUIImage*>(node);
+				if (img->getImage() == tex) {
+					img->setImage(checkerTex);
+					img->setScaleImage(true);
+				}
 			}
 		}
 	}
