@@ -189,6 +189,8 @@ void Object2D::createButton() {
     // button->setVisible(false);
 
     r->addButtonPair(*this);
+
+    // TODO: Make button loose and adjust position with viewport tl coordinates to fix collision.
 }
 
 void Object2D::removeButton() {

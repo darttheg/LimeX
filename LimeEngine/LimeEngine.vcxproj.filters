@@ -147,6 +147,9 @@
     <ClInclude Include="include\External\errObjArr.h">
       <Filter>Engine\Runtime\External\ErrMesh</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\Empty.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -234,6 +237,9 @@
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
     <ClCompile Include="src\Objects\Text3D.cpp">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Empty.cpp">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
   </ItemGroup>

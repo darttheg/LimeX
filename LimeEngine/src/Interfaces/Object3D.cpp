@@ -120,7 +120,7 @@ void Interface::Object3DBind::bind(Application* app) {
     // Returns number
     obj.set_function("getReferenceCount", &Object3D::getRefCount);
 
-    // Destroys this object. A `Mesh` will remain cached unless explicitly removed.
+    // Destroys this object.
     // Returns nil
     obj.set_function("destroy", &Object3D::i_destroy);
 

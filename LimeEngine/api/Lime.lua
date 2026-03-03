@@ -59,6 +59,18 @@ Camera = Camera or {}
 ---@return Camera
 function Camera.new() end
 
+---@class Empty
+---@field position Vec3 @The 3D position of this object in the scene.
+---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
+---@field scale Vec3 @The 3D scale of this object in the scene.
+---@field visible boolean @Determines the visibility of this object and its children.
+---@field id number @The identifier for this object to be used in raycasts and object selection.
+Empty = Empty or {}
+--- An invisible object used to mark locations, parent objects, and more.
+---@overload fun(pos:Vec3): Empty
+---@return Empty
+function Empty.new() end
+
 ---@class Event
 Event = Event or {}
 --- A container of functions that will run in sequence when called upon.
@@ -201,7 +213,7 @@ Vec4 = Vec4 or {}
 ---@return Vec4
 function Vec4.new() end
 
---- Destroys this object. A `Mesh` will remain cached unless explicitly removed.
+--- Destroys this object.
 ---@return nil
 function Billboard:destroy() end
 
@@ -219,7 +231,7 @@ function Billboard:loadMaterial(material) end
 ---@return void
 function Billboard:parentTo(parent) end
 
---- Destroys this object. A `Mesh` will remain cached unless explicitly removed.
+--- Destroys this object.
 ---@return nil
 function Camera:destroy() end
 
@@ -243,6 +255,19 @@ function Camera:parentTo(parent) end
 --- When rendering, this `Camera` will take over as the active rendering viewpoint.
 ---@return void
 function Camera:setActive() end
+
+--- Destroys this object.
+---@return nil
+function Empty:destroy() end
+
+--- Returns the reference count for this object.
+---@return number
+function Empty:getReferenceCount() end
+
+--- Parents this object to another 3D object.
+---@param parent any
+---@return void
+function Empty:parentTo(parent) end
 
 --- Clears all functions hooked to this Event.
 function Event:clear() end
@@ -550,7 +575,7 @@ function Material:setTextureScale(scale) end
 ---@return void
 function Material:setTextureWrapMethod(uMethod, vMethod) end
 
---- Destroys this object. A `Mesh` will remain cached unless explicitly removed.
+--- Destroys this object.
 ---@return nil
 function Skydome:destroy() end
 
@@ -609,7 +634,7 @@ function Text2D:setFont(name) end
 ---@return void
 function Text2D:setWordWrap(wrap) end
 
---- Destroys this object. A `Mesh` will remain cached unless explicitly removed.
+--- Destroys this object.
 ---@return nil
 function Text3D:destroy() end
 
@@ -650,10 +675,6 @@ function Texture:append(toAppend, pos) end
 ---@return void
 function Texture:crop(topLeft, bottomRight) end
 
---- Destroys this `Texture`, effectively removing it from memory. Objects using this `Texture` will use an engine-defined `Texture` instead, but it is recommended to remove references to this `Texture` before destruction.
----@return nil
-function Texture:destroy() end
-
 --- Returns the color of the pixel at `pos` in this `Texture`.
 ---@param pos Vec2
 ---@return Vec4
@@ -675,6 +696,10 @@ function Texture:getSize() end
 ---@param keyColor Vec4
 ---@return void
 function Texture:keyColor(keyColor) end
+
+--- Purges this `Texture`, effectively removing it from memory. Objects using this `Texture` will use an engine-defined `Texture` instead, but it is recommended to remove references to this `Texture` first.
+---@return nil
+function Texture:purge() end
 
 --- Replaces the pixel at `pos` with a pixel of color `color`.
 ---@param pos Vec2

@@ -28,6 +28,7 @@
 #include "Objects/Image2D.h"
 #include "Objects/Billboard.h"
 #include "Objects/Text3D.h"
+#include "Objects/Empty.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -55,4 +56,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::Image2DBind::bind(app);
 	Object::BillboardBind::bind(app);
 	Object::Text3DBind::bind(app);
+	Object::EmptyBind::bind(app);
 }
