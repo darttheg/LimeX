@@ -15,7 +15,7 @@ class Object3D {
 public:
     virtual ~Object3D() = default;
 	virtual irr::scene::ISceneNode* getNode() const = 0;
-	// virtual void destroy() = 0;
+	virtual void destroy() = 0;
 
 	Vec3 getPosition() const;
 	virtual void setPosition(const Vec3& pos);
@@ -31,6 +31,8 @@ public:
 	void setID(int d);
 
 	bool parentTo(sol::optional<Object3D*> parent);
+
+	sol::object i_destroy();
 protected:
 
 private:

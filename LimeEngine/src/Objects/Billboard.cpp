@@ -22,6 +22,11 @@ Billboard::Billboard(const Material& mat) {
 	loadMaterial(mat);
 }
 
+void Billboard::destroy() {
+	if (bb) bb->remove();
+	bb = nullptr;
+}
+
 Vec2 Billboard::getSize() {
 	if (!bb) return Vec2();
 

@@ -33,6 +33,11 @@ Camera::Camera(const Vec3& pos, const Vec3& rot) {
 	r->updateCameraMatrix(camera);
 }
 
+void Camera::destroy() {
+	if (camera) camera->remove();
+	camera = nullptr;
+}
+
 static void updateLookTarget(irr::scene::ICameraSceneNode* c, irr::scene::ISceneNode* forward) {
 	if (!c) return;
 	c->updateAbsolutePosition();

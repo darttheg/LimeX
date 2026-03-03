@@ -30,6 +30,11 @@ Image2D::Image2D(const Vec2& pos, const Vec2& sz) : Image2D() {
 	Object2D::setSize(sz);
 }
 
+void Image2D::destroy() {
+	if (img) img->remove();
+	img = nullptr;
+}
+
 bool Image2D::loadTexture(const Texture& tx) {
 	if (!img || !tx.getTexture()) return false;
 

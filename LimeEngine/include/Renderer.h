@@ -26,6 +26,7 @@ namespace irr {
 		class ICameraSceneNode;
 		class IBillboardSceneNode;
 		class CTextAnchorSceneNode;
+		class IAnimatedMesh;
 	}
 	namespace video {
 		class IVideoDriver;
@@ -81,6 +82,11 @@ public:
 	void setMatchRes(bool v);
 	bool getMatchRes() { return doMatchResolution; }
 	void setSceneRenderQuality(int q);
+
+	// Scene - Cleanup
+	void addToDeletionQueue(irr::scene::ISceneNode* node);
+	bool removeTexture(irr::video::ITexture* tex);
+	bool removeMesh(irr::scene::IAnimatedMesh* mesh);
 
 	// Textures
 	irr::video::ITexture* createTexture(int w, int h, const std::string& name = "");
@@ -145,6 +151,11 @@ private:
 	int fps = 0;
 	HWND hwndIrr = nullptr;
 	QuadRenderer* qr = nullptr;
+
+	// Fallback
+	irr::video::ITexture* alphaBlankTex = nullptr;
+	irr::video::ITexture* checkerTex = nullptr;
+	irr::scene::IAnimatedMesh* errMesh = nullptr;
 
 	// GUI Environment
 	GUIManager* guiManager = nullptr;

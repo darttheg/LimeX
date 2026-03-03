@@ -16,6 +16,7 @@ public:
 	Text2D();
 	Text2D(const std::string& tx);
 	Text2D(const Vec2& pos, const Vec2& sz);
+	void destroy() override;
 
 	std::string getText();
 	void setText(const std::string& tx);

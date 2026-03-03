@@ -12,12 +12,15 @@ namespace irr {
 	}
 }
 
+#include "sol/forward.hpp"
+
 class Texture {
 public:
 	Texture();
 	Texture(int w, int h, const std::string& name = "");
 	Texture(const std::string& path);
 	Texture(irr::video::ITexture* tex);
+	sol::object remove();
 
 	Vec2 getSize();
 	void write(const std::string& outPath);
@@ -27,6 +30,7 @@ public:
 	void setColor(const Vec2& pos, const Vec4& color);
 	void key(const Vec4& color);
 	std::string getPath() const;
+	int getRefCount();
 	irr::video::ITexture* getTexture() const { return texture; }
 private:
 	irr::video::ITexture* texture = nullptr;

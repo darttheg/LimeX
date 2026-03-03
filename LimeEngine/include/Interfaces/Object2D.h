@@ -1,5 +1,6 @@
 #pragma once
 #include <sol/optional.hpp>
+#include <sol/forward.hpp>
 
 class Application;
 class Vec2;
@@ -19,7 +20,8 @@ public:
 	virtual ~Object2D() = default;
 	virtual irr::gui::IGUIElement* getNode() const = 0;
 	irr::gui::IGUIElement* getButton() const;
-	// virtual void destroy() = 0;
+	virtual void destroy() = 0;
+	sol::object i_destroy();
 
 	Vec2 getPosition() const;
 	virtual void setPosition(const Vec2& pos);

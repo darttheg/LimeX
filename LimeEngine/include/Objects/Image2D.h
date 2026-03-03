@@ -17,6 +17,7 @@ public:
 	Image2D();
 	Image2D(const Texture& t);
 	Image2D(const Vec2& pos, const Vec2& sz);
+	void destroy() override;
 
 	bool loadTexture(const Texture& tx);
 

@@ -200,6 +200,10 @@ Vec4 = Vec4 or {}
 ---@return Vec4
 function Vec4.new() end
 
+--- Destroys this object. A `Mesh` will remain cached unless explicitly removed.
+---@return nil
+function Billboard:destroy() end
+
 --- Loads a `Material` into this `Billboard`.
 ---@param material Material
 ---@return void
@@ -209,6 +213,10 @@ function Billboard:loadMaterial(material) end
 ---@param child any
 ---@return void
 function Billboard:parentTo(child) end
+
+--- Destroys this object. A `Mesh` will remain cached unless explicitly removed.
+---@return nil
+function Camera:destroy() end
 
 --- Returns the forward vector.
 ---@return Vec3
@@ -529,6 +537,10 @@ function Material:setTextureScale(scale) end
 ---@return void
 function Material:setTextureWrapMethod(uMethod, vMethod) end
 
+--- Destroys this object. A `Mesh` will remain cached unless explicitly removed.
+---@return nil
+function Skydome:destroy() end
+
 --- Loads a new Material into this Skydome
 ---@param material Material
 ---@return void
@@ -576,6 +588,10 @@ function Text2D:setWordWrap(wrap) end
 ---@return void
 function Text2D:updateBackgroundZ() end
 
+--- Destroys this object. A `Mesh` will remain cached unless explicitly removed.
+---@return nil
+function Text3D:destroy() end
+
 --- Parents this object to another 3D object.
 ---@param child any
 ---@return void
@@ -609,6 +625,10 @@ function Texture:append(toAppend, pos) end
 ---@return void
 function Texture:crop(topLeft, bottomRight) end
 
+--- Removes this `Texture` from memory. Objects using this `Texture` will use an engine-defined `Texture` instead. It is suggested to remove all references to this object prior to removal.
+---@return nil
+function Texture:destroy() end
+
 --- Returns the color of the pixel at `pos` in this `Texture`.
 ---@param pos Vec2
 ---@return Vec4
@@ -617,6 +637,10 @@ function Texture:getColor(pos) end
 --- Returns the path of this `Texture`.
 ---@return string
 function Texture:getPath() end
+
+--- Returns the reference count for this `Texture`.
+---@return number
+function Texture:getReferenceCount() end
 
 --- Returns the dimensions of this `Texture`.
 ---@return Vec2

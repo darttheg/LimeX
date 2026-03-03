@@ -8,6 +8,7 @@
 #include "Objects/Vec2.h"
 #include "Objects/Vec4.h"
 
+static Application* a;
 static Renderer* r;
 static DebugConsole* d;
 
@@ -33,6 +34,13 @@ Texture::Texture(int w, int h, const std::string& name) {
 	if (!r->guardRenderingCheck()) return;
 
 	texture = r->createTexture(w, h, name);
+}
+
+sol::object Texture::remove() {
+	if (!r->removeTexture(texture))
+		d->Warn("Could not remove texture: it is not valid!");
+	texture = nullptr;
+	return sol::make_object(a->GetLuaState(), sol::nil);
 }
 
 Vec2 Texture::getSize() {
@@ -121,7 +129,12 @@ std::string Texture::getPath() const {
 	return texture->getName().getPath().c_str();
 }
 
-void Object::TextureBind::bind(Application* a) {
+int Texture::getRefCount() {
+	return texture ? texture->getReferenceCount() : -1;
+}
+
+void Object::TextureBind::bind(Application* app) {
+	a = app;
 	r = a->GetRenderer();
 	d = a->GetDebugConsole();
 
@@ -179,6 +192,14 @@ void Object::TextureBind::bind(Application* a) {
 	// Params Vec4 keyColor
 	// Returns void
 	obj.set_function("keyColor", &Texture::key);
+
+	// Returns the reference count for this `Texture`.
+	// Returns number
+	obj.set_function("getReferenceCount", &Texture::getRefCount);
+
+	// Removes this `Texture` from memory. Objects using this `Texture` will use an engine-defined `Texture` instead. It is suggested to remove all references to this object prior to removal.
+	// Returns nil
+	obj.set_function("destroy", &Texture::remove);
 
 	// End Object
 }

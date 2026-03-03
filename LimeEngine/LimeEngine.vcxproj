@@ -23,6 +23,7 @@
     <ClInclude Include="include\DebugConsole.h" />
     <ClInclude Include="include\External\CTextAnchorSceneNode.h" />
     <ClInclude Include="include\External\CGUIColoredText.h" />
+    <ClInclude Include="include\External\errObjArr.h" />
     <ClInclude Include="include\FrameLimiter.h" />
     <ClInclude Include="include\Interfaces\Object2D.h" />
     <ClInclude Include="include\Interfaces\Object3D.h" />

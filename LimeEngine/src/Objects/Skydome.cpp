@@ -20,6 +20,11 @@ Skydome::Skydome(const Material& mat) {
 	loadMaterial(mat);
 }
 
+void Skydome::destroy() {
+	if (sky) sky->remove();
+	sky = nullptr;
+}
+
 using namespace irr;
 using namespace video;
 void Skydome::loadMaterial(const Material& mat) {

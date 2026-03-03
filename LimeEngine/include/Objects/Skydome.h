@@ -16,6 +16,7 @@ class Skydome : public SceneObject, public Object3D {
 public:
     Skydome();
     Skydome(const Material& mat);
+    void destroy() override;
 
     void loadMaterial(const Material& mat);
 

@@ -34,6 +34,31 @@ Renderer::~Renderer() {
 	Shutdown();
 }
 
+static irr::video::ITexture* getCheckerError(irr::video::IVideoDriver* driver) {
+	irr::video::ITexture* checker = driver->getTexture("error");
+	if (!checker) {
+		const irr::video::SColor L(255, 153, 229, 80), W(255, 255, 255, 255);
+		irr::video::IImage* img = driver->createImage(irr::video::ECF_R5G6B5, irr::core::dimension2du(2, 2));
+		img->setPixel(0, 0, L); img->setPixel(1, 0, W);
+		img->setPixel(0, 1, W); img->setPixel(1, 1, L);
+		checker = driver->addTexture("error", img);
+		img->drop();
+	}
+	return checker;
+}
+
+static irr::video::ITexture* getAlphaBlank(irr::video::IVideoDriver* driver) {
+	irr::video::ITexture* blank = driver->getTexture("alpha");
+	if (!blank) {
+		const irr::video::SColor L(0, 0, 0, 0);
+		irr::video::IImage* img = driver->createImage(irr::video::ECF_A1R5G5B5, irr::core::dimension2du(1, 1));
+		blank = driver->addTexture("blank", img);
+		img->drop();
+	}
+	return blank;
+}
+
+#include "External/errObjArr.h"
 bool Renderer::Init() {
 	if (isCreated) return false;
 
@@ -127,6 +152,16 @@ bool Renderer::Init() {
 	qr->init(i_driver);
 	qr->setInternalResolution(renderSize.x, renderSize.y);
 
+	alphaBlankTex = getAlphaBlank(i_driver);
+	checkerTex = getCheckerError(i_driver);
+	errMesh = nullptr;
+
+	irr::io::IReadFile* f = i_device->getFileSystem()->createMemoryReadFile((void*)errObj, errObjLen, "err.obj", false);
+	if (f)
+		errMesh = i_smgr->getMesh(f);
+	else
+		d->Warn("Could not load error mesh! (err.obj)");
+
 	isCreated = true;
 	return true;
 }
@@ -206,30 +241,6 @@ int getNumChildren(irr::scene::ISceneNode* node) {
 	for (auto* child : node->getChildren())
 		total += getNumChildren(child);
 	return total;
-}
-
-static irr::video::ITexture* getCheckerError(irr::video::IVideoDriver* driver) {
-	irr::video::ITexture* checker = driver->getTexture("error");
-	if (!checker) {
-		const irr::video::SColor L(255, 153, 229, 80), W(255, 255, 255, 255);
-		irr::video::IImage* img = driver->createImage(irr::video::ECF_R5G6B5, irr::core::dimension2du(2, 2));
-		img->setPixel(0, 0, L); img->setPixel(1, 0, W);
-		img->setPixel(0, 1, W); img->setPixel(1, 1, L);
-		checker = driver->addTexture("error", img);
-		img->drop();
-	}
-	return checker;
-}
-
-static irr::video::ITexture* getAlphaBlank(irr::video::IVideoDriver* driver) {
-	irr::video::ITexture* blank = driver->getTexture("alpha");
-	if (!blank) {
-		const irr::video::SColor L(0, 0, 0, 0);
-		irr::video::IImage* img = driver->createImage(irr::video::ECF_A1R5G5B5, irr::core::dimension2du(1, 1));
-		blank = driver->addTexture("blank", img);
-		img->drop();
-	}
-	return blank;
 }
 
 // ---
@@ -465,6 +476,112 @@ void Renderer::setSceneRenderQuality(int q) {
 	qr->setSceneRenderQuality(q);
 }
 
+void Renderer::addToDeletionQueue(irr::scene::ISceneNode* node) {
+	if (!i_smgr || !node) return;
+	i_smgr->addToDeletionQueue(node);
+}
+
+bool Renderer::removeTexture(irr::video::ITexture* tex) {
+	if (!i_driver || !tex) return false;
+
+	if (tex == checkerTex || tex == alphaBlankTex) {
+		d->Warn("UNSAFE TEXTURE REMOVAL: This Texture is used by Lime's renderer! It cannot be removed.");
+		return false;
+	}
+
+	bool safe = tex->getReferenceCount() == 0;
+
+	if (!safe) {
+		std::string out = "UNSAFE TEXTURE REMOVAL: Texture is being called for removal but has ";
+		out += std::to_string(tex->getReferenceCount());
+		out += " reference(s)! (";
+		out += tex->getName().getPath().c_str();
+		out += ")";
+		d->Warn(out);
+		core::array<ISceneNode*> stack;
+		if (ISceneNode* root = i_smgr->getRootSceneNode()) stack.push_back(root);
+
+		while (!stack.empty()) {
+			ISceneNode* node = stack.getLast();
+			stack.erase(stack.size() - 1);
+			for (auto* c : node->getChildren()) stack.push_back(c);
+
+			if (!(node->getType() == ESNT_MESH || node->getType() == ESNT_SKY_DOME)) continue;
+
+			for (u32 i = 0; i < node->getMaterialCount(); ++i) {
+				irr::video::SMaterial& mat = node->getMaterial(i);
+				for (u32 l = 0; l < irr::video::MATERIAL_MAX_TEXTURES; ++l) {
+					if (mat.getTexture(l) == tex)
+						mat.setTexture(l, checkerTex);
+				}
+
+				mat.setFlag(irr::video::E_MATERIAL_FLAG::EMF_BILINEAR_FILTER, false);
+				mat.setFlag(irr::video::E_MATERIAL_FLAG::EMF_LIGHTING, false);
+				mat.setFlag(irr::video::E_MATERIAL_FLAG::EMF_FOG_ENABLE, false);
+			}
+		}
+	}
+
+	i_driver->removeTexture(tex);
+
+	return true;
+}
+
+bool Renderer::removeMesh(irr::scene::IAnimatedMesh* mesh) {
+	if (!i_smgr || !mesh) return false;
+
+	bool safe = mesh->getReferenceCount() == 0;
+
+	irr::scene::IAnimatedMesh* fallback = nullptr;
+
+	if (!safe) {
+		std::string name = "no_name";
+		auto* cache = i_smgr->getMeshCache();
+		if (cache) {
+			const irr::u32 n = cache->getMeshCount();
+			for (irr::u32 i = 0; i < n; ++i) {
+				if (cache->getMeshByIndex(i) == mesh) {
+					name = cache->getMeshName(i).getPath().c_str();
+				}
+			}
+		}
+
+		std::string out = "UNSAFE MESH REMOVAL: Mesh is being called for removal but has ";
+		out += std::to_string(mesh->getReferenceCount());
+		out += " reference(s)! (";
+		out += name;
+		out += ")";
+		d->Warn(out);
+		core::array<ISceneNode*> stack;
+		if (ISceneNode* root = i_smgr->getRootSceneNode()) stack.push_back(root);
+
+		while (!stack.empty()) {
+			ISceneNode* node = stack.getLast();
+			stack.erase(stack.size() - 1);
+			for (auto* c : node->getChildren()) stack.push_back(c);
+
+			if (!node->getType() == irr::scene::ESNT_ANIMATED_MESH) continue;
+
+			auto* am = static_cast<irr::scene::IAnimatedMeshSceneNode*>(node);
+			if (am->getMesh() == mesh) {
+				am->setMesh(fallback);
+				am->setMaterialTexture(0, checkerTex);
+
+				am->setMaterialFlag(irr::video::E_MATERIAL_FLAG::EMF_BILINEAR_FILTER, false);
+				am->setMaterialFlag(irr::video::E_MATERIAL_FLAG::EMF_LIGHTING, false);
+				am->setMaterialFlag(irr::video::E_MATERIAL_FLAG::EMF_FOG_ENABLE, false);
+			}
+		}
+	}
+
+	if (auto* cache = i_smgr->getMeshCache()) {
+		cache->removeMesh(mesh);
+		cache->clearUnusedMeshes();
+	}
+
+	return true;
+}
+
 void Renderer::setGUIQuality(int q) {
 	auto setFilters = [&](bool bilinear, bool trilinear, u32 aniso) {
 		for (int i = 0; i < 2; i++) {
@@ -509,7 +626,7 @@ irr::gui::IGUIImage* Renderer::createGUIImage() {
 	if (!guardRenderingCheck()) return nullptr;
 
 	irr::gui::IGUIImage* img = i_gui->addImage(irr::core::recti(0, 0, 64, 64));
-	img->setImage(getAlphaBlank(i_driver));
+	img->setImage(alphaBlankTex);
 
 	return img;
 }
@@ -606,7 +723,7 @@ void Renderer::setFogPlanes(const Vec2& planes) {
 Texture Renderer::getErrorTexture() {
 	if (!guardRenderingCheck()) return Texture();
 
-	return Texture(getCheckerError(i_driver));
+	return Texture(checkerTex);
 }
 
 void Renderer::setMatchRes(bool v) {

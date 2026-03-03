@@ -23,6 +23,7 @@ class Text3D : public SceneObject, public Object3D {
 public:
 	Text3D();
 	Text3D(const std::string& tx);
+	void destroy() override;
 
 	std::string getText();
 	void setText(const std::string& tx);

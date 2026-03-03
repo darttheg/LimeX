@@ -29,6 +29,12 @@ Text3D::Text3D(const std::string& tx) : Text3D() {
 	setText(tx);
 }
 
+void Text3D::destroy() {
+	if (src) src->remove();
+	if (wrap) wrap->remove();
+	src, wrap = nullptr, nullptr;
+}
+
 std::string Text3D::getText() {
 	if (!src) return "";
 

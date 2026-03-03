@@ -6,6 +6,8 @@
 using namespace irr;
 using namespace scene;
 
+static Application* a = nullptr;
+
 Vec3 Object3D::getPosition() const {
     if (!getNode()) return Vec3();
     return Vec3(getNode()->getPosition().X, getNode()->getPosition().Y, getNode()->getPosition().Z);
@@ -52,6 +54,11 @@ bool Object3D::parentTo(sol::optional<Object3D*> parent) {
     return true;
 }
 
+sol::object Object3D::i_destroy() {
+    destroy();
+    return sol::make_object(a->GetLuaState(), sol::nil);
+}
+
 int Object3D::getID() const {
     return getNode() ? getNode()->getID() : 0;
 }
@@ -61,7 +68,8 @@ void Object3D::setID(int d) {
     getNode()->setID(d);
 }
 
-void Interface::Object3DBind::bind(Application* a) {
+void Interface::Object3DBind::bind(Application* app) {
+    a = app;
 	sol::state_view view(a->GetLuaState());
 
     // Interface Object3D
@@ -96,6 +104,10 @@ void Interface::Object3DBind::bind(Application* a) {
     // Params any child
     // Returns void
     obj.set_function("parentTo", &Object3D::parentTo);
+
+    // Destroys this object. A `Mesh` will remain cached unless explicitly removed.
+    // Returns nil
+    obj.set_function("destroy", &Object3D::i_destroy);
 
     // End Interface
 }

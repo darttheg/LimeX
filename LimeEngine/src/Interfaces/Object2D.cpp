@@ -9,6 +9,7 @@
 using namespace irr;
 using namespace scene;
 
+static Application* a = nullptr;
 static Renderer* r = nullptr;
 
 irr::gui::IGUIElement* Object2D::getButton() const {
@@ -210,7 +211,15 @@ void Object2D::createEvents() {
     });
 }
 
-void Interface::Object2DBind::bind(Application* a) {
+sol::object Object2D::i_destroy() {
+    removeButton();
+    setBorder(false);
+    destroy();
+    return sol::make_object(a->GetLuaState(), sol::nil);
+}
+
+void Interface::Object2DBind::bind(Application* app) {
+    a = app;
     r = a->GetRenderer();
     sol::state_view view(a->GetLuaState());
 

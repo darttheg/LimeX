@@ -18,6 +18,7 @@ class Billboard : public SceneObject, public Object3D {
 public:
     Billboard();
     Billboard(const Material& mat);
+    void destroy() override;
 
     void loadMaterial(const Material& mat);
 

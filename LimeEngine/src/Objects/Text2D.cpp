@@ -37,6 +37,11 @@ Text2D::Text2D(const Vec2& pos, const Vec2& sz) : Text2D() {
 	Object2D::setSize(sz);
 }
 
+void Text2D::destroy() {
+	if (text) text->remove();
+	text = nullptr;
+}
+
 std::string Text2D::getText() {
 	if (!text) return "";
 
