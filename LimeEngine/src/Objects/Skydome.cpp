@@ -25,6 +25,9 @@ void Skydome::destroy() {
 	sky = nullptr;
 }
 
+void Skydome::setDebug(bool v) {
+}
+
 using namespace irr;
 using namespace video;
 void Skydome::loadMaterial(const Material& mat) {

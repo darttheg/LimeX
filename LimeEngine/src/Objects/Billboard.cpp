@@ -27,6 +27,9 @@ void Billboard::destroy() {
 	bb = nullptr;
 }
 
+void Billboard::setDebug(bool v) {
+}
+
 Vec2 Billboard::getSize() {
 	if (!bb) return Vec2();
 

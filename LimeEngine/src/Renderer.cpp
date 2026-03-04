@@ -58,7 +58,37 @@ static irr::video::ITexture* getAlphaBlank(irr::video::IVideoDriver* driver) {
 	return blank;
 }
 
-#include "External/errObjArr.h"
+bool mountResources(irr::IrrlichtDevice* device) {
+	if (!device) return false;
+
+	HMODULE mod = nullptr;
+	GetModuleHandleExA(
+		GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+		GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+		(LPCSTR)&mountResources,
+		&mod
+	);
+
+	HRSRC rsrc = FindResource(mod, MAKEINTRESOURCE(101), RT_RCDATA);
+	if (!rsrc) return false;
+	HGLOBAL res = LoadResource(mod, rsrc);
+	if (!res) return false;
+	void* data = LockResource(res);
+	DWORD size = SizeofResource(mod, rsrc);
+
+	auto* fs = device->getFileSystem();
+	irr::io::IReadFile* mem = fs->createMemoryReadFile(
+		data,
+		size,
+		"resources.zip",
+		false
+	);
+
+	bool out = fs->addFileArchive(mem);
+	mem->drop();
+	return out;
+}
+
 bool Renderer::Init() {
 	if (isCreated) return false;
 
@@ -152,15 +182,12 @@ bool Renderer::Init() {
 	qr->init(i_driver);
 	qr->setInternalResolution(renderSize.x, renderSize.y);
 
+	if (!mountResources(i_device))
+		d->Warn("INIT WARNING: Could not mount resources.zip!");
+
 	alphaBlankTex = getAlphaBlank(i_driver);
 	checkerTex = getCheckerError(i_driver);
-	errMesh = nullptr;
-
-	irr::io::IReadFile* f = i_device->getFileSystem()->createMemoryReadFile((void*)errObj, errObjLen, "err.obj", false);
-	if (f)
-		errMesh = i_smgr->getMesh(f);
-	else
-		d->Warn("Could not load error mesh! (err.obj)");
+	errMesh = i_smgr->getMesh("meshes/error.obj");
 
 	isCreated = true;
 	return true;
@@ -178,13 +205,20 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 	if (!guardRenderingCheck()) return false;
 	if (!isCreated || !w->getGLFWWindow()) return false;
 
+	/* Doesn't really do anything crazy
+	if (!w->isFocused()) {
+		i_device->yield();
+		return true;
+	}
+	*/
+
 	if (!i_device->run()) {
 		d->Warn("Render device could not be ran!");
 		return false;
 	}
 
-	if (!i_smgr->getActiveCamera()) // Is it appropriate to prematurely not render even a background?
-		return false;
+	//if (!i_smgr->getActiveCamera()) // Is it appropriate to prematurely not render even a background?
+	//	return false;
 
 	updateFog(); // Update fog params pre-render
 

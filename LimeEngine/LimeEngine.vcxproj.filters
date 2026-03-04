@@ -43,9 +43,6 @@
     <Filter Include="Engine\Runtime\External\ColoredText">
       <UniqueIdentifier>{383d4052-a3c8-4878-8276-25364953b95a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Runtime\External\ErrMesh">
-      <UniqueIdentifier>{264acbb9-1f38-41c6-9add-a94c3ca5bd97}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\LimeEngine.h">
@@ -143,9 +140,6 @@
     </ClInclude>
     <ClInclude Include="include\Objects\Text3D.h">
       <Filter>Engine\Runtime\Objects\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="include\External\errObjArr.h">
-      <Filter>Engine\Runtime\External\ErrMesh</Filter>
     </ClInclude>
     <ClInclude Include="include\Objects\Empty.h">
       <Filter>Engine\Runtime\Objects\3D</Filter>
@@ -247,5 +241,10 @@
     <None Include="api\Enums.api.inl">
       <Filter>Engine\Runtime\APIs</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="lime.rc">
+      <Filter>Engine\Public</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

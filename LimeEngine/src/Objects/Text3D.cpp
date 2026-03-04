@@ -35,6 +35,9 @@ void Text3D::destroy() {
 	src, wrap = nullptr, nullptr;
 }
 
+void Text3D::setDebug(bool v) {
+}
+
 std::string Text3D::getText() {
 	if (!src) return "";
 

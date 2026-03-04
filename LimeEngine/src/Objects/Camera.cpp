@@ -38,6 +38,9 @@ void Camera::destroy() {
 	camera = nullptr;
 }
 
+void Camera::setDebug(bool v) {
+}
+
 static void updateLookTarget(irr::scene::ICameraSceneNode* c, irr::scene::ISceneNode* forward) {
 	if (!c) return;
 	c->updateAbsolutePosition();

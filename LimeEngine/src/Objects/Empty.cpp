@@ -25,6 +25,9 @@ void Empty::destroy() {
 	emp = nullptr;
 }
 
+void Empty::setDebug(bool v) {
+}
+
 irr::scene::ISceneNode* Empty::getNode() const { return emp; }
 
 void Object::EmptyBind::bind(Application* a) {

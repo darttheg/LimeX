@@ -1,0 +1,2 @@
+#define IDR_RES_PAK 101
+IDR_RES_PAK RCDATA "resources.zip"
