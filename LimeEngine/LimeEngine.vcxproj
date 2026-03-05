@@ -51,6 +51,7 @@
     <ClInclude Include="include\Receiver.h" />
     <ClInclude Include="include\Renderer.h" />
     <ClInclude Include="include\GUIManager.h" />
+    <ClInclude Include="include\RenderHelper.h" />
     <ClInclude Include="include\Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +84,7 @@
     <ClCompile Include="src\Receiver.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\GUIManager.cpp" />
+    <ClCompile Include="src\RenderHelper.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>

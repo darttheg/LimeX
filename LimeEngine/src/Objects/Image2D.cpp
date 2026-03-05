@@ -4,15 +4,15 @@
 #include "External/CGUIColoredText.h"
 #include "Application.h"
 #include "DebugConsole.h"
-#include "Renderer.h"
+#include "RenderHelper.h"
 #include "Objects/Texture.h"
 #include "Objects/Vec2.h"
 
 static DebugConsole* d = nullptr;
-static Renderer* r = nullptr;
+static RenderHelper* rh = nullptr;
 
 Image2D::Image2D() {
-	img = r->createGUIImage();
+	img = rh->createGUIImage();
 
 	Object2D::createEvents();
 }
@@ -57,7 +57,7 @@ irr::gui::IGUIElement* Image2D::getNode() const {
 }
 
 void Object::Image2DBind::bind(Application* a) {
-	r = a->GetRenderer();
+	rh = a->GetRenderHelper();
 	d = a->GetDebugConsole();
 
 	// Object Image2D, A basic 2D object to display images. Without loading a Texture, this object can be used as a container for other GUI objects if parented together.

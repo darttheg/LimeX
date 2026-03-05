@@ -5,15 +5,15 @@
 #include "Application.h"
 #include "DebugConsole.h"
 #include "GUIManager.h"
-#include "Renderer.h"
+#include "RenderHelper.h"
 #include "Objects/Vec2.h"
 
 static DebugConsole* d = nullptr;
-static Renderer* r = nullptr;
+static RenderHelper* rh = nullptr;
 static GUIManager* g = nullptr;
 
 Text2D::Text2D() {
-	text = r->createColoredText2D();
+	text = rh->createColoredText2D();
 	if (!text) {
 		d->Warn("Could not create Text2D");
 		return;
@@ -97,9 +97,9 @@ irr::gui::IGUIElement* Text2D::getNode() const {
 }
 
 void Object::Text2DBind::bind(Application* a) {
-	r = a->GetRenderer();
+	rh = a->GetRenderHelper();
 	d = a->GetDebugConsole();
-	g = r->getGUIManager();
+	g = a->GetGUIManager();
 
 	// Object Text2D, A basic 2D object to display text. Text objects support colors and basic styling. Use tags `<#HEX>` for color, `<s>` for strike, `<d>` for drop shadow, `<u>` for underline, `<b>` for bold, and `<r>` to reset styles. Example: `<#6ABE30>This is green! <b>Now, it's green and bold! <r>Now, it's back to normal.`
 	// Inherits Object2D

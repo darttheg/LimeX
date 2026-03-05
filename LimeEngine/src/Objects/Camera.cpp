@@ -1,7 +1,7 @@
 #include "Objects/Camera.h"
 
 #include "Application.h"
-#include "Renderer.h"
+#include "RenderHelper.h"
 #include "DebugConsole.h"
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
@@ -9,7 +9,7 @@
 #include "irrlicht.h"
 
 static DebugConsole* d;
-static Renderer* r;
+static RenderHelper* rh;
 
 Camera::Camera() : Camera(Vec3(), Vec3()){
 }
@@ -18,11 +18,11 @@ Camera::Camera(const Vec3& pos) : Camera(pos, Vec3()) {
 }
 
 Camera::Camera(const Vec3& pos, const Vec3& rot) {
-	camera = r->createCameraNode();
+	camera = rh->createCameraNode();
 	if (!camera) return;
 
-	forward = r->createEmptyNode();
-	left = r->createEmptyNode();
+	forward = rh->createEmptyNode();
+	left = rh->createEmptyNode();
 	camera->addChild(forward);
 	forward->setPosition(irr::core::vector3df(0, 0, 1));
 	camera->addChild(left);
@@ -30,7 +30,7 @@ Camera::Camera(const Vec3& pos, const Vec3& rot) {
 
 	setPosition(pos);
 	setRotation(rot);
-	r->updateCameraMatrix(camera);
+	rh->updateCameraMatrix(camera);
 }
 
 void Camera::destroy() {
@@ -127,11 +127,11 @@ Vec3 Camera::getLeft() const {
 void Camera::setActive() const {
 	if (!camera) return;
 
-	r->setActiveCamera(camera);
+	rh->setActiveCamera(camera);
 }
 
 void Object::CameraBind::bind(Application* a) {
-	r = a->GetRenderer();
+	rh = a->GetRenderHelper();
 	d = a->GetDebugConsole();
 
 	// Object Camera, A viewpoint in the 3D world.

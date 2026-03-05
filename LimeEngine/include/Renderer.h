@@ -17,6 +17,7 @@ class GUIManager;
 class Event;
 class Object2D;
 class QuadRenderer;
+class RenderHelper;
 
 namespace irr {
 	class IrrlichtDevice;
@@ -58,6 +59,7 @@ public:
 	bool Render(bool clearBackBuffer = false, bool clearZBuffer = true);
 	void EndWholeScene() { hasBegunNewScene = false; }
 	void RenderBGPreUpdate(); // For manual rendering, render the BG just so something is showing before the update loop.
+	RenderHelper* GetRenderHelper() const { return rh; }
 
 	bool guardRenderingCheck();
 	bool maximizeDevice();
@@ -89,33 +91,8 @@ public:
 	bool removeTexture(irr::video::ITexture* tex);
 	bool removeMesh(irr::scene::IAnimatedMesh* mesh);
 
-	// Textures
-	irr::video::ITexture* createTexture(int w, int h, const std::string& name = "");
-	irr::video::ITexture* createTexture(const std::string& path);
-	irr::video::ITexture* cropTexture(irr::video::ITexture* tex, const Vec2& pos, const Vec2& dim);
-	irr::video::ITexture* appendTexture(irr::video::ITexture* tex, irr::video::ITexture* toAppend, const Vec2& pos);
-	Vec4 getColor(irr::video::ITexture* tex, const Vec2& pos);
-	irr::video::ITexture* setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color);
-	void keyColor(irr::video::ITexture* tex, const Vec4& color);
-
-	// Misc. Nodes
-	irr::scene::ISceneNode* createEmptyNode();
-	irr::scene::ISceneNode* createSkydomeNode(irr::video::ITexture* tex);
-	irr::scene::IBillboardSceneNode* createBillboardNode();
-	irr::scene::CTextAnchorSceneNode* createText3DNode(irr::gui::CGUIColoredText* src);
-
-	// Camera
-	irr::scene::ICameraSceneNode* createCameraNode();
-	void updateCameraMatrix(irr::scene::ICameraSceneNode* c);
-	void setActiveCamera(irr::scene::ICameraSceneNode* c);
-
 	// GUI
 	void setGUIQuality(int q);
-	irr::gui::CGUIColoredText* createColoredText2D();
-	irr::gui::IGUIStaticText* createStaticText();
-	irr::gui::IGUIImage* createGUIImage();
-	irr::gui::IGUIButton* createButton();
-	irr::gui::IGUIElement* getGUIRoot();
 
 	// Misc
 	bool setMouseVisible(bool vis);
@@ -153,6 +130,7 @@ private:
 	int fps = 0;
 	HWND hwndIrr = nullptr;
 	QuadRenderer* qr = nullptr;
+	RenderHelper* rh = nullptr;
 
 	// Fallback
 	irr::video::ITexture* alphaBlankTex = nullptr;

@@ -1,7 +1,7 @@
 #include "Objects/Text3D.h"
 
 #include "Application.h"
-#include "Renderer.h"
+#include "RenderHelper.h"
 #include "DebugConsole.h"
 #include "GUIManager.h"
 #include "External/CGUIColoredText.h"
@@ -9,12 +9,12 @@
 #include "Objects/Vec2.h"
 
 static DebugConsole* d = nullptr;
-static Renderer* r = nullptr;
+static RenderHelper* rh = nullptr;
 static GUIManager* g = nullptr;
 
 Text3D::Text3D() {
-	src = r->createColoredText2D();
-	wrap = r->createText3DNode(src);
+	src = rh->createColoredText2D();
+	wrap = rh->createText3DNode(src);
 	if (!wrap || !src) {
 		d->Warn("Could not create Text3D");
 		return;
@@ -109,9 +109,9 @@ irr::scene::ISceneNode* Text3D::getNode() const {
 }
 
 void Object::Text3DBind::bind(Application* a) {
-	r = a->GetRenderer();
+	rh = a->GetRenderHelper();
 	d = a->GetDebugConsole();
-	g = r->getGUIManager();
+	g = a->GetGUIManager();
 
 	// Object Text3D, A basic 3D object to display text. This object is essentially a `Text2D` tied to a 3D scene node. Text objects support colors and basic styling. Use tags `<#HEX>` for color, `<s>` for strike, `<d>` for drop shadow, `<u>` for underline, `<b>` for bold, and `<r>` to reset styles. Example: `<#6ABE30>This is green! <b>Now, it's green and bold! <r>Now, it's back to normal.`
 	// Inherits Object3D

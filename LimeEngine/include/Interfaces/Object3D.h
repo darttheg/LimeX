@@ -9,6 +9,7 @@ class Vec4;
 namespace irr {
 	namespace scene {
 		class ISceneNode;
+		class IBillboardSceneNode;
 	}
 }
 
@@ -45,6 +46,7 @@ public:
 	sol::object i_destroy();
 protected:
 	bool debug = false;
+	irr::scene::IBillboardSceneNode* dVisual = nullptr;
 private:
 };
 

@@ -1,7 +1,7 @@
 #include "Objects/Skydome.h"
 
 #include "Application.h"
-#include "Renderer.h"
+#include "RenderHelper.h"
 #include "DebugConsole.h"
 #include "Objects/Texture.h"
 #include "Objects/Material.h"
@@ -9,14 +9,14 @@
 #include "irrlicht.h"
 
 static DebugConsole* d;
-static Renderer* r;
+static RenderHelper* rh;
 
 Skydome::Skydome() {
-	sky = r->createSkydomeNode(nullptr);
+	sky = rh->createSkydomeNode(nullptr);
 }
 
 Skydome::Skydome(const Material& mat) {
-	sky = r->createSkydomeNode(nullptr);
+	sky = rh->createSkydomeNode(nullptr);
 	loadMaterial(mat);
 }
 
@@ -44,7 +44,7 @@ void Skydome::loadMaterial(const Material& mat) {
 }
 
 void Object::SkydomeBind::bind(Application* a) {
-	r = a->GetRenderer();
+	rh = a->GetRenderHelper();
 	d = a->GetDebugConsole();
 
 	sol::state_view view(a->GetLuaState());

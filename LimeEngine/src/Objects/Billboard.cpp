@@ -1,7 +1,7 @@
 #include "Objects/Billboard.h"
 
 #include "Application.h"
-#include "Renderer.h"
+#include "RenderHelper.h"
 #include "DebugConsole.h"
 #include "Objects/Texture.h"
 #include "Objects/Material.h"
@@ -11,14 +11,14 @@
 #include "irrlicht.h"
 
 static DebugConsole* d;
-static Renderer* r;
+static RenderHelper* rh;
 
 Billboard::Billboard() {
-	bb = r->createBillboardNode();
+	bb = rh->createBillboardNode();
 }
 
 Billboard::Billboard(const Material& mat) {
-	bb = r->createBillboardNode();
+	bb = rh->createBillboardNode();
 	loadMaterial(mat);
 }
 
@@ -51,7 +51,7 @@ void Billboard::loadMaterial(const Material& mat) {
 }
 
 void Object::BillboardBind::bind(Application* a) {
-	r = a->GetRenderer();
+	rh = a->GetRenderHelper();
 	d = a->GetDebugConsole();
 
 	// Object Billboard, A plane that faces the active camera.

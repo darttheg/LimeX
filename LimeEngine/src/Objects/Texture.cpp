@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "DebugConsole.h"
 #include "Renderer.h"
+#include "RenderHelper.h"
 
 #include "irrlicht.h"
 
@@ -10,30 +11,25 @@
 
 static Application* a;
 static Renderer* r;
+static RenderHelper* rh;
 static DebugConsole* d;
 
 Texture::Texture() {
-	if (!r->guardRenderingCheck()) return;
-
-	texture = r->createTexture(1, 1, "blank");
+	texture = rh->createTexture(1, 1, "blank");
 }
 
 Texture::Texture(const std::string& path) {
-	if (!r->guardRenderingCheck()) return;
-
-	texture = r->createTexture(path);
+	texture = rh->createTexture(path);
 }
 
 Texture::Texture(irr::video::ITexture* tex) {
-	if (!r->guardRenderingCheck()) return;
-
 	texture = tex;
 }
 
 Texture::Texture(int w, int h, const std::string& name) {
-	if (!r->guardRenderingCheck()) return;
+	if (!rh->guardRenderingCheck()) return;
 
-	texture = r->createTexture(w, h, name);
+	texture = rh->createTexture(w, h, name);
 }
 
 sol::object Texture::remove() {
@@ -44,7 +40,7 @@ sol::object Texture::remove() {
 }
 
 Vec2 Texture::getSize() {
-	if (!r->guardRenderingCheck() || !texture) return Vec2();
+	if (!texture) return Vec2();
 	return Vec2((float)texture->getSize().Width, (float)texture->getSize().Height);
 }
 
@@ -53,7 +49,6 @@ void Texture::write(const std::string& outPath) {
 }
 
 void Texture::crop(const Vec2& tl, const Vec2& br) {
-	if (!r->guardRenderingCheck()) return;
 	if (!texture) {
 		d->Warn("Crop failed: There is no valid texture!");
 		return;
@@ -67,7 +62,7 @@ void Texture::crop(const Vec2& tl, const Vec2& br) {
 	Vec2 pos = tl;
 	Vec2 dim = br - tl;
 
-	texture = r->cropTexture(texture, pos, dim);
+	texture = rh->cropTexture(texture, pos, dim);
 	if (!texture) {
 		d->Warn("Crop failed: Failed to crop texture!");
 		return;
@@ -75,13 +70,12 @@ void Texture::crop(const Vec2& tl, const Vec2& br) {
 }
 
 void Texture::append(const Texture& other, const Vec2& pos) {
-	if (!r->guardRenderingCheck()) return;
 	if (!texture) {
 		d->Warn("Append failed: There is no valid Texture!");
 		return;
 	}
 
-	irr::video::ITexture* t = r->appendTexture(texture, other.texture, pos);
+	irr::video::ITexture* t = rh->appendTexture(texture, other.texture, pos);
 	if (!t) {
 		d->Warn("Append failed: Could not append Texture!");
 		return;
@@ -91,33 +85,30 @@ void Texture::append(const Texture& other, const Vec2& pos) {
 }
 
 Vec4 Texture::getColor(const Vec2& pos) {
-	if (!r->guardRenderingCheck()) return Vec4();
 	if (!texture) {
 		d->Warn("GetColor failed: There is no valid Texture!");
 		return Vec4();
 	}
 
-	return r->getColor(texture, pos);
+	return rh->getColor(texture, pos);
 }
 
 void Texture::setColor(const Vec2& pos, const Vec4& color) {
-	if (!r->guardRenderingCheck()) return;
 	if (!texture) {
 		d->Warn("SetColor failed: There is no valid Texture!");
 		return;
 	}
 
-	r->setColor(texture, pos, color);
+	rh->setColor(texture, pos, color);
 }
 
 void Texture::key(const Vec4& color) {
-	if (!r->guardRenderingCheck()) return;
 	if (!texture) {
 		d->Warn("KeyColor failed: There is no valid Texture!");
 		return;
 	}
 
-	r->keyColor(texture, color);
+	rh->keyColor(texture, color);
 }
 
 std::string Texture::getPath() const {
@@ -136,6 +127,7 @@ int Texture::getRefCount() {
 void Object::TextureBind::bind(Application* app) {
 	a = app;
 	r = a->GetRenderer();
+	rh = a->GetRenderHelper();
 	d = a->GetDebugConsole();
 
 	sol::state_view view(a->GetLuaState());

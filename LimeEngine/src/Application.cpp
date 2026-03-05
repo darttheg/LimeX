@@ -262,6 +262,14 @@ void Application::DisplayMessage(std::string msg, std::string title, int icon) {
 	MessageBox(nullptr, nMessageC, nTitleC, oIcon);
 }
 
+RenderHelper* Application::GetRenderHelper() {
+	return renderer ? renderer->GetRenderHelper() : nullptr;
+}
+
+GUIManager* Application::GetGUIManager() {
+	return renderer ? renderer->getGUIManager() : nullptr;
+}
+
 std::string Application::GetLuaLocation() {
 	if (!lua) return "nan";
 	lua_Debug ar{};

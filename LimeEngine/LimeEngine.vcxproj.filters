@@ -43,22 +43,16 @@
     <Filter Include="Engine\Runtime\External\ColoredText">
       <UniqueIdentifier>{383d4052-a3c8-4878-8276-25364953b95a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Runtime\Core\App">
+      <UniqueIdentifier>{757ba124-c115-450f-911a-e65e780410c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime\Core\Rendering">
+      <UniqueIdentifier>{092e7b09-4f51-46bf-93a3-aa5caf7ad945}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\LimeEngine.h">
       <Filter>Engine\Public</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Application.h">
-      <Filter>Engine\Runtime\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Window.h">
-      <Filter>Engine\Runtime\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\DebugConsole.h">
-      <Filter>Engine\Runtime\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Renderer.h">
-      <Filter>Engine\Runtime\Core</Filter>
     </ClInclude>
     <ClInclude Include="include\LuaBinder.h">
       <Filter>Engine\Runtime\Core</Filter>
@@ -108,17 +102,8 @@
     <ClInclude Include="include\Modules\ModuleGUI.h">
       <Filter>Engine\Runtime\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="include\Receiver.h">
-      <Filter>Engine\Runtime\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\FrameLimiter.h">
-      <Filter>Engine\Runtime\Core</Filter>
-    </ClInclude>
     <ClInclude Include="include\Modules\ModuleInput.h">
       <Filter>Engine\Runtime\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="include\GUIManager.h">
-      <Filter>Engine\Runtime\Core</Filter>
     </ClInclude>
     <ClInclude Include="include\External\CTextAnchorSceneNode.h">
       <Filter>Engine\Runtime\External\ColoredText</Filter>
@@ -132,9 +117,6 @@
     <ClInclude Include="include\Objects\Image2D.h">
       <Filter>Engine\Runtime\Objects\2D</Filter>
     </ClInclude>
-    <ClInclude Include="include\QuadRenderer.h">
-      <Filter>Engine\Runtime\Core</Filter>
-    </ClInclude>
     <ClInclude Include="include\Objects\Billboard.h">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClInclude>
@@ -144,22 +126,37 @@
     <ClInclude Include="include\Objects\Empty.h">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClInclude>
+    <ClInclude Include="include\Application.h">
+      <Filter>Engine\Runtime\Core\App</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DebugConsole.h">
+      <Filter>Engine\Runtime\Core\App</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FrameLimiter.h">
+      <Filter>Engine\Runtime\Core\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUIManager.h">
+      <Filter>Engine\Runtime\Core\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QuadRenderer.h">
+      <Filter>Engine\Runtime\Core\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Renderer.h">
+      <Filter>Engine\Runtime\Core\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RenderHelper.h">
+      <Filter>Engine\Runtime\Core\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Receiver.h">
+      <Filter>Engine\Runtime\Core\App</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Window.h">
+      <Filter>Engine\Runtime\Core\App</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
       <Filter>Engine\Public</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Application.cpp">
-      <Filter>Engine\Runtime\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Window.cpp">
-      <Filter>Engine\Runtime\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DebugConsole.cpp">
-      <Filter>Engine\Runtime\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer.cpp">
-      <Filter>Engine\Runtime\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\LuaBinder.cpp">
       <Filter>Engine\Runtime\Core</Filter>
@@ -209,23 +206,14 @@
     <ClCompile Include="src\Modules\ModuleGUI.cpp">
       <Filter>Engine\Runtime\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="src\Receiver.cpp">
-      <Filter>Engine\Runtime\Core</Filter>
-    </ClCompile>
     <ClCompile Include="src\Modules\ModuleInput.cpp">
       <Filter>Engine\Runtime\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GUIManager.cpp">
-      <Filter>Engine\Runtime\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Objects\Text2D.cpp">
       <Filter>Engine\Runtime\Objects\2D</Filter>
     </ClCompile>
     <ClCompile Include="src\Objects\Image2D.cpp">
       <Filter>Engine\Runtime\Objects\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="src\QuadRenderer.cpp">
-      <Filter>Engine\Runtime\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Objects\Billboard.cpp">
       <Filter>Engine\Runtime\Objects\3D</Filter>
@@ -235,6 +223,30 @@
     </ClCompile>
     <ClCompile Include="src\Objects\Empty.cpp">
       <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application.cpp">
+      <Filter>Engine\Runtime\Core\App</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DebugConsole.cpp">
+      <Filter>Engine\Runtime\Core\App</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUIManager.cpp">
+      <Filter>Engine\Runtime\Core\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\QuadRenderer.cpp">
+      <Filter>Engine\Runtime\Core\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer.cpp">
+      <Filter>Engine\Runtime\Core\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderHelper.cpp">
+      <Filter>Engine\Runtime\Core\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Receiver.cpp">
+      <Filter>Engine\Runtime\Core\App</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Window.cpp">
+      <Filter>Engine\Runtime\Core\App</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

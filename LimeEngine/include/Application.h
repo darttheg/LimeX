@@ -18,6 +18,8 @@ class Renderer;
 class Event;
 class Receiver;
 class FrameLimiter;
+class RenderHelper;
+class GUIManager;
 
 #define LIME_VERSION "1.0"
 
@@ -56,6 +58,8 @@ public:
 
 	DebugConsole* GetDebugConsole() { return console; }
 	Renderer* GetRenderer() { return renderer; }
+	RenderHelper* GetRenderHelper();
+	GUIManager* GetGUIManager();
 	Window* GetWindow() { return window; }
 	Receiver* GetReceiver() { return receiver; }
 	bool IsRunning() { return running; }

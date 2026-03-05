@@ -9,6 +9,7 @@
 #include "Receiver.h"
 #include "GUIManager.h"
 #include "QuadRenderer.h"
+#include "RenderHelper.h"
 
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
@@ -29,6 +30,7 @@ Renderer::Renderer(Application* owner) {
 	w = a->GetWindow();
 	r = a->GetReceiver();
 	guiManager = new GUIManager(d, this);
+	rh = new RenderHelper();
 }
 Renderer::~Renderer() {
 	Shutdown();
@@ -182,6 +184,8 @@ bool Renderer::Init() {
 	qr->init(i_driver);
 	qr->setInternalResolution(renderSize.x, renderSize.y);
 
+	rh->Init(i_device, d);
+
 	if (!mountResources(i_device))
 		d->Warn("INIT WARNING: Could not mount resources.zip!");
 
@@ -254,20 +258,6 @@ void Renderer::RenderBGPreUpdate() {
 }
 
 // ---
-
-irr::video::IImage* texToImg(irr::video::IVideoDriver* driver, irr::video::ITexture* tex) {
-	if (!tex) return nullptr;
-
-	irr::core::dimension2d<u32> texSize = tex->getSize();
-	irr::video::ECOLOR_FORMAT format = tex->getColorFormat();
-	void* pixelData = tex->lock();
-	if (!pixelData) return nullptr;
-
-	irr::video::IImage* image = driver->createImageFromData(format, texSize, pixelData);
-	tex->unlock();
-
-	return image;
-}
 
 int getNumChildren(irr::scene::ISceneNode* node) {
 	if (!node) return 0;
@@ -361,147 +351,6 @@ int Renderer::getObjectCount() {
 	if (!root) return 0;
 
 	return getNumChildren(root) - 1;
-}
-
-irr::video::ITexture* Renderer::createTexture(int w, int h, const std::string& name) {
-	if (!guardRenderingCheck()) return nullptr;
-
-	std::string outName = name;
-	if (name.empty()) {
-		outName = "tex_" + std::to_string((int)(rand() / (double)RAND_MAX * 9999));
-	}
-
-	irr::video::ITexture* tex = i_driver->addTexture(irr::core::dimension2du(w, h), outName.c_str());
-	if (!tex) {
-		d->Warn("Could not create texture " + outName + " of size " + std::to_string(w) + "x" + std::to_string(h));
-		return nullptr;
-	}
-
-	return tex;
-}
-
-irr::video::ITexture* Renderer::createTexture(const std::string& path) {
-	if (!guardRenderingCheck()) return nullptr;
-
-	irr::video::ITexture* tex = i_driver->getTexture(path.c_str());
-	if (!tex) {
-		d->Warn("Could not create texture from " + path);
-		return nullptr;
-	}
-	
-	return tex;
-}
-
-irr::video::ITexture* Renderer::cropTexture(irr::video::ITexture* tex, const Vec2& pos, const Vec2& dim) {
-	if (!guardRenderingCheck()) return nullptr;
-
-	irr::video::IImage* img = i_driver->createImage(tex, irr::core::vector2di(pos.getX(), pos.getY()), irr::core::dimension2du(dim.getX(), dim.getY()));
-	std::string name = "cropped_";
-	name += tex->getName().getInternalName().c_str();
-	irr::video::ITexture* out = i_driver->addTexture(name.c_str(), img);
-
-	return out;
-}
-
-irr::video::ITexture* Renderer::appendTexture(irr::video::ITexture* tex, irr::video::ITexture* toAppend, const Vec2& pos) {
-	if (!guardRenderingCheck()) return nullptr;
-
-	irr::video::IImage* srcBase = texToImg(i_driver, tex);
-	irr::video::IImage* appendBase = texToImg(i_driver, toAppend);
-
-	appendBase->copyTo(srcBase, irr::core::vector2di(pos.getX(), pos.getY()));
-	std::string op = "appended_";
-	op += tex->getName().getInternalName().c_str();
-
-	irr::video::ITexture* out = i_driver->addTexture(op.c_str(), srcBase);
-	srcBase->drop();
-	appendBase->drop();
-
-	return out;
-}
-
-Vec4 Renderer::getColor(irr::video::ITexture* tex, const Vec2& pos) {
-	if (!guardRenderingCheck()) return Vec4();
-
-	irr::video::IImage* img = texToImg(i_driver, tex);
-	irr::video::SColor pCol = img->getPixel(pos.getX(), pos.getY());
-	img->drop();
-
-	return Vec4(pCol.getRed(), pCol.getGreen(), pCol.getBlue(), pCol.getAlpha());
-}
-
-irr::video::ITexture* Renderer::setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color) {
-	if (!guardRenderingCheck()) return nullptr;
-
-	irr::video::IImage* img = texToImg(i_driver, tex);
-	img->getPixel(pos.getX(), pos.getY());
-
-	irr::video::ITexture* out = i_driver->addTexture(tex->getName().getPath().c_str(), img);
-	i_driver->removeTexture(tex);
-	img->drop();
-
-	return out;
-}
-
-void Renderer::keyColor(irr::video::ITexture* tex, const Vec4& color) {
-	if (!guardRenderingCheck()) return;
-
-	i_driver->makeColorKeyTexture(tex, irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()));
-}
-
-irr::scene::ISceneNode* Renderer::createEmptyNode() {
-	if (!guardRenderingCheck()) return nullptr;
-
-	return i_smgr->addEmptySceneNode();
-}
-
-irr::scene::ISceneNode* Renderer::createSkydomeNode(irr::video::ITexture* tex) {
-	if (!guardRenderingCheck()) return nullptr;
-
-	return i_smgr->addSkyDomeSceneNode(tex, 16, 8, 1.0, 2.0, 100.0);
-}
-
-irr::scene::IBillboardSceneNode* Renderer::createBillboardNode() {
-	if (!guardRenderingCheck()) return nullptr;
-
-	return i_smgr->addBillboardSceneNode();
-}
-
-irr::scene::CTextAnchorSceneNode* Renderer::createText3DNode(irr::gui::CGUIColoredText* src) {
-	if (!guardRenderingCheck()) return nullptr;
-
-	return new CTextAnchorSceneNode(i_smgr->getRootSceneNode(), i_smgr, i_gui, src);
-}
-
-irr::scene::ICameraSceneNode* Renderer::createCameraNode() {
-	if (!guardRenderingCheck()) return nullptr;
-
-	return i_smgr->addCameraSceneNode();
-}
-
-void Renderer::updateCameraMatrix(irr::scene::ICameraSceneNode* c) {
-	if (!c) return;
-
-	if (c->isTrulyOrthogonal) {
-		irr::core::matrix4 orthoMat;
-		float z = c->getFOV() * 180.0 / irr::core::PI / 5.0;
-		int width = i_driver->getScreenSize().Width;
-		int height = i_driver->getScreenSize().Height;
-		orthoMat.buildProjectionMatrixOrthoLH(width / z, height / z, c->getNearValue(), c->getFarValue());
-		c->setProjectionMatrix(orthoMat, true);
-	} else {
-		irr::core::matrix4 perspectiveMat;
-		float aspectRatio = c->getAspectRatio();
-		perspectiveMat.buildProjectionMatrixPerspectiveFovLH(c->getFOV(), aspectRatio, c->getNearValue(), c->getFarValue());
-
-		c->setProjectionMatrix(perspectiveMat, false);
-	}
-}
-
-void Renderer::setActiveCamera(irr::scene::ICameraSceneNode* c) {
-	if (!guardRenderingCheck()) return;
-
-	i_smgr->setActiveCamera(c);
 }
 
 void Renderer::setSceneRenderQuality(int q) {
@@ -661,42 +510,6 @@ void Renderer::setGUIQuality(int q) {
 		setFilters(false, false, 0);
 		break;
 	}
-}
-
-irr::gui::CGUIColoredText* Renderer::createColoredText2D() {
-	if (!guardRenderingCheck()) return nullptr;
-
-	irr::core::rect<irr::s32> r(0, 0, 128, 64);
-	irr::gui::CGUIColoredText* out = new irr::gui::CGUIColoredText(i_gui, i_gui->getRootGUIElement(), -1, r);
-
-	return out;
-}
-
-irr::gui::IGUIStaticText* Renderer::createStaticText() {
-	if (!guardRenderingCheck()) return nullptr;
-
-	return i_gui->addStaticText(L"", irr::core::recti(0, 0, 64, 64));
-}
-
-irr::gui::IGUIImage* Renderer::createGUIImage() {
-	if (!guardRenderingCheck()) return nullptr;
-
-	irr::gui::IGUIImage* img = i_gui->addImage(irr::core::recti(0, 0, 64, 64));
-	img->setImage(alphaBlankTex);
-
-	return img;
-}
-
-irr::gui::IGUIButton* Renderer::createButton() {
-	if (!guardRenderingCheck()) return nullptr;
-	irr::gui::IGUIButton* out = i_gui->addButton(irr::core::recti());
-	out->setDrawBorder(false);
-
-	return out;
-}
-
-irr::gui::IGUIElement* Renderer::getGUIRoot() {
-	return i_gui ? i_gui->getRootGUIElement() : nullptr;
 }
 
 void Renderer::setAmbientColor(const Vec4& color) {

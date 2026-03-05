@@ -2,6 +2,7 @@
 #include "Objects/Event.h"
 #include "Application.h"
 #include "Renderer.h"
+#include "RenderHelper.h"
 #include "Objects/Vec2.h"
 #include "Objects/Vec4.h"
 
@@ -11,6 +12,7 @@ using namespace scene;
 
 static Application* a = nullptr;
 static Renderer* r = nullptr;
+static RenderHelper* rh = nullptr;
 
 irr::gui::IGUIElement* Object2D::getButton() const {
     return button;
@@ -116,7 +118,7 @@ bool Object2D::parentTo(sol::optional<Object2D*> parent) {
     if (!getNode()) return false;
 
     if (!parent || *parent == nullptr) {
-        auto* root = r->getGUIRoot();
+        auto* root = rh->getGUIRoot();
         if (!root) return false;
 
         root->addChild(getNode());
@@ -159,7 +161,7 @@ void Object2D::setBGBorder() {
     if (!getNode()) return;
 
     if ((hasBorder || hasBackground) && !bgBorder) {
-        bgBorder = r->createStaticText();
+        bgBorder = rh->createStaticText();
         bgBorder->setVisible(getNode()->isVisible());
         getNode()->getParent()->addChild(bgBorder);
         getNode()->getParent()->sendToBack(bgBorder);
@@ -183,7 +185,7 @@ void Object2D::setEnabled(bool v) {
 
 void Object2D::createButton() {
     if (button || !getNode()) return;
-    button = r->createButton();
+    button = rh->createButton();
     updateButtonDimensions();
     button->setEnabled(btnEnabled);
     // button->setVisible(false);
@@ -238,6 +240,7 @@ sol::object Object2D::i_destroy() {
 void Interface::Object2DBind::bind(Application* app) {
     a = app;
     r = a->GetRenderer();
+    rh = a->GetRenderHelper();
     sol::state_view view(a->GetLuaState());
 
     // Interface Object2D

@@ -1,7 +1,7 @@
 #include "Objects/Empty.h"
 
 #include "Application.h"
-#include "Renderer.h"
+#include "RenderHelper.h"
 #include "DebugConsole.h"
 
 #include "Objects/Vec3.h"
@@ -9,14 +9,14 @@
 #include "irrlicht.h"
 
 static DebugConsole* d;
-static Renderer* r;
+static RenderHelper* rh;
 
 Empty::Empty() {
-	emp = r->createEmptyNode();
+	emp = rh->createEmptyNode();
 }
 
 Empty::Empty(const Vec3& pos) {
-	emp = r->createEmptyNode();
+	emp = rh->createEmptyNode();
 	setPosition(pos);
 }
 
@@ -26,12 +26,17 @@ void Empty::destroy() {
 }
 
 void Empty::setDebug(bool v) {
+	if (v) {
+		dVisual = rh->createDebugNode(DEBUG3D_TYPE::EMPTY);
+	} else {
+		dVisual->remove();
+	}
 }
 
 irr::scene::ISceneNode* Empty::getNode() const { return emp; }
 
 void Object::EmptyBind::bind(Application* a) {
-	r = a->GetRenderer();
+	rh = a->GetRenderHelper();
 	d = a->GetDebugConsole();
 
 	// Object Empty, An invisible object used to mark locations, parent objects, and more.
