@@ -97,7 +97,7 @@ void Module::Lime::bind(Application* app) {
 	// Returns boolean
 	module.set_function("getVSync", &Module::Lime::Bind::GetVSync);
 
-	// Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory.
+	// Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. (NOTE: Enabling the debug console may cause minor hiccups in the application.)
 	// Params boolean enable, boolean? writeOutput
 	// Returns void
 	module.set_function("setDebugConfig", &Module::Lime::Bind::SetDebugConfig);
