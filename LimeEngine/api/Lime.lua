@@ -383,7 +383,7 @@ function Lime.getVersion() end
 ---@return void
 function Lime.log(msg, color) end
 
---- Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory.
+--- Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. (NOTE: Enabling the debug console may cause minor hiccups in the application.)
 ---@param enable boolean
 ---@param writeOutput boolean?
 ---@return void
