@@ -153,6 +153,12 @@
     <ClInclude Include="include\Window.h">
       <Filter>Engine\Runtime\Core\App</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\Mesh.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Objects\MeshBuffer.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -247,6 +253,12 @@
     </ClCompile>
     <ClCompile Include="src\Window.cpp">
       <Filter>Engine\Runtime\Core\App</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Mesh.cpp">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\MeshBuffer.cpp">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

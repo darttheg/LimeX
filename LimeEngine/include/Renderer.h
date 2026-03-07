@@ -28,6 +28,7 @@ namespace irr {
 		class IBillboardSceneNode;
 		class CTextAnchorSceneNode;
 		class IAnimatedMesh;
+		class IMeshBuffer;
 	}
 	namespace video {
 		class IVideoDriver;
@@ -90,6 +91,7 @@ public:
 	void addToDeletionQueue(irr::scene::ISceneNode* node);
 	bool removeTexture(irr::video::ITexture* tex);
 	bool removeMesh(irr::scene::IAnimatedMesh* mesh);
+	bool removeBuffer(irr::scene::IMeshBuffer* buf);
 
 	// GUI
 	void setGUIQuality(int q);

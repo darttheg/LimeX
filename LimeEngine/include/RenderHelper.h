@@ -14,7 +14,12 @@ namespace irr {
 		class ICameraSceneNode;
 		class IBillboardSceneNode;
 		class CTextAnchorSceneNode;
+		class IAnimatedMeshSceneNode;
+		class IOctreeSceneNode;
+		class IMesh;
 		class IAnimatedMesh;
+		class ITriangleSelector;
+		class IMeshSceneNode;
 	}
 	namespace video {
 		class IVideoDriver;
@@ -46,7 +51,7 @@ class RenderHelper {
 public:
 	RenderHelper() = default;
 	~RenderHelper() = default;
-	bool guardRenderingCheck();
+	bool guardRenderingCheck(std::string msg = "");
 
 	void Init(irr::IrrlichtDevice* device, DebugConsole* debug);
 
@@ -59,13 +64,18 @@ public:
 	Vec4 getColor(irr::video::ITexture* tex, const Vec2& pos);
 	irr::video::ITexture* setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color);
 	void keyColor(irr::video::ITexture* tex, const Vec4& color);
+	void setVertexColor(irr::scene::IAnimatedMeshSceneNode* m, const Vec4& color);
 
 	// Create nodes
+	irr::scene::IAnimatedMesh* createMesh(const std::string& path);
+	irr::scene::IAnimatedMeshSceneNode* createAnimatedMesh(irr::scene::IAnimatedMesh* m);
+	irr::scene::IMeshSceneNode* createOctreeMesh(irr::scene::IAnimatedMeshSceneNode* m);
 	irr::scene::ICameraSceneNode* createCameraNode();
 	irr::scene::ISceneNode* createEmptyNode();
 	irr::scene::ISceneNode* createSkydomeNode(irr::video::ITexture* tex);
 	irr::scene::IBillboardSceneNode* createBillboardNode();
 	irr::scene::CTextAnchorSceneNode* createText3DNode(irr::gui::CGUIColoredText* src);
+	irr::scene::ITriangleSelector* createTriangleSelector(irr::scene::IAnimatedMeshSceneNode* m);
 
 	void updateCameraMatrix(irr::scene::ICameraSceneNode* c);
 	void setActiveCamera(irr::scene::ICameraSceneNode* c);

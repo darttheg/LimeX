@@ -102,10 +102,12 @@ bool Renderer::Init() {
 	params.Bits = 16;
 	params.Vsync = cfg.vSync;
 	params.Fullscreen = cfg.fullscreen;
-	// params.Stencilbuffer = true;
+	params.Stencilbuffer = true;
 
 	i_device = irr::createDeviceEx(params);
 	if (!i_device) return false;
+
+	i_device->getLogger()->setLogLevel(irr::ELOG_LEVEL::ELL_WARNING);
 
 	renderSize.x = cfg.renderSize[0];
 	renderSize.y = cfg.renderSize[1];
@@ -375,7 +377,7 @@ bool Renderer::removeTexture(irr::video::ITexture* tex) {
 	bool safe = tex->getReferenceCount() == 1; // Texture obj still owns it so ref == 1
 
 	if (!safe) {
-		std::string out = "UNSAFE TEXTURE REMOVAL: Texture is being called for removal but has ";
+		std::string out = "UNSAFE TEXTURE REMOVAL: Texture is being called for purging but has ";
 		out += std::to_string(tex->getReferenceCount());
 		out += " reference(s)! (";
 		out += tex->getName().getPath().c_str();
@@ -437,7 +439,7 @@ bool Renderer::removeMesh(irr::scene::IAnimatedMesh* mesh) {
 
 	bool safe = mesh->getReferenceCount() == 0;
 
-	irr::scene::IAnimatedMesh* fallback = nullptr;
+	irr::scene::IAnimatedMesh* fallback = i_smgr->getMesh("meshes/error.obj");
 
 	if (!safe) {
 		std::string name = "no_name";
@@ -451,7 +453,7 @@ bool Renderer::removeMesh(irr::scene::IAnimatedMesh* mesh) {
 			}
 		}
 
-		std::string out = "UNSAFE MESH REMOVAL: Mesh is being called for removal but has ";
+		std::string out = "UNSAFE MESH REMOVAL: Mesh is being called for purging but has ";
 		out += std::to_string(mesh->getReferenceCount());
 		out += " reference(s)! (";
 		out += name;
@@ -484,6 +486,21 @@ bool Renderer::removeMesh(irr::scene::IAnimatedMesh* mesh) {
 		cache->clearUnusedMeshes();
 	}
 
+	return true;
+}
+
+bool Renderer::removeBuffer(irr::scene::IMeshBuffer* buf) {
+	if (!buf) return false;
+	if (buf->getReferenceCount() > 1) {
+		std::string out = "UNSAFE MESHBUFFER REMOVAL: MeshBuffer is being called for purging but has ";
+		out += std::to_string(buf->getReferenceCount());
+		out += " reference(s)! (";
+		out += buf->getDebugName();
+		out += ")";
+		d->Warn(out);
+	}
+
+	buf->drop();
 	return true;
 }
 

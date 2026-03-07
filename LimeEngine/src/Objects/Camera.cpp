@@ -21,6 +21,7 @@ Camera::Camera(const Vec3& pos, const Vec3& rot) {
 	camera = rh->createCameraNode();
 	if (!camera) return;
 
+	camera->setNearValue(0.1);
 	forward = rh->createEmptyNode();
 	left = rh->createEmptyNode();
 	camera->addChild(forward);

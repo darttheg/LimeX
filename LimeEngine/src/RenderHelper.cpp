@@ -25,9 +25,12 @@ void RenderHelper::Init(irr::IrrlichtDevice* device, DebugConsole* debug) {
 	i_gpu = i_driver->getGPUProgrammingServices();
 }
 
-bool RenderHelper::guardRenderingCheck() {
+bool RenderHelper::guardRenderingCheck(std::string msg) {
 	if (!i_device) {
-		d->Warn("Rendered objects cannot be created until the Lime window has been created!");
+		if (msg.empty())
+			d->Warn("Rendered objects cannot be created until the Lime window has been created!");
+		else
+			d->Warn(msg);
 		return false;
 	}
 	return true;
@@ -163,6 +166,13 @@ void RenderHelper::keyColor(irr::video::ITexture* tex, const Vec4& color) {
 	i_driver->makeColorKeyTexture(tex, irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()));
 }
 
+void RenderHelper::setVertexColor(irr::scene::IAnimatedMeshSceneNode* m, const Vec4& color) {
+	if (!guardRenderingCheck()) return;
+
+	irr::scene::IMeshManipulator* meshManipulator = i_smgr->getMeshManipulator();
+	meshManipulator->setVertexColors(m->getMesh(), irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()));
+}
+
 irr::scene::ISceneNode* RenderHelper::createEmptyNode() {
 	if (!guardRenderingCheck()) return nullptr;
 
@@ -185,6 +195,61 @@ irr::scene::CTextAnchorSceneNode* RenderHelper::createText3DNode(irr::gui::CGUIC
 	if (!guardRenderingCheck()) return nullptr;
 
 	return new CTextAnchorSceneNode(i_smgr->getRootSceneNode(), i_smgr, i_gui, src);
+}
+
+irr::scene::ITriangleSelector* RenderHelper::createTriangleSelector(irr::scene::IAnimatedMeshSceneNode* m) {
+	if (!m) return nullptr;
+
+	return i_smgr->createOctreeTriangleSelector(m->getMesh(), m, 32);
+}
+
+static bool isValidFilePath(irr::IrrlichtDevice* dev, const std::string& path) {
+	if (!dev) return false;
+	irr::io::IFileSystem* fs = dev->getFileSystem();
+	return fs->existFile(path.c_str());
+}
+
+irr::scene::IAnimatedMesh* RenderHelper::createMesh(const std::string& path) {
+	if (!guardRenderingCheck()) return nullptr;
+
+	if (!isValidFilePath(i_device, path)) {
+		d->Warn("Could not load Mesh from path " + path + ": file does not exist.");
+		return nullptr;
+	}
+
+	irr::scene::IAnimatedMesh* out = i_smgr->getMesh(path.c_str());
+	if (!out) {
+		d->Warn("Could not load Mesh from path " + path + ": Mesh could not be created from file.");
+	}
+	
+	return out;
+}
+
+irr::scene::IAnimatedMeshSceneNode* RenderHelper::createAnimatedMesh(irr::scene::IAnimatedMesh* m) {
+	if (!guardRenderingCheck()) return nullptr;
+	if (!m) {
+		irr::scene::IAnimatedMeshSceneNode* err = i_smgr->addAnimatedMeshSceneNode(i_smgr->getMesh("meshes/error.obj"));
+		irr::video::SMaterial mat = irr::video::SMaterial();
+		mat.Lighting = false;
+		mat.AmbientColor = irr::video::SColor(255);
+		mat.setTexture(0, i_driver->getTexture("error"));
+		mat.setFlag(irr::video::E_MATERIAL_FLAG::EMF_BILINEAR_FILTER, false);
+		mat.UseMipMaps = false;
+		err->getMaterial(0) = mat;
+		return err;
+	}
+
+	irr::scene::IAnimatedMeshSceneNode* out = i_smgr->addAnimatedMeshSceneNode(m);
+	m->drop(); // ...?
+
+	return out;
+}
+
+irr::scene::IMeshSceneNode* RenderHelper::createOctreeMesh(irr::scene::IAnimatedMeshSceneNode* m) {
+	if (!guardRenderingCheck()) return nullptr;
+
+	irr::scene::IMesh* sm = m->getMesh()->getMesh(0);
+	return i_smgr->addOctreeSceneNode(sm);
 }
 
 irr::scene::ICameraSceneNode* RenderHelper::createCameraNode() {
@@ -215,7 +280,6 @@ void RenderHelper::updateCameraMatrix(irr::scene::ICameraSceneNode* c) {
 
 void RenderHelper::setActiveCamera(irr::scene::ICameraSceneNode* c) {
 	if (!guardRenderingCheck()) return;
-
 	i_smgr->setActiveCamera(c);
 }
 

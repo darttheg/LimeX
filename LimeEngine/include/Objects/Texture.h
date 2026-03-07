@@ -20,7 +20,7 @@ public:
 	Texture(int w, int h, const std::string& name = "");
 	Texture(const std::string& path);
 	Texture(irr::video::ITexture* tex);
-	sol::object remove();
+	sol::object purge();
 
 	Vec2 getSize();
 	void write(const std::string& outPath);

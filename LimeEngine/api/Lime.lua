@@ -129,6 +129,28 @@ Material = Material or {}
 ---@return Material
 function Material.new() end
 
+---@class Mesh
+---@field vertexColor Vec4 @Sets the color of all vertexes in this `Mesh`.
+---@field collision boolean @Allows response to raypicks and other simple collision methods. (NOTE: This flag does not affect this `Mesh` when wrapped by a physics object.)
+---@field shadows boolean @Enables shadows.
+---@field position Vec3 @The 3D position of this object in the scene.
+---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
+---@field scale Vec3 @The 3D scale of this object in the scene.
+---@field visible boolean @Determines the visibility of this object and its children.
+---@field id number @The identifier for this object to be used in raycasts and object selection.
+---@field debug boolean @Show debug information about this object in the scene.
+Mesh = Mesh or {}
+--- A scene object capable of displaying a mesh.
+---@overload fun(path:string): Mesh
+---@return Mesh
+function Mesh.new() end
+
+---@class MeshBuffer
+MeshBuffer = MeshBuffer or {}
+--- A container for vertices.
+---@return MeshBuffer
+function MeshBuffer.new() end
+
 ---@class Skydome
 ---@field position Vec3 @The 3D position of this object in the scene.
 ---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
@@ -383,7 +405,7 @@ function Lime.getVersion() end
 ---@return void
 function Lime.log(msg, color) end
 
---- Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. (NOTE: Enabling the debug console may cause minor hiccups in the application.)
+--- Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. (NOTE: Enabling the debug console may cause minor hiccups at runtime.)
 ---@param enable boolean
 ---@param writeOutput boolean?
 ---@return void
@@ -606,6 +628,95 @@ function Material:setTextureScale(scale) end
 ---@param vMethod Lime.Enum.TextureWrapType
 ---@return void
 function Material:setTextureWrapMethod(uMethod, vMethod) end
+
+--- Clears the `MeshBuffer` from within this `Mesh`. This will not remove its `MeshBuffer` from memory.
+---@return void
+function Mesh:clear() end
+
+--- Destroys this object.
+---@return nil
+function Mesh:destroy() end
+
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+---@return Vec4
+function Mesh:getBoundingBox() end
+
+--- Returns the material count of this `Mesh`.
+---@return number
+function Mesh:getMaterialCount() end
+
+--- Returns the reference count for this object.
+---@return number
+function Mesh:getReferenceCount() end
+
+--- Returns the vertex count of this `Mesh`.
+---@return number
+function Mesh:getVertexCount() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+---@param pos Vec3
+---@return boolean
+function Mesh:isPointInside(pos) end
+
+--- Loads a `Material` into this `Mesh`.
+---@overload fun(layer:number, material:Material): void
+---@param material Material
+---@return void
+function Mesh:loadMaterial(material) end
+
+--- Loads a `MeshBuffer` from `path` into this `Mesh`.
+---@param path string
+---@return boolean
+function Mesh:loadMesh(path) end
+
+--- Parents this object to another 3D object.
+---@param parent any
+---@return void
+function Mesh:parentTo(parent) end
+
+--- Purges this `Mesh`, effectively removing its mesh buffer from memory. Objects using this `Mesh`'s `MeshBuffer` will use an engine-defined `Mesh` instead, but it is recommended to remove references to this `Mesh` first.
+---@return nil
+function Mesh:purge() end
+
+--- If shadows are enabled for this `Mesh`, this will update the projection of the shadow. Use this if light sources have moved.
+---@return void
+function Mesh:updateShadow() end
+
+--- Clears this `MeshBuffer`. This will not remove itself from memory.
+---@return void
+function MeshBuffer:clear() end
+
+--- Returns the reference count for this `MeshBuffer`.
+---@return number
+function MeshBuffer:getReferenceCount() end
+
+--- Returns the vertex count of this `MeshBuffer`.
+---@return number
+function MeshBuffer:getVertexCount() end
+
+--- Purges this `MeshBuffer`, effectively removing it from memory. Objects using this `MeshBuffer` will use an engine-defined `MeshBuffer` instead, but it is recommended to remove references to this `MeshBuffer` first.
+---@return nil
+function MeshBuffer:purge() end
+
+--- Pushes a face to this `MeshBuffer`.
+---@param pos1 Vec3
+---@param pos2 Vec3
+---@param pos3 Vec3
+---@param normal1 Vec3
+---@param normal2 Vec3
+---@param normal3 Vec3
+---@param uvw1 Vec3
+---@param uvw2 Vec3
+---@param uvw3 Vec3
+---@param color1 Vec4
+---@param color2 Vec4
+---@param color3 Vec4
+---@return void
+function MeshBuffer:pushFace(pos1, pos2, pos3, normal1, normal2, normal3, uvw1, uvw2, uvw3, color1, color2, color3) end
+
+--- Recalculates the bounding box of this `MeshBuffer`. This should be called after modifying this `MeshBuffer`.
+---@return void
+function MeshBuffer:recalculateBoundingBox() end
 
 --- Destroys this object.
 ---@return nil

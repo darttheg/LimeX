@@ -29,6 +29,8 @@
 #include "Objects/Billboard.h"
 #include "Objects/Text3D.h"
 #include "Objects/Empty.h"
+#include "Objects/Mesh.h"
+#include "Objects/MeshBuffer.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -57,4 +59,6 @@ void LuaBinder::BindAll(Application* app) {
 	Object::BillboardBind::bind(app);
 	Object::Text3DBind::bind(app);
 	Object::EmptyBind::bind(app);
+	Object::MeshBind::bind(app);
+	Object::MeshBufferBind::bind(app);
 }

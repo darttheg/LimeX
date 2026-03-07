@@ -32,9 +32,9 @@ Texture::Texture(int w, int h, const std::string& name) {
 	texture = rh->createTexture(w, h, name);
 }
 
-sol::object Texture::remove() {
+sol::object Texture::purge() {
 	if (!r->removeTexture(texture))
-		d->Warn("Could not remove texture: it is not valid!");
+		d->Warn("Could not purge texture: it is not valid!");
 	texture = nullptr;
 	return sol::make_object(a->GetLuaState(), sol::nil);
 }
@@ -121,7 +121,7 @@ std::string Texture::getPath() const {
 }
 
 int Texture::getRefCount() {
-	return texture ? texture->getReferenceCount() : -1;
+	return texture ? texture->getReferenceCount() : 0;
 }
 
 void Object::TextureBind::bind(Application* app) {
@@ -191,7 +191,7 @@ void Object::TextureBind::bind(Application* app) {
 
 	// Purges this `Texture`, effectively removing it from memory. Objects using this `Texture` will use an engine-defined `Texture` instead, but it is recommended to remove references to this `Texture` first.
 	// Returns nil
-	obj.set_function("purge", &Texture::remove);
+	obj.set_function("purge", &Texture::purge);
 
 	// End Object
 }

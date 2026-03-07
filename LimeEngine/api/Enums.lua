@@ -140,6 +140,18 @@ Center = 2,
 Top = 0,
 Bottom = 1,
 }
+---@alias Lime.Enum.HardwareHint integer
+---@class Lime.Enum.HardwareHintEnum
+---@field Static Lime.Enum.HardwareHint
+---@field Dynamic Lime.Enum.HardwareHint
+---@field Stream Lime.Enum.HardwareHint
+---@field Never Lime.Enum.HardwareHint
+Lime.Enum.HardwareHint = {
+Static = 1,
+Dynamic = 2,
+Stream = 3,
+Never = 0,
+}
 ---@alias Lime.Enum.Mouse integer
 ---@class Lime.Enum.MouseEnum
 ---@field Left Lime.Enum.Mouse
