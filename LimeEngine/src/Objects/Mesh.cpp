@@ -9,6 +9,7 @@
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
+#include "Objects/MeshBuffer.h"
 
 #include "irrlicht.h"
 
@@ -24,6 +25,10 @@ Mesh::Mesh() {
 
 Mesh::Mesh(const std::string& path) : Mesh() {
 	loadMesh(path);
+}
+
+Mesh::Mesh(const MeshBuffer& mb) : Mesh() {
+	loadMeshBuffer(mb);
 }
 
 void Mesh::destroy() {
@@ -53,23 +58,42 @@ bool Mesh::loadMesh(const std::string& path) {
 	return src;
 }
 
-void Mesh::loadMaterial(int layer, const Material& mat) {
-	if (!src) return;
+bool Mesh::loadMeshBuffer(const MeshBuffer& mb) {
+	if (!mb.getBuffer()) return false;
+	if (mb.getBuffer()->getVertexCount() == 0) return false;
+
+	irr::scene::SMesh* mesh = new irr::scene::SMesh();
+	mesh->addMeshBuffer(mb.getBuffer());
+	mesh->recalculateBoundingBox();
+
+	irr::scene::SAnimatedMesh* amesh = new irr::scene::SAnimatedMesh();
+	amesh->addMesh(mesh);
+	mesh->drop();
+
+	if (!src) src = rh->createEmptyMesh();
+	auto* m = static_cast<irr::scene::IAnimatedMeshSceneNode*>(src);
+	if (!m) return false;
+	m->setMesh(amesh);
+	amesh->drop();
+
+	return true;
+}
+
+bool Mesh::loadMaterial(int layer, const Material& mat) {
+	if (!src) return false;
 
 	auto* m = static_cast<irr::scene::IAnimatedMeshSceneNode*>(src);
-	if (!m) {
-		d->Warn("nope");
-		return;
-	}
+	if (!m) return false;
 
 	if (layer < 0) layer = 0;
 	if (layer >= m->getMaterialCount()) layer = m->getMaterialCount() - 1;
 
 	m->getMaterial(layer) = mat.getMaterial();
+	return true;
 }
 
-void Mesh::loadMaterial(const Material& mat) {
-	loadMaterial(0, mat);
+bool Mesh::loadMaterial(const Material& mat) {
+	return loadMaterial(0, mat);
 }
 
 int Mesh::getMaterialCount() const {
@@ -191,7 +215,7 @@ void Object::MeshBind::bind(Application* a) {
 	sol::state_view view(a->GetLuaState());
 	sol::usertype<Mesh> obj = view.new_usertype<Mesh>(
 		"Mesh",
-		sol::constructors<Mesh()>(),
+		sol::constructors<Mesh(), Mesh(const std::string&), Mesh(const MeshBuffer&)>(),
 
 		sol::base_classes, sol::bases<Object3D>(),
 		sol::meta_function::type, [](const Mesh&) { return "Mesh"; },
@@ -215,20 +239,25 @@ void Object::MeshBind::bind(Application* a) {
 
 	// Constructor
 	// Constructor string path
+	// Constructor MeshBuffer buffer
 
-	// Loads a `MeshBuffer` from `path` into this `Mesh`.
+	// Loads a 3D model into this `Mesh`. If importing from file, acceptable formats include `.obj`, `.fbx`, and `.x`.
 	// Params string path 
 	// Returns boolean
-	obj.set_function("loadMesh", &Mesh::loadMesh);
+	obj.set_function("loadMesh",
+		sol::overload(
+			sol::resolve<bool(const std::string&)>(&Mesh::loadMesh),
+			sol::resolve<bool(const MeshBuffer&)>(&Mesh::loadMeshBuffer)
+		));
 
 	// Loads a `Material` into this `Mesh`.
 	// Params number layer, Material material
 	// Params Material material
-	// Returns void
+	// Returns boolean
 	obj.set_function("loadMaterial",
 		sol::overload(
-			sol::resolve<void(int, const Material&)>(&Mesh::loadMaterial),
-			sol::resolve<void(const Material&)>(&Mesh::loadMaterial)
+			sol::resolve<bool(int, const Material&)>(&Mesh::loadMaterial),
+			sol::resolve<bool(const Material&)>(&Mesh::loadMaterial)
 		));
 
 	// Returns the material count of this `Mesh`.
@@ -242,6 +271,11 @@ void Object::MeshBind::bind(Application* a) {
 	// If shadows are enabled for this `Mesh`, this will update the projection of the shadow. Use this if light sources have moved.
 	// Returns void
 	obj.set_function("updateShadow", &Mesh::updateShadowCasting);
+
+	// Tells the graphics system how to store this `Mesh`. By default, `Mesh` objects use Static. Use Dynamic (or more intensely, Stream) if the `Mesh` is updated frequently.
+	// Params Lime.Enum.StorageHint hint
+	// Returns void
+	obj.set_function("setStorageHint", &Mesh::setHardwareHint);
 
 	// Clears the `MeshBuffer` from within this `Mesh`. This will not remove its `MeshBuffer` from memory.
 	// Returns void

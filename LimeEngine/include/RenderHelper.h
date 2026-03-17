@@ -68,6 +68,7 @@ public:
 
 	// Create nodes
 	irr::scene::IAnimatedMesh* createMesh(const std::string& path);
+	irr::scene::IAnimatedMeshSceneNode* createEmptyMesh();
 	irr::scene::IAnimatedMeshSceneNode* createAnimatedMesh(irr::scene::IAnimatedMesh* m);
 	irr::scene::IMeshSceneNode* createOctreeMesh(irr::scene::IAnimatedMeshSceneNode* m);
 	irr::scene::ICameraSceneNode* createCameraNode();

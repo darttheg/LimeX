@@ -140,13 +140,13 @@ Center = 2,
 Top = 0,
 Bottom = 1,
 }
----@alias Lime.Enum.HardwareHint integer
----@class Lime.Enum.HardwareHintEnum
----@field Static Lime.Enum.HardwareHint
----@field Dynamic Lime.Enum.HardwareHint
----@field Stream Lime.Enum.HardwareHint
----@field Never Lime.Enum.HardwareHint
-Lime.Enum.HardwareHint = {
+---@alias Lime.Enum.StorageHint integer
+---@class Lime.Enum.StorageHintEnum
+---@field Static Lime.Enum.StorageHint
+---@field Dynamic Lime.Enum.StorageHint
+---@field Stream Lime.Enum.StorageHint
+---@field Never Lime.Enum.StorageHint
+Lime.Enum.StorageHint = {
 Static = 1,
 Dynamic = 2,
 Stream = 3,

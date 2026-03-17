@@ -225,6 +225,11 @@ irr::scene::IAnimatedMesh* RenderHelper::createMesh(const std::string& path) {
 	return out;
 }
 
+irr::scene::IAnimatedMeshSceneNode* RenderHelper::createEmptyMesh() {
+	if (!guardRenderingCheck()) return nullptr;
+	return i_smgr->addAnimatedMeshSceneNode(nullptr);
+}
+
 irr::scene::IAnimatedMeshSceneNode* RenderHelper::createAnimatedMesh(irr::scene::IAnimatedMesh* m) {
 	if (!guardRenderingCheck()) return nullptr;
 	if (!m) {
@@ -240,7 +245,7 @@ irr::scene::IAnimatedMeshSceneNode* RenderHelper::createAnimatedMesh(irr::scene:
 	}
 
 	irr::scene::IAnimatedMeshSceneNode* out = i_smgr->addAnimatedMeshSceneNode(m);
-	m->drop(); // ...?
+	m->drop();
 
 	return out;
 }

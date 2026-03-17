@@ -8,6 +8,7 @@ class Material;
 class Vec2;
 class Vec3;
 class Vec4;
+class MeshBuffer;
 
 namespace irr {
     namespace scene {
@@ -24,16 +25,16 @@ public:
     // Loading mesh sets hardware mapping hint to static on loading from path
     Mesh(); 
     Mesh(const std::string& path); // Load via path
-    // Mesh(const MeshBuffer& mb); // Load via MeshBuffer
+    Mesh(const MeshBuffer& mb); // Load via MeshBuffer
     void destroy() override;
     void setDebug(bool v) override;
 
     irr::scene::ISceneNode* getNode() const override;
 
     bool loadMesh(const std::string& path);
-    // bool loadBuffer(const MeshBuffer& mb);
-    void loadMaterial(int layer, const Material& mat);
-    void loadMaterial(const Material& mat);
+    bool loadMeshBuffer(const MeshBuffer& mb);
+    bool loadMaterial(int layer, const Material& mat);
+    bool loadMaterial(const Material& mat);
     int getMaterialCount() const;
 
     void setHardwareHint(int hint);

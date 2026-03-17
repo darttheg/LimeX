@@ -142,6 +142,7 @@ function Material.new() end
 Mesh = Mesh or {}
 --- A scene object capable of displaying a mesh.
 ---@overload fun(path:string): Mesh
+---@overload fun(buffer:MeshBuffer): Mesh
 ---@return Mesh
 function Mesh.new() end
 
@@ -659,12 +660,12 @@ function Mesh:getVertexCount() end
 function Mesh:isPointInside(pos) end
 
 --- Loads a `Material` into this `Mesh`.
----@overload fun(layer:number, material:Material): void
+---@overload fun(layer:number, material:Material): boolean
 ---@param material Material
----@return void
+---@return boolean
 function Mesh:loadMaterial(material) end
 
---- Loads a `MeshBuffer` from `path` into this `Mesh`.
+--- Loads a 3D model into this `Mesh`. If importing from file, acceptable formats include `.obj`, `.fbx`, and `.x`.
 ---@param path string
 ---@return boolean
 function Mesh:loadMesh(path) end
@@ -677,6 +678,11 @@ function Mesh:parentTo(parent) end
 --- Purges this `Mesh`, effectively removing its mesh buffer from memory. Objects using this `Mesh`'s `MeshBuffer` will use an engine-defined `Mesh` instead, but it is recommended to remove references to this `Mesh` first.
 ---@return nil
 function Mesh:purge() end
+
+--- Tells the graphics system how to store this `Mesh`. By default, `Mesh` objects use Static. Use Dynamic (or more intensely, Stream) if the `Mesh` is updated frequently.
+---@param hint Lime.Enum.StorageHint
+---@return void
+function Mesh:setStorageHint(hint) end
 
 --- If shadows are enabled for this `Mesh`, this will update the projection of the shadow. Use this if light sources have moved.
 ---@return void

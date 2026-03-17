@@ -79,7 +79,7 @@ LIME_ENUM(TextAlign,
     LIME_ENUM_VALUE(Bottom, 1)
 );
 
-LIME_ENUM(HardwareHint,
+LIME_ENUM(StorageHint,
     LIME_ENUM_VALUE(Static, 1),
     LIME_ENUM_VALUE(Dynamic, 2),
     LIME_ENUM_VALUE(Stream, 3),
