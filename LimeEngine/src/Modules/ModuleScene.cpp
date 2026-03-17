@@ -182,8 +182,20 @@ void Module::Scene::Bind::SetRenderQuality(int q) {
 }
 
 #include "Objects/HitResult.h"
-HitResult Module::Scene::Bind::FireRaycast(const Vec3& start, const Vec3& end, float life) {
-	return rh->fireRaycast(start, end, life);
+sol::table Module::Scene::Bind::FireRaycast(const Vec3& start, const Vec3& end, float life) {
+	HitResult hit = rh->fireRaycast(start, end, life);
+
+	sol::state& lua = a->GetLuaState();
+	sol::table out = lua.create_table();
+
+	out["hit"] = hit.hit;
+	out["startPos"] = hit.startPos;
+	out["endPos"] = hit.endPos;
+	out["normal"] = hit.normal;
+	out["objID"] = hit.objID;
+	out["matID"] = hit.matID;
+
+	return out;
 }
 
 Mesh Module::Scene::Bind::CreateCubeMesh(const Vec3& size) {

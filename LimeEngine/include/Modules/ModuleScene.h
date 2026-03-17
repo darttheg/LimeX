@@ -13,6 +13,7 @@ class Vec4;
 class Texture;
 class Mesh;
 class HitResult;
+#include "sol/forward.hpp"
 
 namespace Module {
 	namespace Scene {
@@ -31,7 +32,7 @@ namespace Module {
 			Texture GetErrorTexture();
 			void SetRenderSize(const Vec2& size);
 			void SetRenderQuality(int q);
-			HitResult FireRaycast(const Vec3& start, const Vec3& end, float life = 0);
+			sol::table FireRaycast(const Vec3& start, const Vec3& end, float life = 0);
 
 			Mesh CreateCubeMesh(const Vec3& size);
 			Mesh CreateSphereMesh(float r, int polyCount = 8);

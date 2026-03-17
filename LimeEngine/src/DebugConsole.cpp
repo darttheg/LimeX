@@ -92,6 +92,10 @@ void DebugConsole::Create() {
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
     consoleHandle = (void*)h;
 
+    DWORD mode;
+    GetConsoleMode(consoleHandle, &mode);
+    SetConsoleMode(consoleHandle, mode & ~ENABLE_QUICK_EDIT_MODE);
+
     CONSOLE_SCREEN_BUFFER_INFO info{};
     if (GetConsoleScreenBufferInfo(h, &info))
         defaultAttr = info.wAttributes;
