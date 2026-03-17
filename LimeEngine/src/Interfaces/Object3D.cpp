@@ -1,5 +1,6 @@
 #include "Interfaces/Object3D.h"
 #include "Application.h"
+#include "RenderHelper.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
 
@@ -8,6 +9,7 @@ using namespace irr;
 using namespace scene;
 
 static Application* a = nullptr;
+static RenderHelper* rh = nullptr;
 
 Vec3 Object3D::getPosition() const {
     if (!getNode()) return Vec3();
@@ -82,8 +84,29 @@ void Object3D::i_setDebug(bool v) {
 sol::object Object3D::i_destroy() {
     setDebug(false);
     debug = false;
+    clearAttributes();
     destroy();
     return sol::make_object(a->GetLuaState(), sol::nil);
+}
+
+void Object3D::setAttribute(sol::object key, sol::object value) {
+    if (!getNode()) return;
+    rh->setAttribute(getNode(), key, value);
+}
+
+sol::object Object3D::getAttribute(sol::object key) {
+    if (!getNode()) return sol::nil;
+    return rh->getAttribute(getNode(), key);
+}
+
+sol::object Object3D::getAttributes() {
+    if (!getNode()) return sol::nil;
+    return rh->getAttributes(getNode());
+}
+
+void Object3D::clearAttributes() {
+    if (!getNode()) return;
+    rh->clearAttributes(getNode());
 }
 
 int Object3D::getID() const {
@@ -111,6 +134,7 @@ bool Object3D::isPointInside(const Vec3& pos) const {
 
 void Interface::Object3DBind::bind(Application* app) {
     a = app;
+    rh = app->GetRenderHelper();
 	sol::state_view view(a->GetLuaState());
 
     // Interface Object3D
@@ -165,6 +189,24 @@ void Interface::Object3DBind::bind(Application* app) {
     // Params Vec3 pos
     // Returns boolean
     obj.set_function("isPointInside", &Object3D::isPointInside);
+
+    // Sets `key` to `value` within this object's attributes.
+    // Params any key, any value
+    // Returns void
+    obj.set_function("setAttribute", &Object3D::setAttribute);
+
+    // Returns the content of attribute `key` from this object's attributes.
+    // Params any key
+    // Returns any
+    obj.set_function("getAttribute", &Object3D::getAttribute);
+
+    // Returns all attributes bundled in a table object.
+    // Returns table
+    obj.set_function("getAttributes", &Object3D::getAttributes);
+
+    // Clears this object's attributes.
+    // Returns void
+    obj.set_function("clearAttributes", &Object3D::clearAttributes);
 
     // End Interface
 }

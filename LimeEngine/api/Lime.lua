@@ -83,6 +83,7 @@ Event = Event or {}
 ---@field objID number @If hit, this will be the hit object's ID. Else, 0.
 ---@field matID number @If hit, this will be the hit material's ID. Else, 0.
 ---@field hit boolean @True if the raycast hit a collidable object.
+---@field attr table @Attributes of the hit object, if any.
 HitResult = HitResult or {}
 ---@class Hook
 Hook = Hook or {}
@@ -241,9 +242,22 @@ Vec4 = Vec4 or {}
 ---@return Vec4
 function Vec4.new() end
 
+--- Clears this object's attributes.
+---@return void
+function Billboard:clearAttributes() end
+
 --- Destroys this object.
 ---@return nil
 function Billboard:destroy() end
+
+--- Returns the content of attribute `key` from this object's attributes.
+---@param key any
+---@return any
+function Billboard:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+---@return table
+function Billboard:getAttributes() end
 
 --- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
 ---@return Vec4
@@ -268,9 +282,28 @@ function Billboard:loadMaterial(material) end
 ---@return void
 function Billboard:parentTo(parent) end
 
+--- Sets `key` to `value` within this object's attributes.
+---@param key any
+---@param value any
+---@return void
+function Billboard:setAttribute(key, value) end
+
+--- Clears this object's attributes.
+---@return void
+function Camera:clearAttributes() end
+
 --- Destroys this object.
 ---@return nil
 function Camera:destroy() end
+
+--- Returns the content of attribute `key` from this object's attributes.
+---@param key any
+---@return any
+function Camera:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+---@return table
+function Camera:getAttributes() end
 
 --- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
 ---@return Vec4
@@ -302,9 +335,28 @@ function Camera:parentTo(parent) end
 ---@return void
 function Camera:setActive() end
 
+--- Sets `key` to `value` within this object's attributes.
+---@param key any
+---@param value any
+---@return void
+function Camera:setAttribute(key, value) end
+
+--- Clears this object's attributes.
+---@return void
+function Empty:clearAttributes() end
+
 --- Destroys this object.
 ---@return nil
 function Empty:destroy() end
+
+--- Returns the content of attribute `key` from this object's attributes.
+---@param key any
+---@return any
+function Empty:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+---@return table
+function Empty:getAttributes() end
 
 --- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
 ---@return Vec4
@@ -323,6 +375,12 @@ function Empty:isPointInside(pos) end
 ---@param parent any
 ---@return void
 function Empty:parentTo(parent) end
+
+--- Sets `key` to `value` within this object's attributes.
+---@param key any
+---@param value any
+---@return void
+function Empty:setAttribute(key, value) end
 
 --- Clears all functions hooked to this Event.
 function Event:clear() end
@@ -535,6 +593,10 @@ function Lime.Scene.createSphereMesh(radius) end
 ---@return HitResult
 function Lime.Scene.fireRaycast(startPos, endPos, rayLifeMs) end
 
+--- Returns whether or not the application is actively rendering new output from the scene.
+---@return boolean
+function Lime.Scene.getActivelyRendering() end
+
 --- Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
 ---@return Texture
 function Lime.Scene.getErrorTexture() end
@@ -542,6 +604,11 @@ function Lime.Scene.getErrorTexture() end
 --- Returns the amount of 3D objects in the scene.
 ---@return number
 function Lime.Scene.getObjectCount() end
+
+--- If set to false, the application will not update the scene output.
+---@param active boolean
+---@return void
+function Lime.Scene.setActivelyRendering(active) end
 
 --- Sets the ambient color of the scene to `rgba`.
 ---@param rgba Vec4
@@ -666,9 +733,22 @@ function Material:setTextureWrapMethod(uMethod, vMethod) end
 ---@return void
 function Mesh:clear() end
 
+--- Clears this object's attributes.
+---@return void
+function Mesh:clearAttributes() end
+
 --- Destroys this object.
 ---@return nil
 function Mesh:destroy() end
+
+--- Returns the content of attribute `key` from this object's attributes.
+---@param key any
+---@return any
+function Mesh:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+---@return table
+function Mesh:getAttributes() end
 
 --- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
 ---@return Vec4
@@ -711,6 +791,12 @@ function Mesh:parentTo(parent) end
 --- Purges this `Mesh`, effectively removing its mesh buffer from memory. Objects using this `Mesh`'s `MeshBuffer` will use an engine-defined `Mesh` instead, but it is recommended to remove references to this `Mesh` first.
 ---@return nil
 function Mesh:purge() end
+
+--- Sets `key` to `value` within this object's attributes.
+---@param key any
+---@param value any
+---@return void
+function Mesh:setAttribute(key, value) end
 
 --- Tells the graphics system how to store this `Mesh`. By default, `Mesh` objects use Static. Use Dynamic (or more intensely, Stream) if the `Mesh` is updated frequently.
 ---@param hint Lime.Enum.StorageHint
@@ -757,9 +843,22 @@ function MeshBuffer:pushFace(pos1, pos2, pos3, normal1, normal2, normal3, uvw1, 
 ---@return void
 function MeshBuffer:recalculateBoundingBox() end
 
+--- Clears this object's attributes.
+---@return void
+function Skydome:clearAttributes() end
+
 --- Destroys this object.
 ---@return nil
 function Skydome:destroy() end
+
+--- Returns the content of attribute `key` from this object's attributes.
+---@param key any
+---@return any
+function Skydome:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+---@return table
+function Skydome:getAttributes() end
 
 --- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
 ---@return Vec4
@@ -783,6 +882,12 @@ function Skydome:loadMaterial(material) end
 ---@param parent any
 ---@return void
 function Skydome:parentTo(parent) end
+
+--- Sets `key` to `value` within this object's attributes.
+---@param key any
+---@param value any
+---@return void
+function Skydome:setAttribute(key, value) end
 
 --- Destroys this object.
 ---@return nil
@@ -825,9 +930,22 @@ function Text2D:setFont(name) end
 ---@return void
 function Text2D:setWordWrap(wrap) end
 
+--- Clears this object's attributes.
+---@return void
+function Text3D:clearAttributes() end
+
 --- Destroys this object.
 ---@return nil
 function Text3D:destroy() end
+
+--- Returns the content of attribute `key` from this object's attributes.
+---@param key any
+---@return any
+function Text3D:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+---@return table
+function Text3D:getAttributes() end
 
 --- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
 ---@return Vec4
@@ -852,6 +970,12 @@ function Text3D:parentTo(parent) end
 ---@param all Lime.Enum.TextAlign
 ---@return void
 function Text3D:setAlignment(all) end
+
+--- Sets `key` to `value` within this object's attributes.
+---@param key any
+---@param value any
+---@return void
+function Text3D:setAttribute(key, value) end
 
 --- Sets the font to use for this object. Fonts must first be embedded. See `Lime.GUI.embedFont`.
 ---@param name string

@@ -105,6 +105,8 @@ public:
 	void addButtonPair(const Object2D& o);
 	void removeButtonPair(const Object2D& o);
 	bool isElementHovered(const Object2D& o);
+	void setActivelyRendering(bool v) { doRender = v; }
+	bool getIsActivelyRendering() const { return doRender; }
 
 private:
 	struct Vec4S { float x, y, z, w; };
@@ -112,6 +114,7 @@ private:
 
 	bool isCreated = false;
 	bool hasBegunNewScene = false;
+	bool doRender = true;
 
 	// Renderer parameters
 	Vec2S renderSize{};

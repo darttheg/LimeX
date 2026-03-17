@@ -187,6 +187,7 @@ bool Renderer::Init() {
 	qr->setInternalResolution(renderSize.x, renderSize.y);
 
 	rh->Init(i_device, d);
+	rh->SetLuaState(&a->GetLuaState());
 
 	if (!mountResources(i_device))
 		d->Warn("INIT WARNING: Could not mount resources.zip!");
@@ -222,6 +223,8 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 		d->Warn("Render device could not be ran!");
 		return false;
 	}
+
+	if (!doRender) return true;
 
 	//if (!i_smgr->getActiveCamera()) // Is it appropriate to prematurely not render even a background?
 	//	return false;

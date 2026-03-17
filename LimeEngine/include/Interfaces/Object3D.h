@@ -1,5 +1,6 @@
 #pragma once
 #include <sol/optional.hpp>
+#include <sol/forward.hpp>
 
 class Application;
 class Vec3;
@@ -44,6 +45,11 @@ public:
 	void i_setDebug(bool v);
 
 	sol::object i_destroy();
+
+	void setAttribute(sol::object key, sol::object value);
+	sol::object getAttribute(sol::object key);
+	sol::object getAttributes();
+	void clearAttributes();
 protected:
 	bool debug = false;
 	irr::scene::IBillboardSceneNode* dVisual = nullptr;

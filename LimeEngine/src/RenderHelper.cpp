@@ -2,6 +2,7 @@
 #include <fstream>
 #include <stdexcept>
 #include "irrlicht.h"
+#include "sol/sol.hpp"
 
 #include "DebugConsole.h"
 
@@ -16,15 +17,21 @@
 #include "External/CTextAnchorSceneNode.h"
 
 static DebugConsole* d = nullptr;
+static sol::state* luaState = nullptr;
 
 void RenderHelper::Init(irr::IrrlichtDevice* device, DebugConsole* debug) {
 	i_device = device;
+
 	d = debug;
 
 	i_smgr = i_device->getSceneManager();
 	i_driver = i_device->getVideoDriver();
 	i_gui = i_device->getGUIEnvironment();
 	i_gpu = i_driver->getGPUProgrammingServices();
+}
+
+void RenderHelper::SetLuaState(sol::state* s) {
+	luaState = s;
 }
 
 bool RenderHelper::guardRenderingCheck(std::string msg) {
@@ -304,9 +311,11 @@ HitResult RenderHelper::fireRaycast(const Vec3& start, const Vec3& end, float li
 	HitResult out;
 	out.startPos = start;
 	out.endPos = end;
+	out.attr = sol::nil;
 
 	if (pickedNode) {
 		out.hit = true;
+		out.attr = getAttributes(pickedNode);
 		out.objID = pickedNode->getID();
 		out.endPos = Vec3(hitPosition.X, hitPosition.Y, hitPosition.Z);
 		out.normal = Vec3(hitTriangle.getNormal().X, hitTriangle.getNormal().Y, hitTriangle.getNormal().Z);
@@ -424,4 +433,26 @@ irr::gui::IGUIButton* RenderHelper::createButton() {
 
 irr::gui::IGUIElement* RenderHelper::getGUIRoot() {
 	return i_gui ? i_gui->getRootGUIElement() : nullptr;
+}
+
+sol::object RenderHelper::getAttribute(irr::scene::ISceneNode* node, sol::object key) {
+	auto it = attributes.find(node);
+	if (it == attributes.end()) return sol::nil;
+	return it->second.get<sol::object>(key);
+}
+
+void RenderHelper::setAttribute(irr::scene::ISceneNode* node, sol::object key, sol::object value) {
+	if (attributes.find(node) == attributes.end())
+		attributes[node] = luaState->create_table();
+	attributes[node].set(key, value);
+}
+
+sol::table RenderHelper::getAttributes(irr::scene::ISceneNode* node) {
+	auto it = attributes.find(node);
+	if (it == attributes.end()) return sol::nil;
+	return it->second;
+}
+
+void RenderHelper::clearAttributes(irr::scene::ISceneNode* node) {
+	attributes.erase(node);
 }

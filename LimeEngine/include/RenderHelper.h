@@ -2,6 +2,7 @@
 
 #include <string>
 #include <sol/forward.hpp>
+#include <unordered_map>
 
 class DebugConsole;
 class Vec4;
@@ -59,6 +60,7 @@ public:
 	bool guardRenderingCheck(std::string msg = "");
 
 	void Init(irr::IrrlichtDevice* device, DebugConsole* debug);
+	void SetLuaState(sol::state* s);
 
 	irr::scene::IBillboardSceneNode* createDebugNode(DEBUG3D_TYPE t);
 
@@ -98,10 +100,17 @@ public:
 	irr::gui::IGUIButton* createButton();
 	irr::gui::IGUIElement* getGUIRoot();
 
+	// Attributes
+	sol::object getAttribute(irr::scene::ISceneNode* node, sol::object key);
+	void setAttribute(irr::scene::ISceneNode* node, sol::object key, sol::object value);
+	sol::table getAttributes(irr::scene::ISceneNode* node);
+	void clearAttributes(irr::scene::ISceneNode* node);
 private:
 	irr::IrrlichtDevice* i_device = nullptr;
 	irr::scene::ISceneManager* i_smgr = nullptr;
 	irr::video::IVideoDriver* i_driver = nullptr;
 	irr::gui::IGUIEnvironment* i_gui = nullptr;
 	irr::video::IGPUProgrammingServices* i_gpu = nullptr;
+
+	std::unordered_map<irr::scene::ISceneNode*, sol::table> attributes;
 };

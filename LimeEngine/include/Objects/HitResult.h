@@ -1,6 +1,7 @@
 #pragma once
 
 class Vec3;
+#include "sol/forward.hpp"
 
 class HitResult {
 public:
@@ -12,4 +13,5 @@ public:
 	int objID = 0;
 	int matID = 0;
 	bool hit = false;
+	sol::table attr;
 };

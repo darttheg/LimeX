@@ -114,6 +114,15 @@ void Module::Scene::bind(Application* app) {
 			sol::resolve<Mesh(const Vec2&, const Vec2&, const Vec2&)>(&Module::Scene::Bind::CreatePlaneMesh)
 		));
 
+	// If set to false, the application will not update the scene output.
+	// Params boolean active
+	// Returns void
+	module.set_function("setActivelyRendering", &Module::Scene::Bind::SetActivelyRendering);
+
+	// Returns whether or not the application is actively rendering new output from the scene.
+	// Returns boolean
+	module.set_function("getActivelyRendering", &Module::Scene::Bind::GetActivelyRendering);
+
 	// Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
 	// Params Vec3 startPos, Vec3 endPos, number? rayLifeMs
 	// Returns HitResult
@@ -128,6 +137,7 @@ void Module::Scene::bind(Application* app) {
 	// Field number objID, If hit, this will be the hit object's ID. Else, 0.
 	// Field number matID, If hit, this will be the hit material's ID. Else, 0.
 	// Field boolean hit, True if the raycast hit a collidable object.
+	// Field table attr, Attributes of the hit object, if any.
 	// End Object
 }
 
@@ -181,6 +191,14 @@ void Module::Scene::Bind::SetRenderQuality(int q) {
 	r->setSceneRenderQuality(q);
 }
 
+void Module::Scene::Bind::SetActivelyRendering(bool v) {
+	r->setActivelyRendering(v);
+}
+
+bool Module::Scene::Bind::GetActivelyRendering() {
+	return r->getIsActivelyRendering();
+}
+
 #include "Objects/HitResult.h"
 sol::table Module::Scene::Bind::FireRaycast(const Vec3& start, const Vec3& end, float life) {
 	HitResult hit = rh->fireRaycast(start, end, life);
@@ -194,6 +212,7 @@ sol::table Module::Scene::Bind::FireRaycast(const Vec3& start, const Vec3& end, 
 	out["normal"] = hit.normal;
 	out["objID"] = hit.objID;
 	out["matID"] = hit.matID;
+	out["attr"] = hit.attr;
 
 	return out;
 }
