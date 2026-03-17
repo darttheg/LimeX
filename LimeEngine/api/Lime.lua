@@ -79,6 +79,7 @@ Event = Event or {}
 ---@class HitResult
 ---@field startPos Vec3 @The starting position of this raycast.
 ---@field endPos Vec3 @The ending position of this raycast. If an object was hit, this will be the hit position.
+---@field normal Vec3 @The normal vector of the hit triangle, if any.
 ---@field objID number @If hit, this will be the hit object's ID. Else, 0.
 ---@field matID number @If hit, this will be the hit material's ID. Else, 0.
 ---@field hit boolean @True if the raycast hit a collidable object.

@@ -39,6 +39,7 @@
     <ClInclude Include="include\Objects\DebugRaycastNode.h" />
     <ClInclude Include="include\Objects\Empty.h" />
     <ClInclude Include="include\Objects\Event.h" />
+    <ClInclude Include="include\Objects\HitResult.h" />
     <ClInclude Include="include\Objects\Image2D.h" />
     <ClInclude Include="include\Objects\Mesh.h" />
     <ClInclude Include="include\Objects\MeshBuffer.h" />

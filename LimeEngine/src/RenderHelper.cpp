@@ -10,6 +10,7 @@
 #include "Objects/Vec4.h"
 #include "Objects/Texture.h"
 #include "Objects/Mesh.h"
+#include "Objects/HitResult.h"
 
 #include "External/CGUIColoredText.h"
 #include "External/CTextAnchorSceneNode.h"
@@ -291,8 +292,8 @@ Mesh RenderHelper::createPlaneMesh(const Vec2& tileSize, const Vec2& tileCount, 
 	return o;
 }
 
-#include <sol/table.hpp>
-sol::table RenderHelper::fireRaycast(const Vec3& start, const Vec3& end, float life) {
+#include "Objects/DebugRaycastNode.h"
+HitResult RenderHelper::fireRaycast(const Vec3& start, const Vec3& end, float life) {
 	scene::ISceneCollisionManager* collisionManager = i_smgr->getSceneCollisionManager();
 	core::line3d<f32> ray(core::vector3df(start.getX(), start.getY(), start.getZ()), core::vector3df(end.getX(), end.getY(), end.getZ()));
 
@@ -300,9 +301,62 @@ sol::table RenderHelper::fireRaycast(const Vec3& start, const Vec3& end, float l
 	core::triangle3df hitTriangle;
 	scene::ISceneNode* pickedNode = collisionManager->getSceneNodeAndCollisionPointFromRay(ray, hitPosition, hitTriangle, false);
 
-	// Well... how do we create Lua table here? We shouldn't...
+	HitResult out;
+	out.startPos = start;
+	out.endPos = end;
 
-	return sol::table();
+	if (pickedNode) {
+		out.hit = true;
+		out.objID = pickedNode->getID();
+		out.endPos = Vec3(hitPosition.X, hitPosition.Y, hitPosition.Z);
+		out.normal = Vec3(hitTriangle.getNormal().X, hitTriangle.getNormal().Y, hitTriangle.getNormal().Z);
+		if (pickedNode->getMaterialCount() <= 1)
+			out.matID = pickedNode->getMaterial(0).ID;
+		else {
+			irr::scene::ITriangleSelector* sel = pickedNode->getTriangleSelector();
+			irr::scene::IAnimatedMeshSceneNode* anode = static_cast<irr::scene::IAnimatedMeshSceneNode*>(pickedNode);
+			if (sel && anode) {
+				irr::core::aabbox3df area(
+					hitPosition - irr::core::vector3df(0.01f, 0.01f, 0.01f),
+					hitPosition + irr::core::vector3df(0.01f, 0.01f, 0.01f)
+				);
+
+				irr::scene::IMesh* m = anode->getMesh()->getMesh(0);
+
+				for (u32 b = 0; b < m->getMeshBufferCount(); ++b) {
+					irr::scene::IMeshBuffer* buf = m->getMeshBuffer(b);
+					irr::video::S3DVertex* v = (irr::video::S3DVertex*)buf->getVertices();
+					u16* ind = buf->getIndices();
+
+					for (u32 i = 0; i < buf->getIndexCount(); i += 3) {
+						irr::core::triangle3df tri(
+							v[ind[i]].Pos,
+							v[ind[i+1]].Pos,
+							v[ind[i+2]].Pos
+						);
+
+						if (!tri.isTotalOutsideBox(area)) continue;
+						if (tri == hitTriangle) {
+							out.matID = pickedNode->getMaterial(b).ID;
+							goto found;
+						}
+					}
+				}
+			found:;
+			}
+		}
+	}
+	
+	if (life > 0) {
+		RaycastVisualSceneNode* deb = new RaycastVisualSceneNode(i_smgr->getRootSceneNode(), i_smgr);
+		deb->start = ray.start;
+		deb->end = pickedNode ? hitPosition : ray.end;
+		deb->hit = pickedNode;
+		deb->life = life;
+		deb->drop();
+	}
+
+	return out;
 }
 
 irr::scene::ICameraSceneNode* RenderHelper::createCameraNode() {

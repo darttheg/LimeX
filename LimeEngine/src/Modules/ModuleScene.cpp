@@ -124,6 +124,7 @@ void Module::Scene::bind(Application* app) {
 	// Object HitResult, An object that stores raycast hit data.
 	// Field Vec3 startPos, The starting position of this raycast.
 	// Field Vec3 endPos, The ending position of this raycast. If an object was hit, this will be the hit position.
+	// Field Vec3 normal, The normal vector of the hit triangle, if any.
 	// Field number objID, If hit, this will be the hit object's ID. Else, 0.
 	// Field number matID, If hit, this will be the hit material's ID. Else, 0.
 	// Field boolean hit, True if the raycast hit a collidable object.
@@ -180,7 +181,8 @@ void Module::Scene::Bind::SetRenderQuality(int q) {
 	r->setSceneRenderQuality(q);
 }
 
-sol::table Module::Scene::Bind::FireRaycast(const Vec3& start, const Vec3& end, float life) {
+#include "Objects/HitResult.h"
+HitResult Module::Scene::Bind::FireRaycast(const Vec3& start, const Vec3& end, float life) {
 	return rh->fireRaycast(start, end, life);
 }
 

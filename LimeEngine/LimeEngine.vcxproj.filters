@@ -165,6 +165,9 @@
     <ClInclude Include="include\Objects\DebugRaycastNode.h">
       <Filter>Engine\Runtime\Objects\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\HitResult.h">
+      <Filter>Engine\Runtime\Objects\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">

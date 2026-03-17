@@ -12,6 +12,7 @@ class Vec3;
 class Vec4;
 class Texture;
 class Mesh;
+class HitResult;
 
 namespace Module {
 	namespace Scene {
@@ -30,7 +31,7 @@ namespace Module {
 			Texture GetErrorTexture();
 			void SetRenderSize(const Vec2& size);
 			void SetRenderQuality(int q);
-			sol::table FireRaycast(const Vec3& start, const Vec3& end, float life = 0);
+			HitResult FireRaycast(const Vec3& start, const Vec3& end, float life = 0);
 
 			Mesh CreateCubeMesh(const Vec3& size);
 			Mesh CreateSphereMesh(float r, int polyCount = 8);

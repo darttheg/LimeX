@@ -8,6 +8,7 @@ class Vec4;
 class Vec3;
 class Vec2;
 class Mesh;
+class HitResult;
 
 namespace irr {
 	class IrrlichtDevice;
@@ -85,7 +86,7 @@ public:
 	Mesh createSphereMesh(float r, int polyCount);
 	Mesh createCylinderMesh(float r, float l, int polyCount, bool closed = true);
 	Mesh createPlaneMesh(const Vec2& tileSize, const Vec2& tileCount, const Vec2& texRepeat);
-	sol::table fireRaycast(const Vec3& start, const Vec3& end, float life);
+	HitResult fireRaycast(const Vec3& start, const Vec3& end, float life);
 
 	void updateCameraMatrix(irr::scene::ICameraSceneNode* c);
 	void setActiveCamera(irr::scene::ICameraSceneNode* c);

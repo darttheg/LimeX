@@ -39,7 +39,9 @@ public:
 	virtual void render() override {
 		IVideoDriver* driver = SceneManager->getVideoDriver();
 		driver->setTransform(ETS_WORLD, AbsoluteTransformation);
-		driver->setMaterial(SMaterial());
+		SMaterial o;
+		o.Lighting = false;
+		driver->setMaterial(o);
 
 		SColor color = hit ? SColor(255, 0, 255, 0) : SColor(255, 255, 0, 0);
 		driver->draw3DLine(start, end, color);
