@@ -36,6 +36,7 @@
     <ClInclude Include="include\Modules\ModuleWindow.h" />
     <ClInclude Include="include\Objects\Billboard.h" />
     <ClInclude Include="include\Objects\Camera.h" />
+    <ClInclude Include="include\Objects\DebugRaycastNode.h" />
     <ClInclude Include="include\Objects\Empty.h" />
     <ClInclude Include="include\Objects\Event.h" />
     <ClInclude Include="include\Objects\Image2D.h" />

@@ -26,6 +26,7 @@ public:
     Mesh(); 
     Mesh(const std::string& path); // Load via path
     Mesh(const MeshBuffer& mb); // Load via MeshBuffer
+    Mesh(irr::scene::IMesh* m);
     void destroy() override;
     void setDebug(bool v) override;
 

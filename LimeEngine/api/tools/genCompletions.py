@@ -355,31 +355,31 @@ def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc],
 
         out.append(f"{obj.name} = {obj.name} or {{}}")
 
-        if obj.ctor_comment:
-            out.append(f"--- {obj.ctor_comment}")
+        if obj.ctors:
+            if obj.ctor_comment:
+                out.append(f"--- {obj.ctor_comment}")
 
-        ctors = obj.ctors or [[]]
-        uniq: List[List[Param]] = []
-        seenk = set()
-        for c in ctors:
-            k = sig_key(c)
-            if k in seenk:
-                continue
-            seenk.add(k)
-            uniq.append(c)
+            uniq: List[List[Param]] = []
+            seenk = set()
+            for c in obj.ctors:
+                k = sig_key(c)
+                if k in seenk:
+                    continue
+                seenk.add(k)
+                uniq.append(c)
 
-        base = min(uniq, key=lambda c: len(c))
-        for c in uniq:
-            if sig_key(c) == sig_key(base):
-                continue
-            sig = ctor_sig(c)
-            out.append(f"---@overload fun({sig}): {obj.name}" if sig else f"---@overload fun(): {obj.name}")
+            base = min(uniq, key=lambda c: len(c))
+            for c in uniq:
+                if sig_key(c) == sig_key(base):
+                    continue
+                sig = ctor_sig(c)
+                out.append(f"---@overload fun({sig}): {obj.name}" if sig else f"---@overload fun(): {obj.name}")
 
-        for p in base:
-            out.append(f"---@param {p.name} {p.typ}")
-        out.append(f"---@return {obj.name}")
-        out.append(f"function {obj.name}.new({', '.join([p.name for p in base])}) end")
-        out.append("")
+            for p in base:
+                out.append(f"---@param {p.name} {p.typ}")
+            out.append(f"---@return {obj.name}")
+            out.append(f"function {obj.name}.new({', '.join([p.name for p in base])}) end")
+            out.append("")
 
         for iname in obj.inherits:
             idef = interfaces.get(iname)

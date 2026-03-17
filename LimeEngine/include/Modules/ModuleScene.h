@@ -11,7 +11,7 @@ class Vec2;
 class Vec3;
 class Vec4;
 class Texture;
-//class Mesh;
+class Mesh;
 
 namespace Module {
 	namespace Scene {
@@ -30,10 +30,13 @@ namespace Module {
 			Texture GetErrorTexture();
 			void SetRenderSize(const Vec2& size);
 			void SetRenderQuality(int q);
+			sol::table FireRaycast(const Vec3& start, const Vec3& end, float life = 0);
 
-			//Mesh CreateCubeMesh(int scale);
-			//Mesh CreateRectangleMesh(const Vec3& scale);
-			//Mesh CreateSphereMesh(int scale);
+			Mesh CreateCubeMesh(const Vec3& size);
+			Mesh CreateSphereMesh(float r, int polyCount = 8);
+			Mesh CreateCylinderMesh(float r, float l, int polyCount = 8, bool closed = true);
+			Mesh CreatePlaneMesh(const Vec2& tileSize, const Vec2& tileCount);
+			Mesh CreatePlaneMesh(const Vec2& tileSize, const Vec2& tileCount, const Vec2& texRepeat);
 		}
 	}
 }

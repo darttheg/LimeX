@@ -9,6 +9,7 @@
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
 #include "Objects/Texture.h"
+#include "Objects/Mesh.h"
 
 #include "External/CGUIColoredText.h"
 #include "External/CTextAnchorSceneNode.h"
@@ -26,7 +27,7 @@ void RenderHelper::Init(irr::IrrlichtDevice* device, DebugConsole* debug) {
 }
 
 bool RenderHelper::guardRenderingCheck(std::string msg) {
-	if (!i_device) {
+	if (!i_device || !i_smgr) {
 		if (msg.empty())
 			d->Warn("Rendered objects cannot be created until the Lime window has been created!");
 		else
@@ -57,6 +58,7 @@ irr::scene::IBillboardSceneNode* RenderHelper::createDebugNode(DEBUG3D_TYPE t) {
 	o.Lighting = false;
 	o.MaterialType = irr::video::E_MATERIAL_TYPE::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 	o.FogEnable = false;
+	o.ZWriteEnable = true;
 	o.ZBuffer = irr::video::E_COMPARISON_FUNC::ECFN_ALWAYS;
 	o.setFlag(irr::video::E_MATERIAL_FLAG::EMF_BILINEAR_FILTER, false);
 
@@ -75,7 +77,7 @@ irr::scene::IBillboardSceneNode* RenderHelper::createDebugNode(DEBUG3D_TYPE t) {
 	o.setTexture(0, tex);
 	irr::scene::IBillboardSceneNode* out = i_smgr->addBillboardSceneNode();
 	out->getMaterial(0) = o;
-	out->setSize(irr::core::dimension2df(1.5, 1.5));
+	out->setSize(irr::core::dimension2df(1.0f, 1.0f));
 
 	return out;
 }
@@ -255,6 +257,52 @@ irr::scene::IMeshSceneNode* RenderHelper::createOctreeMesh(irr::scene::IAnimated
 
 	irr::scene::IMesh* sm = m->getMesh()->getMesh(0);
 	return i_smgr->addOctreeSceneNode(sm);
+}
+
+Mesh RenderHelper::createCubeMesh(const Vec3& size) {
+	if (!guardRenderingCheck()) return Mesh();
+	const irr::scene::IGeometryCreator* g = i_smgr->getGeometryCreator();
+	irr::scene::IMesh* out = g->createCubeMesh(irr::core::vector3df(size.getX(), size.getY(), size.getZ()));
+	Mesh o = Mesh(out);
+	return o;
+}
+
+Mesh RenderHelper::createSphereMesh(float r, int polyCount) {
+	if (!guardRenderingCheck()) return Mesh();
+	const irr::scene::IGeometryCreator* g = i_smgr->getGeometryCreator();
+	irr::scene::IMesh* out = g->createSphereMesh(r, polyCount, polyCount);
+	Mesh o = Mesh(out);
+	return o;
+}
+
+Mesh RenderHelper::createCylinderMesh(float r, float l, int polyCount, bool closed) {
+	if (!guardRenderingCheck()) return Mesh();
+	const irr::scene::IGeometryCreator* g = i_smgr->getGeometryCreator();
+	irr::scene::IMesh* out = g->createCylinderMesh(r, l, polyCount, irr::video::SColor(255), closed);
+	Mesh o = Mesh(out);
+	return o;
+}
+
+Mesh RenderHelper::createPlaneMesh(const Vec2& tileSize, const Vec2& tileCount, const Vec2& texRepeat) {
+	if (!guardRenderingCheck()) return Mesh();
+	const irr::scene::IGeometryCreator* g = i_smgr->getGeometryCreator();
+	irr::scene::IMesh* out = g->createPlaneMesh(irr::core::dimension2df(tileSize.getX(), tileSize.getY()), irr::core::dimension2du(tileCount.getX(), tileCount.getY()), 0, irr::core::dimension2df(texRepeat.getX(), texRepeat.getY()));
+	Mesh o = Mesh(out);
+	return o;
+}
+
+#include <sol/table.hpp>
+sol::table RenderHelper::fireRaycast(const Vec3& start, const Vec3& end, float life) {
+	scene::ISceneCollisionManager* collisionManager = i_smgr->getSceneCollisionManager();
+	core::line3d<f32> ray(core::vector3df(start.getX(), start.getY(), start.getZ()), core::vector3df(end.getX(), end.getY(), end.getZ()));
+
+	core::vector3df hitPosition;
+	core::triangle3df hitTriangle;
+	scene::ISceneNode* pickedNode = collisionManager->getSceneNodeAndCollisionPointFromRay(ray, hitPosition, hitTriangle, false);
+
+	// Well... how do we create Lua table here? We shouldn't...
+
+	return sol::table();
 }
 
 irr::scene::ICameraSceneNode* RenderHelper::createCameraNode() {

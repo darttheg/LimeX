@@ -74,7 +74,7 @@ void Object3D::i_setDebug(bool v) {
     setDebug(v);
     debug = v;
 
-    if (!getNode()) return;
+    if (!getNode() || !dVisual) return;
     getNode()->updateAbsolutePosition();
     dVisual->setPosition(getNode()->getPosition());
 }

@@ -31,6 +31,11 @@ Mesh::Mesh(const MeshBuffer& mb) : Mesh() {
 	loadMeshBuffer(mb);
 }
 
+Mesh::Mesh(irr::scene::IMesh* m) {
+	irr::scene::SAnimatedMesh* amesh = new irr::scene::SAnimatedMesh(m);
+	src = rh->createAnimatedMesh(amesh);
+}
+
 void Mesh::destroy() {
 	if (src) src->remove();
 	src = nullptr;
@@ -38,7 +43,17 @@ void Mesh::destroy() {
 }
 
 void Mesh::setDebug(bool v) {
-	d->Warn("TODO!"); // Maybe also make it so if you load a new mesh and have debug on, it'll preserve the debug info?
+	if (v) {
+		if (src) src->setDebugDataVisible(
+			irr::scene::EDS_BBOX |
+			// irr::scene::EDS_NORMALS |
+			irr::scene::EDS_MESH_WIRE_OVERLAY);
+		if (dVisual) dVisual->remove();
+		dVisual = rh->createDebugNode(DEBUG3D_TYPE::EMPTY);
+	} else {
+		if (src) src->setDebugDataVisible(irr::scene::EDS_OFF);
+		if (dVisual) dVisual->remove();
+	}
 }
 
 bool Mesh::loadMesh(const std::string& path) {
@@ -55,6 +70,7 @@ bool Mesh::loadMesh(const std::string& path) {
 	src = rh->createAnimatedMesh(rh->createMesh(path));
 	if (!src) d->Warn("Failed to create Mesh!");
 
+	setDebug(Object3D::getDebug());
 	return src;
 }
 
@@ -76,6 +92,7 @@ bool Mesh::loadMeshBuffer(const MeshBuffer& mb) {
 	m->setMesh(amesh);
 	amesh->drop();
 
+	setDebug(Object3D::getDebug());
 	return true;
 }
 

@@ -1,10 +1,13 @@
 #pragma once
 
 #include <string>
+#include <sol/forward.hpp>
 
 class DebugConsole;
 class Vec4;
+class Vec3;
 class Vec2;
+class Mesh;
 
 namespace irr {
 	class IrrlichtDevice;
@@ -20,6 +23,7 @@ namespace irr {
 		class IAnimatedMesh;
 		class ITriangleSelector;
 		class IMeshSceneNode;
+		class ISceneCollisionManager;
 	}
 	namespace video {
 		class IVideoDriver;
@@ -77,6 +81,11 @@ public:
 	irr::scene::IBillboardSceneNode* createBillboardNode();
 	irr::scene::CTextAnchorSceneNode* createText3DNode(irr::gui::CGUIColoredText* src);
 	irr::scene::ITriangleSelector* createTriangleSelector(irr::scene::IAnimatedMeshSceneNode* m);
+	Mesh createCubeMesh(const Vec3& size);
+	Mesh createSphereMesh(float r, int polyCount);
+	Mesh createCylinderMesh(float r, float l, int polyCount, bool closed = true);
+	Mesh createPlaneMesh(const Vec2& tileSize, const Vec2& tileCount, const Vec2& texRepeat);
+	sol::table fireRaycast(const Vec3& start, const Vec3& end, float life);
 
 	void updateCameraMatrix(irr::scene::ICameraSceneNode* c);
 	void setActiveCamera(irr::scene::ICameraSceneNode* c);

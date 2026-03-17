@@ -3,23 +3,27 @@
 #include "DebugConsole.h"
 #include "Application.h"
 #include "Renderer.h"
+#include "RenderHelper.h"
 
 #include "Objects/Event.h"
 #include "Objects/Texture.h"
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
+#include "Objects/Mesh.h"
 
 #include <sol/sol.hpp>
 
 static DebugConsole* d;
 static Application* a;
 static Renderer* r;
+static RenderHelper* rh;
 
 void Module::Scene::bind(Application* app) {
 	a = app;
 	d = app->GetDebugConsole();
 	r = app->GetRenderer();
+	rh = app->GetRenderHelper();
 	sol::state& lua = app->GetLuaState();
 
 	// Module Lime.Scene
@@ -83,7 +87,47 @@ void Module::Scene::bind(Application* app) {
 	// Returns void
 	module.set_function("setRenderQuality", &Module::Scene::Bind::SetRenderQuality);
 
+	// Returns a `Mesh` containing a cube.
+	// Params Vec3 size
+	// Returns Mesh
+	module.set_function("createCubeMesh", &Module::Scene::Bind::CreateCubeMesh);
+
+	// Returns a `Mesh` containing a sphere.
+	// Params number radius
+	// Params number radius, number polyCount
+	// Returns Mesh
+	module.set_function("createSphereMesh", &Module::Scene::Bind::CreateSphereMesh);
+
+	// Returns a `Mesh` containing a cylinder.
+	// Params number radius, number length
+	// Params number radius, number length, number polyCount, boolean closed
+	// Returns Mesh
+	module.set_function("createCylinderMesh", &Module::Scene::Bind::CreateCylinderMesh);
+
+	// Returns a `Mesh` containing a plane. Parameter `repeatCount` controls how much an applied `Texture` will repeat within one tile.
+	// Params Vec2 tileSize, Vec2 tileCount
+	// Params Vec2 tileSize, Vec2 tileCount, Vec2 repeatCount
+	// Returns Mesh
+	module.set_function("createPlaneMesh",
+		sol::overload(
+			sol::resolve<Mesh(const Vec2&, const Vec2&)>(&Module::Scene::Bind::CreatePlaneMesh),
+			sol::resolve<Mesh(const Vec2&, const Vec2&, const Vec2&)>(&Module::Scene::Bind::CreatePlaneMesh)
+		));
+
+	// Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
+	// Params Vec3 startPos, Vec3 endPos, number? rayLifeMs
+	// Returns HitResult
+	module.set_function("fireRaycast", &Module::Scene::Bind::FireRaycast);
+
 	// End Module
+
+	// Object HitResult, An object that stores raycast hit data.
+	// Field Vec3 startPos, The starting position of this raycast.
+	// Field Vec3 endPos, The ending position of this raycast. If an object was hit, this will be the hit position.
+	// Field number objID, If hit, this will be the hit object's ID. Else, 0.
+	// Field number matID, If hit, this will be the hit material's ID. Else, 0.
+	// Field boolean hit, True if the raycast hit a collidable object.
+	// End Object
 }
 
 // Functions
@@ -134,4 +178,28 @@ void Module::Scene::Bind::SetRenderSize(const Vec2& size) {
 
 void Module::Scene::Bind::SetRenderQuality(int q) {
 	r->setSceneRenderQuality(q);
+}
+
+sol::table Module::Scene::Bind::FireRaycast(const Vec3& start, const Vec3& end, float life) {
+	return rh->fireRaycast(start, end, life);
+}
+
+Mesh Module::Scene::Bind::CreateCubeMesh(const Vec3& size) {
+	return rh->createCubeMesh(size);
+}
+
+Mesh Module::Scene::Bind::CreateSphereMesh(float r, int polyCount) {
+	return rh->createSphereMesh(r, polyCount);
+}
+
+Mesh Module::Scene::Bind::CreateCylinderMesh(float r, float l, int polyCount, bool closed) {
+	return rh->createCylinderMesh(r, l, polyCount, closed);
+}
+
+Mesh Module::Scene::Bind::CreatePlaneMesh(const Vec2& tileSize, const Vec2& tileCount) {
+	return rh->createPlaneMesh(tileSize, tileCount, tileCount);
+}
+
+Mesh Module::Scene::Bind::CreatePlaneMesh(const Vec2& tileSize, const Vec2& tileCount, const Vec2& texRepeat) {
+	return rh->createPlaneMesh(tileSize, tileCount, texRepeat);
 }

@@ -49,6 +49,9 @@
     <Filter Include="Engine\Runtime\Core\Rendering">
       <UniqueIdentifier>{092e7b09-4f51-46bf-93a3-aa5caf7ad945}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Runtime\Objects\Debug">
+      <UniqueIdentifier>{7e966761-d4ee-4755-919a-535e99373782}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\LimeEngine.h">
@@ -158,6 +161,9 @@
     </ClInclude>
     <ClInclude Include="include\Objects\MeshBuffer.h">
       <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Objects\DebugRaycastNode.h">
+      <Filter>Engine\Runtime\Objects\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

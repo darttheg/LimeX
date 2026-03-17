@@ -76,16 +76,15 @@ function Empty.new() end
 
 ---@class Event
 Event = Event or {}
---- A container of functions that will run in sequence when called upon.
----@return Event
-function Event.new() end
-
+---@class HitResult
+---@field startPos Vec3 @The starting position of this raycast.
+---@field endPos Vec3 @The ending position of this raycast. If an object was hit, this will be the hit position.
+---@field objID number @If hit, this will be the hit object's ID. Else, 0.
+---@field matID number @If hit, this will be the hit material's ID. Else, 0.
+---@field hit boolean @True if the raycast hit a collidable object.
+HitResult = HitResult or {}
 ---@class Hook
 Hook = Hook or {}
---- A handle from Event hooking.
----@return Hook
-function Hook.new() end
-
 ---@class Image2D
 ---@field scaleToFit boolean @Determines whether or not this `Image2D` scales to its size boundaries or not.
 ---@field position Vec2 @The 2D position of this object on the screen.
@@ -502,6 +501,38 @@ function Lime.Input.setMousePosition(pos) end
 ---@param visible boolean
 ---@return void
 function Lime.Input.setMouseVisible(visible) end
+
+--- Returns a `Mesh` containing a cube.
+---@param size Vec3
+---@return Mesh
+function Lime.Scene.createCubeMesh(size) end
+
+--- Returns a `Mesh` containing a cylinder.
+---@overload fun(radius:number, length:number, polyCount:number, closed:boolean): Mesh
+---@param radius number
+---@param length number
+---@return Mesh
+function Lime.Scene.createCylinderMesh(radius, length) end
+
+--- Returns a `Mesh` containing a plane. Parameter `repeatCount` controls how much an applied `Texture` will repeat within one tile.
+---@overload fun(tileSize:Vec2, tileCount:Vec2, repeatCount:Vec2): Mesh
+---@param tileSize Vec2
+---@param tileCount Vec2
+---@return Mesh
+function Lime.Scene.createPlaneMesh(tileSize, tileCount) end
+
+--- Returns a `Mesh` containing a sphere.
+---@overload fun(radius:number, polyCount:number): Mesh
+---@param radius number
+---@return Mesh
+function Lime.Scene.createSphereMesh(radius) end
+
+--- Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
+---@param startPos Vec3
+---@param endPos Vec3
+---@param rayLifeMs number?
+---@return HitResult
+function Lime.Scene.fireRaycast(startPos, endPos, rayLifeMs) end
 
 --- Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
 ---@return Texture
