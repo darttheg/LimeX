@@ -242,7 +242,8 @@ void Object::MeshBind::bind(Application* a) {
 	// Constructor MeshBuffer buffer
 
 	// Loads a 3D model into this `Mesh`. If importing from file, acceptable formats include `.obj`, `.fbx`, and `.x`.
-	// Params string path 
+	// Params string path
+	// Params MeshBuffer buffer
 	// Returns boolean
 	obj.set_function("loadMesh",
 		sol::overload(

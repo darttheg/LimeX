@@ -666,6 +666,7 @@ function Mesh:isPointInside(pos) end
 function Mesh:loadMaterial(material) end
 
 --- Loads a 3D model into this `Mesh`. If importing from file, acceptable formats include `.obj`, `.fbx`, and `.x`.
+---@overload fun(buffer:MeshBuffer): boolean
 ---@param path string
 ---@return boolean
 function Mesh:loadMesh(path) end
