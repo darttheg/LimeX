@@ -114,14 +114,14 @@ void Module::Scene::bind(Application* app) {
 			sol::resolve<Mesh(const Vec2&, const Vec2&, const Vec2&)>(&Module::Scene::Bind::CreatePlaneMesh)
 		));
 
-	// If set to false, the application will not update the scene output.
+	// If set to false, the application will not update the scene output. A use case is a pseudo-pause your game to save on resources while loading assets.
 	// Params boolean active
 	// Returns void
-	module.set_function("setActivelyRendering", &Module::Scene::Bind::SetActivelyRendering);
+	module.set_function("setRenderingActive", &Module::Scene::Bind::SetActivelyRendering);
 
 	// Returns whether or not the application is actively rendering new output from the scene.
 	// Returns boolean
-	module.set_function("getActivelyRendering", &Module::Scene::Bind::GetActivelyRendering);
+	module.set_function("isRenderingActive", &Module::Scene::Bind::GetActivelyRendering);
 
 	// Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
 	// Params Vec3 startPos, Vec3 endPos, number? rayLifeMs
@@ -134,10 +134,10 @@ void Module::Scene::bind(Application* app) {
 	// Field Vec3 startPos, The starting position of this raycast.
 	// Field Vec3 endPos, The ending position of this raycast. If an object was hit, this will be the hit position.
 	// Field Vec3 normal, The normal vector of the hit triangle, if any.
-	// Field number objID, If hit, this will be the hit object's ID. Else, 0.
-	// Field number matID, If hit, this will be the hit material's ID. Else, 0.
+	// Field number objectID, If hit, this will be the hit object's ID. Else, 0.
+	// Field number materialID, If hit, this will be the hit material's ID. Else, 0.
 	// Field boolean hit, True if the raycast hit a collidable object.
-	// Field table attr, Attributes of the hit object, if any.
+	// Field table attributes, Attributes of the hit object, if any.
 	// End Object
 }
 

@@ -174,7 +174,7 @@ bool Mesh::getShadows() const {
 
 void Mesh::setShadows(bool v) {
 	if (!src) return;
-	bool has = sh;
+	bool has = sh != nullptr;
 	if (has == v) return;
 	auto* m = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(src);
 	if (!m) return;
@@ -183,6 +183,7 @@ void Mesh::setShadows(bool v) {
 		sh = m->addShadowVolumeSceneNode();
 	} else if (sh) {
 		sh->remove();
+		sh = nullptr;
 	}
 }
 
@@ -246,7 +247,7 @@ void Object::MeshBind::bind(Application* a) {
 		// Field boolean collision, Allows response to raypicks and other simple collision methods. (NOTE: This flag does not affect this `Mesh` when wrapped by a physics object.)
 		"collision", sol::property(&Mesh::getSimpleCollision, &Mesh::setSimpleCollision),
 
-		// Field boolean shadows, Enables shadows.
+		// Field boolean shadows, Enables shadows. If there is no light source, the scene will be dark until one is created.
 		"shadows", sol::property(&Mesh::getShadows, &Mesh::setShadows)
 	);
 

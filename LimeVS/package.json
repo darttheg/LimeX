@@ -1,0 +1,57 @@
+{
+  "name": "lime-engine",
+  "displayName": "Lime Engine",
+  "publisher": "Lime",
+  "description": "Lua completions and building tools for Lime Engine.",
+  "icon": "icon.png",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onLanguage:lua"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "lime.build",
+        "title": "Lime: Build",
+        "icon": "$(tools)"
+      },
+      {
+        "command": "lime.buildAndRun",
+        "title": "Lime: Build + Run",
+        "icon": "$(play)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "lime.build",
+          "group": "navigation@1",
+          "when": "resourceLangId == lua"
+        },
+        {
+          "command": "lime.buildAndRun",
+          "group": "navigation@2",
+          "when": "resourceLangId == lua"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Lime Engine",
+      "properties": {
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0",
+    "@types/node": "^18.0.0",
+    "typescript": "^5.0.0"
+  }
+}

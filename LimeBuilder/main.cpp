@@ -2,6 +2,8 @@
 // Compiles Lime projects into a package.
 
 #include <iostream>
+#include <chrono>
+#include <iomanip>
 #include "builder.h"
 
 AppAlterables parseArgs(int argc, char* argv[]) {
@@ -28,6 +30,8 @@ AppAlterables parseArgs(int argc, char* argv[]) {
 }
 
 int main(int argc, char** argv) {
+	auto start = std::chrono::steady_clock::now();
+
 	if (argc < 2) {
 		std::cout << "LimeBuilder <project dir> <output dir>\n";
 		std::cout << "LimeBuilder <project + output dir>\n";
@@ -47,10 +51,16 @@ int main(int argc, char** argv) {
 		BuildPackage(pDir, oDir);
 	} catch (const std::exception& e) {
 		std::cout << "\nFailed to build:\n  " << e.what() << "\n";
-		return 0;
+		return 1;
 	}
 
-	std::cout << "Your Lime project has been built to\n  " << oDir << "\n";
+	auto end = std::chrono::steady_clock::now();
+	double ms = std::chrono::duration<double, std::milli>(end - start).count();
+
+	if (ms < 1000.0)
+		std::cout << "\Build complete in " << std::fixed << std::setprecision(1) << ms << "ms\n";
+	else
+		std::cout << "\Build complete in " << std::fixed << std::setprecision(2) << ms / 1000.0 << "s\n";
 
 	return 0;
 }

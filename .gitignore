@@ -402,3 +402,4 @@ FodyWeavers.xsd
 *.lnk
 LimeEngine/resources.zip
 *.zip
+*.vsix

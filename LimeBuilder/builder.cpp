@@ -184,7 +184,7 @@ static void resolveRequires() {
 		for (auto it = begin; it != end; ++it) {
 			std::string required = (*it)[1].str();
 			if (!modulesByName.count(required))
-				throw std::runtime_error("Module '" + m.name + "' requires module '" + required + "' but it is missing!");
+				throw std::runtime_error("Module '" + m.name + "' requires module '" + required + "' but it is missing.");
 		}
 	}
 }
@@ -247,7 +247,7 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 	modules.clear();
 	modulesByName.clear();
 	fs::path src = fs::path(pDir);
-	std::cout << "Searching " << src.string() << "...\n";
+	std::cout << "Compiling project from root " << src.string() << "...\n";
 
 	bool hasMain = false;
 	std::string mainFull;
@@ -268,7 +268,7 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 		}
 
 		if (modulesByName.count(m.name))
-			throw std::runtime_error("There are multiple '" + m.name + "' modules!");
+			throw std::runtime_error("There are multiple '" + m.name + "' modules.");
 
 		if (entry.path().filename() == "main.lua") {
 			hasMain = true;
@@ -280,10 +280,10 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 	}
 
 	if (modules.empty())
-		throw std::runtime_error("No modules could be found!");
+		throw std::runtime_error("No modules could be found.");
 
 	if (!hasMain)
-		throw std::runtime_error("No 'main.lua' found!");
+		throw std::runtime_error("No 'main.lua' found.");
 
 	resolveRequires();
 
@@ -292,7 +292,7 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 
 	for (auto& m : modules) {
 		try {
-			std::cout << "Compiling " << m.name << "\n";
+			std::cout << "   + " << m.name << "\n";
 			m.bytecode = compileLuaToBC(L, m.code, m.name);
 		} catch (const std::exception& e) {
 			throw std::runtime_error("Failed to compile module '" + m.name + "': " + e.what());
@@ -323,7 +323,7 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 	}
 	f.close();
 
-	std::cout << "Created Lime package at: " << outPkg.string() << "\n";
+	// std::cout << "Created Lime package at: " << outPkg.string() << "\n";
 
 	std::vector<char> templateExe;
 	if (!LoadEmbeddedPlayer(templateExe))
@@ -340,7 +340,7 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 	try {
 		fs::path ico = fs::path(pDir) / "icon.ico";
 		if (fs::exists(ico)) {
-			std::cout << "Applying icon: " << ico.string() << "\n";
+			// std::cout << "Applying icon: " << ico.string() << "\n";
 			ApplyIcoToExe(finalPath, ico);
 		}
 	} catch (const std::exception& e) {
@@ -350,5 +350,5 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 
 	EmbedPackage(finalExe, outPkg.string());
 
-	std::cout << "Created application exe at:\n  " << finalExe << "\n";
+	std::cout << "Created application at " << finalExe << "\n";
 }

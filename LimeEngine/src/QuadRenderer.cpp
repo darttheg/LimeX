@@ -133,6 +133,7 @@ void QuadRenderer::buildQuad()
 
     qMat = irr::video::SMaterial();
     qMat.Lighting = false;
+    qMat.FogEnable = false;
     qMat.ZBuffer = false;
     qMat.ZWriteEnable = false;
     qMat.BackfaceCulling = false;
@@ -145,6 +146,7 @@ void QuadRenderer::buildQuad()
 
     qBlendMat = irr::video::SMaterial();
     qBlendMat.Lighting = false;
+    qBlendMat.FogEnable = false;
     qBlendMat.ZBuffer = false;
     qBlendMat.ZWriteEnable = false;
     qBlendMat.BackfaceCulling = false;
