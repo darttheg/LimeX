@@ -29,6 +29,7 @@ namespace irr {
 		class CTextAnchorSceneNode;
 		class IAnimatedMesh;
 		class IMeshBuffer;
+		class ILightManager;
 	}
 	namespace video {
 		class IVideoDriver;
@@ -136,6 +137,7 @@ private:
 	HWND hwndIrr = nullptr;
 	QuadRenderer* qr = nullptr;
 	RenderHelper* rh = nullptr;
+	irr::scene::ILightManager* lightManager = nullptr;
 
 	// Fallback
 	irr::video::ITexture* alphaBlankTex = nullptr;

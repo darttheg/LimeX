@@ -27,6 +27,7 @@
     <ClInclude Include="include\Interfaces\Object2D.h" />
     <ClInclude Include="include\Interfaces\Object3D.h" />
     <ClInclude Include="include\Interfaces\SceneObject.h" />
+    <ClInclude Include="include\LightManager.h" />
     <ClInclude Include="include\LimeEngine.h" />
     <ClInclude Include="include\LuaBinder.h" />
     <ClInclude Include="include\Modules\ModuleGUI.h" />
@@ -41,6 +42,7 @@
     <ClInclude Include="include\Objects\Event.h" />
     <ClInclude Include="include\Objects\HitResult.h" />
     <ClInclude Include="include\Objects\Image2D.h" />
+    <ClInclude Include="include\Objects\Light.h" />
     <ClInclude Include="include\Objects\Mesh.h" />
     <ClInclude Include="include\Objects\MeshBuffer.h" />
     <ClInclude Include="include\Objects\Text3D.h" />
@@ -76,6 +78,7 @@
     <ClCompile Include="src\Objects\Empty.cpp" />
     <ClCompile Include="src\Objects\Event.cpp" />
     <ClCompile Include="src\Objects\Image2D.cpp" />
+    <ClCompile Include="src\Objects\Light.cpp" />
     <ClCompile Include="src\Objects\Mesh.cpp" />
     <ClCompile Include="src\Objects\MeshBuffer.cpp" />
     <ClCompile Include="src\Objects\Text3D.cpp" />

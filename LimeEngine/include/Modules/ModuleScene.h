@@ -33,6 +33,7 @@ namespace Module {
 			void SetRenderQuality(int q);
 			void SetActivelyRendering(bool v);
 			bool GetActivelyRendering();
+			void SetLightManagerType(int type);
 			sol::table FireRaycast(const Vec3& start, const Vec3& end, float life = 0);
 
 			Mesh CreateCubeMesh(const Vec3& size);

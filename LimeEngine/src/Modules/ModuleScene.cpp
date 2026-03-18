@@ -58,13 +58,13 @@ void Module::Scene::bind(Application* app) {
 	// Returns void
 	module.set_function("setShadowColor", &Module::Scene::Bind::SetShadowColor);
 
-	// Sets the light management type using `Lime.Enum.LightManagementType`.
+	// Sets the light management behavior using `Lime.Enum.LightManagementType`. 
 	// Params Lime.Enum.LightManagementType type
 	// Returns void
 	module.set_function("setLightManagementType", &Module::Scene::Bind::SetLightManagementType);
 
 	// Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality.
-	// Params Lime.Enum.TextureCreationQuality
+	// Params Lime.Enum.TextureCreationQuality quality
 	// Returns void
 	module.set_function("setTextureCreationQuality", &Module::Scene::Bind::SetTextureCreationQuality);
 
@@ -197,6 +197,10 @@ void Module::Scene::Bind::SetActivelyRendering(bool v) {
 
 bool Module::Scene::Bind::GetActivelyRendering() {
 	return r->getIsActivelyRendering();
+}
+
+void Module::Scene::Bind::SetLightManagerType(int type) {
+	r->setLightManagementType(type);
 }
 
 #include "Objects/HitResult.h"

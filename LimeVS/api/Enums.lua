@@ -62,6 +62,16 @@ AlphaHarsh = 14,
 SphereMap = 10,
 ReflectMap = 11,
 }
+---@alias Lime.Enum.LightType integer
+---@class Lime.Enum.LightTypeEnum
+---@field Point Lime.Enum.LightType
+---@field Spotlight Lime.Enum.LightType
+---@field Directional Lime.Enum.LightType
+Lime.Enum.LightType = {
+Point = 0,
+Spotlight = 1,
+Directional = 2,
+}
 ---@alias Lime.Enum.TextureWrapType integer
 ---@class Lime.Enum.TextureWrapTypeEnum
 ---@field Repeat Lime.Enum.TextureWrapType
@@ -100,13 +110,13 @@ High = 2,
 }
 ---@alias Lime.Enum.LightManagementType integer
 ---@class Lime.Enum.LightManagementTypeEnum
----@field EightNearest Lime.Enum.LightManagementType
----@field ThreeClosestToAll Lime.Enum.LightManagementType
----@field EmptyZones Lime.Enum.LightManagementType
+---@field EightNearestToCamera Lime.Enum.LightManagementType
+---@field ThreeClosestToObjects Lime.Enum.LightManagementType
+---@field EmptyAsActivationZone Lime.Enum.LightManagementType
 Lime.Enum.LightManagementType = {
-EightNearest = 0,
-ThreeClosestToAll = 1,
-EmptyZones = 2,
+EightNearestToCamera = 0,
+ThreeClosestToObjects = 1,
+EmptyAsActivationZone = 2,
 }
 ---@alias Lime.Enum.ZOrderMethod integer
 ---@class Lime.Enum.ZOrderMethodEnum

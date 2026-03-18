@@ -31,6 +31,7 @@
 #include "Objects/Empty.h"
 #include "Objects/Mesh.h"
 #include "Objects/MeshBuffer.h"
+#include "Objects/Light.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -61,4 +62,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::EmptyBind::bind(app);
 	Object::MeshBind::bind(app);
 	Object::MeshBufferBind::bind(app);
+	Object::LightBind::bind(app);
 }

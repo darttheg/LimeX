@@ -104,6 +104,19 @@ Image2D = Image2D or {}
 ---@return Image2D
 function Image2D.new() end
 
+---@class Light
+---@field position Vec3 @The 3D position of this object in the scene.
+---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
+---@field scale Vec3 @The 3D scale of this object in the scene.
+---@field visible boolean @Determines the visibility of this object and its children.
+---@field id number @The identifier for this object to be used in raycasts and object selection.
+---@field debug boolean @Show debug information about this object in the scene.
+Light = Light or {}
+--- A source of light.
+---@overload fun(type:Lime.Enum.LightType): Light
+---@return Light
+function Light.new() end
+
 ---@class Material
 ---@field ID number @An ID to identify this `Material` with, being useful for raycast hit results as those can contain a hit ID.
 ---@field type Lime.Enum.MaterialType @Sets the type of this `Material`, determing how the layers interact with themselves and the world.
@@ -435,6 +448,47 @@ function Image2D:moveToFront() end
 ---@return void
 function Image2D:parentTo(parent) end
 
+--- Clears this object's attributes.
+---@return void
+function Light:clearAttributes() end
+
+--- Destroys this object.
+---@return nil
+function Light:destroy() end
+
+--- Returns the content of attribute `key` from this object's attributes.
+---@param key any
+---@return any
+function Light:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+---@return table
+function Light:getAttributes() end
+
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+---@return Vec4
+function Light:getBoundingBox() end
+
+--- Returns the reference count for this object.
+---@return number
+function Light:getReferenceCount() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+---@param pos Vec3
+---@return boolean
+function Light:isPointInside(pos) end
+
+--- Parents this object to another 3D object.
+---@param parent any
+---@return void
+function Light:parentTo(parent) end
+
+--- Sets `key` to `value` within this object's attributes.
+---@param key any
+---@param value any
+---@return void
+function Light:setAttribute(key, value) end
+
 --- Closes the Lime application.
 function Lime.close() end
 
@@ -656,8 +710,9 @@ function Lime.Scene.setShadowColor(rgba) end
 function Lime.Scene.setSize(size) end
 
 --- Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality.
+---@param quality Lime.Enum.TextureCreationQuality
 ---@return void
-function Lime.Scene.setTextureCreationQuality() end
+function Lime.Scene.setTextureCreationQuality(quality) end
 
 --- Returns the size of the monitor the window is running on.
 ---@return Vec2

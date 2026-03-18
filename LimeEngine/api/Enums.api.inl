@@ -34,6 +34,12 @@ LIME_ENUM(MaterialType,
     LIME_ENUM_VALUE(ReflectMap, 11)
 );
 
+LIME_ENUM(LightType,
+    LIME_ENUM_VALUE(Point, 0)
+    LIME_ENUM_VALUE(Spotlight, 1)
+    LIME_ENUM_VALUE(Directional, 2)
+);
+
 LIME_ENUM(TextureWrapType,
     LIME_ENUM_VALUE(Repeat, 0)
     LIME_ENUM_VALUE(Clamp, 1)
@@ -56,9 +62,9 @@ LIME_ENUM(TextureCreationQuality,
 );
 
 LIME_ENUM(LightManagementType,
-    LIME_ENUM_VALUE(EightNearest, 0)
-    LIME_ENUM_VALUE(ThreeClosestToAll, 1)
-    LIME_ENUM_VALUE(EmptyZones, 2)
+    LIME_ENUM_VALUE(EightNearestToCamera, 0)
+    LIME_ENUM_VALUE(ThreeClosestToObjects, 1)
+    LIME_ENUM_VALUE(EmptyAsActivationZone, 2)
 );
 
 LIME_ENUM(ZOrderMethod,

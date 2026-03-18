@@ -168,6 +168,12 @@
     <ClInclude Include="include\Objects\HitResult.h">
       <Filter>Engine\Runtime\Objects\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\Light.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LightManager.h">
+      <Filter>Engine\Runtime\Core\Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -267,6 +273,9 @@
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
     <ClCompile Include="src\Objects\MeshBuffer.cpp">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Light.cpp">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
   </ItemGroup>

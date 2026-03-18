@@ -18,6 +18,7 @@
 
 #include "External/CGUIColoredText.h"
 #include "External/CTextAnchorSceneNode.h"
+#include "LightManager.h"
 
 static Application* a = nullptr;
 static DebugConsole* d = nullptr;
@@ -116,11 +117,16 @@ bool Renderer::Init() {
 	i_driver = i_device->getVideoDriver();
 	i_gui = i_device->getGUIEnvironment();
 	i_gpu = i_driver->getGPUProgrammingServices();
+	setTextureCreationQuality(1); // Medium
 
 	i_device->setEventReceiver(a->GetReceiver());
 	a->GetReceiver()->initJoysticks(i_device);
 
 	guiManager->SetGUIEnv(i_gui);
+
+	lightManager = new CLightManager(i_smgr);
+	i_smgr->setLightManager(0);
+	i_smgr->setLightManager(lightManager);
 
 	using namespace irr;
 	using namespace video;
@@ -551,40 +557,34 @@ void Renderer::setBackgroundColor(const Vec4& color) {
 
 void Renderer::setLightManagementType(int type) {
 	if (!guardRenderingCheck()) return;
-
-	/*
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	*/
+	type = std::clamp<int>(type, 0, 2);
+	CLightManager* out = static_cast<CLightManager*>(lightManager);
+	if (out) out->setMode(type);
 }
 
-void Renderer::setTextureCreationQuality(int quality) {
+void Renderer::setTextureCreationQuality(int q) {
 	if (!guardRenderingCheck()) return;
 
-	/*
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	TODO
-	*/
+	switch (q) {
+	case 1: // Medium
+		i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_QUALITY, false);
+		i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED, false);
+		i_driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
+		i_driver->setTextureCreationFlag(irr::video::ETCF_ALLOW_NON_POWER_2, true);
+		break;
+	case 2: // High
+		i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_QUALITY, true);
+		i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED, false);
+		i_driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
+		i_driver->setTextureCreationFlag(irr::video::ETCF_ALLOW_NON_POWER_2, true);
+		break;
+	default: // Low
+		i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_QUALITY, false);
+		i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED, true);
+		i_driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, false);
+		i_driver->setTextureCreationFlag(irr::video::ETCF_ALLOW_NON_POWER_2, false);
+		break;
+	}
 }
 
 void Renderer::setShadowColor(const Vec4& color) {
