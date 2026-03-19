@@ -180,7 +180,7 @@ async function checkEngineVersion(context: vscode.ExtensionContext, workspaceFol
   if (projectVersion === templateVersion) return;
 
   const choice = await vscode.window.showInformationMessage(
-    `Lime: Update Lime Engine version? (${projectVersion} to ${templateVersion})`,
+    `Lime: Update engine to ${templateVersion} (from ${projectVersion})?`,
     "Update", "Ignore"
   );
 

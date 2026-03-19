@@ -194,7 +194,7 @@ async function checkEngineVersion(context, workspaceFolder) {
     const templateVersion = getFileVersion(templateDll).ProductVersion;
     if (projectVersion === templateVersion)
         return;
-    const choice = await vscode.window.showInformationMessage(`Lime: Update Lime Engine version? (${projectVersion} to ${templateVersion})`, "Update", "Ignore");
+    const choice = await vscode.window.showInformationMessage(`Lime: Update engine to ${templateVersion} (from ${projectVersion})?`, "Update", "Ignore");
     if (choice === "Update") {
         fs.copyFileSync(templateDll, projectDll);
         vscode.window.showInformationMessage("Lime: LimeEngine.dll updated successfully.");
