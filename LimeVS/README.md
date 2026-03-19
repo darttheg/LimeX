@@ -22,5 +22,6 @@ Running **Lime: Build** will build your project, with output detailing the build
 | Command | Action |
 | ----- | ----- |
 | **Lime: Build** | Builds your project. |
-| **Lime: Build + Run** | Builds and runs your project. |
-| **Lime: Package** | Packages your built application. See `Shipping`. |
+| **Lime: Build and Run** | Builds and runs your project. |
+| **Lime: Package Project** | Packages your built application. See `Shipping`. |
+| **Lime: Create New Project** | Creates a new project. |

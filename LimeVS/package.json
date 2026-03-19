@@ -57,8 +57,7 @@
         },
         {
           "command": "lime.newProject",
-          "group": "navigation@4",
-          "when": "resourceLangId == lua"
+          "group": "navigation@4"
         }
       ]
     },
