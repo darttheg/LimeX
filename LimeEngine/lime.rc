@@ -1,2 +1,29 @@
+#include <winver.h>
+
 #define IDR_RES_PAK 101
 IDR_RES_PAK RCDATA "resources.zip"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,0,0,1
+ PRODUCTVERSION 0,0,0,1
+ FILEFLAGSMASK 0x3fL
+ FILEFLAGS 0x0L
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "Lime Engine"
+            VALUE "FileVersion", "1.0.0.0"
+            VALUE "ProductName", "Lime Engine"
+            VALUE "ProductVersion", "beta-0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1200
+    END
+END

@@ -59,6 +59,7 @@
     <ClInclude Include="include\GUIManager.h" />
     <ClInclude Include="include\RenderHelper.h" />
     <ClInclude Include="include\Window.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
@@ -98,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="api\Enums.api.inl" />
+    <None Include="resources.zip" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="lime.rc" />

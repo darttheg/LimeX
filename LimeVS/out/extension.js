@@ -183,10 +183,28 @@ async function createNewProject(context) {
     await injectLuaLibrary(context, dest);
     vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(dest), false);
 }
+const winVersionInfo = __importStar(require("win-version-info"));
+const getFileVersion = winVersionInfo.default ?? winVersionInfo;
+async function checkEngineVersion(context, workspaceFolder) {
+    const projectDll = path.join(workspaceFolder, "LimeEngine.dll");
+    if (!fs.existsSync(projectDll))
+        return; // not a Lime project
+    const templateDll = path.join(context.extensionPath, "template", "LimeEngine.dll");
+    const projectVersion = getFileVersion(projectDll).ProductVersion;
+    const templateVersion = getFileVersion(templateDll).ProductVersion;
+    if (projectVersion === templateVersion)
+        return;
+    const choice = await vscode.window.showInformationMessage(`Lime: Update Lime Engine version? (${projectVersion} to ${templateVersion})`, "Update", "Ignore");
+    if (choice === "Update") {
+        fs.copyFileSync(templateDll, projectDll);
+        vscode.window.showInformationMessage("Lime: LimeEngine.dll updated successfully.");
+    }
+}
 async function activate(context) {
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
     if (workspaceFolder) {
         await injectLuaLibrary(context, workspaceFolder).catch((err) => vscode.window.showWarningMessage(`Lime: Could not configure Lua library path: ${err}`));
+        await checkEngineVersion(context, workspaceFolder).catch((err) => vscode.window.showWarningMessage(`Lime: Could not check engine version: ${err}`));
     }
     context.subscriptions.push(vscode.window.onDidCloseTerminal((closed) => {
         for (const [key, terminal] of terminals) {

@@ -4,12 +4,16 @@
   "publisher": "Lime",
   "description": "Build and run Lua-driven 3D applications.",
   "icon": "icon.png",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.75.0"
   },
-  "categories": ["Other"],
-  "activationEvents": ["onLanguage:lua"],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:lua"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -69,8 +73,11 @@
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
-    "@types/vscode": "^1.75.0",
     "@types/node": "^18.0.0",
+    "@types/vscode": "^1.75.0",
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "win-version-info": "^6.0.1"
   }
 }
