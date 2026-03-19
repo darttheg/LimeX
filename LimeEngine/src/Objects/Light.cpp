@@ -15,12 +15,6 @@ static RenderHelper* rh;
 
 Light::Light() {
 	light = rh->createLight();
-	if (!light) return;
-	light->getLightData().DiffuseColor = irr::video::SColor(255, 255, 0, 0);
-	light->getLightData().AmbientColor = irr::video::SColor(255, 255, 0, 0);
-	light->setLightType(irr::video::E_LIGHT_TYPE::ELT_POINT);
-	light->getLightData().Radius = 500.0f;
-	light->enableCastShadow(true);
 ;}
 
 Light::Light(int type) : Light() {
@@ -50,27 +44,39 @@ void Light::setType(int type) {
 }
 
 Vec4 Light::getDiffuseColor() const {
-	return Vec4();
+	if (!light) return Vec4();
+	irr::video::SColorf c = light->getLightData().DiffuseColor;
+	return Vec4((int)c.getRed() * 255, (int)c.getGreen() * 255, (int)c.getBlue() * 255, (int)c.getAlpha() * 255);
 }
 
 void Light::setDiffuseColor(const Vec4& c) {
-
+	if (!light) return;
+	irr::video::SColorf ca = irr::video::SColorf(c.getW() / 255.0, c.getX() / 255.0, c.getY() / 255.0, c.getZ() / 255.0);
+	light->getLightData().DiffuseColor = ca; // Add intensity!
 }
 
 Vec4 Light::getAmbientColor() const {
-	return Vec4();
+	if (!light) return Vec4();
+	irr::video::SColorf c = light->getLightData().AmbientColor;
+	return Vec4((int)c.getRed() * 255, (int)c.getGreen() * 255, (int)c.getBlue() * 255, (int)c.getAlpha() * 255);
 }
 
 void Light::setAmbientColor(const Vec4& c) {
-
+	if (!light) return;
+	irr::video::SColorf ca = irr::video::SColorf(c.getW() / 255.0, c.getX() / 255.0, c.getY() / 255.0, c.getZ() / 255.0);
+	light->getLightData().AmbientColor = ca;
 }
 
 Vec4 Light::getSpecularColor() const {
-	return Vec4();
+	if (!light) return Vec4();
+	irr::video::SColorf c = light->getLightData().SpecularColor;
+	return Vec4((int)c.getRed() * 255, (int)c.getGreen() * 255, (int)c.getBlue() * 255, (int)c.getAlpha() * 255);
 }
 
 void Light::setSpecularColor(const Vec4& c) {
-
+	if (!light) return;
+	irr::video::SColorf ca = irr::video::SColorf(c.getW() / 255.0, c.getX() / 255.0, c.getY() / 255.0, c.getZ() / 255.0);
+	light->getLightData().SpecularColor = ca;
 }
 
 float Light::getIntensity() const {
