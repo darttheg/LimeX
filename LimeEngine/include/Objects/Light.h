@@ -51,6 +51,8 @@ private:
     struct Vec4S { float x, y, z, w; };
     Vec4S diffuse;
     float intensity = 1.0f;
+
+    void updateDiffuseColor();
 };
 
 namespace Object::LightBind {

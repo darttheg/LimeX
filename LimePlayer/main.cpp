@@ -5,7 +5,7 @@
 #include <vector>
 
 typedef void* (*FUNC_Lime_Create)();
-typedef void (*FUNC_Lime_Run)(void* handle, const void* data, size_t size);
+typedef int (*FUNC_Lime_Run)(void* handle, const void* data, size_t size);
 typedef void (*FUNC_Lime_End)(void* handle);
 
 struct Footer {
@@ -72,9 +72,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		return 1;
 	}
 
-	Lime_Run(handle, pkg.data(), pkg.size());
+	int result = Lime_Run(handle, pkg.data(), pkg.size());
 
 	Lime_End(handle);
 
-	return 0;
+	return result;
 }

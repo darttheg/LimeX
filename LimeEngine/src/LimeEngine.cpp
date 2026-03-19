@@ -11,13 +11,13 @@ extern "C" {
 		return reinterpret_cast<LimeHandle>(app);
 	}
 
-	void Lime_Run(LimeHandle handle, const void* data, size_t size) {
+	int Lime_Run(LimeHandle handle, const void* data, size_t size) {
 		Application* app = reinterpret_cast<Application*>(handle);
-		if (!app) return;
+		if (!app) return 1;
 
-		if (!app->Init(data, size)) return;
+		if (!app->Init(data, size)) return 1;
 
-		app->Run();
+		return app->Run();
 	}
 
 	void Lime_End(LimeHandle handle) {

@@ -71,9 +71,16 @@ void Module::Lime::bind(Application* app) {
 	module.set_function("getVersion", &Module::Lime::Bind::GetVersion);
 
 	// IMPORTANT: This function should always be run prior to window creation (pre-`Lime.onUpdate` Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
-	// Params Lime.Enum.DriverType driver, Vec2? windowSize, Vec2? renderSize
+	// Params Lime.Enum.DriverType driver
+	// Params Lime.Enum.DriverType driver, Vec2 windowSize
+	// Params Lime.Enum.DriverType driver, Vec2 windowSize, Vec2 renderSize
 	// Returns boolean
-	module.set_function("setInitConfig", &Module::Lime::Bind::SetInitConfig);
+	module.set_function("setInitConfig",
+		sol::overload(
+			sol::resolve<bool(int)>(&Module::Lime::Bind::SetInitConfig),
+			sol::resolve<bool(int, const Vec2&)>(&Module::Lime::Bind::SetInitConfig),
+			sol::resolve<bool(int, const Vec2&, const Vec2&)>(&Module::Lime::Bind::SetInitConfig)
+		));
 
 	// Returns the elapsed time the application has been running in milliseconds.
 	// Returns number
@@ -163,6 +170,14 @@ void Module::Lime::Bind::SetVSync(bool on) {
 
 int Module::Lime::Bind::GetMemoryUsage() {
 	return a->getMemoryUsage();
+}
+
+bool Module::Lime::Bind::SetInitConfig(int driverType) {
+	return SetInitConfig(driverType, Vec2(640, 480), Vec2(640, 480));
+}
+
+bool Module::Lime::Bind::SetInitConfig(int driverType, const Vec2& windowSize) {
+	return SetInitConfig(driverType, windowSize, windowSize);
 }
 
 bool Module::Lime::Bind::SetInitConfig(int driverType, const Vec2& windowSize, const Vec2& renderSize) {

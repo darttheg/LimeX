@@ -2,7 +2,7 @@
   "name": "lime-engine",
   "displayName": "Lime Engine",
   "publisher": "Lime",
-  "description": "Lua completions and building tools for Lime Engine.",
+  "description": "Build and run Lua-driven 3D applications.",
   "icon": "icon.png",
   "version": "0.0.1",
   "engines": {
@@ -20,8 +20,18 @@
       },
       {
         "command": "lime.buildAndRun",
-        "title": "Lime: Build + Run",
+        "title": "Lime: Build and Run",
         "icon": "$(play)"
+      },
+      {
+        "command": "lime.package",
+        "title": "Lime: Package Project",
+        "icon": "$(package)"
+      },
+      {
+        "command": "lime.newProject",
+        "title": "Lime: Create New Project",
+        "icon": "$(new-folder)"
       }
     ],
     "menus": {
@@ -35,13 +45,22 @@
           "command": "lime.buildAndRun",
           "group": "navigation@2",
           "when": "resourceLangId == lua"
+        },
+        {
+          "command": "lime.package",
+          "group": "navigation@3",
+          "when": "resourceLangId == lua"
+        },
+        {
+          "command": "lime.newProject",
+          "group": "navigation@4",
+          "when": "resourceLangId == lua"
         }
       ]
     },
     "configuration": {
       "title": "Lime Engine",
-      "properties": {
-      }
+      "properties": {}
     }
   },
   "scripts": {

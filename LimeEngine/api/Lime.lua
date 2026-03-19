@@ -107,7 +107,7 @@ function Image2D.new() end
 ---@class Light
 ---@field type Lime.Enum.LightType @Sets the type of this `Light`.
 ---@field shadows boolean @Enables shadow-casting for this `Light`. `Mesh` objects must also have shadows enabled. (NOTE: Due to performance limitations, it is recommended to only have one main shadow-casting `Light`)
----@field intensity number @Scales the intensity of luminosity, affecting only diffuse color.
+---@field intensity number @Scales the intensity of luminosity from this `Light`.
 ---@field radius number @The cut-off distance for light reach around its center. Not effective for directional light sources.
 ---@field falloff number @Dictates the blend from inner to outer cones for spotlights. For example, <1.0 is soft, 1.0 is linear, 2.0 is a bit harsher, 10.0+ is a very harsh cut-off.
 ---@field diffuseColor Vec4 @Sets the diffuse color for this `Light`, the main light color.
@@ -544,11 +544,11 @@ function Lime.setEndOnError(doEnd) end
 function Lime.setFrameRate(target) end
 
 --- IMPORTANT: This function should always be run prior to window creation (pre-`Lime.onUpdate` Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
+---@overload fun(driver:Lime.Enum.DriverType, windowSize:Vec2): boolean
+---@overload fun(driver:Lime.Enum.DriverType, windowSize:Vec2, renderSize:Vec2): boolean
 ---@param driver Lime.Enum.DriverType
----@param windowSize Vec2?
----@param renderSize Vec2?
 ---@return boolean
-function Lime.setInitConfig(driver, windowSize, renderSize) end
+function Lime.setInitConfig(driver) end
 
 --- Sets vertical syncronization, matching the frame rate to the primary monitor's refresh rate.
 ---@param vSyncOn boolean

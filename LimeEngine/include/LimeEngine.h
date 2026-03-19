@@ -9,6 +9,6 @@
 extern "C" {
 	typedef void* LimeHandle;
 	LIMEAPI LimeHandle Lime_Create();
-	LIMEAPI void Lime_Run(LimeHandle handle, const void* data, size_t size);
+	LIMEAPI int Lime_Run(LimeHandle handle, const void* data, size_t size);
 	LIMEAPI void Lime_End(LimeHandle handle);
 }

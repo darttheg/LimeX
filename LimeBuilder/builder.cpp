@@ -299,14 +299,18 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 		}
 	}
 
-	std::cout << "Compiled " << modules.size() << " modules\n";
+	std::cout << "Compiled " << modules.size();
+	if (modules.size() == 1)
+		std::cout << " module\n";
+	else
+		std::cout << " modules\n";
 
 	fs::create_directories(oDir);
 	fs::path outPkg = fs::path(oDir) / "app.limepkg";
 	std::ofstream f(outPkg, std::ios::binary);
 
 	if (!f.is_open())
-		throw std::runtime_error("Could not write output Lime package!");
+		throw std::runtime_error("Could not write output Lime package.");
 
 	uint32_t count = (uint32_t)modules.size();
 	f.write((char*)&count, sizeof(count));

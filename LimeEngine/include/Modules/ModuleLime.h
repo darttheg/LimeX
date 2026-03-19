@@ -18,6 +18,8 @@ namespace Module {
 			void Log(std::string msg, int color = 0);
 			void SetEndOnError(bool v);
 			void Close();
+			bool SetInitConfig(int driverType);
+			bool SetInitConfig(int driverType, const Vec2& windowSize);
 			bool SetInitConfig(int driverType, const Vec2& windowSize, const Vec2& renderSize);
 			int GetElapsedTime();
 			std::string GetVersion();

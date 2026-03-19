@@ -33,6 +33,12 @@ irr::scene::ISceneNode* Light::getNode() const {
 	return light;
 }
 
+void Light::updateDiffuseColor() {
+	if (!light) return;
+	irr::video::SColorf ca = irr::video::SColorf(diffuse.x * intensity, diffuse.y * intensity, diffuse.z * intensity, diffuse.w * intensity);
+	light->getLightData().DiffuseColor = ca;
+}
+
 int Light::getType() const {
 	if (!light) return 0;
 	return (int)light->getLightType();
@@ -52,7 +58,7 @@ Vec4 Light::getDiffuseColor() const {
 void Light::setDiffuseColor(const Vec4& c) {
 	if (!light) return;
 	irr::video::SColorf ca = irr::video::SColorf(c.getX() / 255.0 * intensity, c.getY() / 255.0 * intensity, c.getZ() / 255.0 * intensity, c.getW() / 255.0 * intensity);
-	diffuse = { ca.getRed() * intensity, ca.getGreen() * intensity, ca.getBlue() * intensity, ca.getAlpha() * intensity };
+	diffuse = { ca.getRed(), ca.getGreen(), ca.getBlue(), ca.getAlpha() };
 	light->getLightData().DiffuseColor = ca;
 }
 
@@ -87,6 +93,7 @@ float Light::getIntensity() const {
 void Light::setIntensity(float i) {
 	if (!light) return;
 	intensity = i;
+	updateDiffuseColor();
 }
 
 Vec3 Light::getAttenuation() const {
@@ -159,7 +166,7 @@ void Object::LightBind::bind(Application* a) {
 		// Field boolean shadows, Enables shadow-casting for this `Light`. `Mesh` objects must also have shadows enabled. (NOTE: Due to performance limitations, it is recommended to only have one main shadow-casting `Light`)
 		"shadows", sol::property(&Light::getShadows, &Light::setShadows),
 
-		// Field number intensity, Scales the intensity of luminosity, affecting only diffuse color.
+		// Field number intensity, Scales the intensity of luminosity from this `Light`.
 		"intensity", sol::property(&Light::getIntensity, &Light::setIntensity),
 
 		// Field number radius, The cut-off distance for light reach around its center. Not effective for directional light sources.
