@@ -45,14 +45,15 @@ void Light::setType(int type) {
 
 Vec4 Light::getDiffuseColor() const {
 	if (!light) return Vec4();
-	irr::video::SColorf c = light->getLightData().DiffuseColor;
-	return Vec4((int)c.getRed() * 255, (int)c.getGreen() * 255, (int)c.getBlue() * 255, (int)c.getAlpha() * 255);
+	// irr::video::SColorf c = light->getLightData().DiffuseColor;
+	return Vec4((int)diffuse.x * 255, (int)diffuse.y * 255, (int)diffuse.z * 255, (int)diffuse.w * 255);
 }
 
 void Light::setDiffuseColor(const Vec4& c) {
 	if (!light) return;
-	irr::video::SColorf ca = irr::video::SColorf(c.getW() / 255.0, c.getX() / 255.0, c.getY() / 255.0, c.getZ() / 255.0);
-	light->getLightData().DiffuseColor = ca; // Add intensity!
+	irr::video::SColorf ca = irr::video::SColorf(c.getX() / 255.0 * intensity, c.getY() / 255.0 * intensity, c.getZ() / 255.0 * intensity, c.getW() / 255.0 * intensity);
+	diffuse = { ca.getRed() * intensity, ca.getGreen() * intensity, ca.getBlue() * intensity, ca.getAlpha() * intensity };
+	light->getLightData().DiffuseColor = ca;
 }
 
 Vec4 Light::getAmbientColor() const {
@@ -80,46 +81,61 @@ void Light::setSpecularColor(const Vec4& c) {
 }
 
 float Light::getIntensity() const {
-	return 0.0f;
+	return light ? intensity : 0.0f;
 }
 
 void Light::setIntensity(float i) {
+	if (!light) return;
+	intensity = i;
 }
 
 Vec3 Light::getAttenuation() const {
-	return Vec3();
+	if (!light) return Vec3();
+	irr::core::vector3df att = light->getLightData().Attenuation;
+	return Vec3(att.X, att.Y, att.Z);
 }
 
 void Light::setAttenuation(const Vec3& att) {
+	if (!light) return;
+	irr::core::vector3df out = irr::core::vector3df(att.getX(), att.getY(), att.getZ());
+	light->getLightData().Attenuation = out;
 }
 
 float Light::getRadius() const {
-	return 0.0f;
+	return light ? light->getRadius() : 0.0f;
 }
 
 void Light::setRadius(float r) {
+	if (!light) return;
+	light->setRadius(r);
 }
 
 float Light::getFalloff() const {
-	return 0.0f;
+	return light ? light->getLightData().Falloff : 0.0f;
 }
 
 void Light::setFalloff(float f) {
+	if (!light) return;
+	light->getLightData().Falloff = f;
 }
 
 Vec2 Light::getCones() const {
-	return Vec2();
+	return light ? Vec2(light->getLightData().InnerCone, light->getLightData().OuterCone) : Vec2();
 }
 
 void Light::setCones(const Vec2& c) {
+	if (!light) return;
+	light->getLightData().InnerCone = c.getX();
+	light->getLightData().OuterCone = c.getY();
 }
 
 bool Light::getShadows() const {
-	return false;
+	return light ? light->getLightData().CastShadows : false;
 }
 
 void Light::setShadows(bool v) {
-
+	if (!light) return;
+	light->getLightData().CastShadows = v;
 }
 
 void Object::LightBind::bind(Application* a) {

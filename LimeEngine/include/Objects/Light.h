@@ -50,6 +50,7 @@ private:
     irr::scene::ILightSceneNode* light = nullptr;
     struct Vec4S { float x, y, z, w; };
     Vec4S diffuse;
+    float intensity = 1.0f;
 };
 
 namespace Object::LightBind {
