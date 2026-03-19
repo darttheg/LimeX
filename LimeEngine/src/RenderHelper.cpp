@@ -207,6 +207,12 @@ irr::scene::CTextAnchorSceneNode* RenderHelper::createText3DNode(irr::gui::CGUIC
 	return new CTextAnchorSceneNode(i_smgr->getRootSceneNode(), i_smgr, i_gui, src);
 }
 
+irr::scene::ILightSceneNode* RenderHelper::createLight() {
+	if (!guardRenderingCheck()) return nullptr;
+
+	return i_smgr->addLightSceneNode(i_smgr->getRootSceneNode());
+}
+
 irr::scene::ITriangleSelector* RenderHelper::createTriangleSelector(irr::scene::IAnimatedMeshSceneNode* m) {
 	if (!m) return nullptr;
 

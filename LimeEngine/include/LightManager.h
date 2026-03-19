@@ -51,6 +51,7 @@ public:
 
     virtual void OnRenderPassPostRender(scene::E_SCENE_NODE_RENDER_PASS renderPass)
     {
+        if (Mode == NO_MANAGEMENT) return;
         for (u32 i = 0; i < SceneLightList->size(); ++i)
             (*SceneLightList)[i]->setVisible(false);
     }

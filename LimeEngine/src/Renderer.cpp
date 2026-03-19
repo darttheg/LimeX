@@ -117,7 +117,6 @@ bool Renderer::Init() {
 	i_driver = i_device->getVideoDriver();
 	i_gui = i_device->getGUIEnvironment();
 	i_gpu = i_driver->getGPUProgrammingServices();
-	setTextureCreationQuality(1); // Medium
 
 	i_device->setEventReceiver(a->GetReceiver());
 	a->GetReceiver()->initJoysticks(i_device);
@@ -203,6 +202,8 @@ bool Renderer::Init() {
 	errMesh = i_smgr->getMesh("meshes/error.obj");
 
 	isCreated = true;
+	setTextureCreationQuality(1); // Medium
+	setLightManagementType(0); // EightNearest
 	return true;
 }
 

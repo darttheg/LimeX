@@ -26,6 +26,7 @@ namespace irr {
 		class ITriangleSelector;
 		class IMeshSceneNode;
 		class ISceneCollisionManager;
+		class ILightSceneNode;
 	}
 	namespace video {
 		class IVideoDriver;
@@ -83,6 +84,7 @@ public:
 	irr::scene::ISceneNode* createSkydomeNode(irr::video::ITexture* tex);
 	irr::scene::IBillboardSceneNode* createBillboardNode();
 	irr::scene::CTextAnchorSceneNode* createText3DNode(irr::gui::CGUIColoredText* src);
+	irr::scene::ILightSceneNode* createLight();
 	irr::scene::ITriangleSelector* createTriangleSelector(irr::scene::IAnimatedMeshSceneNode* m);
 	Mesh createCubeMesh(const Vec3& size);
 	Mesh createSphereMesh(float r, int polyCount);

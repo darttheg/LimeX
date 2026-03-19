@@ -21,6 +21,7 @@ public:
     void destroy() override;
     void setDebug(bool v) override;
 
+    int getType() const;
     void setType(int type);
     Vec4 getDiffuseColor() const;
     void setDiffuseColor(const Vec4& c);
@@ -29,8 +30,6 @@ public:
     Vec4 getSpecularColor() const;
     void setSpecularColor(const Vec4& c);
 
-    // Problem is, getting and setting these edits the colors too.
-    // Maybe store the colors and then apply intensities etc? This will probably just be for diffuse though.
     float getIntensity() const;
     void setIntensity(float i);
 
@@ -38,14 +37,19 @@ public:
     void setAttenuation(const Vec3& att);
     float getRadius() const; // Point
     void setRadius(float r); // Point
-    float getFallOff() const; // Spotlight
-    void setFallOff(float f); // Spotlight
+    float getFalloff() const; // Spotlight
+    void setFalloff(float f); // Spotlight
     Vec2 getCones() const; // Spotlight
     void setCones(const Vec2& c); // Spotlight
+    
+    bool getShadows() const;
+    void setShadows(bool v);
 
     irr::scene::ISceneNode* getNode() const override;
 private:
     irr::scene::ILightSceneNode* light = nullptr;
+    struct Vec4S { float x, y, z, w; };
+    Vec4S diffuse;
 };
 
 namespace Object::LightBind {

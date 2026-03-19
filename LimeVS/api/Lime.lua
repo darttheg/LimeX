@@ -105,6 +105,15 @@ Image2D = Image2D or {}
 function Image2D.new() end
 
 ---@class Light
+---@field type Lime.Enum.LightType @Sets the type of this `Light`.
+---@field intensity number @Scales the intensity of luminosity, affecting only diffuse color.
+---@field radius number @The cut-off distance for light reach around its center. Not effective for directional light sources.
+---@field falloff number @Dictates the blend from inner to outer cones for spotlights. For example, <1.0 is soft, 1.0 is linear, 2.0 is a bit harsher, 10.0+ is a very harsh cut-off.
+---@field diffuseColor Vec4 @Sets the diffuse color for this `Light`, the main light color.
+---@field ambientColor Vec4 @Sets the ambient color for this `Light`, the atmospheric color applied to all objects.
+---@field specularColor Vec4 @Sets the specular color for this `Light`, the color that appears on shiny objects.
+---@field attenuation Vec3 @Sets the attenuation, or spread behavior, of this `Light`. Format is `(Constant, Linear, Quadratic)`, all ranging from 0.0 to 1.0. Not effective for directional light sources.
+---@field cones Vec2 @Sets the inner and outer cones of this `Light`. This is only used for spotlights.
 ---@field position Vec3 @The 3D position of this object in the scene.
 ---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
 ---@field scale Vec3 @The 3D scale of this object in the scene.
@@ -679,7 +688,7 @@ function Lime.Scene.setFogColor(rgba) end
 ---@return void
 function Lime.Scene.setFogPlanes(planes) end
 
---- Sets the light management type using `Lime.Enum.LightManagementType`.
+--- Sets the light management behavior using `Lime.Enum.LightManagementType`.
 ---@param type Lime.Enum.LightManagementType
 ---@return void
 function Lime.Scene.setLightManagementType(type) end

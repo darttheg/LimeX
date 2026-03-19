@@ -21,10 +21,10 @@ class FrameLimiter;
 class RenderHelper;
 class GUIManager;
 
-#define LIME_VERSION "1.0"
+#define LIME_VERSION "beta-0.1"
 
 struct WindowConfig {
-	int driverType = 0; // OpenGL
+	int driverType = 0;
 	std::vector<int> windowSize{ 640, 480 };
 	std::vector<int> renderSize{ 640, 480 };
 	int frameRate = 60;
@@ -51,7 +51,7 @@ public:
 	bool Run();
 	void EndApp();
 
-	// Do not use to end from user!
+	// Do not use to end from user! This is used by Lime.
 	bool Stop();
 
 	void DisplayMessage(std::string msg, std::string title, int icon);
