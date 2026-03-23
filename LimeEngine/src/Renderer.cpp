@@ -653,6 +653,10 @@ bool Renderer::isElementHovered(const Object2D& o) {
 	return o.getNode()->isPointInside(irr::core::vector2di(r->getMouseState().pos.x, r->getMouseState().pos.y));
 }
 
+irr::io::IFileSystem* const Renderer::getFileSystem() {
+	return i_device ? i_device->getFileSystem() : nullptr;
+}
+
 #include "Objects/Event.h"
 bool Renderer::runEventFromGUI(std::shared_ptr<Event> e, std::function<void(const std::string&)> onError) {
 	if (!e)

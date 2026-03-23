@@ -42,9 +42,11 @@
     <ClInclude Include="include\Objects\Event.h" />
     <ClInclude Include="include\Objects\HitResult.h" />
     <ClInclude Include="include\Objects\Image2D.h" />
+    <ClInclude Include="include\Objects\IrrShaderMat.h" />
     <ClInclude Include="include\Objects\Light.h" />
     <ClInclude Include="include\Objects\Mesh.h" />
     <ClInclude Include="include\Objects\MeshBuffer.h" />
+    <ClInclude Include="include\Objects\ShaderMaterial.h" />
     <ClInclude Include="include\Objects\Text3D.h" />
     <ClInclude Include="include\Objects\Texture.h" />
     <ClInclude Include="include\Objects\Material.h" />
@@ -79,9 +81,11 @@
     <ClCompile Include="src\Objects\Empty.cpp" />
     <ClCompile Include="src\Objects\Event.cpp" />
     <ClCompile Include="src\Objects\Image2D.cpp" />
+    <ClCompile Include="src\Objects\IrrShaderMat.cpp" />
     <ClCompile Include="src\Objects\Light.cpp" />
     <ClCompile Include="src\Objects\Mesh.cpp" />
     <ClCompile Include="src\Objects\MeshBuffer.cpp" />
+    <ClCompile Include="src\Objects\ShaderMaterial.cpp" />
     <ClCompile Include="src\Objects\Text3D.cpp" />
     <ClCompile Include="src\Objects\Texture.cpp" />
     <ClCompile Include="src\Objects\Material.cpp" />

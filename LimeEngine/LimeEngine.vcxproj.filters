@@ -175,6 +175,12 @@
       <Filter>Engine\Runtime\Core\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="include\Objects\ShaderMaterial.h">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Objects\IrrShaderMat.h">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -278,6 +284,12 @@
     </ClCompile>
     <ClCompile Include="src\Objects\Light.cpp">
       <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\ShaderMaterial.cpp">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\IrrShaderMat.cpp">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

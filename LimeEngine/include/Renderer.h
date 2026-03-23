@@ -44,6 +44,9 @@ namespace irr {
 		class IGUIButton;
 		class IGUIElement;
 	}
+	namespace io {
+		class IFileSystem;
+	}
 }
 using namespace irr;
 
@@ -108,6 +111,8 @@ public:
 	bool isElementHovered(const Object2D& o);
 	void setActivelyRendering(bool v) { doRender = v; }
 	bool getIsActivelyRendering() const { return doRender; }
+	irr::video::IVideoDriver* const getVideoDriver() { return i_driver; }
+	irr::io::IFileSystem* const getFileSystem();
 
 private:
 	struct Vec4S { float x, y, z, w; };

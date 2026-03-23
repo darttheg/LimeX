@@ -7,6 +7,7 @@ class Application;
 class Vec2;
 class Vec4;
 class Texture;
+class ShaderMaterial;
 
 namespace irr {
 	namespace video {
@@ -85,9 +86,13 @@ public:
 	float getShine() const;
 	void setShine(float v);
 
+	void applyShader(const ShaderMaterial& sm);
+	void clearShader();
+
 	irr::video::SMaterial& getMaterial() const { return *material; }
 private:
 	std::unique_ptr<irr::video::SMaterial> material;
+	int prevType = -1;
 	int m_quality = -1;
 };
 

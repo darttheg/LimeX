@@ -32,6 +32,7 @@
 #include "Objects/Mesh.h"
 #include "Objects/MeshBuffer.h"
 #include "Objects/Light.h"
+#include "Objects/ShaderMaterial.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -63,4 +64,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::MeshBind::bind(app);
 	Object::MeshBufferBind::bind(app);
 	Object::LightBind::bind(app);
+	Object::ShaderMaterialBind::bind(app);
 }

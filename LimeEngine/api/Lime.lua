@@ -176,6 +176,15 @@ MeshBuffer = MeshBuffer or {}
 ---@return MeshBuffer
 function MeshBuffer.new() end
 
+---@class ShaderMaterial
+ShaderMaterial = ShaderMaterial or {}
+--- A special material that can produce custom effects. This object is applied to a `Material`, not directly to another 3D object. By default, all `ShaderMaterial` objects set internal parameters `uWVP` to the current world-view projection matrix and `uWorld` to just the current world matrix.
+---@param vertexShaderPath string
+---@param pixelShaderPath string
+---@param type Lime.Enum.MaterialType?
+---@return ShaderMaterial
+function ShaderMaterial.new(vertexShaderPath, pixelShaderPath, type) end
+
 ---@class Skydome
 ---@field position Vec3 @The 3D position of this object in the scene.
 ---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
@@ -770,10 +779,19 @@ function Lime.Window.setSize(size) end
 ---@return void
 function Lime.Window.setTitle(title) end
 
+--- Clears any shaders from this `Material`.
+---@return void
+function Material:clearShader() end
+
 --- Clears the `Texture` in this `Material`.
 ---@param layer number?
 ---@return void
 function Material:clearTexture(layer) end
+
+--- Loads a `ShaderMaterial` into this `Material`.
+---@param shader ShaderMaterial
+---@return void
+function Material:loadShader(shader) end
 
 --- Loads a `Texture` into this `Material`.
 ---@overload fun(layer:number, img:Texture): void
@@ -907,6 +925,23 @@ function MeshBuffer:pushFace(pos1, pos2, pos3, normal1, normal2, normal3, uvw1, 
 --- Recalculates the bounding box of this `MeshBuffer`. This should be called after modifying this `MeshBuffer`.
 ---@return void
 function MeshBuffer:recalculateBoundingBox() end
+
+--- Returns the path to the pixel shader file loaded in this `ShaderMaterial`.
+---@return string
+function ShaderMaterial:getPSPath() end
+
+--- Returns the path to the vertex shader file loaded in this `ShaderMaterial`.
+---@return string
+function ShaderMaterial:getVSPath() end
+
+--- Sets a uniform shader parameter within this `ShaderMaterial`.
+---@overload fun(name:string, value:Vec2): void
+---@overload fun(name:string, value:Vec3): void
+---@overload fun(name:string, value:Vec4): void
+---@param name string
+---@param value number
+---@return void
+function ShaderMaterial:setParameter(name, value) end
 
 --- Clears this object's attributes.
 ---@return void

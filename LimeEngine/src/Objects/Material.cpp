@@ -11,6 +11,7 @@
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
 #include "Objects/Texture.h"
+#include "Objects/ShaderMaterial.h"
 
 static DebugConsole* d;
 static Renderer* r;
@@ -112,6 +113,7 @@ int Material::getType() const {
 
 void Material::setType(int v) {
 	material->MaterialType = static_cast<irr::video::E_MATERIAL_TYPE>(v);
+	prevType = v;
 }
 
 bool Material::getFog() const {
@@ -231,6 +233,20 @@ void Material::setShine(float v) {
 	material->Shininess = static_cast<irr::f32>(v * 30.0f);
 }
 
+void Material::applyShader(const ShaderMaterial& sm) {
+	if (!sm.isValid()) return;
+	material->MaterialType = static_cast<irr::video::E_MATERIAL_TYPE>(sm.getMaterialType());
+}
+
+void Material::clearShader() {
+	if (prevType == -1) {
+		material->MaterialType = irr::video::EMT_SOLID;
+		prevType = (int)irr::video::EMT_SOLID;
+		return;
+	}
+	material->MaterialType = static_cast<irr::video::E_MATERIAL_TYPE>(prevType);
+}
+
 Vec4 Material::getAmbientColor() const {
 	irr::video::SColor c = material->AmbientColor;
 	return Vec4(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
@@ -343,6 +359,15 @@ void Object::MaterialBind::bind(Application* a) {
 	obj[sol::meta_function::to_string] = [](const Material& v) {
 		return "Material";
 		};
+
+	// Loads a `ShaderMaterial` into this `Material`.
+	// Params ShaderMaterial shader
+	// Returns void
+	obj.set_function("loadShader", &Material::applyShader);
+
+	// Clears any shaders from this `Material`.
+	// Returns void
+	obj.set_function("clearShader", &Material::clearShader);
 
 	// Loads a `Texture` into this `Material`.
 	// Params number layer, Texture img
