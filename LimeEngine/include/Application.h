@@ -21,7 +21,7 @@ class FrameLimiter;
 class RenderHelper;
 class GUIManager;
 
-#define LIME_VERSION "beta-0.1"
+#define LIME_VERSION "beta-0.2"
 
 struct WindowConfig {
 	int driverType = 0;
