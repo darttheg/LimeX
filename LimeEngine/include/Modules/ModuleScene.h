@@ -13,6 +13,7 @@ class Vec4;
 class Texture;
 class Mesh;
 class HitResult;
+class ShaderMaterial;
 
 namespace Module {
 	namespace Scene {
@@ -34,6 +35,7 @@ namespace Module {
 			void SetActivelyRendering(bool v);
 			bool GetActivelyRendering();
 			void SetLightManagerType(int type);
+			void SetPostProcessingShader(const ShaderMaterial& sm);
 			sol::table FireRaycast(const Vec3& start, const Vec3& end, float life = 0);
 
 			Mesh CreateCubeMesh(const Vec3& size);

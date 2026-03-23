@@ -9,12 +9,15 @@
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
 
+class Renderer;
+
 using UniformValue = std::variant<float, int, Vec2, Vec3, Vec4>;
 
 class IrrShaderMaterial : public irr::video::IShaderConstantSetCallBack {
 public:
 	IrrShaderMaterial(irr::video::IVideoDriver* driver, const std::string& vsPath, const std::string& psPath, int type);
 
+	void setRenderer(Renderer* r);
 	void OnSetConstants(irr::video::IMaterialRendererServices* services, irr::s32 userData) override;
 	void setUniformFloat(const std::string& name, float v);
 	void setUniformInt(const std::string& name, int v);

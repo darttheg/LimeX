@@ -11,6 +11,7 @@
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
 #include "Objects/Mesh.h"
+#include "Objects/ShaderMaterial.h"
 
 #include <sol/sol.hpp>
 
@@ -123,6 +124,11 @@ void Module::Scene::bind(Application* app) {
 	// Returns boolean
 	module.set_function("isRenderingActive", &Module::Scene::Bind::GetActivelyRendering);
 
+	// Passes a `Shader` to the renderer be used for special effects on the scene output.
+	// Params Shader shader
+	// Returns void
+	module.set_function("setPostProcessingShader", &Module::Scene::Bind::SetPostProcessingShader);
+
 	// Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
 	// Params Vec3 startPos, Vec3 endPos, number? rayLifeMs
 	// Returns HitResult
@@ -201,6 +207,10 @@ bool Module::Scene::Bind::GetActivelyRendering() {
 
 void Module::Scene::Bind::SetLightManagerType(int type) {
 	r->setLightManagementType(type);
+}
+
+void Module::Scene::Bind::SetPostProcessingShader(const ShaderMaterial& sm) {
+	r->setPostProcessingShader(sm);
 }
 
 #include "Objects/HitResult.h"

@@ -152,15 +152,15 @@ Bottom = 1,
 }
 ---@alias Lime.Enum.StorageHint integer
 ---@class Lime.Enum.StorageHintEnum
+---@field Never Lime.Enum.StorageHint
 ---@field Static Lime.Enum.StorageHint
 ---@field Dynamic Lime.Enum.StorageHint
 ---@field Stream Lime.Enum.StorageHint
----@field Never Lime.Enum.StorageHint
 Lime.Enum.StorageHint = {
+Never = 0,
 Static = 1,
 Dynamic = 2,
 Stream = 3,
-Never = 0,
 }
 ---@alias Lime.Enum.Mouse integer
 ---@class Lime.Enum.MouseEnum

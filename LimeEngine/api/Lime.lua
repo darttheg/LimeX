@@ -176,14 +176,14 @@ MeshBuffer = MeshBuffer or {}
 ---@return MeshBuffer
 function MeshBuffer.new() end
 
----@class ShaderMaterial
-ShaderMaterial = ShaderMaterial or {}
---- A special material that can produce custom effects. This object is applied to a `Material`, not directly to another 3D object. By default, all `ShaderMaterial` objects set internal parameters `uWVP` to the current world-view projection matrix and `uWorld` to just the current world matrix.
+---@class Shader
+Shader = Shader or {}
+--- A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldTransformed` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
 ---@param vertexShaderPath string
 ---@param pixelShaderPath string
 ---@param type Lime.Enum.MaterialType?
----@return ShaderMaterial
-function ShaderMaterial.new(vertexShaderPath, pixelShaderPath, type) end
+---@return Shader
+function Shader.new(vertexShaderPath, pixelShaderPath, type) end
 
 ---@class Skydome
 ---@field position Vec3 @The 3D position of this object in the scene.
@@ -515,6 +515,10 @@ function Lime.close() end
 ---@return number
 function Lime.getElapsedTime() end
 
+--- Returns the elapsed time the application has been running in seconds.
+---@return number
+function Lime.getElapsedTimeSeconds() end
+
 --- Returns the frame rate in frames per second.
 ---@return number
 function Lime.getFrameRate() end
@@ -703,6 +707,11 @@ function Lime.Scene.setFogPlanes(planes) end
 ---@return void
 function Lime.Scene.setLightManagementType(type) end
 
+--- Passes a `Shader` to the renderer be used for special effects on the scene output.
+---@param shader Shader
+---@return void
+function Lime.Scene.setPostProcessingShader(shader) end
+
 --- Sets the render quality of the scene using `Lime.Enum.Quality`.
 ---@param quality Lime.Enum.Quality
 ---@return void
@@ -779,7 +788,7 @@ function Lime.Window.setSize(size) end
 ---@return void
 function Lime.Window.setTitle(title) end
 
---- Clears any shaders from this `Material`.
+--- Clears the `Shader` applied to this `Material`, if any.
 ---@return void
 function Material:clearShader() end
 
@@ -788,8 +797,8 @@ function Material:clearShader() end
 ---@return void
 function Material:clearTexture(layer) end
 
---- Loads a `ShaderMaterial` into this `Material`.
----@param shader ShaderMaterial
+--- Loads a `Shader` into this `Material`.
+---@param shader Shader
 ---@return void
 function Material:loadShader(shader) end
 
@@ -926,22 +935,22 @@ function MeshBuffer:pushFace(pos1, pos2, pos3, normal1, normal2, normal3, uvw1, 
 ---@return void
 function MeshBuffer:recalculateBoundingBox() end
 
---- Returns the path to the pixel shader file loaded in this `ShaderMaterial`.
+--- Returns the path to the pixel shader file loaded in this `Shader`.
 ---@return string
-function ShaderMaterial:getPSPath() end
+function Shader:getPSPath() end
 
---- Returns the path to the vertex shader file loaded in this `ShaderMaterial`.
+--- Returns the path to the vertex shader file loaded in this `Shader`.
 ---@return string
-function ShaderMaterial:getVSPath() end
+function Shader:getVSPath() end
 
---- Sets a uniform shader parameter within this `ShaderMaterial`.
+--- Sets a uniform shader parameter within this `Shader`.
 ---@overload fun(name:string, value:Vec2): void
 ---@overload fun(name:string, value:Vec3): void
 ---@overload fun(name:string, value:Vec4): void
 ---@param name string
 ---@param value number
 ---@return void
-function ShaderMaterial:setParameter(name, value) end
+function Shader:setParameter(name, value) end
 
 --- Clears this object's attributes.
 ---@return void

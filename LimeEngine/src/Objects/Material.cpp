@@ -360,12 +360,12 @@ void Object::MaterialBind::bind(Application* a) {
 		return "Material";
 		};
 
-	// Loads a `ShaderMaterial` into this `Material`.
-	// Params ShaderMaterial shader
+	// Loads a `Shader` into this `Material`.
+	// Params Shader shader
 	// Returns void
 	obj.set_function("loadShader", &Material::applyShader);
 
-	// Clears any shaders from this `Material`.
+	// Clears the `Shader` applied to this `Material`, if any.
 	// Returns void
 	obj.set_function("clearShader", &Material::clearShader);
 

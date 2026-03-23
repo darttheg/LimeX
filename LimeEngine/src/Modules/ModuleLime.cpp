@@ -86,6 +86,10 @@ void Module::Lime::bind(Application* app) {
 	// Returns number
 	module.set_function("getElapsedTime", &Module::Lime::Bind::GetElapsedTime);
 
+	// Returns the elapsed time the application has been running in seconds.
+	// Returns number
+	module.set_function("getElapsedTimeSeconds", &Module::Lime::Bind::GetElapsedTimeSeconds);
+
 	// Returns the frame rate in frames per second.
 	// Returns number
 	module.set_function("getFrameRate", &Module::Lime::Bind::GetFrameRate);
@@ -198,4 +202,8 @@ bool Module::Lime::Bind::SetInitConfig(int driverType, const Vec2& windowSize, c
 
 int Module::Lime::Bind::GetElapsedTime() {
 	return r->getElapsedTime();
+}
+
+float Module::Lime::Bind::GetElapsedTimeSeconds() {
+	return r->getDtTime();
 }

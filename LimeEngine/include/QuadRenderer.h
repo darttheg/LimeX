@@ -1,8 +1,10 @@
 #pragma once
 #include <cstdint>
+#include <memory>
 #include <irrlicht.h>
 
 class DebugConsole;
+class ShaderMaterial;
 
 class QuadRenderer {
 public:
@@ -11,6 +13,9 @@ public:
 	void setWindowResolution(std::uint32_t w, std::uint32_t h);
 	void setMatchWindowRender(bool m);
 	void setClearColor(std::uint32_t r, std::uint32_t g, std::uint32_t b, std::uint32_t a);
+
+	void setPostProcessingShader(int shaderID);
+	void clearPostProcessingShader();
 
 	void beginInternal();
 	void beginGUIPass();
@@ -50,4 +55,6 @@ private:
 	void buildQuad();
 	void recreateRt();
 	void setVp();
+
+	int ppxType = -1;
 };

@@ -11,6 +11,7 @@ static Renderer* r;
 
 ShaderMaterial::ShaderMaterial(const std::string& vs, const std::string& ps, int type) {
 	shadermat = std::make_shared<IrrShaderMaterial>(r->getVideoDriver(), vs, ps, type);
+	shadermat->setRenderer(r);
 	auto* fs = r->getFileSystem();
 	if (!fs) return;
 	vsPath = fs->getAbsolutePath(vs.c_str()).c_str();
@@ -61,22 +62,22 @@ void Object::ShaderMaterialBind::bind(Application* a) {
 	r = a->GetRenderer();
 	d = a->GetDebugConsole();
 
-	// Object ShaderMaterial, A special material that can produce custom effects. This object is applied to a `Material`, not directly to another 3D object. By default, all `ShaderMaterial` objects set internal parameters `uWVP` to the current world-view projection matrix and `uWorld` to just the current world matrix.
+	// Object Shader, A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldTransformed` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
 
 	// Constructor string vertexShaderPath, string pixelShaderPath, Lime.Enum.MaterialType? type
 
 	sol::state_view view(a->GetLuaState());
 	sol::usertype<ShaderMaterial> obj = view.new_usertype<ShaderMaterial>(
-		"ShaderMaterial",
+		"Shader",
 		sol::constructors<ShaderMaterial(const std::string& vsPath, const std::string& psPath), ShaderMaterial(const std::string &vsPath, const std::string &psPath, int type)>(),
-		sol::meta_function::type, [](const ShaderMaterial&) { return "ShaderMaterial"; }
+		sol::meta_function::type, [](const ShaderMaterial&) { return "Shader"; }
 	);
 
 	obj[sol::meta_function::to_string] = [](const ShaderMaterial& v) {
-		return "ShaderMaterial";
+		return "Shader";
 		};
 
-	// Sets a uniform shader parameter within this `ShaderMaterial`.
+	// Sets a uniform shader parameter within this `Shader`.
 	// Params string name, number value
 	// Params string name, Vec2 value
 	// Params string name, Vec3 value
@@ -91,11 +92,11 @@ void Object::ShaderMaterialBind::bind(Application* a) {
 			sol::resolve<void(const std::string&, const Vec4&)>(&ShaderMaterial::setUniformVec4)
 		));
 
-	// Returns the path to the vertex shader file loaded in this `ShaderMaterial`.
+	// Returns the path to the vertex shader file loaded in this `Shader`.
 	// Returns string
 	obj.set_function("getVSPath", &ShaderMaterial::getVsPath);
 
-	// Returns the path to the pixel shader file loaded in this `ShaderMaterial`.
+	// Returns the path to the pixel shader file loaded in this `Shader`.
 	// Returns string
 	obj.set_function("getPSPath", &ShaderMaterial::getPsPath);
 

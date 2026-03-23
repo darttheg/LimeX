@@ -18,6 +18,7 @@ class Event;
 class Object2D;
 class QuadRenderer;
 class RenderHelper;
+class ShaderMaterial;
 
 namespace irr {
 	class IrrlichtDevice;
@@ -90,6 +91,7 @@ public:
 	void setMatchRes(bool v);
 	bool getMatchRes() { return doMatchResolution; }
 	void setSceneRenderQuality(int q);
+	void setPostProcessingShader(const ShaderMaterial& sm);
 
 	// Scene - Cleanup
 	void addToDeletionQueue(irr::scene::ISceneNode* node);
@@ -114,6 +116,10 @@ public:
 	irr::video::IVideoDriver* const getVideoDriver() { return i_driver; }
 	irr::io::IFileSystem* const getFileSystem();
 
+	// Time
+	void addToDtTime(float dt) { dtTime += dt; }
+	float getDtTime() const { return dtTime; }
+
 private:
 	struct Vec4S { float x, y, z, w; };
 	struct Vec2S { float x, y; };
@@ -121,6 +127,8 @@ private:
 	bool isCreated = false;
 	bool hasBegunNewScene = false;
 	bool doRender = true;
+
+	float dtTime = 0.0f;
 
 	// Renderer parameters
 	Vec2S renderSize{};

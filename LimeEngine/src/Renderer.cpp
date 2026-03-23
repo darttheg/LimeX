@@ -20,6 +20,8 @@
 #include "External/CTextAnchorSceneNode.h"
 #include "LightManager.h"
 
+#include "Objects/ShaderMaterial.h"
+
 static Application* a = nullptr;
 static DebugConsole* d = nullptr;
 static Window* w = nullptr;
@@ -369,6 +371,11 @@ void Renderer::setSceneRenderQuality(int q) {
 	if (!guardRenderingCheck()) return;
 
 	qr->setSceneRenderQuality(q);
+}
+
+void Renderer::setPostProcessingShader(const ShaderMaterial& sm) {
+	if (!guardRenderingCheck()) return;
+	qr->setPostProcessingShader(sm.isValid() ? sm.getMaterialType() : -1);
 }
 
 void Renderer::addToDeletionQueue(irr::scene::ISceneNode* node) {

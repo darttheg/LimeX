@@ -4,16 +4,14 @@
 #include <iostream>
 #include <string>
 
-void QuadRenderer::init(irr::video::IVideoDriver* d)
-{
+void QuadRenderer::init(irr::video::IVideoDriver* d) {
     driver = d;
 
     buildQuad();
     recreateRt();
 }
 
-void QuadRenderer::setInternalResolution(std::uint32_t w, std::uint32_t h)
-{
+void QuadRenderer::setInternalResolution(std::uint32_t w, std::uint32_t h) {
     w = std::max<std::uint32_t>(1u, w);
     h = std::max<std::uint32_t>(1u, h);
 
@@ -40,6 +38,14 @@ void QuadRenderer::setMatchWindowRender(bool m) {
 
 void QuadRenderer::setClearColor(std::uint32_t br, std::uint32_t bg, std::uint32_t bb, std::uint32_t ba) {
     clear.set(ba, br, bg, bb);
+}
+
+void QuadRenderer::setPostProcessingShader(int shaderID) {
+    ppxType = shaderID;
+}
+
+void QuadRenderer::clearPostProcessingShader() {
+    ppxType = -1;
 }
 
 void QuadRenderer::beginInternal()
@@ -88,7 +94,12 @@ void QuadRenderer::presentToWindow()
     qMat.setTexture(0, rtScene);
     qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, highQuality);
     qMat.setFlag(irr::video::EMF_ANTI_ALIASING, highQuality ? irr::video::E_ANTI_ALIASING_MODE::EAAM_LINE_SMOOTH : irr::video::E_ANTI_ALIASING_MODE::EAAM_OFF);
-    qMat.MaterialType = irr::video::EMT_SOLID;
+    
+    if (ppxType >= 0)
+        qMat.MaterialType = static_cast<irr::video::E_MATERIAL_TYPE>(ppxType);
+    else
+        qMat.MaterialType = irr::video::EMT_SOLID;
+
     driver->setMaterial(qMat);
 
     driver->drawVertexPrimitiveList(

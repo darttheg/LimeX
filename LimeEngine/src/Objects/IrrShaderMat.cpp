@@ -4,6 +4,10 @@
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
 
+#include "Renderer.h"
+
+static Renderer* r;
+
 IrrShaderMaterial::IrrShaderMaterial(irr::video::IVideoDriver* driver, const std::string& vsPath, const std::string& psPath, int type) {
 	auto* gpu = driver->getGPUProgrammingServices();
 	if (!gpu) return;
@@ -16,6 +20,10 @@ IrrShaderMaterial::IrrShaderMaterial(irr::video::IVideoDriver* driver, const std
 	);
 }
 
+void IrrShaderMaterial::setRenderer(Renderer* r1) {
+	r = r1;
+}
+
 void IrrShaderMaterial::OnSetConstants(irr::video::IMaterialRendererServices* services, irr::s32 userData) {
 	auto* driver = services->getVideoDriver();
 	if (!driver) return;
@@ -25,8 +33,11 @@ void IrrShaderMaterial::OnSetConstants(irr::video::IMaterialRendererServices* se
 	wvp *= driver->getTransform(irr::video::ETS_WORLD);
 	world = driver->getTransform(irr::video::ETS_WORLD);
 
-	services->setVertexShaderConstant("uWVP", wvp.pointer(), 16);
-	services->setVertexShaderConstant("uWorld", world.pointer(), 16);
+	const irr::f32 t = r ? r->getDtTime() : 0.0f;
+
+	services->setVertexShaderConstant("mWorldTransformed", wvp.pointer(), 16);
+	services->setVertexShaderConstant("mWorld", world.pointer(), 16);
+	services->setVertexShaderConstant("uTime", &t, 1);
 
 	for (auto& [name, val] : uniforms) {
 		std::visit([&](auto&& v) {

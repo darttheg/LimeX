@@ -86,10 +86,10 @@ LIME_ENUM(TextAlign,
 );
 
 LIME_ENUM(StorageHint,
-    LIME_ENUM_VALUE(Static, 1),
-    LIME_ENUM_VALUE(Dynamic, 2),
-    LIME_ENUM_VALUE(Stream, 3),
     LIME_ENUM_VALUE(Never, 0)
+    LIME_ENUM_VALUE(Static, 1)
+    LIME_ENUM_VALUE(Dynamic, 2)
+    LIME_ENUM_VALUE(Stream, 3)
 );
 
 LIME_ENUM(Mouse,

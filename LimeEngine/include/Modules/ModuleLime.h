@@ -22,6 +22,7 @@ namespace Module {
 			bool SetInitConfig(int driverType, const Vec2& windowSize);
 			bool SetInitConfig(int driverType, const Vec2& windowSize, const Vec2& renderSize);
 			int GetElapsedTime();
+			float GetElapsedTimeSeconds();
 			std::string GetVersion();
 			int GetFrameRate();
 			void SetFrameRate(int fps);
