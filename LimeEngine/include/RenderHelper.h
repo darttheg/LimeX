@@ -91,7 +91,12 @@ public:
 	Mesh createCylinderMesh(float r, float l, int polyCount, bool closed = true);
 	Mesh createPlaneMesh(const Vec2& tileSize, const Vec2& tileCount, const Vec2& texRepeat);
 	HitResult fireRaycast(const Vec3& start, const Vec3& end, float life);
+	HitResult fireScreenRaycast(const Vec2& start, float len, float life);
 
+	// Misc
+	Vec2 toScreenPos(const Vec3& pos);
+
+	// Camera
 	void updateCameraMatrix(irr::scene::ICameraSceneNode* c);
 	void setActiveCamera(irr::scene::ICameraSceneNode* c);
 

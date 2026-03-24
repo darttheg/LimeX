@@ -638,6 +638,10 @@ function Lime.Input.setMousePosition(pos) end
 ---@return void
 function Lime.Input.setMouseVisible(visible) end
 
+--- Clears the `Shader` applied to the screen, if any.
+---@return void
+function Lime.Scene.clearPostProcessingShader() end
+
 --- Returns a `Mesh` containing a cube.
 ---@param size Vec3
 ---@return Mesh
@@ -669,6 +673,13 @@ function Lime.Scene.createSphereMesh(radius) end
 ---@param rayLifeMs number?
 ---@return HitResult
 function Lime.Scene.fireRaycast(startPos, endPos, rayLifeMs) end
+
+--- Fires a raycast out from a screenspace position `Vec2` of length `length`. Only objects with collision enabled will be tested.
+---@param startPos Vec2
+---@param length number
+---@param rayLifeMs number?
+---@return HitResult
+function Lime.Scene.fireScreenRaycast(startPos, length, rayLifeMs) end
 
 --- Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
 ---@return Texture
@@ -741,6 +752,11 @@ function Lime.Scene.setSize(size) end
 ---@param quality Lime.Enum.TextureCreationQuality
 ---@return void
 function Lime.Scene.setTextureCreationQuality(quality) end
+
+--- Converts a 3D position to `Vec2` on the screen.
+---@param pos Vec3
+---@return Vec2
+function Lime.Scene.toScreenPosition(pos) end
 
 --- Returns the size of the monitor the window is running on.
 ---@return Vec2

@@ -376,6 +376,27 @@ HitResult RenderHelper::fireRaycast(const Vec3& start, const Vec3& end, float li
 	return out;
 }
 
+HitResult RenderHelper::fireScreenRaycast(const Vec2& start, float len, float life) {
+	irr::scene::ICameraSceneNode* c = i_smgr->getActiveCamera();
+
+	irr::core::line3df ray = i_smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::vector2di(start.getX(), start.getY()), c);
+
+	irr::core::vector3df dir = ray.getVector().normalize();
+	Vec3 startPos(ray.start.X, ray.start.Y, ray.start.Z);
+	Vec3 endPos(ray.start.X + dir.X * len, ray.start.Y + dir.Y * len, ray.start.Z + dir.Z * len);
+
+	return fireRaycast(startPos, endPos, life);
+}
+
+Vec2 RenderHelper::toScreenPos(const Vec3& pos) {
+	if (!guardRenderingCheck()) return Vec2();
+
+	irr::core::vector3df world = irr::core::vector3df(pos.getX(), pos.getY(), pos.getZ());
+	irr::core::vector2di screen = i_smgr->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(world, i_smgr->getActiveCamera());
+
+	return Vec2(screen.X, screen.Y);
+}
+
 irr::scene::ICameraSceneNode* RenderHelper::createCameraNode() {
 	if (!guardRenderingCheck()) return nullptr;
 

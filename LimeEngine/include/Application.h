@@ -21,8 +21,6 @@ class FrameLimiter;
 class RenderHelper;
 class GUIManager;
 
-#define LIME_VERSION "beta-0.2"
-
 struct WindowConfig {
 	int driverType = 0;
 	std::vector<int> windowSize{ 640, 480 };

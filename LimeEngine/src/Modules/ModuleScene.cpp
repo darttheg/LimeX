@@ -129,10 +129,24 @@ void Module::Scene::bind(Application* app) {
 	// Returns void
 	module.set_function("setPostProcessingShader", &Module::Scene::Bind::SetPostProcessingShader);
 
+	// Clears the `Shader` applied to the screen, if any.
+	// Returns void
+	module.set_function("clearPostProcessingShader", &Module::Scene::Bind::ClearPostProcessingShader);
+
+	// Converts a 3D position to `Vec2` on the screen.
+	// Params Vec3 pos
+	// Returns Vec2
+	module.set_function("toScreenPosition", &Module::Scene::Bind::ConvertToScreenSpace);
+
 	// Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
 	// Params Vec3 startPos, Vec3 endPos, number? rayLifeMs
 	// Returns HitResult
 	module.set_function("fireRaycast", &Module::Scene::Bind::FireRaycast);
+
+	// Fires a raycast out from a screenspace position `Vec2` of length `length`. Only objects with collision enabled will be tested.
+	// Params Vec2 startPos, number length, number? rayLifeMs
+	// Returns HitResult
+	module.set_function("fireScreenRaycast", &Module::Scene::Bind::FireScreenRaycast);
 
 	// End Module
 
@@ -213,6 +227,14 @@ void Module::Scene::Bind::SetPostProcessingShader(const ShaderMaterial& sm) {
 	r->setPostProcessingShader(sm);
 }
 
+void Module::Scene::Bind::ClearPostProcessingShader() {
+	r->clearPostProcessingShader();
+}
+
+Vec2 Module::Scene::Bind::ConvertToScreenSpace(const Vec3& pos) {
+	return rh->toScreenPos(pos);
+}
+
 #include "Objects/HitResult.h"
 sol::table Module::Scene::Bind::FireRaycast(const Vec3& start, const Vec3& end, float life) {
 	HitResult hit = rh->fireRaycast(start, end, life);
@@ -229,6 +251,23 @@ sol::table Module::Scene::Bind::FireRaycast(const Vec3& start, const Vec3& end, 
 	out["attr"] = hit.attr;
 
 	return out;
+}
+
+sol::table Module::Scene::Bind::FireScreenRaycast(const Vec2& start, float len, float life) {
+	HitResult hit = rh->fireScreenRaycast(start, len, life);
+
+	sol::state& lua = a->GetLuaState();
+	sol::table out = lua.create_table();
+
+	out["hit"] = hit.hit;
+	out["startPos"] = hit.startPos;
+	out["endPos"] = hit.endPos;
+	out["normal"] = hit.normal;
+	out["objID"] = hit.objID;
+	out["matID"] = hit.matID;
+	out["attr"] = hit.attr;
+
+	return out; // Only issue is if your window is huge but render size is small, you'll have to figure out inaccuracies within the big pixels vs. small mouse position.
 }
 
 Mesh Module::Scene::Bind::CreateCubeMesh(const Vec3& size) {

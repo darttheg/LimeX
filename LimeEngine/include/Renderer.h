@@ -92,8 +92,13 @@ public:
 	bool getMatchRes() { return doMatchResolution; }
 	void setSceneRenderQuality(int q);
 	void setPostProcessingShader(const ShaderMaterial& sm);
+	void clearPostProcessingShader();
 	irr::scene::ICameraSceneNode* getActiveCameraNode();
 	irr::video::ITexture* createRenderTargetTexture(const Vec2& size, irr::scene::ICameraSceneNode* c);
+
+	// Preloading - Add to queue and load one mesh+texture per frame
+	// bool preloadMesh(sol::variadic_args va);
+	// bool preloadTexture(sol::variadic_args va);
 
 	// Scene - Cleanup
 	void addToDeletionQueue(irr::scene::ISceneNode* node);

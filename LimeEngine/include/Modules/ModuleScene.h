@@ -36,7 +36,10 @@ namespace Module {
 			bool GetActivelyRendering();
 			void SetLightManagerType(int type);
 			void SetPostProcessingShader(const ShaderMaterial& sm);
+			void ClearPostProcessingShader();
+			Vec2 ConvertToScreenSpace(const Vec3& pos);
 			sol::table FireRaycast(const Vec3& start, const Vec3& end, float life = 0);
+			sol::table FireScreenRaycast(const Vec2& start, float len, float life = 0);
 
 			Mesh CreateCubeMesh(const Vec3& size);
 			Mesh CreateSphereMesh(float r, int polyCount = 8);

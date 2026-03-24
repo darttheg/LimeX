@@ -378,6 +378,11 @@ void Renderer::setPostProcessingShader(const ShaderMaterial& sm) {
 	qr->setPostProcessingShader(sm.isValid() ? sm.getMaterialType() : -1);
 }
 
+void Renderer::clearPostProcessingShader() {
+	if (!guardRenderingCheck()) return;
+	qr->clearPostProcessingShader();
+}
+
 irr::scene::ICameraSceneNode* Renderer::getActiveCameraNode() {
 	if (!guardRenderingCheck()) return nullptr;
 	return i_smgr->getActiveCamera();
@@ -399,6 +404,8 @@ irr::video::ITexture* Renderer::createRenderTargetTexture(const Vec2& size, irr:
 
 	i_smgr->setActiveCamera(prev);
 	if (prev) prev->setAspectRatio(prevAR);
+
+	rttc++;
 	return out;
 }
 

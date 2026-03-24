@@ -6,8 +6,9 @@
 class DebugConsole;
 class Application;
 class Renderer;
-
 class Vec2;
+
+#define LIME_VERSION "beta-0.4"
 
 namespace Module {
 	namespace Lime {
