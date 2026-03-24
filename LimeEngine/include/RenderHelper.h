@@ -98,7 +98,10 @@ public:
 
 	// Camera
 	void updateCameraMatrix(irr::scene::ICameraSceneNode* c);
-	void setActiveCamera(irr::scene::ICameraSceneNode* c);
+	void setActiveCamera(irr::scene::ICameraSceneNode* c, irr::scene::ISceneNode* l, irr::scene::ISceneNode* f);
+	irr::scene::ICameraSceneNode* getActiveCamera();
+	irr::scene::ISceneNode* getActiveCameraLeft() { return cleft; }
+	irr::scene::ISceneNode* getActiveCameraForward() { return cforward; }
 
 	// GUI
 	irr::gui::CGUIColoredText* createColoredText2D();
@@ -118,6 +121,9 @@ private:
 	irr::video::IVideoDriver* i_driver = nullptr;
 	irr::gui::IGUIEnvironment* i_gui = nullptr;
 	irr::video::IGPUProgrammingServices* i_gpu = nullptr;
+
+	irr::scene::ISceneNode* cleft = nullptr;
+	irr::scene::ISceneNode* cforward = nullptr;
 
 	std::unordered_map<irr::scene::ISceneNode*, sol::table> attributes;
 };

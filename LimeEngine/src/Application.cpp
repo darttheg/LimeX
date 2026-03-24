@@ -7,6 +7,7 @@
 #include "DebugConsole.h"
 #include "Receiver.h"
 #include "Renderer.h"
+#include "SoundManager.h"
 #include "LuaBinder.h"
 #include "Objects/Event.h"
 #include "Objects/Vec2.h"
@@ -98,6 +99,7 @@ bool Application::Init(const void* data, size_t size) {
 	console = new DebugConsole(this);
 	window = new Window(this);
 	renderer = new Renderer(this);
+	soundManager = new SoundManager(this);
 	receiver = new Receiver(this, renderer->getGUIManager()); // Kind of odd, hopefully no issues in the future
 	// Context: Without this ^, button events have to go from receiver, up to application, then through renderer to GUIManager...
 
@@ -151,6 +153,11 @@ bool Application::Init(const void* data, size_t size) {
 	if (!CreateWindows())
 		return false;
 
+	if (!soundManager->Init()) {
+		console->PostError("Failed to create sound manager", true);
+		return false;
+	}
+
 	// Init console
 	if (debugCfg.on) {
 		console->Create();
@@ -189,17 +196,23 @@ bool Application::Run() {
 	while (running) {
 		dt = limiter->beginFrame();
 
+		// Poll window events
 		window->PollEvents();
 		receiver->beginFrame();
 
-		// console->Log("running");
 		console->Update(getMemUsed());
 
+		// Run update
 		LimeUpdate.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); }, dt);
 
+		// Update sound manager
+		soundManager->Update();
+
+		// Render
 		if (window && window->ShouldClose()) fail = true;
 		if (!renderer->Render()) fail = true;
 
+		// Clean-up
 		updateFrameRate();
 		renderer->EndWholeScene();
 		receiver->endFrame();

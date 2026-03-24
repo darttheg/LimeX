@@ -20,6 +20,7 @@ class Receiver;
 class FrameLimiter;
 class RenderHelper;
 class GUIManager;
+class SoundManager;
 
 struct WindowConfig {
 	int driverType = 0;
@@ -62,6 +63,7 @@ public:
 	Receiver* GetReceiver() { return receiver; }
 	bool IsRunning() { return running; }
 	sol::state& GetLuaState() { return *lua; }
+	SoundManager* GetSoundManager() { return soundManager; }
 	
 	std::string GetLuaLocation();
 
@@ -91,6 +93,9 @@ private:
 	struct DebugConfig { bool on, write; };
 	DebugConfig debugCfg{};
 	DebugConsole* console = nullptr;
+
+	// Sound
+	SoundManager* soundManager = nullptr;
 
 	// Window & Renderer
 	Window* window = nullptr;

@@ -24,6 +24,9 @@ Lime.Input = Lime.Input or {}
 ---@class Lime.Scene
 Lime.Scene = Lime.Scene or {}
 
+---@class Lime.Sound
+Lime.Sound = Lime.Sound or {}
+
 ---@class Lime.Window
 ---@field onResize Event @Event called by Lime once the window is resized in any way.
 Lime.Window = Lime.Window or {}

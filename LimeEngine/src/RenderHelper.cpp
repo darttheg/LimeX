@@ -423,9 +423,16 @@ void RenderHelper::updateCameraMatrix(irr::scene::ICameraSceneNode* c) {
 	}
 }
 
-void RenderHelper::setActiveCamera(irr::scene::ICameraSceneNode* c) {
+void RenderHelper::setActiveCamera(irr::scene::ICameraSceneNode* c, irr::scene::ISceneNode* l, irr::scene::ISceneNode* f) {
 	if (!guardRenderingCheck()) return;
 	i_smgr->setActiveCamera(c);
+	cleft = l;
+	cforward = f;
+}
+
+irr::scene::ICameraSceneNode* RenderHelper::getActiveCamera() {
+	if (!guardRenderingCheck()) return nullptr;
+	return i_smgr->getActiveCamera();
 }
 
 irr::gui::CGUIColoredText* RenderHelper::createColoredText2D() {

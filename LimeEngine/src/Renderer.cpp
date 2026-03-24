@@ -35,6 +35,7 @@ Renderer::Renderer(Application* owner) {
 	guiManager = new GUIManager(d, this);
 	rh = new RenderHelper();
 }
+
 Renderer::~Renderer() {
 	Shutdown();
 }

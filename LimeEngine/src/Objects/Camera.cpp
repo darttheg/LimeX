@@ -126,7 +126,7 @@ Vec3 Camera::getLeft() const {
 void Camera::setActive() const {
 	if (!camera) return;
 
-	rh->setActiveCamera(camera);
+	rh->setActiveCamera(camera, left, forward);
 }
 
 void Object::CameraBind::bind(lua_State* ls, RenderHelper* renh) {

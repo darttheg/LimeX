@@ -181,6 +181,12 @@
     <ClInclude Include="include\Objects\IrrShaderMat.h">
       <Filter>Engine\Runtime\Objects\Common</Filter>
     </ClInclude>
+    <ClInclude Include="include\Modules\ModuleSound.h">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SoundManager.h">
+      <Filter>Engine\Runtime\Core\App</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -290,6 +296,12 @@
     </ClCompile>
     <ClCompile Include="src\Objects\IrrShaderMat.cpp">
       <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\ModuleSound.cpp">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoundManager.cpp">
+      <Filter>Engine\Runtime\Core\App</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
