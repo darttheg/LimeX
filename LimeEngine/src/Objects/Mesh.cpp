@@ -19,9 +19,6 @@ static DebugConsole* d;
 static RenderHelper* rh;
 
 Mesh::Mesh() {
-	bool cur = col;
-	col = !col;
-	setSimpleCollision(cur);
 }
 
 Mesh::Mesh(const std::string& path) : Mesh() {
@@ -59,19 +56,22 @@ void Mesh::setDebug(bool v) {
 
 bool Mesh::loadMesh(const std::string& path) {
 	if (src) {
-		auto* out = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(src);
-		if (out) {
-			if (getMesh()->getReferenceCount() == 1) // Necessary? Probably nice to know though.
-				d->Warn("This Mesh is loading a new Mesh, but the old buffer is not held elsewhere! Purge Meshes if they are to be unused.");
-		}
+		if (getMesh()->getReferenceCount() == 1) // Necessary? Probably nice to know though.
+			d->Warn("This Mesh is loading a new Mesh, but the old buffer is not held elsewhere! Purge Meshes if they are to be unused.");
 
-		out->remove();
+		src->remove();
 	}
 
 	src = rh->createAnimatedMesh(rh->createMesh(path));
 	if (!src) d->Warn("Failed to create Mesh!");
 
 	setDebug(Object3D::getDebug());
+
+	// Reapply collision state
+	bool cur = col;
+	col = !col;
+	setSimpleCollision(cur);
+
 	return src;
 }
 
@@ -88,25 +88,26 @@ bool Mesh::loadMeshBuffer(const MeshBuffer& mb) {
 	mesh->drop();
 
 	if (!src) src = rh->createEmptyMesh();
-	auto* m = static_cast<irr::scene::IAnimatedMeshSceneNode*>(src);
-	if (!m) return false;
-	m->setMesh(amesh);
+	src->setMesh(amesh);
 	amesh->drop();
 
 	setDebug(Object3D::getDebug());
+
+	// Reapply collision state
+	bool cur = col;
+	col = !col;
+	setSimpleCollision(cur);
+
 	return true;
 }
 
 bool Mesh::loadMaterial(int layer, const Material& mat) {
 	if (!src) return false;
 
-	auto* m = static_cast<irr::scene::IAnimatedMeshSceneNode*>(src);
-	if (!m) return false;
-
 	if (layer < 0) layer = 0;
-	if (layer >= m->getMaterialCount()) layer = m->getMaterialCount() - 1;
+	if (layer >= src->getMaterialCount()) layer = src->getMaterialCount() - 1;
 
-	m->getMaterial(layer) = mat.getMaterial();
+	src->getMaterial(layer) = mat.getMaterial();
 	return true;
 }
 
@@ -134,17 +135,13 @@ int Mesh::getVertexCount() const {
 
 void Mesh::setColor(const Vec4& col) {
 	if (!src) return;
-	auto* m = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(src);
-	if (!m) return;
-	rh->setVertexColor(m, col);
+	rh->setVertexColor(src, col);
 }
 
 Vec4 Mesh::getColor() const {
 	if (!src) return Vec4();
-	auto* m = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(src);
-	if (!m) return Vec4();
 
-	auto* verts = static_cast<irr::video::S3DVertex*>(m->getMesh()->getMeshBuffer(0)->getVertices());
+	auto* verts = static_cast<irr::video::S3DVertex*>(src->getMesh()->getMeshBuffer(0)->getVertices());
 	irr::video::SColor out = verts[0].Color;
 	return Vec4(out.getRed(), out.getGreen(), out.getBlue(), out.getAlpha());
 }
@@ -154,18 +151,16 @@ bool Mesh::getSimpleCollision() const {
 }
 
 void Mesh::setSimpleCollision(bool v) {
-	if (!src) return;
-	auto* m = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(src);
-	if (!m || col == v) return;
+	if (!src || col == v) return;
 	col = v;
 
 	if (col) {
-		irr::scene::ITriangleSelector* tri = rh->createTriangleSelector(m);
+		irr::scene::ITriangleSelector* tri = rh->createTriangleSelector(src);
 		if (!tri) return;
 		src->setTriangleSelector(tri);
 		tri->drop();
 	} else {
-		m->setTriangleSelector(nullptr);
+		src->setTriangleSelector(nullptr);
 	}
 }
 
@@ -177,11 +172,9 @@ void Mesh::setShadows(bool v) {
 	if (!src) return;
 	bool has = sh != nullptr;
 	if (has == v) return;
-	auto* m = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(src);
-	if (!m) return;
 
 	if (v) {
-		sh = m->addShadowVolumeSceneNode();
+		sh = src->addShadowVolumeSceneNode();
 	} else if (sh) {
 		sh->remove();
 		sh = nullptr;
@@ -205,17 +198,14 @@ void Mesh::clear() {
 
 void Mesh::purge() {
 	if (!src) return;
-	auto* m = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(src);
-	if (!m) return;
-	irr::scene::IAnimatedMesh* out = m->getMesh();
+	irr::scene::IAnimatedMesh* out = src->getMesh();
 
 	src->remove();
 	r->removeMesh(out);
 }
 
 irr::scene::IMesh* Mesh::getMesh() const {
-	auto* m = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(src);
-	if (m) return m->getMesh();
+	if (src) return src->getMesh();
 	return nullptr;
 }
 

@@ -8,7 +8,7 @@ class Application;
 class Renderer;
 class Vec2;
 
-#define LIME_VERSION "beta-0.4"
+#define LIME_VERSION "beta-0.5"
 
 namespace Module {
 	namespace Lime {
@@ -16,6 +16,7 @@ namespace Module {
 
 		namespace Bind {
 			void SetDebugConfig(bool on, bool write = false);
+			void ClearDebug();
 			void Log(std::string msg, int color = 0);
 			void SetEndOnError(bool v);
 			void Close();

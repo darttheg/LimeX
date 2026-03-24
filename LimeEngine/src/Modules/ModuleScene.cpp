@@ -146,7 +146,7 @@ void Module::Scene::bind(Application* app) {
 	// Fires a raycast out from a screenspace position `Vec2` of length `length`. Only objects with collision enabled will be tested.
 	// Params Vec2 startPos, number length, number? rayLifeMs
 	// Returns HitResult
-	module.set_function("fireScreenRaycast", &Module::Scene::Bind::FireScreenRaycast);
+	module.set_function("fireScreenspaceRaycast", &Module::Scene::Bind::FireScreenRaycast);
 
 	// End Module
 

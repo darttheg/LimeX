@@ -508,6 +508,9 @@ function Light:parentTo(parent) end
 ---@return void
 function Light:setAttribute(key, value) end
 
+--- Clears the debug console's lines, only visually.
+function Lime.clearDebugConsole() end
+
 --- Closes the Lime application.
 function Lime.close() end
 
@@ -679,7 +682,7 @@ function Lime.Scene.fireRaycast(startPos, endPos, rayLifeMs) end
 ---@param length number
 ---@param rayLifeMs number?
 ---@return HitResult
-function Lime.Scene.fireScreenRaycast(startPos, length, rayLifeMs) end
+function Lime.Scene.fireScreenspaceRaycast(startPos, length, rayLifeMs) end
 
 --- Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
 ---@return Texture

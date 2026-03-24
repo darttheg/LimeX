@@ -94,7 +94,7 @@ void Object::Vec4Bind::bind(lua_State* ls) {
 	);
 
 	obj[sol::meta_function::to_string] = [](const Vec4& v) {
-		return "(" + std::to_string(v.getX()) + ", " + std::to_string(v.getY()) + std::to_string(v.getZ()) + std::to_string(v.getW()) + ")";
+		return "(" + std::to_string(v.getX()) + ", " + std::to_string(v.getY()) + ", " + std::to_string(v.getZ()) + ", " + std::to_string(v.getW()) + ")";
 		};
 
 	// Object Vec4, A four-dimensional vector object.

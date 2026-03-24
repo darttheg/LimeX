@@ -66,6 +66,9 @@ void Module::Lime::bind(Application* app) {
 	// Closes the Lime application.
 	module.set_function("close", &Module::Lime::Bind::Close);
 
+	// Clears the debug console's lines, only visually.
+	module.set_function("clearDebugConsole", &Module::Lime::Bind::ClearDebug);
+
 	// Returns the Lime version running.
 	// Returns string
 	module.set_function("getVersion", &Module::Lime::Bind::GetVersion);
@@ -138,6 +141,10 @@ void Module::Lime::bind(Application* app) {
 
 void Module::Lime::Bind::SetDebugConfig(bool on, bool write) {
 	a->setDebugConfig(on, write);
+}
+
+void Module::Lime::Bind::ClearDebug() {
+	d->ClearConsole();
 }
 
 void Module::Lime::Bind::Log(std::string msg, int color) {

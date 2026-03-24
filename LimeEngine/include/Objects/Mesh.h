@@ -64,7 +64,7 @@ public:
     void purge();
 private:
     bool col = false;
-    irr::scene::ISceneNode* src = nullptr;
+    irr::scene::IAnimatedMeshSceneNode* src = nullptr;
     irr::scene::IShadowVolumeSceneNode* sh = nullptr;
 
     irr::scene::IMesh* getMesh() const;

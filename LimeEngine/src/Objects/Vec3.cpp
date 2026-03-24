@@ -109,7 +109,7 @@ void Object::Vec3Bind::bind(lua_State* ls) {
 	);
 
 	obj[sol::meta_function::to_string] = [](const Vec3& v) {
-		return "(" + std::to_string(v.getX()) + ", " + std::to_string(v.getY()) + std::to_string(v.getZ()) + ")";
+		return "(" + std::to_string(v.getX()) + ", " + std::to_string(v.getY()) + ", " + std::to_string(v.getZ()) + ")";
 		};
 
 	// Object Vec3, A three-dimensional vector object.

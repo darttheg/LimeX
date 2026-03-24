@@ -26,6 +26,7 @@ public:
 
 	int GetMemUsed() { return memUsed; }
 	void SetEnable(bool v); // Enable/disable console
+	void ClearConsole(); // Only the lines in the console visually
 	void Clear(); // Clear lines
 
 	void Log(const char* msg, MESSAGE_TYPE type = MESSAGE_TYPE::NORMAL);

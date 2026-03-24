@@ -80,6 +80,19 @@ void DebugConsole::SetEnable(bool v) {
         Create();
 }
 
+void DebugConsole::ClearConsole() {
+    HWND h = GetConsoleWindow();
+    if (!h) return;
+
+    COORD coord = { 0,0 };
+    DWORD written;
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(consoleHandle, &csbi);
+    FillConsoleOutputCharacter(consoleHandle, ' ', csbi.dwSize.X * csbi.dwSize.Y, coord, &written);
+    FillConsoleOutputAttribute(consoleHandle, csbi.wAttributes, csbi.dwSize.X * csbi.dwSize.Y, coord, &written);
+    SetConsoleCursorPosition(consoleHandle, coord);
+}
+
 void DebugConsole::Clear() {
     consoleLines.clear();
 }
