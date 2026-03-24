@@ -15,12 +15,16 @@ public:
 	~SoundManager() = default;
 
 	bool Init();
-	bool Update();
+	bool Update(float dt);
 private:
 	irrklang::ISoundEngine* i_sound = nullptr;
 
 	struct Vec3S { float x, y, z; };
-	
+	Vec3S lastCamPos{ 0,0,0 };
+	bool firstVel = true;
+
+	/*
 	bool useManualListenerVel = false;
 	Vec3S listenerVel;
+	*/
 };

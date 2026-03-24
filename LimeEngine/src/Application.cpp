@@ -206,7 +206,7 @@ bool Application::Run() {
 		LimeUpdate.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); }, dt);
 
 		// Update sound manager
-		soundManager->Update();
+		soundManager->Update(dt);
 
 		// Render
 		if (window && window->ShouldClose()) fail = true;
