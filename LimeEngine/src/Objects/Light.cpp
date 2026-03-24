@@ -1,8 +1,6 @@
 #include "Objects/Light.h"
 
-#include "Application.h"
 #include "RenderHelper.h"
-#include "DebugConsole.h"
 
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
@@ -10,7 +8,8 @@
 
 #include "irrlicht.h"
 
-static DebugConsole* d;
+#include <sol/sol.hpp>
+
 static RenderHelper* rh;
 
 Light::Light() {
@@ -145,14 +144,13 @@ void Light::setShadows(bool v) {
 	light->getLightData().CastShadows = v;
 }
 
-void Object::LightBind::bind(Application* a) {
-	rh = a->GetRenderHelper();
-	d = a->GetDebugConsole();
+void Object::LightBind::bind(lua_State* ls, RenderHelper* renh) {
+	rh = renh;
 
 	// Object Light, A source of light.
 	// Inherits Object3D
 
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<Light> obj = view.new_usertype<Light>(
 		"Light",
 		sol::constructors<Light(), Light(int type)>(),

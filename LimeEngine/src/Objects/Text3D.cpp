@@ -1,24 +1,22 @@
 #include "Objects/Text3D.h"
 
-#include "Application.h"
+#include <sol/sol.hpp>
+
+#include "Objects/Vec2.h"
 #include "RenderHelper.h"
-#include "DebugConsole.h"
 #include "GUIManager.h"
+
 #include "External/CGUIColoredText.h"
 #include "External/CTextAnchorSceneNode.h"
-#include "Objects/Vec2.h"
 
-static DebugConsole* d = nullptr;
 static RenderHelper* rh = nullptr;
 static GUIManager* g = nullptr;
 
 Text3D::Text3D() {
 	src = rh->createColoredText2D();
 	wrap = rh->createText3DNode(src);
-	if (!wrap || !src) {
-		d->Warn("Could not create Text3D");
+	if (!wrap || !src)
 		return;
-	}
 
 	src->setText(L"Text");
 }
@@ -108,10 +106,9 @@ irr::scene::ISceneNode* Text3D::getNode() const {
 	return wrap;
 }
 
-void Object::Text3DBind::bind(Application* a) {
-	rh = a->GetRenderHelper();
-	d = a->GetDebugConsole();
-	g = a->GetGUIManager();
+void Object::Text3DBind::bind(lua_State* ls, RenderHelper* renh, GUIManager* gu) {
+	rh = renh;
+	g = gu;
 
 	// Object Text3D, A basic 3D object to display text. This object is essentially a `Text2D` tied to a 3D scene node. Text objects support colors and basic styling. Use tags `<#HEX>` for color, `<s>` for strike, `<d>` for drop shadow, `<u>` for underline, `<b>` for bold, and `<r>` to reset styles. Example: `<#6ABE30>This is green! <b>Now, it's green and bold! <r>Now, it's back to normal.`
 	// Inherits Object3D
@@ -119,7 +116,7 @@ void Object::Text3DBind::bind(Application* a) {
 	// Constructor
 	// Constructor string text
 
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<Text3D> obj = view.new_usertype<Text3D>(
 		"Text3D",
 		sol::constructors<Text3D(), Text3D(const std::string& t)>(),

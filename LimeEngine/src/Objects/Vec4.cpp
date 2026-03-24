@@ -1,5 +1,5 @@
 #include "Objects/Vec4.h"
-#include "Application.h"
+#include <sol/sol.hpp>
 
 #include <iomanip>
 
@@ -56,7 +56,7 @@ static Vec4 fromHex(std::string_view hex) {
 	return Vec4(r, g, b, a);
 }
 
-Vec4::Vec4() : x(0), y(0) {}
+Vec4::Vec4() : x(0), y(0), z(0), w(0) {}
 Vec4::Vec4(float x) : x(x), y(x), z(x), w(x) {}
 Vec4::Vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 Vec4::Vec4(const std::string& hex) {
@@ -74,8 +74,8 @@ Vec4 Vec4::operator*(float scalar) const { return Vec4(getX() * scalar, getY() *
 Vec4 Vec4::operator/(float scalar) const { return Vec4(getX() / scalar, getY() / scalar, getZ() / scalar, getW() / scalar); }
 bool Vec4::operator==(const Vec4& other) const { return getX() == other.getX() && getY() == other.getY() && getZ() == other.getZ() && getW() == other.getW(); }
 
-void Object::Vec4Bind::bind(Application* a) {
-	sol::state_view view(a->GetLuaState());
+void Object::Vec4Bind::bind(lua_State* ls) {
+	sol::state_view view(ls);
 	sol::usertype<Vec4> obj = view.new_usertype<Vec4>(
 		"Vec4",
 		sol::constructors<Vec4(), Vec4(float), Vec4(float, float, float, float), Vec4(const std::string&)>(),

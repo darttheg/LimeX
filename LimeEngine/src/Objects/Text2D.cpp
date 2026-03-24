@@ -1,9 +1,8 @@
 #include "Objects/Text2D.h"
 #include "irrlicht.h"
+#include <sol/sol.hpp>
 
 #include "External/CGUIColoredText.h"
-#include "Application.h"
-#include "DebugConsole.h"
 #include "GUIManager.h"
 #include "RenderHelper.h"
 #include "Objects/Vec2.h"
@@ -14,10 +13,7 @@ static GUIManager* g = nullptr;
 
 Text2D::Text2D() {
 	text = rh->createColoredText2D();
-	if (!text) {
-		d->Warn("Could not create Text2D");
-		return;
-	}
+	if (!text) return;
 
 	text->setText(L"Text");
 
@@ -96,10 +92,9 @@ irr::gui::IGUIElement* Text2D::getNode() const {
 	return text;
 }
 
-void Object::Text2DBind::bind(Application* a) {
-	rh = a->GetRenderHelper();
-	d = a->GetDebugConsole();
-	g = a->GetGUIManager();
+void Object::Text2DBind::bind(lua_State* ls, RenderHelper* renh, GUIManager* gu) {
+	rh = renh;
+	g = gu;
 
 	// Object Text2D, A basic 2D object to display text. Text objects support colors and basic styling. Use tags `<#HEX>` for color, `<s>` for strike, `<d>` for drop shadow, `<u>` for underline, `<b>` for bold, and `<r>` to reset styles. Example: `<#6ABE30>This is green! <b>Now, it's green and bold! <r>Now, it's back to normal.`
 	// Inherits Object2D
@@ -108,7 +103,7 @@ void Object::Text2DBind::bind(Application* a) {
 	// Constructor string text
 	// Constructor Vec2 pos, Vec2 size
 
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<Text2D> obj = view.new_usertype<Text2D>(
 		"Text2D",
 		sol::constructors<Text2D(), Text2D(const std::string& t), Text2D(const Vec2& p, const Vec2& s)>(),

@@ -2,9 +2,11 @@
 #include "Interfaces/SceneObject.h"
 #include "Interfaces/Object3D.h"
 
+extern "C" { struct lua_State; }
+
 #include "ICameraSceneNode.h"
 
-class Application;
+class RenderHelper;
 class Vec2;
 class Vec3;
 
@@ -54,5 +56,5 @@ private:
 };
 
 namespace Object::CameraBind {
-    void bind(Application* app);
+    void bind(lua_State* ls, RenderHelper* renh);
 }

@@ -2,12 +2,13 @@
 #include <string>
 #include <memory>
 
-class Application;
+extern "C" { struct lua_State; }
 
 class IrrShaderMaterial;
 class Vec2;
 class Vec3;
 class Vec4;
+class Renderer;
 
 class ShaderMaterial {
 public:
@@ -31,5 +32,5 @@ private:
 };
 
 namespace Object::ShaderMaterialBind {
-	void bind(Application* app);
+	void bind(lua_State* ls, Renderer* rend);
 }

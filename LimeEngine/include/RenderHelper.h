@@ -70,9 +70,9 @@ public:
 	irr::video::ITexture* cropTexture(irr::video::ITexture* tex, const Vec2& pos, const Vec2& dim);
 	irr::video::ITexture* appendTexture(irr::video::ITexture* tex, irr::video::ITexture* toAppend, const Vec2& pos);
 	Vec4 getColor(irr::video::ITexture* tex, const Vec2& pos);
-	irr::video::ITexture* setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color);
-	void keyColor(irr::video::ITexture* tex, const Vec4& color);
-	void setVertexColor(irr::scene::IAnimatedMeshSceneNode* m, const Vec4& color);
+	bool setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color);
+	bool keyColor(irr::video::ITexture* tex, const Vec4& color);
+	bool setVertexColor(irr::scene::IAnimatedMeshSceneNode* m, const Vec4& color);
 
 	// Create nodes
 	irr::scene::IAnimatedMesh* createMesh(const std::string& path);

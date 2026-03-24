@@ -1,8 +1,11 @@
 #pragma once
 #include <string>
 
-class Application;
+extern "C" { struct lua_State; }
 
+class Renderer;
+
+class Camera;
 class Vec2;
 class Vec4;
 
@@ -23,19 +26,23 @@ public:
 	sol::object purge();
 
 	Vec2 getSize();
-	void write(const std::string& outPath);
-	void crop(const Vec2& tl, const Vec2& br);
-	void append(const Texture& other, const Vec2& pos);
+	bool write(const std::string& outPath);
+	bool crop(const Vec2& tl, const Vec2& br);
+	bool append(const Texture& other, const Vec2& pos);
 	Vec4 getColor(const Vec2& pos);
-	void setColor(const Vec2& pos, const Vec4& color);
-	void key(const Vec4& color);
+	bool setColor(const Vec2& pos, const Vec4& color);
+	bool key(const Vec4& color);
 	std::string getPath() const;
 	int getRefCount();
+
+	void makeRenderTexture(const Vec2& size);
+	void makeRenderTexture(const Vec2& size, const Camera& c);
+
 	irr::video::ITexture* getTexture() const { return texture; }
 private:
 	irr::video::ITexture* texture = nullptr;
 };
 
 namespace Object::TextureBind {
-	void bind(Application* app);
+	void bind(lua_State* ls, Renderer* rend);
 }

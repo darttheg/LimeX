@@ -3,7 +3,7 @@
 #include <cmath>
 #include <functional>
 
-class Application;
+extern "C" { struct lua_State; }
 
 class Vec2 {
 public:
@@ -44,5 +44,5 @@ private:
 };
 
 namespace Object::Vec2Bind {
-    void bind(Application* app);
+    void bind(lua_State* ls);
 }

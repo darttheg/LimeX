@@ -1,14 +1,12 @@
 #include "Objects/Camera.h"
 
-#include "Application.h"
 #include "RenderHelper.h"
-#include "DebugConsole.h"
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 
 #include "irrlicht.h"
+#include <sol/sol.hpp>
 
-static DebugConsole* d;
 static RenderHelper* rh;
 
 Camera::Camera() : Camera(Vec3(), Vec3()){
@@ -131,9 +129,8 @@ void Camera::setActive() const {
 	rh->setActiveCamera(camera);
 }
 
-void Object::CameraBind::bind(Application* a) {
-	rh = a->GetRenderHelper();
-	d = a->GetDebugConsole();
+void Object::CameraBind::bind(lua_State* ls, RenderHelper* renh) {
+	rh = renh;
 
 	// Object Camera, A viewpoint in the 3D world.
 	// Inherits Object3D
@@ -142,7 +139,7 @@ void Object::CameraBind::bind(Application* a) {
 	// Constructor Vec3 pos
 	// Constructor Vec3 pos, Vec3 rot
 
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<Camera> obj = view.new_usertype<Camera>(
 		"Camera",
 		sol::constructors<Camera(), Camera(const Vec3& pos), Camera(const Vec3& pos, const Vec3& rot)>(),

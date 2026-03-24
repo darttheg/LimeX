@@ -1,14 +1,13 @@
 #include "Objects/Skydome.h"
 
-#include "Application.h"
+#include <sol/sol.hpp>
+
 #include "RenderHelper.h"
-#include "DebugConsole.h"
 #include "Objects/Texture.h"
 #include "Objects/Material.h"
 
 #include "irrlicht.h"
 
-static DebugConsole* d;
 static RenderHelper* rh;
 
 Skydome::Skydome() {
@@ -43,11 +42,10 @@ void Skydome::loadMaterial(const Material& mat) {
 	sky->setMaterialFlag(E_MATERIAL_FLAG::EMF_USE_MIP_MAPS, mat.getMaterial().getFlag(E_MATERIAL_FLAG::EMF_USE_MIP_MAPS));
 }
 
-void Object::SkydomeBind::bind(Application* a) {
-	rh = a->GetRenderHelper();
-	d = a->GetDebugConsole();
+void Object::SkydomeBind::bind(lua_State* ls, RenderHelper* renh) {
+	rh = renh;
 
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<Skydome> obj = view.new_usertype<Skydome>(
 		"Skydome",
 		sol::constructors<Skydome(), Skydome(const Material& material)>(),

@@ -2,7 +2,8 @@
 #include <sol/optional.hpp>
 #include <sol/forward.hpp>
 
-class Application;
+extern "C" { struct lua_State; }
+class RenderHelper;
 class Vec3;
 class Vec4;
 // #include "Objects/Vec3.h"
@@ -57,5 +58,5 @@ private:
 };
 
 namespace Interface::Object3DBind {
-    void bind(Application* app);
+    void bind(lua_State* ls, RenderHelper* renh);
 }

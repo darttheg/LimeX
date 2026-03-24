@@ -2,13 +2,17 @@
 #include "Interfaces/SceneObject.h"
 #include "Interfaces/Object3D.h"
 
-class Application;
+extern "C" { struct lua_State; }
+
 class Texture;
 class Material;
 class Vec2;
 class Vec3;
 class Vec4;
 class MeshBuffer;
+class DebugConsole;
+class Renderer;
+class RenderHelper;
 
 namespace irr {
     namespace scene {
@@ -67,5 +71,5 @@ private:
 };
 
 namespace Object::MeshBind {
-    void bind(Application* app);
+    void bind(lua_State* ls, DebugConsole* dc, Renderer* rend, RenderHelper* renh);
 }

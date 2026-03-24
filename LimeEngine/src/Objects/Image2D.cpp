@@ -1,18 +1,17 @@
 #include "Objects/Image2D.h"
 #include "irrlicht.h"
+#include <sol/sol.hpp>
 
 #include "External/CGUIColoredText.h"
-#include "Application.h"
-#include "DebugConsole.h"
 #include "RenderHelper.h"
 #include "Objects/Texture.h"
 #include "Objects/Vec2.h"
 
-static DebugConsole* d = nullptr;
 static RenderHelper* rh = nullptr;
 
 Image2D::Image2D() {
 	img = rh->createGUIImage();
+	if (!img) return;
 
 	Object2D::createEvents();
 }
@@ -56,9 +55,8 @@ irr::gui::IGUIElement* Image2D::getNode() const {
 	return img;
 }
 
-void Object::Image2DBind::bind(Application* a) {
-	rh = a->GetRenderHelper();
-	d = a->GetDebugConsole();
+void Object::Image2DBind::bind(lua_State* ls, RenderHelper* renh) {
+	rh = renh;
 
 	// Object Image2D, A basic 2D object to display images. Without loading a Texture, this object can be used as a container for other GUI objects if parented together.
 	// Inherits Object2D
@@ -67,7 +65,7 @@ void Object::Image2DBind::bind(Application* a) {
 	// Constructor Texture tex
 	// Constructor Vec2 pos, Vec2 size
 
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<Image2D> obj = view.new_usertype<Image2D>(
 		"Image2D",
 		sol::constructors<Image2D(), Image2D(const Texture& t), Image2D(const Vec2& pos, const Vec2& sz)>(),

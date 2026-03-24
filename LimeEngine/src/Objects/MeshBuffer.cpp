@@ -1,22 +1,18 @@
 #include "Objects/MeshBuffer.h"
 
-#include "Application.h"
-#include "DebugConsole.h"
 #include "Renderer.h"
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
 
 #include "irrlicht.h"
+#include <sol/sol.hpp>
 
-static Application* a;
-static DebugConsole* d;
+static lua_State* l;
 static Renderer* r;
 
 MeshBuffer::MeshBuffer() {
-	if (r->guardRenderingCheck()) {
-		buffer = new irr::scene::SMeshBuffer();
-	}
+	buffer = new irr::scene::SMeshBuffer();
 }
 
 void MeshBuffer::pushFace(const Vec3& v1, const Vec3& v2, const Vec3& v3, const Vec3& n1, const Vec3& n2, const Vec3& n3, const Vec2& uvw1, const Vec2& uvw2, const Vec2& uvw3, const Vec4& c1, const Vec4& c2, const Vec4& c3) {
@@ -65,26 +61,24 @@ void MeshBuffer::clear() {
 }
 
 sol::object MeshBuffer::purge() {
-	if (!r->removeBuffer(buffer))
-		d->Warn("Could not purge buffer: it is not valid!");
+	r->removeBuffer(buffer);
 	buffer = nullptr;
-	return sol::make_object(a->GetLuaState(), sol::nil);
+	return sol::make_object(l, sol::nil);
 }
 
 int MeshBuffer::getRefCount() const {
 	return buffer ? buffer->getReferenceCount() : 0;
 }
 
-void Object::MeshBufferBind::bind(Application* app) {
-	a = app;
-	d = app->GetDebugConsole();
-	r = app->GetRenderer();
+void Object::MeshBufferBind::bind(lua_State* ls, Renderer* rend) {
+	l = ls;
+	r = rend;
 
 	// Object MeshBuffer, A container for vertices.
 
 	// Constructor
 
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<MeshBuffer> obj = view.new_usertype<MeshBuffer>(
 		"MeshBuffer",
 		sol::constructors<MeshBuffer()>(),

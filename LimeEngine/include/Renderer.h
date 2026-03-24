@@ -92,6 +92,8 @@ public:
 	bool getMatchRes() { return doMatchResolution; }
 	void setSceneRenderQuality(int q);
 	void setPostProcessingShader(const ShaderMaterial& sm);
+	irr::scene::ICameraSceneNode* getActiveCameraNode();
+	irr::video::ITexture* createRenderTargetTexture(const Vec2& size, irr::scene::ICameraSceneNode* c);
 
 	// Scene - Cleanup
 	void addToDeletionQueue(irr::scene::ISceneNode* node);
@@ -147,6 +149,7 @@ private:
 	int frameCount = 0;
 	int lastTime = 0;
 	int fps = 0;
+	int rttc = 0;
 	HWND hwndIrr = nullptr;
 	QuadRenderer* qr = nullptr;
 	RenderHelper* rh = nullptr;

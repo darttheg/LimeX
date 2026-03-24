@@ -2,8 +2,8 @@
 #include "Interfaces/SceneObject.h"
 #include "Interfaces/Object3D.h"
 
-class Application;
-class Texture;
+extern "C" { struct lua_State; }
+class RenderHelper;
 class Material;
 class Vec2;
 
@@ -32,5 +32,5 @@ private:
 };
 
 namespace Object::BillboardBind {
-    void bind(Application* app);
+    void bind(lua_State* ls, RenderHelper* renh);
 }

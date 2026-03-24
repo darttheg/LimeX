@@ -2,15 +2,14 @@
 #include "Application.h"
 #include "DebugConsole.h"
 
-static Application* a;
-static DebugConsole* d;
+static lua_State* ls;
 
 Event::Event() {
 }
 
 Hook Event::hook(sol::function f) {
 	f.push();
-	int ref = luaL_ref(a->GetLuaState(), LUA_REGISTRYINDEX);
+	int ref = luaL_ref(ls, LUA_REGISTRYINDEX);
 	funcs.push_back(ref);
 	// We can get the function because it's sitting at the top of the registry after just being called.
 	updateLen();
@@ -29,7 +28,7 @@ bool Event::removeRef(int ref) {
 	if (it == funcs.end())
 		return false;
 
-	luaL_unref((a->GetLuaState()), LUA_REGISTRYINDEX, ref);
+	luaL_unref(ls, LUA_REGISTRYINDEX, ref);
 	funcs.erase(it);
 	updateLen();
 	return true;
@@ -37,7 +36,7 @@ bool Event::removeRef(int ref) {
 
 void Event::clear() {
 	for (int ref : funcs) {
-		luaL_unref(a->GetLuaState(), LUA_REGISTRYINDEX, ref);
+		luaL_unref(ls, LUA_REGISTRYINDEX, ref);
 	}
 
 	funcs.clear();
@@ -49,27 +48,27 @@ bool Event::empty() {
 }
 
 void Event::run() {
-	int argc = lua_gettop(a->GetLuaState());
+	int argc = lua_gettop(ls);
 	int passc = (argc >= 1) ? (argc - 1) : 0;
 
 	for (int ref : funcs) {
-		lua_rawgeti((a->GetLuaState()), LUA_REGISTRYINDEX, ref); // Push callback function from registry onto stack
+		lua_rawgeti(ls, LUA_REGISTRYINDEX, ref); // Push callback function from registry onto stack
 
 		// Starts at index 2 to exclude self
 		for (int i = 2; i <= argc; ++i)
-			lua_pushvalue(a->GetLuaState(), i);
+			lua_pushvalue(ls, i);
 
 		// Call Lua function with pushed arguments
-		if (lua_pcall(a->GetLuaState(), passc, 0, 0) != LUA_OK)
-			lua_pop(a->GetLuaState(), 1);
+		if (lua_pcall(ls, passc, 0, 0) != LUA_OK)
+			lua_pop(ls, 1);
 	}
 
 	if (passc > 0)
-		lua_pop(a->GetLuaState(), passc);
+		lua_pop(ls, passc);
 }
 
 static void bindEvent() {
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<Event> bindType = view.new_usertype<Event>("Event",
 		sol::no_constructor,
 		sol::meta_function::type, [](const Event&) { return "Event"; }
@@ -123,7 +122,7 @@ sol::object Hook::unhook() {
 }
 
 static void bindHook() {
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<Hook> bindType = view.new_usertype<Hook>("Hook",
 		sol::constructors<Hook()>(),
 		sol::meta_function::type, [](const Hook&) { return "Hook"; }
@@ -142,9 +141,8 @@ static void bindHook() {
 	// End Object
 }
 
-void Object::EventBind::bind(Application* app) {
-	a = app;
-	d = a->GetDebugConsole();
+void Object::EventBind::bind(lua_State* l) {
+	ls = l;
 	bindEvent();
 	bindHook();
 }

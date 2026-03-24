@@ -2,9 +2,11 @@
 #include "Interfaces/SceneObject.h"
 #include "Interfaces/Object3D.h"
 
-class Application;
+extern "C" { struct lua_State; }
+
 class Texture;
 class Material;
+class RenderHelper;
 
 namespace irr {
 	namespace scene {
@@ -27,5 +29,5 @@ private:
 };
 
 namespace Object::SkydomeBind {
-    void bind(Application* app);
+    void bind(lua_State* ls, RenderHelper* renh);
 }

@@ -1,14 +1,11 @@
 #include "Objects/Empty.h"
 
-#include "Application.h"
 #include "RenderHelper.h"
-#include "DebugConsole.h"
-
 #include "Objects/Vec3.h"
 
 #include "irrlicht.h"
+#include <sol/sol.hpp>
 
-static DebugConsole* d;
 static RenderHelper* rh;
 
 Empty::Empty() {
@@ -36,14 +33,13 @@ void Empty::setDebug(bool v) {
 
 irr::scene::ISceneNode* Empty::getNode() const { return emp; }
 
-void Object::EmptyBind::bind(Application* a) {
-	rh = a->GetRenderHelper();
-	d = a->GetDebugConsole();
+void Object::EmptyBind::bind(lua_State* ls, RenderHelper* renh) {
+	rh = renh;
 
 	// Object Empty, An invisible object used to mark locations, parent objects, and more.
 	// Inherits Object3D
 
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<Empty> obj = view.new_usertype<Empty>(
 		"Empty",
 		sol::constructors<Empty(), Empty(const Vec3& pos)>(),

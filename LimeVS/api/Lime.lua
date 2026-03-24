@@ -1099,13 +1099,13 @@ function Text3D:setWordWrap(wrap) end
 --- Appends another `Texture` onto this `Texture`.
 ---@param toAppend Texture
 ---@param pos Vec2
----@return void
+---@return boolean
 function Texture:append(toAppend, pos) end
 
 --- Crops the `Texture` to the dimensions provided. Be mindful as cropping creates a new `Texture` in the renderer.
 ---@param topLeft Vec2
 ---@param bottomRight Vec2
----@return void
+---@return boolean
 function Texture:crop(topLeft, bottomRight) end
 
 --- Returns the color of the pixel at `pos` in this `Texture`.
@@ -1127,22 +1127,28 @@ function Texture:getSize() end
 
 --- Removes the color `keyColor` from anywhere in this `Texture`.
 ---@param keyColor Vec4
----@return void
+---@return boolean
 function Texture:keyColor(keyColor) end
 
 --- Purges this `Texture`, effectively removing it from memory. Objects using this `Texture` will use an engine-defined `Texture` instead, but it is recommended to remove references to this `Texture` first.
 ---@return nil
 function Texture:purge() end
 
+--- Renders the scene to this `Texture`.
+---@overload fun(size:Vec2, viewpoint:Camera): void
+---@param size Vec2
+---@return void
+function Texture:renderToTexture(size) end
+
 --- Replaces the pixel at `pos` with a pixel of color `color`.
 ---@param pos Vec2
 ---@param color Vec4
----@return void
+---@return boolean
 function Texture:setColor(pos, color) end
 
 --- Writes the `Texture` to path `path`.
 ---@param path string
----@return void
+---@return boolean
 function Texture:write(path) end
 
 --- Measures the angle between vectors in degrees

@@ -1,13 +1,13 @@
 #include "Objects/ShaderMaterial.h"
 
-#include "Application.h"
-#include "DebugConsole.h"
 #include "Renderer.h"
 
 static DebugConsole* d;
 static Renderer* r;
 
 #include "Objects/IrrShaderMat.h"
+
+#include <sol/sol.hpp>
 
 ShaderMaterial::ShaderMaterial(const std::string& vs, const std::string& ps, int type) {
 	shadermat = std::make_shared<IrrShaderMaterial>(r->getVideoDriver(), vs, ps, type);
@@ -58,15 +58,14 @@ std::string ShaderMaterial::getPsPath() const {
 	return psPath;
 }
 
-void Object::ShaderMaterialBind::bind(Application* a) {
-	r = a->GetRenderer();
-	d = a->GetDebugConsole();
+void Object::ShaderMaterialBind::bind(lua_State* ls, Renderer* rend) {
+	r = rend;
 
 	// Object Shader, A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldTransformed` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
 
 	// Constructor string vertexShaderPath, string pixelShaderPath, Lime.Enum.MaterialType? type
 
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<ShaderMaterial> obj = view.new_usertype<ShaderMaterial>(
 		"Shader",
 		sol::constructors<ShaderMaterial(const std::string& vsPath, const std::string& psPath), ShaderMaterial(const std::string &vsPath, const std::string &psPath, int type)>(),

@@ -1,5 +1,5 @@
 #include "Objects/Vec2.h"
-#include "Application.h"
+#include <sol/sol.hpp>
 
 #define PI 3.14159265358979323846
 
@@ -67,8 +67,8 @@ Vec2 Vec2::clamp(const Vec2& min, const Vec2& max) const {
 	return Vec2(std::clamp(getX(), min.getX(), max.getX()), std::clamp(getY(), min.getY(), max.getY()));
 }
 
-void Object::Vec2Bind::bind(Application* a) {
-	sol::state_view view(a->GetLuaState());
+void Object::Vec2Bind::bind(lua_State* ls) {
+	sol::state_view view(ls);
 	sol::usertype<Vec2> obj = view.new_usertype<Vec2>(
 		"Vec2",
 		sol::constructors<Vec2(), Vec2(float), Vec2(float, float)>(),

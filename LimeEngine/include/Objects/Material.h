@@ -2,7 +2,7 @@
 #include <string>
 #include <memory>
 
-class Application;
+extern "C" { struct lua_State; }
 
 class Vec2;
 class Vec4;
@@ -97,5 +97,5 @@ private:
 };
 
 namespace Object::MaterialBind {
-	void bind(Application* app);
+	void bind(lua_State* ls);
 }

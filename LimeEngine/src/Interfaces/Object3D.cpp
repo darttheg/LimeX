@@ -1,14 +1,14 @@
 #include "Interfaces/Object3D.h"
-#include "Application.h"
 #include "RenderHelper.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
 
 #include "irrlicht.h"
+#include <sol/sol.hpp>
 using namespace irr;
 using namespace scene;
 
-static Application* a = nullptr;
+static lua_State* l = nullptr;
 static RenderHelper* rh = nullptr;
 
 Vec3 Object3D::getPosition() const {
@@ -86,7 +86,7 @@ sol::object Object3D::i_destroy() {
     debug = false;
     clearAttributes();
     destroy();
-    return sol::make_object(a->GetLuaState(), sol::nil);
+    return sol::make_object(l, sol::nil);
 }
 
 void Object3D::setAttribute(sol::object key, sol::object value) {
@@ -132,10 +132,10 @@ bool Object3D::isPointInside(const Vec3& pos) const {
     return b.isPointInside(irr::core::vector3df(pos.getX(), pos.getY(), pos.getZ()));
 }
 
-void Interface::Object3DBind::bind(Application* app) {
-    a = app;
-    rh = app->GetRenderHelper();
-	sol::state_view view(a->GetLuaState());
+void Interface::Object3DBind::bind(lua_State* ls, RenderHelper* renh) {
+    rh = renh;
+    l = ls;
+	sol::state_view view(ls);
 
     // Interface Object3D
 

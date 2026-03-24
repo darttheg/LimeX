@@ -2,7 +2,8 @@
 #include <sol/optional.hpp>
 #include <sol/forward.hpp>
 
-class Application;
+extern "C" { struct lua_State; }
+class Renderer;
 class Vec2;
 class Vec4;
 class Event;
@@ -79,5 +80,5 @@ private:
 };
 
 namespace Interface::Object2DBind {
-	void bind(Application* app);
+	void bind(lua_State* ls, Renderer* rend);
 }

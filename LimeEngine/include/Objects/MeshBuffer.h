@@ -1,11 +1,11 @@
 #pragma once
 
-class Application;
-class Texture;
-class Material;
+extern "C" { struct lua_State; }
+
 class Vec2;
 class Vec3;
 class Vec4;
+class Renderer;
 
 #include "sol/forward.hpp"
 
@@ -46,5 +46,5 @@ private:
 };
 
 namespace Object::MeshBufferBind {
-    void bind(Application* app);
+    void bind(lua_State* ls, Renderer* rend);
 }

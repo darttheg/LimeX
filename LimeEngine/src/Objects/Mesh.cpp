@@ -1,6 +1,5 @@
 #include "Objects/Mesh.h"
 
-#include "Application.h"
 #include "Renderer.h"
 #include "RenderHelper.h"
 #include "DebugConsole.h"
@@ -12,6 +11,8 @@
 #include "Objects/MeshBuffer.h"
 
 #include "irrlicht.h"
+
+#include <sol/sol.hpp>
 
 static Renderer* r;
 static DebugConsole* d;
@@ -222,15 +223,15 @@ irr::scene::ISceneNode* Mesh::getNode() const {
 	return src;
 }
 
-void Object::MeshBind::bind(Application* a) {
-	r = a->GetRenderer();
-	rh = a->GetRenderHelper();
-	d = a->GetDebugConsole();
+void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, RenderHelper* renh) {
+	r = rend;
+	rh = renh;
+	d = dc;
 
 	// Object Mesh, A scene object capable of displaying a mesh.
 	// Inherits Object3D
 
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<Mesh> obj = view.new_usertype<Mesh>(
 		"Mesh",
 		sol::constructors<Mesh(), Mesh(const std::string&), Mesh(const MeshBuffer&)>(),

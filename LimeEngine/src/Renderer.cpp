@@ -378,6 +378,30 @@ void Renderer::setPostProcessingShader(const ShaderMaterial& sm) {
 	qr->setPostProcessingShader(sm.isValid() ? sm.getMaterialType() : -1);
 }
 
+irr::scene::ICameraSceneNode* Renderer::getActiveCameraNode() {
+	if (!guardRenderingCheck()) return nullptr;
+	return i_smgr->getActiveCamera();
+}
+
+irr::video::ITexture* Renderer::createRenderTargetTexture(const Vec2& size, irr::scene::ICameraSceneNode* c) {
+	if (!guardRenderingCheck()) return nullptr;
+	std::string outName = "rtt_" + std::to_string(rttc);
+	irr::video::ITexture* out = i_driver->addRenderTargetTexture(irr::core::dimension2du(size.getX(), size.getY()), outName.c_str());
+
+	irr::scene::ICameraSceneNode* prev = i_smgr->getActiveCamera();
+	irr::f32 prevAR = prev ? prev->getAspectRatio() : 0.0f;
+
+	i_smgr->setActiveCamera(c ? c : prev);
+	i_smgr->getActiveCamera()->setAspectRatio(size.getX() / size.getY());
+	i_driver->setRenderTarget(out, true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
+	i_smgr->drawAll();
+	i_driver->setRenderTarget(nullptr, true, true, 0);
+
+	i_smgr->setActiveCamera(prev);
+	if (prev) prev->setAspectRatio(prevAR);
+	return out;
+}
+
 void Renderer::addToDeletionQueue(irr::scene::ISceneNode* node) {
 	if (!i_smgr || !node) return;
 	i_smgr->addToDeletionQueue(node);

@@ -2,6 +2,9 @@
 
 #include "Interfaces/Object2D.h"
 
+extern "C" { struct lua_State; }
+class RenderHelper;
+class GUIManager;
 class Vec2;
 
 namespace irr {
@@ -35,5 +38,5 @@ private:
 };
 
 namespace Object::Text2DBind {
-	void bind(Application* app);
+	void bind(lua_State* ls, RenderHelper* renh, GUIManager* gu);
 }

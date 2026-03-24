@@ -1,13 +1,13 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include "sol/sol.hpp"
+#include <sol/sol.hpp>
 #include <functional>
 
-class Application;
+extern "C" { struct lua_State; }
 
 namespace Object::EventBind {
-	void bind(Application* app);
+	void bind(lua_State* l);
 }
 
 class Event : public std::enable_shared_from_this<Event> {

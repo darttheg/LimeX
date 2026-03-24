@@ -2,6 +2,8 @@
 
 #include "Interfaces/Object2D.h"
 
+extern "C" { struct lua_State; }
+class RenderHelper;
 class Vec2;
 class Texture;
 
@@ -29,5 +31,5 @@ private:
 };
 
 namespace Object::Image2DBind {
-	void bind(Application* app);
+	void bind(lua_State* ls, RenderHelper* renh);
 }

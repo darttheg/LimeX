@@ -2,10 +2,12 @@
 #include "Interfaces/SceneObject.h"
 #include "Interfaces/Object3D.h"
 
-class Application;
+extern "C" { struct lua_State; }
+
 class Vec2;
 class Vec3;
 class Vec4;
+class RenderHelper;
 
 namespace irr {
     namespace scene {
@@ -56,5 +58,5 @@ private:
 };
 
 namespace Object::LightBind {
-    void bind(Application* app);
+    void bind(lua_State* ls, RenderHelper* renh);
 }

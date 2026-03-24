@@ -1,16 +1,13 @@
 #include "Objects/Billboard.h"
 
-#include "Application.h"
 #include "RenderHelper.h"
-#include "DebugConsole.h"
-#include "Objects/Texture.h"
 #include "Objects/Material.h"
 
 #include "Objects/Vec2.h"
 
 #include "irrlicht.h"
+#include <sol/sol.hpp>
 
-static DebugConsole* d;
 static RenderHelper* rh;
 
 Billboard::Billboard() {
@@ -50,14 +47,13 @@ void Billboard::loadMaterial(const Material& mat) {
 	bb->getMaterial(0) = mat.getMaterial();
 }
 
-void Object::BillboardBind::bind(Application* a) {
-	rh = a->GetRenderHelper();
-	d = a->GetDebugConsole();
+void Object::BillboardBind::bind(lua_State* ls, RenderHelper* renh) {
+	rh = renh;
 
 	// Object Billboard, A plane that faces the active camera.
 	// Inherits Object3D
 
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<Billboard> obj = view.new_usertype<Billboard>(
 		"Billboard",
 		sol::constructors<Billboard(), Billboard(const Material & material)>(),

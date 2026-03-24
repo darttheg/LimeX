@@ -1,9 +1,10 @@
 #include "Objects/Vec3.h"
-#include "Application.h"
+#include <sol/sol.hpp>
+#include <algorithm>
 
 #define PI 3.14159265358979323846
 
-Vec3::Vec3() : x(0), y(0) {}
+Vec3::Vec3() : x(0), y(0), z() {}
 Vec3::Vec3(float x) : x(x), y(x), z(x) {}
 Vec3::Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
 
@@ -89,8 +90,8 @@ Vec3 Vec3::reflect(const Vec3& dir) const {
 	return *this - dir * (2.0f * this->dot(dir));
 }
 
-void Object::Vec3Bind::bind(Application* a) {
-	sol::state_view view(a->GetLuaState());
+void Object::Vec3Bind::bind(lua_State* ls) {
+	sol::state_view view(ls);
 	sol::usertype<Vec3> obj = view.new_usertype<Vec3>(
 		"Vec3",
 		sol::constructors<Vec3(), Vec3(float), Vec3(float, float, float)>(),

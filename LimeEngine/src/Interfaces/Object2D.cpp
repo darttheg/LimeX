@@ -1,18 +1,18 @@
 #include "Interfaces/Object2D.h"
 #include "Objects/Event.h"
-#include "Application.h"
 #include "Renderer.h"
 #include "RenderHelper.h"
 #include "Objects/Vec2.h"
 #include "Objects/Vec4.h"
 
+#include <sol/sol.hpp>
 #include "irrlicht.h"
 using namespace irr;
 using namespace scene;
 
-static Application* a = nullptr;
 static Renderer* r = nullptr;
 static RenderHelper* rh = nullptr;
+static lua_State* l = nullptr;
 
 irr::gui::IGUIElement* Object2D::getButton() const {
     return button;
@@ -234,14 +234,14 @@ sol::object Object2D::i_destroy() {
     removeButton();
     setBorder(false);
     destroy();
-    return sol::make_object(a->GetLuaState(), sol::nil);
+    return sol::make_object(l, sol::nil);
 }
 
-void Interface::Object2DBind::bind(Application* app) {
-    a = app;
-    r = a->GetRenderer();
-    rh = a->GetRenderHelper();
-    sol::state_view view(a->GetLuaState());
+void Interface::Object2DBind::bind(lua_State* ls, Renderer* rend) {
+    r = rend;
+    rh = rend->GetRenderHelper();
+    l = ls;
+    sol::state_view view(ls);
 
     // Interface Object2D
 

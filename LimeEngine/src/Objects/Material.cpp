@@ -1,8 +1,6 @@
 #include "Objects/Material.h"
 
-#include "Application.h"
-#include "DebugConsole.h"
-#include "Renderer.h"
+#include <sol/sol.hpp>
 
 #include <algorithm>
 #include "irrlicht.h"
@@ -12,9 +10,6 @@
 #include "Objects/Vec4.h"
 #include "Objects/Texture.h"
 #include "Objects/ShaderMaterial.h"
-
-static DebugConsole* d;
-static Renderer* r;
 
 Material::Material() {
 	material = std::make_unique<irr::video::SMaterial>();
@@ -156,7 +151,7 @@ void Material::setQuality(int quality) {
 	if (m_quality == quality) return;
 	m_quality = quality;
 
-	auto setFilters = [&](bool bilinear, bool trilinear, u32 aniso) {
+	auto setFilters = [&](bool bilinear, bool trilinear, irr::u32 aniso) {
 			for (int i = 0; i < 2; i++) {
 				material->TextureLayer[i].AnisotropicFilter = aniso;
 				material->TextureLayer[i].BilinearFilter = bilinear;
@@ -287,10 +282,7 @@ void Material::setEmissiveColor(const Vec4& rgba) {
 	material->EmissiveColor = c;
 }
 
-void Object::MaterialBind::bind(Application* a) {
-	r = a->GetRenderer();
-	d = a->GetDebugConsole();
-
+void Object::MaterialBind::bind(lua_State* ls) {
 	// Object Material, An object used to hold material parameters for 3D objects. A Material has at most two layers, with `Lime.Enum.MaterialType` allowing for different combinations of said layers.
 
 	// Constructor
@@ -298,7 +290,7 @@ void Object::MaterialBind::bind(Application* a) {
 	// Constructor Material other
 	// Constructor Lime.Enum.Quality quality
 
-	sol::state_view view(a->GetLuaState());
+	sol::state_view view(ls);
 	sol::usertype<Material> obj = view.new_usertype<Material>(
 		"Material",
 		sol::constructors<Material(), Material(const Texture& img), Material(const Material& other), Material(int quality)>(),

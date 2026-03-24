@@ -157,8 +157,8 @@ Vec4 RenderHelper::getColor(irr::video::ITexture* tex, const Vec2& pos) {
 	return Vec4(pCol.getRed(), pCol.getGreen(), pCol.getBlue(), pCol.getAlpha());
 }
 
-irr::video::ITexture* RenderHelper::setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color) {
-	if (!guardRenderingCheck()) return nullptr;
+bool RenderHelper::setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color) {
+	if (!guardRenderingCheck()) return false;
 
 	irr::video::IImage* img = texToImg(i_driver, tex);
 	img->getPixel(pos.getX(), pos.getY());
@@ -170,17 +170,19 @@ irr::video::ITexture* RenderHelper::setColor(irr::video::ITexture* tex, const Ve
 	return out;
 }
 
-void RenderHelper::keyColor(irr::video::ITexture* tex, const Vec4& color) {
-	if (!guardRenderingCheck()) return;
+bool RenderHelper::keyColor(irr::video::ITexture* tex, const Vec4& color) {
+	if (!guardRenderingCheck()) return false;
 
 	i_driver->makeColorKeyTexture(tex, irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()));
+	return tex;
 }
 
-void RenderHelper::setVertexColor(irr::scene::IAnimatedMeshSceneNode* m, const Vec4& color) {
-	if (!guardRenderingCheck()) return;
+bool RenderHelper::setVertexColor(irr::scene::IAnimatedMeshSceneNode* m, const Vec4& color) {
+	if (!guardRenderingCheck()) return false;
 
 	irr::scene::IMeshManipulator* meshManipulator = i_smgr->getMeshManipulator();
 	meshManipulator->setVertexColors(m->getMesh(), irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()));
+	return m;
 }
 
 irr::scene::ISceneNode* RenderHelper::createEmptyNode() {

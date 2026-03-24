@@ -36,9 +36,11 @@
 //
 
 void LuaBinder::BindAll(Application* app) {
+	lua_State* ls = app->GetLuaState();
+
 	// Interfaces
-	Interface::Object2DBind::bind(app);
-	Interface::Object3DBind::bind(app);
+	Interface::Object2DBind::bind(ls, app->GetRenderer());
+	Interface::Object3DBind::bind(ls, app->GetRenderHelper());
 
 	// Modules
 	Module::Lime::bind(app);
@@ -48,21 +50,21 @@ void LuaBinder::BindAll(Application* app) {
 	Module::GUI::bind(app);
 
 	// Objects
-	Object::EventBind::bind(app);
-	Object::Vec2Bind::bind(app);
-	Object::Vec3Bind::bind(app);
-	Object::Vec4Bind::bind(app);
-	Object::TextureBind::bind(app);
-	Object::MaterialBind::bind(app);
-	Object::SkydomeBind::bind(app);
-	Object::CameraBind::bind(app);
-	Object::Text2DBind::bind(app);
-	Object::Image2DBind::bind(app);
-	Object::BillboardBind::bind(app);
-	Object::Text3DBind::bind(app);
-	Object::EmptyBind::bind(app);
-	Object::MeshBind::bind(app);
-	Object::MeshBufferBind::bind(app);
-	Object::LightBind::bind(app);
-	Object::ShaderMaterialBind::bind(app);
+	Object::EventBind::bind(ls);
+	Object::Vec2Bind::bind(ls);
+	Object::Vec3Bind::bind(ls);
+	Object::Vec4Bind::bind(ls);
+	Object::TextureBind::bind(ls, app->GetRenderer());
+	Object::MaterialBind::bind(ls);
+	Object::SkydomeBind::bind(ls, app->GetRenderHelper());
+	Object::CameraBind::bind(ls, app->GetRenderHelper());
+	Object::Text2DBind::bind(ls, app->GetRenderHelper(), app->GetGUIManager());
+	Object::Image2DBind::bind(ls, app->GetRenderHelper());
+	Object::BillboardBind::bind(ls, app->GetRenderHelper());
+	Object::Text3DBind::bind(ls, app->GetRenderHelper(), app->GetGUIManager());
+	Object::EmptyBind::bind(ls, app->GetRenderHelper());
+	Object::MeshBind::bind(ls, app->GetDebugConsole(), app->GetRenderer(), app->GetRenderHelper());
+	Object::MeshBufferBind::bind(ls, app->GetRenderer());
+	Object::LightBind::bind(ls, app->GetRenderHelper());
+	Object::ShaderMaterialBind::bind(ls, app->GetRenderer());
 }
