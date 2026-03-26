@@ -59,6 +59,7 @@ bool SoundManager::Update(float dt) {
 	last = c;
 
 	i_sound->setListenerPosition(pos, forward, lVel * velFactor, up);
+	return true;
 }
 
 int SoundManager::getMainVolume() {
@@ -108,7 +109,7 @@ irrklang::ISound* SoundManager::play(irrklang::ISoundSource* src, bool td, bool 
 	if (!guardSoundCheck() || !src) return nullptr;
 	
 	irrklang::ISound* out = nullptr;
-	if (!td)
+	if (td)
 		out = i_sound->play3D(src, irrklang::vec3df(), loops, false, true, sfx);
 	else
 		out = i_sound->play2D(src, loops, false, true, sfx);

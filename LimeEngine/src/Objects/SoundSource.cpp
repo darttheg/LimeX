@@ -26,6 +26,8 @@ bool SoundSource::play(bool td) {
 	cur = s->play(src, td, loops, doSFX);
 	if (cur && td)
 		cur->setPosition(irrklang::vec3df(pos.x, pos.y, pos.z));
+	if (cur)
+		cur->setMinDistance(minDist);
 
 	return cur;
 }
@@ -58,6 +60,16 @@ bool SoundSource::getLooping() {
 void SoundSource::setLooping(bool v) {
 	loops = v;
 	if (cur) cur->setIsLooped(v);
+}
+
+float SoundSource::getMinDist() {
+	return cur ? cur->getMinDistance() : 0.0f;
+}
+
+void SoundSource::setMinDist(float f) {
+	if (!src || !cur) return;
+	cur->setMinDistance(f);
+	minDist = f;
 }
 
 void SoundSource::setVolume(float f) {
@@ -109,6 +121,15 @@ Vec3 SoundSource::getVelocity() {
 	return cur ? Vec3(cur->getVelocity().X, cur->getVelocity().Y, cur->getVelocity().Z) : Vec3();
 }
 
+void SoundSource::setPosition(const Vec3& p) {
+	if (!src || !cur) return;
+	cur->setPosition(irrklang::vec3df(p.getX(), p.getY(), p.getZ()));
+}
+
+Vec3 SoundSource::getPosition() {
+	return cur ? Vec3(cur->getPosition().X, cur->getPosition().Y, cur->getPosition().Z) : Vec3();
+}
+
 bool SoundSource::getDoSFX() {
 	return doSFX;
 }
@@ -149,12 +170,41 @@ sol::object SoundSource::purge() {
 
 bool SoundSource::loadFromFile(const std::string& path, int type) {
 	stop();
-	src->drop();
-	cur = nullptr;
-	src = nullptr;
-
 	src = s->createSoundSource(path, type);
 	return src;
+}
+
+void SoundSource::clearEffects() {
+	if (!cur) return;
+	cur->getSoundEffectControl()->disableAllEffects();
+}
+
+bool SoundSource::addDistortionEffect(float gain, float edge) {
+	if (!cur || !doSFX) return false;
+	if (!cur->getSoundEffectControl()) return false;
+	cur->getSoundEffectControl()->enableDistortionSoundEffect(gain, edge);
+	return true;
+}
+
+bool SoundSource::addEchoEffect(float wetDry, float feedback, float delay) {
+	if (!cur || !doSFX) return false;
+	if (!cur->getSoundEffectControl()) return false;
+	cur->getSoundEffectControl()->enableEchoSoundEffect(wetDry, feedback, delay, delay);
+	return true;
+}
+
+bool SoundSource::addReverbEffect(float inputGain, float mix, float time, float freqRatio) {
+	if(!cur || !doSFX) return false;
+	if (!cur->getSoundEffectControl()) return false;
+	cur->getSoundEffectControl()->enableWavesReverbSoundEffect(inputGain, mix, time, freqRatio);
+	return true;
+}
+
+bool SoundSource::addCompressionEffect(float threshold, float ratio) {
+	if (!cur || !doSFX) return false;
+	if (!cur->getSoundEffectControl()) return false;
+	cur->getSoundEffectControl()->enableCompressorSoundEffect(0.0f, 10.0f, 200.0f, threshold, ratio, 4.0f);
+	return true;
 }
 
 void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou) {
@@ -169,15 +219,15 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou) {
 	sol::state_view view(ls);
 	sol::usertype<SoundSource> obj = view.new_usertype<SoundSource>(
 		"SoundSource",
-		sol::constructors<SoundSource(), SoundSource(const std::string&, int)>(),
+		sol::constructors<SoundSource(), SoundSource(const std::string&), SoundSource(const std::string&, int)>(),
 
 		sol::meta_function::type, [](const SoundSource&) { return "SoundSource"; },
 
 		// Field boolean paused, Whether or not this `SoundSource` is paused.
 		"paused", sol::property(&SoundSource::getPaused, &SoundSource::setPaused),
 
-		// Field boolean loops, Whether or not this `SoundSource` loops on playback. 
-		"loops", sol::property(&SoundSource::getLooping, &SoundSource::setLooping),
+		// Field boolean looping, Whether or not this `SoundSource` loops on playback. 
+		"looping", sol::property(&SoundSource::getLooping, &SoundSource::setLooping),
 
 		// Field number volume, The volume of this `SoundSource`.
 		"volume", sol::property(&SoundSource::getVolume, &SoundSource::setVolume),
@@ -188,6 +238,9 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou) {
 		// Field number pan, The pan of this `SoundSource`, where -1.0 is left and 1.0 is right. 
 		"pan", sol::property(&SoundSource::getPan, &SoundSource::setPan),
 
+		// Field number minimumDistance, Sets the minimum listening distance for this `SoundSource`. Only applicable if this object is played in 3D.
+		"minimumDistance", sol::property(&SoundSource::getMinDist, &SoundSource::setMinDist),
+
 		// Field number playbackPosition, The current playback position of this `SoundSource`.
 		"playbackPosition", sol::property(&SoundSource::getPlayPosition, &SoundSource::setPlayPosition),
 
@@ -197,7 +250,13 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou) {
 			[](SoundSource& c, const Vec3& v) { c.setVelocity(v); }
 		),
 
-		// Field boolean sfx, Whether or not sound effects are enabled on playback. This flag must be enabled, then the object should be played to see any effect.
+		// Field Vec3 position, The position of this `SoundSource` in the scene. Only applicable if this `SoundSource` is played in 3D.
+		"position", sol::property(
+			[](SoundSource& c) { return Vec3{ [&] { return c.getPosition(); }, [&](auto v) { c.setPosition(v); } }; },
+			[](SoundSource& c, const Vec3& v) { c.setPosition(v); }
+		),
+
+		// Field boolean sfx, Whether or not sound effects are enabled on playback. This flag must first be enabled to apply effects, as it is false by default. Sound effects are more resource-intensive.
 		"sfx", sol::property(&SoundSource::getDoSFX, &SoundSource::setDoSFX),
 
 		// Field boolean debug, Show debug information about this object in the scene.
@@ -241,6 +300,34 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou) {
 	// Purges this `SoundSource`, effectively removing it from memory. If other `SoundSource` objects use this sound, there may be issues.
 	// Returns nil
 	obj.set_function("purge", &SoundSource::purge);
+
+	// Clears all effects applied to this `SoundSource`. Stopping or destroying this `SoundSource` will clear its effects.
+	// Returns void
+	obj.set_function("clearEffects", &SoundSource::clearEffects);
+
+	// Enables distortion on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect messes with the sound's frequency and other attributes to produce an odd result.
+	// Params
+	// Params number gain, number edge
+	// Returns bool
+	obj.set_function("addDistortionEffect", &SoundSource::addDistortionEffect);
+
+	// Enables echoing on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect repeats the sound with decay over time.
+	// Params
+	// Params number wetDry, number feedback, number delayMs
+	// Returns bool
+	obj.set_function("addEchoEffect", &SoundSource::addEchoEffect);
+
+	// Enables reverb on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect mixes the sound to bounce off surfaces in a room or a cave.
+	// Params
+	// Params number inputGain, number mix, number timeMs, number freqRatio
+	// Returns bool
+	obj.set_function("addReverbEffect", &SoundSource::addReverbEffect);
+
+	// Enables compression on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect reduces the dynamic range of the sound's waveform.
+	// Params
+	// Params number threshold, number ratio
+	// Returns bool
+	obj.set_function("addCompressionEffect", &SoundSource::addCompressionEffect);
 
 	// End Object
 }

@@ -203,13 +203,15 @@ function Skydome.new() end
 
 ---@class SoundSource
 ---@field paused boolean @Whether or not this `SoundSource` is paused.
----@field loops boolean @Whether or not this `SoundSource` loops on playback.
+---@field looping boolean @Whether or not this `SoundSource` loops on playback.
 ---@field volume number @The volume of this `SoundSource`.
 ---@field speed number @The playback speed of this `SoundSource`.
 ---@field pan number @The pan of this `SoundSource`, where -1.0 is left and 1.0 is right.
+---@field minimumDistance number @Sets the minimum listening distance for this `SoundSource`. Only applicable if this object is played in 3D.
 ---@field playbackPosition number @The current playback position of this `SoundSource`.
 ---@field velocity Vec3 @The velocity of this `SoundSource`. Only applicable if this object is played in 3D.
----@field sfx boolean @Whether or not sound effects are enabled on playback. This flag must be enabled, then the object should be played to see any effect.
+---@field position Vec3 @The position of this `SoundSource` in the scene. Only applicable if this `SoundSource` is played in 3D.
+---@field sfx boolean @Whether or not sound effects are enabled on playback. This flag must first be enabled to apply effects, as it is false by default. Sound effects are more resource-intensive.
 ---@field debug boolean @Show debug information about this object in the scene.
 SoundSource = SoundSource or {}
 --- A source of sound, whether that be for sound effects or music.
@@ -793,6 +795,11 @@ function Lime.Sound.getVelocityFactor() end
 ---@return void
 function Lime.Sound.setAllSoundsPaused(paused) end
 
+--- Sets the default minimum listening distance for new sounds.
+---@param distance number
+---@return void
+function Lime.Sound.setDefaultMinimumDistance(distance) end
+
 --- Sets the application's main volume.
 ---@param volume number
 ---@return void
@@ -1059,7 +1066,31 @@ function Skydome:parentTo(parent) end
 ---@return void
 function Skydome:setAttribute(key, value) end
 
---- Destroys this `SoundSource`, which detaches and stops itself playing in the scene. To free this sound from memory, see `SoundSource:purge`.
+--- Enables compression on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect reduces the dynamic range of the sound's waveform.
+--- Returns bool
+---@overload fun(threshold:number, ratio:number)
+function SoundSource:addCompressionEffect() end
+
+--- Enables distortion on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect messes with the sound's frequency and other attributes to produce an odd result.
+--- Returns bool
+---@overload fun(gain:number, edge:number)
+function SoundSource:addDistortionEffect() end
+
+--- Enables echoing on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect repeats the sound with decay over time.
+--- Returns bool
+---@overload fun(wetDry:number, feedback:number, delayMs:number)
+function SoundSource:addEchoEffect() end
+
+--- Enables reverb on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect mixes the sound to bounce off surfaces in a room or a cave.
+--- Returns bool
+---@overload fun(inputGain:number, mix:number, timeMs:number, freqRatio:number)
+function SoundSource:addReverbEffect() end
+
+--- Clears all effects applied to this `SoundSource`. Stopping or destroying this `SoundSource` will clear its effects.
+---@return void
+function SoundSource:clearEffects() end
+
+--- Destroys this `SoundSource`, which stops itself from playing in the scene as well as detaching from a parent 3D object. To free this sound from memory, see `SoundSource:purge`.
 ---@return nil
 function SoundSource:destroy() end
 

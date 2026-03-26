@@ -39,6 +39,11 @@ void Module::Sound::bind(Application* app) {
 	// Returns void
 	module.set_function("setAllSoundsPaused", &Module::Sound::Bind::SetAllPaused);
 
+	// Sets the default minimum listening distance for new sounds.
+	// Params number distance
+	// Returns void
+	module.set_function("setDefaultMinimumDistance", &Module::Sound::Bind::SetDefaultMinDistance);
+
 	// End Module
 }
 

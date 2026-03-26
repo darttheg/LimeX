@@ -28,6 +28,8 @@ public:
 	void setPaused(bool v);
 	bool getLooping();
 	void setLooping(bool v);
+	float getMinDist();
+	void setMinDist(float f);
 	void setVolume(float f);
 	float getVolume();
 	void setPitch(float f);
@@ -39,6 +41,8 @@ public:
 	int getPlayLength();
 	void setVelocity(const Vec3& vel);
 	Vec3 getVelocity();
+	void setPosition(const Vec3& vel);
+	Vec3 getPosition();
 	bool getDoSFX();
 	void setDoSFX(bool v);
 	
@@ -49,6 +53,12 @@ public:
 
 	void attachTo(sol::optional<Object3D*> parent); // 3D
 	std::string getPath();
+
+	void clearEffects();
+	bool addDistortionEffect(float gain = -18.0f, float edge = 15.0f);
+	bool addEchoEffect(float wetDry = 50.0f, float feedback = 50.0f, float delay = 250.0f);
+	bool addReverbEffect(float inputGain = 0.0f, float mix = 0.0f, float time = 1000.0f, float freqRatio = 0.001f);
+	bool addCompressionEffect(float threshold = -20.0f, float ratio = 3.0f);
 
 	// Destroy will just destroy this object and the sound. Purge will do the same but also unload it.
 	sol::object destroy();
@@ -63,6 +73,7 @@ private:
 	bool loops = false;
 	bool attached = false;
 	bool doSFX = false;
+	float minDist = 1.0f;
 	Vec3S pos = Vec3S{ 0,0,0 };
 };
 
