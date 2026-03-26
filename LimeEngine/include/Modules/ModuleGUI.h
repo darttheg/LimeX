@@ -23,6 +23,8 @@ namespace Module {
 			void setDefaultFont(const std::string& name);
 			bool isFontEmbedded(const std::string& name);
 			void setQuality(int q);
+			std::string embedTTF(const std::string& ttfPath, int size);
+			std::string embedTTF(const std::string& ttfPath, int size, const std::string& name);
 		}
 	}
 }

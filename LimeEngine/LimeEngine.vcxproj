@@ -23,6 +23,7 @@
     <ClInclude Include="include\DebugConsole.h" />
     <ClInclude Include="include\External\CTextAnchorSceneNode.h" />
     <ClInclude Include="include\External\CGUIColoredText.h" />
+    <ClInclude Include="include\External\FontLoader.h" />
     <ClInclude Include="include\FrameLimiter.h" />
     <ClInclude Include="include\Interfaces\Object2D.h" />
     <ClInclude Include="include\Interfaces\Object3D.h" />
@@ -69,6 +70,7 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\DebugConsole.cpp" />
+    <ClCompile Include="src\External\FontLoader.cpp" />
     <ClCompile Include="src\Interfaces\Object2D.cpp" />
     <ClCompile Include="src\Interfaces\Object3D.cpp" />
     <ClCompile Include="src\Interfaces\SceneObject.cpp" />

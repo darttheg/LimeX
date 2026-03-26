@@ -7,11 +7,13 @@
 #include "Objects/Event.h"
 #include "Interfaces/Object2D.h"
 
-#include "irrlicht.h"
+// #include "irrlicht.h"
+#include "External/FontLoader.h"
 
 static irr::gui::IGUIEnvironment* guienv = nullptr;
 static DebugConsole* d = nullptr;
 static Renderer* r = nullptr;
+static irr::IrrlichtDevice* device = nullptr;
 
 struct GUIManager::FCache {
 	std::unordered_map<std::string, irr::gui::IGUIFont*> cache;
@@ -32,13 +34,14 @@ GUIManager::GUIManager(DebugConsole* de, Renderer* re) {
 GUIManager::~GUIManager() {
 }
 
-void GUIManager::SetGUIEnv(irr::gui::IGUIEnvironment* g) {
+void GUIManager::SetGUIEnv(irr::gui::IGUIEnvironment* g, irr::IrrlichtDevice* downer) {
 	if (!g) {
 		d->Warn("GUI environment could not be created!");
 		return;
 	}
 
 	guienv = g;
+	device = downer;
 	setQuality(0);
 }
 
@@ -73,7 +76,7 @@ std::string GUIManager::embedFont(const std::string& path) {
 	if (fontCache->cache.find(fontName) != fontCache->cache.end()) {
 		std::string out = "Font ";
 		out += fontName;
-		out += " is already embedded!";
+		out += " is already loaded!";
 		d->Warn(out);
 		return fontName;
 	}
@@ -91,13 +94,46 @@ std::string GUIManager::embedFont(const std::string& path) {
 	return fontName;
 }
 
+std::string GUIManager::embedTTF(const std::string& ttfPath, int size) {
+	if (size <= 0) {
+		d->Warn("Failed to load TTF font " + ttfPath + ": Font size " + std::to_string(size) + " is too small.");
+		return "";
+	}
+
+	std::string name;
+	irr::gui::IGUIFont* out = FontLoader::loadTTFAuto(device, ttfPath.c_str(), size, &name);
+	if (!out) {
+		d->Warn("Failed to load TTF font " + ttfPath);
+		return "";
+	}
+
+	fontCache->cache[name] = out;
+	return name;
+}
+
+std::string GUIManager::embedTTF(const std::string& ttfPath, int size, const std::string& name) {
+	if (size <= 0) {
+		d->Warn("Failed to load TTF font " + ttfPath + ": Font size " + std::to_string(size) + " is too small.");
+		return "";
+	}
+
+	irr::gui::IGUIFont* out = FontLoader::loadTTF(device, ttfPath.c_str(), size, name.c_str());
+	if (!out) {
+		d->Warn("Failed to load TTF font " + ttfPath);
+		return "";
+	}
+
+	fontCache->cache[name] = out;
+	return name;
+}
+
 void GUIManager::setDefaultFont(const std::string& name) {
 	if (!guardRenderingCheck()) return;
 
 	if (fontCache->cache.find(name) == fontCache->cache.end()) {
 		std::string out = "Font ";
 		out += name;
-		out += " could not be made the default font: it is not embedded!";
+		out += " could not be made the default font: it is not loaded!";
 		d->Warn(out);
 		return;
 	}

@@ -27,8 +27,10 @@ bool SoundSource::play(bool td) {
 	cur = s->play(src, td, loops, doSFX);
 	if (cur && td)
 		cur->setPosition(irrklang::vec3df(pos.x, pos.y, pos.z));
-	if (cur)
+	if (cur) {
 		cur->setMinDistance(minDist);
+		cur->setVolume(vol);
+	}
 
 	is3D = td;
 
@@ -78,12 +80,13 @@ void SoundSource::setMinDist(float f) {
 }
 
 void SoundSource::setVolume(float f) {
-	if (!src || !cur) return;
-	cur->setVolume(f);
+	if (!src) return;
+	vol = f;
+	if (cur) cur->setVolume(f);
 }
 
 float SoundSource::getVolume() {
-	return cur ? cur->getVolume() : 0.0f;
+	return cur ? cur->getVolume() : vol;
 }
 
 void SoundSource::setPitch(float f) {

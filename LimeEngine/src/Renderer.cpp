@@ -124,7 +124,7 @@ bool Renderer::Init() {
 	i_device->setEventReceiver(a->GetReceiver());
 	a->GetReceiver()->initJoysticks(i_device);
 
-	guiManager->SetGUIEnv(i_gui);
+	guiManager->SetGUIEnv(i_gui, i_device);
 
 	lightManager = new CLightManager(i_smgr);
 	i_smgr->setLightManager(0);

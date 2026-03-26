@@ -52,6 +52,9 @@
     <Filter Include="Engine\Runtime\Objects\Debug">
       <UniqueIdentifier>{7e966761-d4ee-4755-919a-535e99373782}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Runtime\External\FontLoader">
+      <UniqueIdentifier>{aeb649e8-8319-4a2b-b2f3-531a67cb3971}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\LimeEngine.h">
@@ -190,6 +193,9 @@
     <ClInclude Include="include\Objects\SoundSource.h">
       <Filter>Engine\Runtime\Objects\Common</Filter>
     </ClInclude>
+    <ClInclude Include="include\External\FontLoader.h">
+      <Filter>Engine\Runtime\External\FontLoader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -308,6 +314,9 @@
     </ClCompile>
     <ClCompile Include="src\Objects\SoundSource.cpp">
       <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\External\FontLoader.cpp">
+      <Filter>Engine\Runtime\External\FontLoader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

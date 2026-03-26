@@ -25,25 +25,35 @@ void Module::GUI::bind(Application* app) {
 	// Module Lime.GUI
 	sol::table module = lua["Lime"]["GUI"].get_or_create<sol::table>();
 
-	// Embeds a bitmap font from path `path`. Returns the name of this font, cut from `path`. (NOTE: `path` must be the path to a .xml file. The .xml files must be paired by an image file.)
+	// Loads a bitmap font. Returns the name of this font, cut from `path`. (NOTE: `path` must be the path to a .xml file. The .xml files must be paired by an image file.)
 	// Params string path
 	// Returns string
-	module.set_function("embedFont", &Module::GUI::Bind::embedFont);
+	module.set_function("loadXML", &Module::GUI::Bind::embedFont);
 
 	// Sets the default font for new GUI elements to font `name`.
 	// Params string name
 	// Returns void
 	module.set_function("setDefaultFont", &Module::GUI::Bind::setDefaultFont);
 
-	// Returns true if the font `name` is embedded.
+	// Returns true if the font `name` is loaded.
 	// Params string name
 	// Returns boolean
-	module.set_function("isFontEmbedded", &Module::GUI::Bind::isFontEmbedded);
+	module.set_function("isFontLoaded", &Module::GUI::Bind::isFontEmbedded);
 
 	// Sets the quality of all GUI elements using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
 	// Params Lime.Enum.Quality quality
 	// Returns void
 	module.set_function("setQuality", &Module::GUI::Bind::setQuality);
+
+	// Loads a Truetype font. Provide `name` to set the name manually, otherwise Lime will register the font as fontname_size. Returns the output font name.
+	// Params string path, number fontSize
+	// Params string path, number fontSize, string name
+	// Returns string
+	module.set_function("loadTTF",
+		sol::overload(
+			sol::resolve<std::string(const std::string&, int size)>(&Module::GUI::Bind::embedTTF),
+			sol::resolve<std::string(const std::string&, int size, const std::string&)>(&Module::GUI::Bind::embedTTF)
+		));
 
 	// End Module
 }
@@ -64,4 +74,12 @@ bool Module::GUI::Bind::isFontEmbedded(const std::string& name) {
 
 void Module::GUI::Bind::setQuality(int q) {
 	g->setQuality(q);
+}
+
+std::string Module::GUI::Bind::embedTTF(const std::string& ttfPath, int size) {
+	return g->embedTTF(ttfPath, size);
+}
+
+std::string Module::GUI::Bind::embedTTF(const std::string& ttfPath, int size, const std::string& name) {
+	return g->embedTTF(ttfPath, size, name);
 }

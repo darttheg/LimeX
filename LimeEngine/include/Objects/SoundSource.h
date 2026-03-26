@@ -78,6 +78,7 @@ private:
 	bool loops = false;
 	bool is3D = false;
 	bool doSFX = false;
+	float vol = 100.0f;
 	float minDist = 1.0f;
 	Vec3S pos = Vec3S{ 0,0,0 };
 	irr::scene::ISceneNode* parent = nullptr;

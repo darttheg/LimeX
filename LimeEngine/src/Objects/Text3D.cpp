@@ -141,7 +141,7 @@ void Object::Text3DBind::bind(lua_State* ls, RenderHelper* renh, GUIManager* gu)
 		return "Text3D";
 		};
 
-	// Sets the font to use for this object. Fonts must first be embedded. See `Lime.GUI.embedFont`. 
+	// Sets the font to use for this object. Fonts must first be loaded. See `Lime.GUI.loadXML` and `Lime.GUI.loadTTF`. 
 	// Params string name
 	// Returns boolean
 	obj.set_function("setFont", &Text3D::setFont);

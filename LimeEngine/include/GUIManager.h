@@ -24,11 +24,13 @@ public:
 	GUIManager(DebugConsole* de, Renderer* re);
 	~GUIManager();
 
-	void SetGUIEnv(irr::gui::IGUIEnvironment* g);
+	void SetGUIEnv(irr::gui::IGUIEnvironment* g, irr::IrrlichtDevice* downer);
 	bool Render();
 
 	bool guardRenderingCheck();
 	std::string embedFont(const std::string& path);
+	std::string embedTTF(const std::string& ttfPath, int size);
+	std::string embedTTF(const std::string& ttfPath, int size, const std::string& name);
 	void setDefaultFont(const std::string& name);
 	bool isFontEmbedded(const std::string& name);
 	void setQuality(int q);

@@ -612,15 +612,22 @@ function Lime.setInitConfig(driver) end
 ---@return void
 function Lime.setVSync(vSyncOn) end
 
---- Embeds a bitmap font from path `path`. Returns the name of this font, cut from `path`. (NOTE: `path` must be the path to a .xml file. The .xml files must be paired by an image file.)
----@param path string
----@return string
-function Lime.GUI.embedFont(path) end
-
---- Returns true if the font `name` is embedded.
+--- Returns true if the font `name` is loaded.
 ---@param name string
 ---@return boolean
-function Lime.GUI.isFontEmbedded(name) end
+function Lime.GUI.isFontLoaded(name) end
+
+--- Loads a Truetype font. Provide `name` to set the name manually, otherwise Lime will register the font as fontname_size. Returns the output font name.
+---@overload fun(path:string, fontSize:number, name:string): string
+---@param path string
+---@param fontSize number
+---@return string
+function Lime.GUI.loadTTF(path, fontSize) end
+
+--- Loads a bitmap font. Returns the name of this font, cut from `path`. (NOTE: `path` must be the path to a .xml file. The .xml files must be paired by an image file.)
+---@param path string
+---@return string
+function Lime.GUI.loadXML(path) end
 
 --- Sets the default font for new GUI elements to font `name`.
 ---@param name string
@@ -1197,7 +1204,7 @@ function Text2D:parentTo(parent) end
 ---@return void
 function Text2D:setAlignment(all) end
 
---- Sets the font to use for this object. Fonts must first be embedded. See `Lime.GUI.embedFont`.
+--- Sets the font to use for this object. Fonts must first be loaded. See `Lime.GUI.loadXML` and `Lime.GUI.loadTTF`.
 ---@param name string
 ---@return boolean
 function Text2D:setFont(name) end
@@ -1258,7 +1265,7 @@ function Text3D:setAlignment(all) end
 ---@return void
 function Text3D:setAttribute(key, value) end
 
---- Sets the font to use for this object. Fonts must first be embedded. See `Lime.GUI.embedFont`.
+--- Sets the font to use for this object. Fonts must first be loaded. See `Lime.GUI.loadXML` and `Lime.GUI.loadTTF`.
 ---@param name string
 ---@return boolean
 function Text3D:setFont(name) end
