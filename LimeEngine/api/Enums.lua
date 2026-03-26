@@ -162,6 +162,16 @@ Static = 1,
 Dynamic = 2,
 Stream = 3,
 }
+---@alias Lime.Enum.SoundType integer
+---@class Lime.Enum.SoundTypeEnum
+---@field Auto Lime.Enum.SoundType
+---@field Stream Lime.Enum.SoundType
+---@field Static Lime.Enum.SoundType
+Lime.Enum.SoundType = {
+Auto = 0,
+Stream = 1,
+Static = 2,
+}
 ---@alias Lime.Enum.Mouse integer
 ---@class Lime.Enum.MouseEnum
 ---@field Left Lime.Enum.Mouse

@@ -24,6 +24,9 @@ Lime.Input = Lime.Input or {}
 ---@class Lime.Scene
 Lime.Scene = Lime.Scene or {}
 
+---@class Lime.Sound
+Lime.Sound = Lime.Sound or {}
+
 ---@class Lime.Window
 ---@field onResize Event @Event called by Lime once the window is resized in any way.
 Lime.Window = Lime.Window or {}
@@ -197,6 +200,22 @@ Skydome = Skydome or {}
 ---@overload fun(material:Material): Skydome
 ---@return Skydome
 function Skydome.new() end
+
+---@class SoundSource
+---@field paused boolean @Whether or not this `SoundSource` is paused.
+---@field loops boolean @Whether or not this `SoundSource` loops on playback.
+---@field volume number @The volume of this `SoundSource`.
+---@field speed number @The playback speed of this `SoundSource`.
+---@field pan number @The pan of this `SoundSource`, where -1.0 is left and 1.0 is right.
+---@field playbackPosition number @The current playback position of this `SoundSource`.
+---@field velocity Vec3 @The velocity of this `SoundSource`. Only applicable if this object is played in 3D.
+---@field sfx boolean @Whether or not sound effects are enabled on playback. This flag must be enabled, then the object should be played to see any effect.
+---@field debug boolean @Show debug information about this object in the scene.
+SoundSource = SoundSource or {}
+--- A source of sound, whether that be for sound effects or music.
+---@overload fun(path:string, type:Lime.Enum.SoundType?): SoundSource
+---@return SoundSource
+function SoundSource.new() end
 
 ---@class Text2D
 ---@field text string @The text content of this object.
@@ -761,6 +780,29 @@ function Lime.Scene.setTextureCreationQuality(quality) end
 ---@return Vec2
 function Lime.Scene.toScreenPosition(pos) end
 
+--- Returns the application's main volume.
+---@return number
+function Lime.Sound.getMainVolume() end
+
+--- Returns the listener velocity factor.
+---@return number
+function Lime.Sound.getVelocityFactor() end
+
+--- Sets all `Sound` objects to paused or unpaused.
+---@param paused boolean
+---@return void
+function Lime.Sound.setAllSoundsPaused(paused) end
+
+--- Sets the application's main volume.
+---@param volume number
+---@return void
+function Lime.Sound.setMainVolume(volume) end
+
+--- Sets the factor to scale listener velocity by. Listener velocity is calculated with the last and current active `Camera` positions. In the event that the active `Camera` is swapped, listener velocity will be 0 on the first frame automatically.
+---@param factor number
+---@return void
+function Lime.Sound.setVelocityFactor(factor) end
+
 --- Returns the size of the monitor the window is running on.
 ---@return Vec2
 function Lime.Window.getMonitorSize() end
@@ -1016,6 +1058,41 @@ function Skydome:parentTo(parent) end
 ---@param value any
 ---@return void
 function Skydome:setAttribute(key, value) end
+
+--- Destroys this `SoundSource`, which detaches and stops itself playing in the scene. To free this sound from memory, see `SoundSource:purge`.
+---@return nil
+function SoundSource:destroy() end
+
+--- Returns the playback length of this `SoundSource`.
+---@return number
+function SoundSource:getLength() end
+
+--- Returns the file path of the sound loaded into this `SoundSource`.
+---@return string
+function SoundSource:getPath() end
+
+--- Returns true if this `SoundSource` is playing.
+---@return boolean
+function SoundSource:isPlaying() end
+
+--- Loads a new sound into this `SoundSource`. (WARNING: Unused sounds should be purged to free up unused memory)
+---@param path string
+---@param type Lime.Enum.SoundType?
+---@return boolean
+function SoundSource:load(path, type) end
+
+--- Play this `SoundSource`.
+---@param is3D boolean?
+---@return boolean
+function SoundSource:play(is3D) end
+
+--- Purges this `SoundSource`, effectively removing it from memory. If other `SoundSource` objects use this sound, there may be issues.
+---@return nil
+function SoundSource:purge() end
+
+--- Stop this `SoundSource`.
+---@return void
+function SoundSource:stop() end
 
 --- Destroys this object.
 ---@return nil

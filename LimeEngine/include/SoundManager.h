@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 class Application;
 class Vec2;
@@ -7,6 +8,11 @@ class Vec3;
 namespace irrklang {
 	class ISoundEngine;
 	class ISound;
+	class ISoundSource;
+}
+
+namespace irr::scene {
+	class ICameraSceneNode;
 }
 
 class SoundManager {
@@ -16,15 +22,31 @@ public:
 
 	bool Init();
 	bool Update(float dt);
+	bool guardSoundCheck(std::string msg = "");
+
+	float getVelFactor() { return velFactor; }
+	void setVelFactor(float f) { velFactor = f; }
+
+	int getMainVolume();
+	void setMainVolume(int v);
+	void setAllSoundsPaused(bool v);
+	void stopAllSounds();
+	int getLoadedSoundsCount();
+	void setDefaultVolumeRange(float min);
+	void setDopplerEffectParameters(float dopplerFactor, float distanceFactor);
+	// bool appendSourceToAlias(const Sound& src, const std::string& name);
+	// bool removeAliasAndSources(const std::string& name);
+
+	irrklang::ISoundSource* createSoundSource(const std::string& path, int type = 0);
+	void unloadSound(irrklang::ISoundSource* src);
+	irrklang::ISound* play(irrklang::ISoundSource* src, bool td, bool loops, bool sfx);
 private:
 	irrklang::ISoundEngine* i_sound = nullptr;
 
 	struct Vec3S { float x, y, z; };
 	Vec3S lastCamPos{ 0,0,0 };
 	bool firstVel = true;
+	float velFactor = 1.0f;
 
-	/*
-	bool useManualListenerVel = false;
-	Vec3S listenerVel;
-	*/
+	irr::scene::ICameraSceneNode* last = nullptr;
 };

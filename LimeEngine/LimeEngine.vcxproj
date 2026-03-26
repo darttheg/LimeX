@@ -48,6 +48,7 @@
     <ClInclude Include="include\Objects\Mesh.h" />
     <ClInclude Include="include\Objects\MeshBuffer.h" />
     <ClInclude Include="include\Objects\ShaderMaterial.h" />
+    <ClInclude Include="include\Objects\SoundSource.h" />
     <ClInclude Include="include\Objects\Text3D.h" />
     <ClInclude Include="include\Objects\Texture.h" />
     <ClInclude Include="include\Objects\Material.h" />
@@ -89,6 +90,7 @@
     <ClCompile Include="src\Objects\Mesh.cpp" />
     <ClCompile Include="src\Objects\MeshBuffer.cpp" />
     <ClCompile Include="src\Objects\ShaderMaterial.cpp" />
+    <ClCompile Include="src\Objects\SoundSource.cpp" />
     <ClCompile Include="src\Objects\Text3D.cpp" />
     <ClCompile Include="src\Objects\Texture.cpp" />
     <ClCompile Include="src\Objects\Material.cpp" />

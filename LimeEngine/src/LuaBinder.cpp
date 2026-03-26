@@ -34,6 +34,7 @@
 #include "Objects/MeshBuffer.h"
 #include "Objects/Light.h"
 #include "Objects/ShaderMaterial.h"
+#include "Objects/SoundSource.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -69,4 +70,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::MeshBufferBind::bind(ls, app->GetRenderer());
 	Object::LightBind::bind(ls, app->GetRenderHelper());
 	Object::ShaderMaterialBind::bind(ls, app->GetRenderer());
+	Object::SoundSourceBind::bind(ls, app->GetSoundManager());
 }

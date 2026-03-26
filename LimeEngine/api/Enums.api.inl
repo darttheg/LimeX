@@ -92,6 +92,12 @@ LIME_ENUM(StorageHint,
     LIME_ENUM_VALUE(Stream, 3)
 );
 
+LIME_ENUM(SoundType,
+    LIME_ENUM_VALUE(Auto, 0)
+    LIME_ENUM_VALUE(Stream, 1)
+    LIME_ENUM_VALUE(Static, 2)
+);
+
 LIME_ENUM(Mouse,
     LIME_ENUM_VALUE(Left, 0)
     LIME_ENUM_VALUE(Right, 1)

@@ -12,6 +12,17 @@ namespace Module {
 		void bind(Application* app);
 
 		namespace Bind {
+			float GetVelFactor();
+			void SetVelFactor(float v);
+			int GetMainVolume();
+			void SetMainVolume(int v);
+			void SetAllPaused(bool v);
+			void StopAll();
+			int GetLoadedCount();
+			void SetDefaultMinDistance(float min);
+			void SetDopplerEffectParameters(float dopplerFactor, float distanceFactor);
+			// bool AppendSourceToAlias(const Sound& src, const std::string& name);
+			// bool RemoveAliasAndSources(const std::string& name);
 		}
 	}
 }
