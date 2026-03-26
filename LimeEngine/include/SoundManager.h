@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 class Application;
 class Vec2;
@@ -13,7 +14,13 @@ namespace irrklang {
 
 namespace irr::scene {
 	class ICameraSceneNode;
+	class ISceneNode;
 }
+
+struct SoundSourceOnNode {
+	irrklang::ISound* sound;
+	irr::scene::ISceneNode* parent;
+};
 
 class SoundManager {
 public:
@@ -40,6 +47,7 @@ public:
 	irrklang::ISoundSource* createSoundSource(const std::string& path, int type = 0);
 	void unloadSound(irrklang::ISoundSource* src);
 	irrklang::ISound* play(irrklang::ISoundSource* src, bool td, bool loops, bool sfx);
+	bool attachSoundToNode(irrklang::ISound* sound, irr::scene::ISceneNode* parent);
 private:
 	irrklang::ISoundEngine* i_sound = nullptr;
 
@@ -49,4 +57,6 @@ private:
 	float velFactor = 1.0f;
 
 	irr::scene::ICameraSceneNode* last = nullptr;
+
+	std::vector<SoundSourceOnNode> soundNodePairs;
 };

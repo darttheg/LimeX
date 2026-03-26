@@ -38,6 +38,7 @@ public:
 	void setID(int d);
 
 	bool parentTo(sol::optional<Object3D*> parent);
+	bool hasParent();
 
 	Vec4 getBoundingBox() const;
 	bool isPointInside(const Vec3& pos) const;

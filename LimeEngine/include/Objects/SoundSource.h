@@ -14,6 +14,10 @@ namespace irrklang {
 	class ISoundSource;
 }
 
+namespace irr::scene {
+	class ISceneNode;
+}
+
 class Vec3;
 
 class SoundSource {
@@ -51,7 +55,8 @@ public:
 
 	bool loadFromFile(const std::string& pat, int type = 0);
 
-	void attachTo(sol::optional<Object3D*> parent); // 3D
+	bool attachTo(sol::optional<Object3D*> parent); // 3D
+	bool isAttached();
 	std::string getPath();
 
 	void clearEffects();
@@ -71,10 +76,11 @@ private:
 	struct Vec3S { float x, y, z; };
 
 	bool loops = false;
-	bool attached = false;
+	bool is3D = false;
 	bool doSFX = false;
 	float minDist = 1.0f;
 	Vec3S pos = Vec3S{ 0,0,0 };
+	irr::scene::ISceneNode* parent = nullptr;
 };
 
 namespace Object::SoundSourceBind {

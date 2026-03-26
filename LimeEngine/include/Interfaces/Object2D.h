@@ -45,6 +45,7 @@ public:
 	int getRefCount() const;
 
 	bool parentTo(sol::optional<Object2D*> parent);
+	bool hasParent();
 
 	void createButton();
 	void removeButton();

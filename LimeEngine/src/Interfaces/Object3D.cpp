@@ -71,6 +71,11 @@ bool Object3D::parentTo(sol::optional<Object3D*> parent) {
     return true;
 }
 
+bool Object3D::hasParent() {
+    if (!getNode()) return false;
+    return getNode()->getParent() != getNode()->getSceneManager()->getRootSceneNode();
+}
+
 void Object3D::i_setDebug(bool v) {
     if (debug == v) return;
     setDebug(v);
@@ -170,8 +175,12 @@ void Interface::Object3DBind::bind(lua_State* ls, RenderHelper* renh) {
      
     // Parents this object to another 3D object.
     // Params any parent
-    // Returns void
+    // Returns boolean
     obj.set_function("parentTo", &Object3D::parentTo);
+
+    // Returns true if this object is parented to another 3D object.
+    // Returns boolean
+    obj.set_function("hasParent", &Object3D::hasParent);
 
     // Returns the reference count for this object.
     // Returns number

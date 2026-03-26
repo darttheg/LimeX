@@ -59,6 +59,18 @@ bool SoundManager::Update(float dt) {
 	last = c;
 
 	i_sound->setListenerPosition(pos, forward, lVel * velFactor, up);
+
+	// Sound Node Pairs
+	for (auto it = soundNodePairs.begin(); it != soundNodePairs.end();) {
+		if (!it->sound || !it->parent) { // || s.sound->isFinished() ?
+			it = soundNodePairs.erase(it);
+		} else {
+			auto pos = it->parent->getAbsolutePosition();
+			it->sound->setPosition(pos);
+			++it;
+		}
+	}
+
 	return true;
 }
 
@@ -77,6 +89,7 @@ void SoundManager::setAllSoundsPaused(bool v) {
 
 void SoundManager::stopAllSounds() {
 	i_sound->stopAllSounds();
+	soundNodePairs.clear();
 }
 
 int SoundManager::getLoadedSoundsCount() {
@@ -117,4 +130,8 @@ irrklang::ISound* SoundManager::play(irrklang::ISoundSource* src, bool td, bool 
 	std::string s = src->getName();
 	if (!out) d->Warn("Could not play sound from path " + s);
 	return out;
+}
+
+bool SoundManager::attachSoundToNode(irrklang::ISound* sound, irr::scene::ISceneNode* parent) {
+	return false;
 }

@@ -133,6 +133,11 @@ bool Object2D::parentTo(sol::optional<Object2D*> parent) {
     return true;
 }
 
+bool Object2D::hasParent() {
+    if (!getNode()) return false;
+    return getNode()->getParent() != rh->getGUIRoot();
+}
+
 void Object2D::setHoverEvent(std::shared_ptr<Event> e) {
     onHovered = std::move(e);
 }
@@ -283,8 +288,12 @@ void Interface::Object2DBind::bind(lua_State* ls, Renderer* rend) {
 
     // Parents this object to another 2D object.
     // Params any parent
-    // Returns void
+    // Returns boolean
     obj.set_function("parentTo", &Object2D::parentTo);
+
+    // Returns true if this object is parented to another 2D object.
+    // Returns boolean
+    obj.set_function("hasParent", &Object2D::hasParent);
 
     // Returns true if this object is currently hovered.
     // Returns boolean

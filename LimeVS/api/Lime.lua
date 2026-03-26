@@ -211,7 +211,7 @@ function Skydome.new() end
 ---@field playbackPosition number @The current playback position of this `SoundSource`.
 ---@field velocity Vec3 @The velocity of this `SoundSource`. Only applicable if this object is played in 3D.
 ---@field position Vec3 @The position of this `SoundSource` in the scene. Only applicable if this `SoundSource` is played in 3D.
----@field sfx boolean @Whether or not sound effects are enabled on playback. This flag must be enabled, then the object should be played to see any effect.
+---@field effects boolean @Whether or not sound effects are enabled on playback. This flag must first be enabled to apply effects, as it is false by default. Sound effects are more resource-intensive.
 ---@field debug boolean @Show debug information about this object in the scene.
 SoundSource = SoundSource or {}
 --- A source of sound, whether that be for sound effects or music.
@@ -320,6 +320,10 @@ function Billboard:getBoundingBox() end
 ---@return number
 function Billboard:getReferenceCount() end
 
+--- Returns true if this object is parented to another 3D object.
+---@return boolean
+function Billboard:hasParent() end
+
 --- Returns true if `pos` is inside this object's bounding box.
 ---@param pos Vec3
 ---@return boolean
@@ -332,7 +336,7 @@ function Billboard:loadMaterial(material) end
 
 --- Parents this object to another 3D object.
 ---@param parent any
----@return void
+---@return boolean
 function Billboard:parentTo(parent) end
 
 --- Sets `key` to `value` within this object's attributes.
@@ -374,6 +378,10 @@ function Camera:getLeft() end
 ---@return number
 function Camera:getReferenceCount() end
 
+--- Returns true if this object is parented to another 3D object.
+---@return boolean
+function Camera:hasParent() end
+
 --- Returns true if `pos` is inside this object's bounding box.
 ---@param pos Vec3
 ---@return boolean
@@ -381,7 +389,7 @@ function Camera:isPointInside(pos) end
 
 --- Parents this object to another 3D object.
 ---@param parent any
----@return void
+---@return boolean
 function Camera:parentTo(parent) end
 
 --- When rendering, this `Camera` will take over as the active rendering viewpoint.
@@ -419,6 +427,10 @@ function Empty:getBoundingBox() end
 ---@return number
 function Empty:getReferenceCount() end
 
+--- Returns true if this object is parented to another 3D object.
+---@return boolean
+function Empty:hasParent() end
+
 --- Returns true if `pos` is inside this object's bounding box.
 ---@param pos Vec3
 ---@return boolean
@@ -426,7 +438,7 @@ function Empty:isPointInside(pos) end
 
 --- Parents this object to another 3D object.
 ---@param parent any
----@return void
+---@return boolean
 function Empty:parentTo(parent) end
 
 --- Sets `key` to `value` within this object's attributes.
@@ -466,6 +478,10 @@ function Image2D:destroy() end
 ---@return number
 function Image2D:getReferenceCount() end
 
+--- Returns true if this object is parented to another 2D object.
+---@return boolean
+function Image2D:hasParent() end
+
 --- Returns true if this object is currently hovered.
 ---@return boolean
 function Image2D:isHovered() end
@@ -485,7 +501,7 @@ function Image2D:moveToFront() end
 
 --- Parents this object to another 2D object.
 ---@param parent any
----@return void
+---@return boolean
 function Image2D:parentTo(parent) end
 
 --- Clears this object's attributes.
@@ -513,6 +529,10 @@ function Light:getBoundingBox() end
 ---@return number
 function Light:getReferenceCount() end
 
+--- Returns true if this object is parented to another 3D object.
+---@return boolean
+function Light:hasParent() end
+
 --- Returns true if `pos` is inside this object's bounding box.
 ---@param pos Vec3
 ---@return boolean
@@ -520,7 +540,7 @@ function Light:isPointInside(pos) end
 
 --- Parents this object to another 3D object.
 ---@param parent any
----@return void
+---@return boolean
 function Light:parentTo(parent) end
 
 --- Sets `key` to `value` within this object's attributes.
@@ -926,6 +946,10 @@ function Mesh:getReferenceCount() end
 ---@return number
 function Mesh:getVertexCount() end
 
+--- Returns true if this object is parented to another 3D object.
+---@return boolean
+function Mesh:hasParent() end
+
 --- Returns true if `pos` is inside this object's bounding box.
 ---@param pos Vec3
 ---@return boolean
@@ -945,7 +969,7 @@ function Mesh:loadMesh(path) end
 
 --- Parents this object to another 3D object.
 ---@param parent any
----@return void
+---@return boolean
 function Mesh:parentTo(parent) end
 
 --- Purges this `Mesh`, effectively removing its mesh buffer from memory. Objects using this `Mesh`'s `MeshBuffer` will use an engine-defined `Mesh` instead, but it is recommended to remove references to this `Mesh` first.
@@ -1045,6 +1069,10 @@ function Skydome:getBoundingBox() end
 ---@return number
 function Skydome:getReferenceCount() end
 
+--- Returns true if this object is parented to another 3D object.
+---@return boolean
+function Skydome:hasParent() end
+
 --- Returns true if `pos` is inside this object's bounding box.
 ---@param pos Vec3
 ---@return boolean
@@ -1057,7 +1085,7 @@ function Skydome:loadMaterial(material) end
 
 --- Parents this object to another 3D object.
 ---@param parent any
----@return void
+---@return boolean
 function Skydome:parentTo(parent) end
 
 --- Sets `key` to `value` within this object's attributes.
@@ -1102,6 +1130,10 @@ function SoundSource:getLength() end
 ---@return string
 function SoundSource:getPath() end
 
+--- Returns true if this `SoundSource` is parented to a 3D object.
+---@return boolean
+function SoundSource:hasParent() end
+
 --- Returns true if this `SoundSource` is playing.
 ---@return boolean
 function SoundSource:isPlaying() end
@@ -1111,6 +1143,11 @@ function SoundSource:isPlaying() end
 ---@param type Lime.Enum.SoundType?
 ---@return boolean
 function SoundSource:load(path, type) end
+
+--- Parents this `SoundSource` to a 3D object. (NOTE: This `SoundSource` must be playing in 3D)
+---@param parent any
+---@return boolean
+function SoundSource:parentTo(parent) end
 
 --- Play this `SoundSource`.
 ---@param is3D boolean?
@@ -1133,6 +1170,10 @@ function Text2D:destroy() end
 ---@return number
 function Text2D:getReferenceCount() end
 
+--- Returns true if this object is parented to another 2D object.
+---@return boolean
+function Text2D:hasParent() end
+
 --- Returns true if this object is currently hovered.
 ---@return boolean
 function Text2D:isHovered() end
@@ -1147,7 +1188,7 @@ function Text2D:moveToFront() end
 
 --- Parents this object to another 2D object.
 ---@param parent any
----@return void
+---@return boolean
 function Text2D:parentTo(parent) end
 
 --- Sets the text's alignment within its bounding box.
@@ -1191,6 +1232,10 @@ function Text3D:getBoundingBox() end
 ---@return number
 function Text3D:getReferenceCount() end
 
+--- Returns true if this object is parented to another 3D object.
+---@return boolean
+function Text3D:hasParent() end
+
 --- Returns true if `pos` is inside this object's bounding box.
 ---@param pos Vec3
 ---@return boolean
@@ -1198,7 +1243,7 @@ function Text3D:isPointInside(pos) end
 
 --- Parents this object to another 3D object.
 ---@param parent any
----@return void
+---@return boolean
 function Text3D:parentTo(parent) end
 
 --- Sets the text's alignment within its bounding box.

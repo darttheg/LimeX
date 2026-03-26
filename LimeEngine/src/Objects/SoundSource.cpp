@@ -4,6 +4,7 @@
 #include "irrKlang.h"
 #include <sol/sol.hpp>
 #include "Objects/Vec3.h"
+#include "Interfaces/Object3D.h"
 
 static SoundManager* s = nullptr;
 static lua_State* l = nullptr;
@@ -29,6 +30,8 @@ bool SoundSource::play(bool td) {
 	if (cur)
 		cur->setMinDistance(minDist);
 
+	is3D = td;
+
 	return cur;
 }
 
@@ -36,6 +39,8 @@ void SoundSource::stop() {
 	if (!src || !cur) return;
 	cur->stop();
 	cur->drop();
+	parent = nullptr;
+	is3D = false;
 }
 
 bool SoundSource::isPlaying() {
@@ -146,7 +151,22 @@ void SoundSource::setDebug(bool v) {
 	// TODO
 }
 
-void SoundSource::attachTo(sol::optional<Object3D*> parent) {
+bool SoundSource::attachTo(sol::optional<Object3D*> p) {
+	if (!cur || !is3D) return false;
+
+	if (!p || *p == nullptr) {
+		parent = nullptr; // SoundManager update will resolve
+		return true;
+	}
+
+	Object3D* pa = *p;
+	if (!pa->getNode()) return false;
+	parent = pa->getNode();
+	return s->attachSoundToNode(cur, parent);
+}
+
+bool SoundSource::isAttached() {
+	return src && cur && parent;
 }
 
 std::string SoundSource::getPath() {
@@ -256,8 +276,8 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou) {
 			[](SoundSource& c, const Vec3& v) { c.setPosition(v); }
 		),
 
-		// Field boolean sfx, Whether or not sound effects are enabled on playback. This flag must first be enabled to apply effects, as it is false by default. Sound effects are more resource-intensive.
-		"sfx", sol::property(&SoundSource::getDoSFX, &SoundSource::setDoSFX),
+		// Field boolean effects, Whether or not sound effects are enabled on playback. This flag must first be enabled to apply effects, as it is false by default. Sound effects are more resource-intensive.
+		"effects", sol::property(&SoundSource::getDoSFX, &SoundSource::setDoSFX),
 
 		// Field boolean debug, Show debug information about this object in the scene.
 		"debug", sol::property(&SoundSource::getDebug, &SoundSource::setDebug)
@@ -287,6 +307,15 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou) {
 	// Returns the file path of the sound loaded into this `SoundSource`.
 	// Returns string
 	obj.set_function("getPath", &SoundSource::getPath);
+
+	// Parents this `SoundSource` to a 3D object. (NOTE: This `SoundSource` must be playing in 3D)
+	// Params any parent
+	// Returns boolean
+	obj.set_function("parentTo", &SoundSource::attachTo);
+
+	// Returns true if this `SoundSource` is parented to a 3D object.
+	// Returns boolean
+	obj.set_function("hasParent", &SoundSource::isAttached);
 
 	// Loads a new sound into this `SoundSource`. (WARNING: Unused sounds should be purged to free up unused memory)
 	// Params string path, Lime.Enum.SoundType? type
