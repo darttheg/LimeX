@@ -188,16 +188,35 @@ const getFileVersion = winVersionInfo.default ?? winVersionInfo;
 async function checkEngineVersion(context, workspaceFolder) {
     const projectDll = path.join(workspaceFolder, "LimeEngine.dll");
     if (!fs.existsSync(projectDll))
-        return; // not a Lime project
+        return;
     const templateDll = path.join(context.extensionPath, "template", "LimeEngine.dll");
     const projectVersion = getFileVersion(projectDll).ProductVersion;
     const templateVersion = getFileVersion(templateDll).ProductVersion;
-    if (projectVersion === templateVersion)
+    if (projectVersion === templateVersion) {
+        await checkMissingDlls(context, workspaceFolder);
         return;
+    }
     const choice = await vscode.window.showInformationMessage(`Lime: Update engine to ${templateVersion} (from ${projectVersion})?`, "Update", "Ignore");
     if (choice === "Update") {
         fs.copyFileSync(templateDll, projectDll);
         vscode.window.showInformationMessage("Lime: LimeEngine.dll updated successfully.");
+    }
+}
+async function checkMissingDlls(context, workspaceFolder) {
+    const templateDir = path.join(context.extensionPath, "template");
+    const templateEntries = fs.readdirSync(templateDir, { withFileTypes: true });
+    const missingDlls = templateEntries
+        .filter(e => e.isFile() && e.name.endsWith(".dll") && e.name !== "LimeEngine.dll")
+        .map(e => e.name)
+        .filter(name => !fs.existsSync(path.join(workspaceFolder, name)));
+    if (missingDlls.length === 0)
+        return;
+    const choice = await vscode.window.showInformationMessage(`Lime: Missing DLL(s): ${missingDlls.join(", ")}. Update?`, "Update", "Ignore");
+    if (choice === "Update") {
+        for (const name of missingDlls) {
+            fs.copyFileSync(path.join(templateDir, name), path.join(workspaceFolder, name));
+        }
+        vscode.window.showInformationMessage(`Lime: Added ${missingDlls.length} DLL(s).`);
     }
 }
 async function activate(context) {

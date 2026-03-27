@@ -170,14 +170,17 @@ const getFileVersion = (winVersionInfo as any).default ?? winVersionInfo;
 
 async function checkEngineVersion(context: vscode.ExtensionContext, workspaceFolder: string): Promise<void> {
   const projectDll = path.join(workspaceFolder, "LimeEngine.dll");
-  if (!fs.existsSync(projectDll)) return; // not a Lime project
+  if (!fs.existsSync(projectDll)) return;
 
   const templateDll = path.join(context.extensionPath, "template", "LimeEngine.dll");
 
   const projectVersion = getFileVersion(projectDll).ProductVersion;
   const templateVersion = getFileVersion(templateDll).ProductVersion;
 
-  if (projectVersion === templateVersion) return;
+  if (projectVersion === templateVersion) {
+    await checkMissingDlls(context, workspaceFolder);
+    return;
+  }
 
   const choice = await vscode.window.showInformationMessage(
     `Lime: Update engine to ${templateVersion} (from ${projectVersion})?`,
@@ -187,6 +190,30 @@ async function checkEngineVersion(context: vscode.ExtensionContext, workspaceFol
   if (choice === "Update") {
     fs.copyFileSync(templateDll, projectDll);
     vscode.window.showInformationMessage("Lime: LimeEngine.dll updated successfully.");
+  }
+}
+
+async function checkMissingDlls(context: vscode.ExtensionContext, workspaceFolder: string): Promise<void> {
+  const templateDir = path.join(context.extensionPath, "template");
+
+  const templateEntries = fs.readdirSync(templateDir, { withFileTypes: true });
+  const missingDlls = templateEntries
+    .filter(e => e.isFile() && e.name.endsWith(".dll") && e.name !== "LimeEngine.dll")
+    .map(e => e.name)
+    .filter(name => !fs.existsSync(path.join(workspaceFolder, name)));
+
+  if (missingDlls.length === 0) return;
+
+  const choice = await vscode.window.showInformationMessage(
+    `Lime: Missing DLL(s): ${missingDlls.join(", ")}. Update?`,
+    "Update", "Ignore"
+  );
+
+  if (choice === "Update") {
+    for (const name of missingDlls) {
+      fs.copyFileSync(path.join(templateDir, name), path.join(workspaceFolder, name));
+    }
+    vscode.window.showInformationMessage(`Lime: Added ${missingDlls.length} DLL(s).`);
   }
 }
 
