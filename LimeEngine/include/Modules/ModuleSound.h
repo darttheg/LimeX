@@ -17,9 +17,11 @@ namespace Module {
 			int GetMainVolume();
 			void SetMainVolume(int v);
 			void SetAllPaused(bool v);
+			void SetMuteUnfocus(bool v);
 			void StopAll();
 			int GetLoadedCount();
 			void SetDefaultMinDistance(float min);
+			void SetDefaultMaxDistance(float max);
 			void SetDopplerEffectParameters(float dopplerFactor, float distanceFactor);
 			// bool AppendSourceToAlias(const Sound& src, const std::string& name);
 			// bool RemoveAliasAndSources(const std::string& name);

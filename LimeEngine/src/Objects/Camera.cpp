@@ -16,6 +16,8 @@ Camera::Camera(const Vec3& pos) : Camera(pos, Vec3()) {
 }
 
 Camera::Camera(const Vec3& pos, const Vec3& rot) {
+	bool setActive = !rh->getActiveCamera();
+
 	camera = rh->createCameraNode();
 	if (!camera) return;
 
@@ -30,6 +32,9 @@ Camera::Camera(const Vec3& pos, const Vec3& rot) {
 	setPosition(pos);
 	setRotation(rot);
 	rh->updateCameraMatrix(camera);
+
+	if (setActive)
+		rh->setActiveCamera(camera, left, forward);
 }
 
 void Camera::destroy() {

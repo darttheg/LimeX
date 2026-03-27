@@ -255,7 +255,7 @@ Vec2 Window::getMonitorSize() {
 
 bool Window::isFocused() {
 	if (!guardEditCheck()) return false;
-	return a->GetRenderer()->isFocused();
+	return GetForegroundWindow() == glfwGetWin32Window(glfwWindow);
 }
 
 void Window::setResizable(bool on) {

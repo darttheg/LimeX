@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "RenderHelper.h"
 #include "DebugConsole.h"
+#include "Window.h"
 
 #include "irrlicht.h"
 #include "irrKlang.h"
@@ -71,6 +72,12 @@ bool SoundManager::Update(float dt) {
 		}
 	}
 
+	if (muteUnfocus && !a->GetWindow()->isFocused()) {
+		i_sound->setSoundVolume(0.0f);
+	} else {
+		i_sound->setSoundVolume(mainVol);
+	}
+
 	return true;
 }
 
@@ -80,7 +87,9 @@ int SoundManager::getMainVolume() {
 
 void SoundManager::setMainVolume(int v) {
 	if (!guardSoundCheck()) return;
-	i_sound->setSoundVolume((float)(v / 100.0));
+	float out = (float)(v / 100.0);
+	i_sound->setSoundVolume(out);
+	mainVol = out;
 }
 
 void SoundManager::setAllSoundsPaused(bool v) {
@@ -96,8 +105,16 @@ int SoundManager::getLoadedSoundsCount() {
 	return i_sound->getSoundSourceCount();
 }
 
-void SoundManager::setDefaultVolumeRange(float min) {
+void SoundManager::setDefaultMin(float min) {
 	i_sound->setDefault3DSoundMinDistance(min);
+}
+
+void SoundManager::setDefaultMax(float max) {
+	i_sound->setDefault3DSoundMaxDistance(max);
+}
+
+void SoundManager::setMuteUnfocus(bool v) {
+	muteUnfocus = v;
 }
 
 void SoundManager::setDopplerEffectParameters(float dopplerFactor, float distanceFactor) {

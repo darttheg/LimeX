@@ -39,7 +39,9 @@ public:
 	void setAllSoundsPaused(bool v);
 	void stopAllSounds();
 	int getLoadedSoundsCount();
-	void setDefaultVolumeRange(float min);
+	void setDefaultMin(float min);
+	void setDefaultMax(float max);
+	void setMuteUnfocus(bool v);
 	void setDopplerEffectParameters(float dopplerFactor, float distanceFactor);
 	void warnGarbageCollection(const std::string& path);
 	// bool appendSourceToAlias(const Sound& src, const std::string& name);
@@ -56,6 +58,8 @@ private:
 	Vec3S lastCamPos{ 0,0,0 };
 	bool firstVel = true;
 	float velFactor = 1.0f;
+	float mainVol = 1.0f;
+	bool muteUnfocus = false;
 
 	irr::scene::ICameraSceneNode* last = nullptr;
 

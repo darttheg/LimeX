@@ -44,6 +44,16 @@ void Module::Sound::bind(Application* app) {
 	// Returns void
 	module.set_function("setDefaultMinimumDistance", &Module::Sound::Bind::SetDefaultMinDistance);
 
+	// Sets the default maximum listening distance for new sounds.
+	// Params number distance
+	// Returns void
+	module.set_function("setDefaultMaximumDistance", &Module::Sound::Bind::SetDefaultMaxDistance);
+
+	// Determines unfocused window behavior in regards to application volume.
+	// Params boolean mute
+	// Returns void
+	module.set_function("setMuteWhileUnfocused", &Module::Sound::Bind::SetMuteUnfocus);
+
 	// End Module
 }
 
@@ -69,6 +79,10 @@ void Module::Sound::Bind::SetAllPaused(bool v) {
 	s->setAllSoundsPaused(v);
 }
 
+void Module::Sound::Bind::SetMuteUnfocus(bool v) {
+	s->setMuteUnfocus(v);
+}
+
 void Module::Sound::Bind::StopAll() {
 	s->stopAllSounds();
 }
@@ -77,8 +91,12 @@ int Module::Sound::Bind::GetLoadedCount() {
 	return s->getLoadedSoundsCount();
 }
 
+void Module::Sound::Bind::SetDefaultMaxDistance(float max) {
+	s->setDefaultMax(max);
+}
+
 void Module::Sound::Bind::SetDefaultMinDistance(float min) {
-	s->setDefaultVolumeRange(min);
+	s->setDefaultMin(min);
 }
 
 void Module::Sound::Bind::SetDopplerEffectParameters(float dopplerFactor, float distanceFactor) {

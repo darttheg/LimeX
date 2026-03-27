@@ -870,6 +870,11 @@ function Lime.Sound.getVelocityFactor() end
 ---@return void
 function Lime.Sound.setAllSoundsPaused(paused) end
 
+--- Sets the default maximum listening distance for new sounds.
+---@param distance number
+---@return void
+function Lime.Sound.setDefaultMaximumDistance(distance) end
+
 --- Sets the default minimum listening distance for new sounds.
 ---@param distance number
 ---@return void
@@ -879,6 +884,11 @@ function Lime.Sound.setDefaultMinimumDistance(distance) end
 ---@param volume number
 ---@return void
 function Lime.Sound.setMainVolume(volume) end
+
+--- Determines unfocused window behavior in regards to application volume.
+---@param mute boolean
+---@return void
+function Lime.Sound.setMuteWhileUnfocused(mute) end
 
 --- Sets the factor to scale listener velocity by. Listener velocity is calculated with the last and current active `Camera` positions. In the event that the active `Camera` is swapped, listener velocity will be 0 on the first frame automatically.
 ---@param factor number
