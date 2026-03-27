@@ -106,6 +106,10 @@ void Texture::makeRenderTexture(const Vec2& size, const Camera& c) {
 	texture = r->createRenderTargetTexture(size, static_cast<irr::scene::ICameraSceneNode*>(c.getNode()));
 }
 
+void Texture::collected() {
+	if (texture) r->warnGarbageCollection(texture->getName().getPath().c_str());
+}
+
 void Object::TextureBind::bind(lua_State* ls, Renderer* rend) {
 	r = rend;
 	rh = rend->GetRenderHelper();
@@ -115,7 +119,8 @@ void Object::TextureBind::bind(lua_State* ls, Renderer* rend) {
 	sol::usertype<Texture> obj = view.new_usertype<Texture>(
 		"Texture",
 		sol::constructors<Texture(), Texture(const std::string&), Texture(int, int, const std::string&)>(),
-		sol::meta_function::type, [](const Texture&) { return "Texture"; }
+		sol::meta_function::type, [](const Texture&) { return "Texture"; },
+		sol::meta_function::garbage_collect, [](Texture& t) { t.collected(); }
 	);
 
 	obj[sol::meta_function::to_string] = [](const Texture& v) {

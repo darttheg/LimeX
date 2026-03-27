@@ -136,7 +136,7 @@ Vec2 Module::Input::Bind::getMouseDelta() {
 }
 
 Vec2 Module::Input::Bind::getMousePosition() {
-	return Vec2(receiver->getMouseState().pos.x, receiver->getMouseState().pos.y);
+	return renderer->getMousePosCorrected(receiver->getMouseState().pos.x, receiver->getMouseState().pos.y);
 }
 
 void Module::Input::Bind::setMousePosition(const Vec2& pos) {

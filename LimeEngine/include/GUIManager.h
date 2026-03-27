@@ -29,8 +29,8 @@ public:
 
 	bool guardRenderingCheck();
 	std::string embedFont(const std::string& path);
-	std::string embedTTF(const std::string& ttfPath, int size);
-	std::string embedTTF(const std::string& ttfPath, int size, const std::string& name);
+	std::string embedTTF(const std::string& ttfPath, int size, bool aa);
+	std::string embedTTF(const std::string& ttfPath, int size, const std::string& name, bool aa);
 	void setDefaultFont(const std::string& name);
 	bool isFontEmbedded(const std::string& name);
 	void setQuality(int q);

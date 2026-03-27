@@ -41,6 +41,7 @@ public:
 	int getLoadedSoundsCount();
 	void setDefaultVolumeRange(float min);
 	void setDopplerEffectParameters(float dopplerFactor, float distanceFactor);
+	void warnGarbageCollection(const std::string& path);
 	// bool appendSourceToAlias(const Sound& src, const std::string& name);
 	// bool removeAliasAndSources(const std::string& name);
 

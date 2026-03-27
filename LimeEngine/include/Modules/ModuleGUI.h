@@ -1,17 +1,7 @@
 #pragma once
 
-#include <sol/forward.hpp>
 #include <string>
-
-class DebugConsole;
 class Application;
-class Renderer;
-
-class Vec2;
-class Vec3;
-class Vec4;
-class Texture;
-//class Mesh;
 
 namespace Module {
 	namespace GUI {
@@ -23,8 +13,8 @@ namespace Module {
 			void setDefaultFont(const std::string& name);
 			bool isFontEmbedded(const std::string& name);
 			void setQuality(int q);
-			std::string embedTTF(const std::string& ttfPath, int size);
-			std::string embedTTF(const std::string& ttfPath, int size, const std::string& name);
+			std::string embedTTF(const std::string& ttfPath, int size, bool aa = true);
+			std::string embedTTF(const std::string& ttfPath, int size, const std::string& name, bool aa = true);
 		}
 	}
 }

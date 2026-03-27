@@ -38,6 +38,8 @@ public:
 	void makeRenderTexture(const Vec2& size);
 	void makeRenderTexture(const Vec2& size, const Camera& c);
 
+	void collected();
+
 	irr::video::ITexture* getTexture() const { return texture; }
 private:
 	irr::video::ITexture* texture = nullptr;

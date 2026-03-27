@@ -29,6 +29,7 @@ bool SoundSource::play(bool td) {
 		cur->setPosition(irrklang::vec3df(pos.x, pos.y, pos.z));
 	if (cur) {
 		cur->setMinDistance(minDist);
+		cur->setMaxDistance(maxDist);
 		cur->setVolume(vol);
 	}
 
@@ -77,6 +78,16 @@ void SoundSource::setMinDist(float f) {
 	if (!src || !cur) return;
 	cur->setMinDistance(f);
 	minDist = f;
+}
+
+float SoundSource::getMaxDist() {
+	return cur ? cur->getMaxDistance() : 0.0f;
+}
+
+void SoundSource::setMaxDist(float f) {
+	if (!src || !cur) return;
+	cur->setMaxDistance(f);
+	maxDist = f;
 }
 
 void SoundSource::setVolume(float f) {
@@ -176,6 +187,10 @@ std::string SoundSource::getPath() {
 	return src ? src->getName() : "";
 }
 
+void SoundSource::collected() {
+	if (src) s->warnGarbageCollection(src->getName());
+}
+
 sol::object SoundSource::destroy() {
 	cur->stop();
 	cur = nullptr;
@@ -245,6 +260,7 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou) {
 		sol::constructors<SoundSource(), SoundSource(const std::string&), SoundSource(const std::string&, int)>(),
 
 		sol::meta_function::type, [](const SoundSource&) { return "SoundSource"; },
+		sol::meta_function::garbage_collect, [](SoundSource& ss) { ss.collected(); },
 
 		// Field boolean paused, Whether or not this `SoundSource` is paused.
 		"paused", sol::property(&SoundSource::getPaused, &SoundSource::setPaused),
@@ -263,6 +279,9 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou) {
 
 		// Field number minimumDistance, Sets the minimum listening distance for this `SoundSource`. Only applicable if this object is played in 3D.
 		"minimumDistance", sol::property(&SoundSource::getMinDist, &SoundSource::setMinDist),
+
+		// Field number maximumDistance, Sets the maximum listening distance for this `SoundSource`. Only applicable if this object is played in 3D.
+		"maximumDistance", sol::property(&SoundSource::getMaxDist, &SoundSource::setMaxDist),
 
 		// Field number playbackPosition, The current playback position of this `SoundSource`.
 		"playbackPosition", sol::property(&SoundSource::getPlayPosition, &SoundSource::setPlayPosition),

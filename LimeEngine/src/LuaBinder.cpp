@@ -14,6 +14,8 @@
 #include "Modules/ModuleInput.h"
 #include "Modules/ModuleGUI.h"
 #include "Modules/ModuleSound.h"
+#include "Modules/ModuleFile.h"
+#include "Modules/ModuleHelp.h"
 //
 
 // OBJECT INCLUDES
@@ -51,6 +53,8 @@ void LuaBinder::BindAll(Application* app) {
 	Module::Input::bind(app);
 	Module::GUI::bind(app);
 	Module::Sound::bind(app);
+	Module::File::bind(app);
+	Module::Help::bind(app);
 
 	// Objects
 	Object::EventBind::bind(ls);

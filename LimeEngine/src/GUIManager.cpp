@@ -94,14 +94,14 @@ std::string GUIManager::embedFont(const std::string& path) {
 	return fontName;
 }
 
-std::string GUIManager::embedTTF(const std::string& ttfPath, int size) {
+std::string GUIManager::embedTTF(const std::string& ttfPath, int size, bool aa) {
 	if (size <= 0) {
 		d->Warn("Failed to load TTF font " + ttfPath + ": Font size " + std::to_string(size) + " is too small.");
 		return "";
 	}
 
 	std::string name;
-	irr::gui::IGUIFont* out = FontLoader::loadTTFAuto(device, ttfPath.c_str(), size, &name);
+	irr::gui::IGUIFont* out = FontLoader::loadTTFAuto(device, ttfPath.c_str(), size, &name, aa);
 	if (!out) {
 		d->Warn("Failed to load TTF font " + ttfPath);
 		return "";
@@ -111,13 +111,13 @@ std::string GUIManager::embedTTF(const std::string& ttfPath, int size) {
 	return name;
 }
 
-std::string GUIManager::embedTTF(const std::string& ttfPath, int size, const std::string& name) {
+std::string GUIManager::embedTTF(const std::string& ttfPath, int size, const std::string& name, bool aa) {
 	if (size <= 0) {
 		d->Warn("Failed to load TTF font " + ttfPath + ": Font size " + std::to_string(size) + " is too small.");
 		return "";
 	}
 
-	irr::gui::IGUIFont* out = FontLoader::loadTTF(device, ttfPath.c_str(), size, name.c_str());
+	irr::gui::IGUIFont* out = FontLoader::loadTTF(device, ttfPath.c_str(), size, name.c_str(), aa);
 	if (!out) {
 		d->Warn("Failed to load TTF font " + ttfPath);
 		return "";

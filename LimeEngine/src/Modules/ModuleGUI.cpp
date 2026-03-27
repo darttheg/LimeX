@@ -46,13 +46,15 @@ void Module::GUI::bind(Application* app) {
 	module.set_function("setQuality", &Module::GUI::Bind::setQuality);
 
 	// Loads a Truetype font. Provide `name` to set the name manually, otherwise Lime will register the font as fontname_size. Returns the output font name.
-	// Params string path, number fontSize
-	// Params string path, number fontSize, string name
+	// Params string path, number fontSize, boolean? aa
+	// Params string path, number fontSize, string name, boolean? aa
 	// Returns string
 	module.set_function("loadTTF",
 		sol::overload(
-			sol::resolve<std::string(const std::string&, int size)>(&Module::GUI::Bind::embedTTF),
-			sol::resolve<std::string(const std::string&, int size, const std::string&)>(&Module::GUI::Bind::embedTTF)
+			[](const std::string& path, int size) { return Module::GUI::Bind::embedTTF(path, size, true);  },
+			[](const std::string& path, int size, bool aa) { return Module::GUI::Bind::embedTTF(path, size, aa);  },
+			[](const std::string& path, int size, const std::string& name) { return Module::GUI::Bind::embedTTF(path, size, name, true);  },
+			[](const std::string& path, int size, const std::string& name, bool aa) { return Module::GUI::Bind::embedTTF(path, size, name, aa);  }
 		));
 
 	// End Module
@@ -76,10 +78,10 @@ void Module::GUI::Bind::setQuality(int q) {
 	g->setQuality(q);
 }
 
-std::string Module::GUI::Bind::embedTTF(const std::string& ttfPath, int size) {
-	return g->embedTTF(ttfPath, size);
+std::string Module::GUI::Bind::embedTTF(const std::string& ttfPath, int size, bool aa) {
+	return g->embedTTF(ttfPath, size, aa);
 }
 
-std::string Module::GUI::Bind::embedTTF(const std::string& ttfPath, int size, const std::string& name) {
-	return g->embedTTF(ttfPath, size, name);
+std::string Module::GUI::Bind::embedTTF(const std::string& ttfPath, int size, const std::string& name, bool aa) {
+	return g->embedTTF(ttfPath, size, name, aa);
 }

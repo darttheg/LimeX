@@ -16,7 +16,7 @@ namespace FontLoader {
         return name + "_" + std::to_string(size);
     }
 
-    irr::gui::IGUIFont* loadTTF(irr::IrrlichtDevice* device, const char* ttfPath, int size, const char* fontName)
+    irr::gui::IGUIFont* loadTTF(irr::IrrlichtDevice* device, const char* ttfPath, int size, const char* fontName, bool aa)
     {
         FT_Library ft;
         FT_Face    face;
@@ -29,6 +29,7 @@ namespace FontLoader {
 
         const irr::u32 atlasW = 512;
         const irr::u32 atlasH = 512;
+        FT_Int32 loadFlags = FT_LOAD_RENDER | (aa ? 0 : FT_LOAD_TARGET_MONO);
 
         struct GlyphArea {
             irr::core::rect<irr::s32> rect;
@@ -41,7 +42,7 @@ namespace FontLoader {
         irr::s32 penX = 0, penY = 0, rowH = 0;
 
         for (FT_ULong c = 32; c < 127; c++) {
-            if (FT_Load_Char(face, c, FT_LOAD_RENDER)) continue;
+            if (FT_Load_Char(face, c, loadFlags)) continue;
             FT_GlyphSlot g = face->glyph;
             irr::u32 w = g->bitmap.width;
             irr::u32 h = g->bitmap.rows;
@@ -76,7 +77,7 @@ namespace FontLoader {
 
         for (FT_ULong c = 32; c < 127; c++) {
             if (!charMap.find(c)) continue;
-            if (FT_Load_Char(face, c, FT_LOAD_RENDER)) continue;
+            if (FT_Load_Char(face, c, loadFlags)) continue;
 
             FT_Bitmap& bmp = face->glyph->bitmap;
             irr::core::map<wchar_t, GlyphArea>::Node* node = charMap.find(c);
@@ -88,7 +89,7 @@ namespace FontLoader {
 
             for (irr::u32 row = 0; row < bmp.rows; row++)
                 for (irr::u32 col = 0; col < bmp.width; col++) {
-                    irr::u8 v = bmp.buffer[row * bmp.pitch + col];
+                    irr::u8 v = aa ? bmp.buffer[row * bmp.pitch + col] : ((bmp.buffer[row * bmp.pitch + col / 8] & (0x80 >> (col % 8))) ? 255 : 0);
                     img->setPixel(
                         xDest + col,
                         yDest + row,
@@ -147,9 +148,9 @@ namespace FontLoader {
         return font;
     }
 
-    irr::gui::IGUIFont* loadTTFAuto(irr::IrrlichtDevice* device, const char* ttfPath, int size, std::string* outName) {
+    irr::gui::IGUIFont* loadTTFAuto(irr::IrrlichtDevice* device, const char* ttfPath, int size, std::string* outName, bool aa) {
         std::string key = autoKey(ttfPath, size);
         if (outName) *outName = key;
-        return loadTTF(device, ttfPath, size, key.c_str());
+        return loadTTF(device, ttfPath, size, key.c_str(), aa);
     }
 }

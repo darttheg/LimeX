@@ -5,6 +5,9 @@
 ---@field onClose Event @Event called by Lime once the application closes in any way.
 Lime = Lime or {}
 
+---@class Lime.File
+Lime.File = Lime.File or {}
+
 ---@class Lime.GUI
 Lime.GUI = Lime.GUI or {}
 
@@ -30,6 +33,9 @@ Lime.Sound = Lime.Sound or {}
 ---@class Lime.Window
 ---@field onResize Event @Event called by Lime once the window is resized in any way.
 Lime.Window = Lime.Window or {}
+
+---@class math.noise
+math.noise = math.noise or {}
 
 ---@class Billboard
 ---@field size Vec2 @The width and height of this Billboard.
@@ -137,10 +143,10 @@ function Light.new() end
 ---@field lighting boolean @Enables lighting for this `Material`.
 ---@field backfaceCulling boolean @Change backface culling behavior for this `Material`.
 ---@field frontfaceCulling boolean @Change frontface culling behavior for this `Material`.
----@field quality Lime.Enum.Quality @Sets the quality of this Material using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
+---@field quality Lime.Enum.Quality @Sets the quality of this `Material` using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
 ---@field wireframe boolean @Enables wireframe view for this `Material`.
 ---@field zMethod Lime.Enum.ZOrderMethod @Sets Z ordering method for this `Material` using `Lime.Enum.ZOrderMethod`.
----@field opacity number @Sets the opacity of this Material from 0.0 (invisible) to 1.0 (visible), affecting the transparency of objects with this `Material` applied. (NOTE: Will not affect solid types)
+---@field opacity number @Sets the opacity of this `Material` from 0.0 (invisible) to 1.0 (visible), affecting the transparency of objects with this `Material` applied. (NOTE: Will not affect solid types)
 ---@field mipmaps boolean @Enables the generation of mipmaps.
 ---@field shine number @Sets the shine for this `Material`, ranging from 0 (soft and wide shine) to 1 (harsh and small shine).
 ---@field writeToDepth boolean @Enables this `Material` writing to the depth buffer on render, where false is common for transparent objects.
@@ -208,6 +214,7 @@ function Skydome.new() end
 ---@field speed number @The playback speed of this `SoundSource`.
 ---@field pan number @The pan of this `SoundSource`, where -1.0 is left and 1.0 is right.
 ---@field minimumDistance number @Sets the minimum listening distance for this `SoundSource`. Only applicable if this object is played in 3D.
+---@field maximumDistance number @Sets the maximum listening distance for this `SoundSource`. Only applicable if this object is played in 3D.
 ---@field playbackPosition number @The current playback position of this `SoundSource`.
 ---@field velocity Vec3 @The velocity of this `SoundSource`. Only applicable if this object is played in 3D.
 ---@field position Vec3 @The position of this `SoundSource` in the scene. Only applicable if this `SoundSource` is played in 3D.
@@ -612,17 +619,58 @@ function Lime.setInitConfig(driver) end
 ---@return void
 function Lime.setVSync(vSyncOn) end
 
+--- Creates a directory.
+---@param path string
+---@return boolean
+function Lime.File.createDirectory(path) end
+
+--- Returns the extension of the file at `path`.
+---@param path string
+---@return string
+function Lime.File.getExtension(path) end
+
+--- Returns the name of the file at `path`.
+---@param path string
+---@return string
+function Lime.File.getFileName(path) end
+
+--- Returns a table of file paths from directory `path`.
+---@param path string
+---@return table
+function Lime.File.getFilesInDirectory(path) end
+
+--- Returns true if a directory exists at `path`.
+---@param path string
+---@return boolean
+function Lime.File.isDirectory(path) end
+
+--- Returns true if `path` leads to a file.
+---@param path string
+---@return boolean
+function Lime.File.isFile(path) end
+
+--- Returns contents of file at `path`.
+---@param path string
+---@return string
+function Lime.File.readFile(path) end
+
+--- Writes content to file at `path`. The file will be created if it does not exist.
+---@param path string
+---@return boolean
+function Lime.File.writeFile(path) end
+
 --- Returns true if the font `name` is loaded.
 ---@param name string
 ---@return boolean
 function Lime.GUI.isFontLoaded(name) end
 
 --- Loads a Truetype font. Provide `name` to set the name manually, otherwise Lime will register the font as fontname_size. Returns the output font name.
----@overload fun(path:string, fontSize:number, name:string): string
+---@overload fun(path:string, fontSize:number, name:string, aa:boolean?): string
 ---@param path string
 ---@param fontSize number
+---@param aa boolean?
 ---@return string
-function Lime.GUI.loadTTF(path, fontSize) end
+function Lime.GUI.loadTTF(path, fontSize, aa) end
 
 --- Loads a bitmap font. Returns the name of this font, cut from `path`. (NOTE: `path` must be the path to a .xml file. The .xml files must be paired by an image file.)
 ---@param path string
@@ -1441,3 +1489,28 @@ function Vec3:normalizeRng(min, max) end
 --- Returns the HEX code for this object. This is useful for converting RGBA to HEX color.
 ---@return string
 function Vec4:getHEX() end
+
+--- Returns the number of octaves in the noise map.
+---@return number
+function math.noise.getOctaves() end
+
+--- Returns the seed of the noise map.
+---@return number
+function math.noise.getSeed() end
+
+--- Returns the value found in the noise map.
+---@overload fun(x:number, y:number): number
+---@overload fun(x:number, y:number, z:number): number
+---@param x number
+---@return number
+function math.noise.getValue(x) end
+
+--- Sets the number of octaves in the noise map.
+---@param octaves number
+---@return void
+function math.noise.setOctaves(octaves) end
+
+--- Sets the seed of the noise map.
+---@param seed number
+---@return void
+function math.noise.setSeed(seed) end

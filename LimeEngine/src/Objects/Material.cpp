@@ -308,13 +308,13 @@ void Object::MaterialBind::bind(lua_State* ls) {
 		"backfaceCulling", sol::property(&Material::getBFCulling, &Material::setBFCulling),
 		// Field boolean frontfaceCulling, Change frontface culling behavior for this `Material`.
 		"frontfaceCulling", sol::property(&Material::getFFCulling, &Material::setFFCulling),
-		// Field Lime.Enum.Quality quality, Sets the quality of this Material using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
+		// Field Lime.Enum.Quality quality, Sets the quality of this `Material` using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
 		"quality", sol::property(&Material::getQuality, &Material::setQuality),
 		// Field boolean wireframe, Enables wireframe view for this `Material`.
 		"wireframe", sol::property(&Material::getWireframe, &Material::setWireframe),
 		// Field Lime.Enum.ZOrderMethod zMethod, Sets Z ordering method for this `Material` using `Lime.Enum.ZOrderMethod`.
 		"zMethod", sol::property(&Material::getZOrdering, &Material::setZOrdering),
-		// Field number opacity, Sets the opacity of this Material from 0.0 (invisible) to 1.0 (visible), affecting the transparency of objects with this `Material` applied. (NOTE: Will not affect solid types)
+		// Field number opacity, Sets the opacity of this `Material` from 0.0 (invisible) to 1.0 (visible), affecting the transparency of objects with this `Material` applied. (NOTE: Will not affect solid types)
 		"opacity", sol::property(&Material::getOpacity, &Material::setOpacity),
 		// Field boolean mipmaps, Enables the generation of mipmaps.
 		"mipmaps", sol::property(&Material::getMipMaps, &Material::setMipMaps),

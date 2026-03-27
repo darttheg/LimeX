@@ -28,9 +28,6 @@
     <Filter Include="Engine\Runtime\Core">
       <UniqueIdentifier>{8c6eb646-9d87-4025-b6a1-751487a83087}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Runtime\Helpers">
-      <UniqueIdentifier>{a0bb8a22-d244-45b8-a0c5-46a5c699a876}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\Runtime\APIs">
       <UniqueIdentifier>{73ad9b06-4e98-4912-be67-5efe359e0327}</UniqueIdentifier>
     </Filter>
@@ -54,6 +51,9 @@
     </Filter>
     <Filter Include="Engine\Runtime\External\FontLoader">
       <UniqueIdentifier>{aeb649e8-8319-4a2b-b2f3-531a67cb3971}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime\External\Noise">
+      <UniqueIdentifier>{430fc752-dff3-48ca-8664-ce27d2f38726}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -196,6 +196,18 @@
     <ClInclude Include="include\External\FontLoader.h">
       <Filter>Engine\Runtime\External\FontLoader</Filter>
     </ClInclude>
+    <ClInclude Include="include\Modules\ModuleFile.h">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Modules\ModuleHelp.h">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\External\PerlinHeader.h">
+      <Filter>Engine\Runtime\External\Noise</Filter>
+    </ClInclude>
+    <ClInclude Include="include\External\PerlinNoise.h">
+      <Filter>Engine\Runtime\External\Noise</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -317,6 +329,12 @@
     </ClCompile>
     <ClCompile Include="src\External\FontLoader.cpp">
       <Filter>Engine\Runtime\External\FontLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\ModuleFile.cpp">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\ModuleHelp.cpp">
+      <Filter>Engine\Runtime\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

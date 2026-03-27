@@ -133,5 +133,17 @@ irrklang::ISound* SoundManager::play(irrklang::ISoundSource* src, bool td, bool 
 }
 
 bool SoundManager::attachSoundToNode(irrklang::ISound* sound, irr::scene::ISceneNode* parent) {
-	return false;
+	if (!guardSoundCheck() || !sound || !parent) return false;
+
+	// Make sure sound is not an entry already. it->parent will point to the param parent already if it is already an entry.
+	for (auto it = soundNodePairs.begin(); it != soundNodePairs.end();) {
+		if (it->sound == sound) return true;
+	}
+
+	soundNodePairs.push_back(SoundSourceOnNode{ sound, parent });
+	return true;
+}
+
+void SoundManager::warnGarbageCollection(const std::string& path) {
+	d->Warn("Lua object containing asset at " + path + " fell out of scope!");
 }

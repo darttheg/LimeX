@@ -68,6 +68,7 @@ public:
 	RenderHelper* GetRenderHelper() const { return rh; }
 
 	bool guardRenderingCheck();
+	void warnGarbageCollection(const std::string& path);
 	bool maximizeDevice();
 	bool restoreDevice();
 	bool isFocused();
@@ -108,6 +109,7 @@ public:
 
 	// GUI
 	void setGUIQuality(int q);
+	Vec2 getMousePosCorrected(float x, float y);
 
 	// Misc
 	bool setMouseVisible(bool vis);

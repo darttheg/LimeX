@@ -24,6 +24,8 @@
     <ClInclude Include="include\External\CTextAnchorSceneNode.h" />
     <ClInclude Include="include\External\CGUIColoredText.h" />
     <ClInclude Include="include\External\FontLoader.h" />
+    <ClInclude Include="include\External\PerlinHeader.h" />
+    <ClInclude Include="include\External\PerlinNoise.h" />
     <ClInclude Include="include\FrameLimiter.h" />
     <ClInclude Include="include\Interfaces\Object2D.h" />
     <ClInclude Include="include\Interfaces\Object3D.h" />
@@ -31,7 +33,9 @@
     <ClInclude Include="include\LightManager.h" />
     <ClInclude Include="include\LimeEngine.h" />
     <ClInclude Include="include\LuaBinder.h" />
+    <ClInclude Include="include\Modules\ModuleFile.h" />
     <ClInclude Include="include\Modules\ModuleGUI.h" />
+    <ClInclude Include="include\Modules\ModuleHelp.h" />
     <ClInclude Include="include\Modules\ModuleInput.h" />
     <ClInclude Include="include\Modules\ModuleLime.h" />
     <ClInclude Include="include\Modules\ModuleScene.h" />
@@ -76,7 +80,9 @@
     <ClCompile Include="src\Interfaces\SceneObject.cpp" />
     <ClCompile Include="src\LimeEngine.cpp" />
     <ClCompile Include="src\LuaBinder.cpp" />
+    <ClCompile Include="src\Modules\ModuleFile.cpp" />
     <ClCompile Include="src\Modules\ModuleGUI.cpp" />
+    <ClCompile Include="src\Modules\ModuleHelp.cpp" />
     <ClCompile Include="src\Modules\ModuleInput.cpp" />
     <ClCompile Include="src\Modules\ModuleLime.cpp" />
     <ClCompile Include="src\Modules\ModuleScene.cpp" />

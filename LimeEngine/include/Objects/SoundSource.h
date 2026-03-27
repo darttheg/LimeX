@@ -34,6 +34,8 @@ public:
 	void setLooping(bool v);
 	float getMinDist();
 	void setMinDist(float f);
+	float getMaxDist();
+	void setMaxDist(float f);
 	void setVolume(float f);
 	float getVolume();
 	void setPitch(float f);
@@ -65,6 +67,8 @@ public:
 	bool addReverbEffect(float inputGain = 0.0f, float mix = 0.0f, float time = 1000.0f, float freqRatio = 0.001f);
 	bool addCompressionEffect(float threshold = -20.0f, float ratio = 3.0f);
 
+	void collected();
+
 	// Destroy will just destroy this object and the sound. Purge will do the same but also unload it.
 	sol::object destroy();
 	sol::object purge();
@@ -80,6 +84,7 @@ private:
 	bool doSFX = false;
 	float vol = 100.0f;
 	float minDist = 1.0f;
+	float maxDist = 5000.0f;
 	Vec3S pos = Vec3S{ 0,0,0 };
 	irr::scene::ISceneNode* parent = nullptr;
 };

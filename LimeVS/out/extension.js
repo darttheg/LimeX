@@ -200,6 +200,7 @@ async function checkEngineVersion(context, workspaceFolder) {
     if (choice === "Update") {
         fs.copyFileSync(templateDll, projectDll);
         vscode.window.showInformationMessage("Lime: LimeEngine.dll updated successfully.");
+        await checkMissingDlls(context, workspaceFolder);
     }
 }
 async function checkMissingDlls(context, workspaceFolder) {

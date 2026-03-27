@@ -51,12 +51,12 @@ void Module::Lime::bind(Application* app) {
 	// Prints a message to console.
 	// Params any msg, Lime.Enum.PrintColor? color
 	// Returns void
-	module.set_function("log", [](sol::this_state ts, sol::object obj) {
+	module.set_function("log", [](sol::this_state ts, sol::object obj, sol::optional<int> color) {
 		sol::state_view L(ts);
 		sol::function tostringfn = L["tostring"];
 		std::string s = tostringfn(obj);
 
-		Module::Lime::Bind::Log(s);
+		Module::Lime::Bind::Log(s, color.value_or(0));
 	});
 
 	// If set to true, Lime will close on any error. A pop-up will be disclosed prior with error details.
@@ -148,7 +148,7 @@ void Module::Lime::Bind::ClearDebug() {
 }
 
 void Module::Lime::Bind::Log(std::string msg, int color) {
-	d->Log(msg.c_str(), (MESSAGE_TYPE)color);
+	d->Log(msg.c_str(), static_cast<MESSAGE_TYPE>(color));
 } 
 
 void Module::Lime::Bind::SetEndOnError(bool v) {

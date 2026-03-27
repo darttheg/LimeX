@@ -315,6 +315,10 @@ bool Renderer::guardRenderingCheck() {
 	return true;
 }
 
+void Renderer::warnGarbageCollection(const std::string& path) {
+	d->Warn("Lua object containing asset at " + path + " fell out of scope!");
+}
+
 bool Renderer::maximizeDevice() {
 	if (i_device)
 		i_device->maximizeWindow();
@@ -576,6 +580,14 @@ void Renderer::setGUIQuality(int q) {
 		setFilters(false, false, 0);
 		break;
 	}
+}
+
+Vec2 Renderer::getMousePosCorrected(float x, float y) {
+	if (doMatchResolution) return Vec2(x, y);
+	irr::core::recti vp = qr->getViewport();
+	int vMouseX = (x - vp.UpperLeftCorner.X) * renderSize.x / w->getSize().getX();
+	int vMouseY = (y - vp.UpperLeftCorner.Y) * renderSize.y / w->getSize().getY();
+	return Vec2(vMouseX, vMouseY);
 }
 
 void Renderer::setAmbientColor(const Vec4& color) {
