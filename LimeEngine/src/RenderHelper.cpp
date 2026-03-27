@@ -73,10 +73,20 @@ irr::scene::IBillboardSceneNode* RenderHelper::createDebugNode(DEBUG3D_TYPE t) {
 	irr::video::ITexture* tex = nullptr;
 
 	switch (t) {
-	case DEBUG3D_TYPE::EMPTY:
-		tex = i_driver->getTexture("icons/debug-empty.png");
+	case DEBUG3D_TYPE::CAMERA:
+		tex = i_driver->getTexture("icons/debug_camera.png");
+		break;
+	case DEBUG3D_TYPE::LIGHT:
+		tex = i_driver->getTexture("icons/debug_light.png");
+		break;
+	case DEBUG3D_TYPE::SKYDOME:
+		tex = i_driver->getTexture("icons/debug_skydome.png");
+		break;
+	case DEBUG3D_TYPE::TEXT:
+		tex = i_driver->getTexture("icons/debug_text.png");
 		break;
 	default:
+		tex = i_driver->getTexture("icons/debug_pfx.png"); // Make ? icon?
 		break;
 	}
 
@@ -399,8 +409,11 @@ Vec2 RenderHelper::toScreenPos(const Vec3& pos) {
 
 irr::scene::ICameraSceneNode* RenderHelper::createCameraNode() {
 	if (!guardRenderingCheck()) return nullptr;
+	irr::scene::ICameraSceneNode* cur = i_smgr->getActiveCamera();
+	irr::scene::ICameraSceneNode* out = i_smgr->addCameraSceneNode();
+	if (cur) i_smgr->setActiveCamera(cur);
 
-	return i_smgr->addCameraSceneNode();
+	return out;
 }
 
 void RenderHelper::updateCameraMatrix(irr::scene::ICameraSceneNode* c) {

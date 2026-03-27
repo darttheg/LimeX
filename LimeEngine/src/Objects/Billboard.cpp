@@ -25,6 +25,12 @@ void Billboard::destroy() {
 }
 
 void Billboard::setDebug(bool v) {
+	if (v) {
+		if (dVisual) dVisual->remove();
+		dVisual = rh->createDebugNode(DEBUG3D_TYPE::BILLBOARD);
+	} else {
+		if (dVisual) dVisual->remove();
+	}
 }
 
 Vec2 Billboard::getSize() {

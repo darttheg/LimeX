@@ -34,6 +34,12 @@ void Text3D::destroy() {
 }
 
 void Text3D::setDebug(bool v) {
+	if (v) {
+		if (dVisual) dVisual->remove();
+		dVisual = rh->createDebugNode(DEBUG3D_TYPE::TEXT);
+	} else {
+		if (dVisual) dVisual->remove();
+	}
 }
 
 std::string Text3D::getText() {

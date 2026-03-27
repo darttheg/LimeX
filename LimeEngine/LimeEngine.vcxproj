@@ -43,6 +43,7 @@
     <ClInclude Include="include\Modules\ModuleWindow.h" />
     <ClInclude Include="include\Objects\Billboard.h" />
     <ClInclude Include="include\Objects\Camera.h" />
+    <ClInclude Include="include\Objects\DebugAxisPlaneNode.h" />
     <ClInclude Include="include\Objects\DebugRaycastNode.h" />
     <ClInclude Include="include\Objects\Empty.h" />
     <ClInclude Include="include\Objects\Event.h" />
@@ -117,7 +118,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="api\Enums.api.inl" />
-    <None Include="resources.zip" />
+    <CopyFileToFolders Include="resources.zip">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="lime.rc" />

@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "Receiver.h"
 #include "Renderer.h"
+#include "Window.h"
 
 #include "Objects/Event.h"
 #include "Objects/Vec2.h"
@@ -14,12 +15,14 @@ static DebugConsole* d;
 static Application* a;
 static Receiver* receiver;
 static Renderer* renderer;
+static Window* w;
 
 void Module::Input::bind(Application* app) {
 	a = app;
 	d = app->GetDebugConsole();
 	receiver = app->GetReceiver();
 	renderer = app->GetRenderer();
+	w = app->GetWindow();
 	sol::state& lua = app->GetLuaState();
 
 	// Module Lime.Input
@@ -109,6 +112,11 @@ void Module::Input::bind(Application* app) {
 	// Returns string
 	module.set_function("getControllerName", &Module::Input::Bind::getControllerName);
 
+	// Determines if the mouse is confined to the window or not.
+	// Params boolean confined
+	// Returns void
+	module.set_function("setMouseConfined", &Module::Input::Bind::setMouseLocked);
+
 	// End Module
 }
 
@@ -161,6 +169,10 @@ float Module::Input::Bind::getControllerAxis(int id, int axis) {
 
 bool Module::Input::Bind::isControllerConnected(int id) {
 	return receiver->isControllerConnected(id);
+}
+
+void Module::Input::Bind::setMouseLocked(bool v) {
+	w->setMouseLocked(v);
 }
 
 std::string Module::Input::Bind::getControllerName(int id) {

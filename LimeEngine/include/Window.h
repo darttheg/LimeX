@@ -43,6 +43,7 @@ public:
 	void setResizable(bool on);
 	void keepAspectRatio(bool on);
 	void setSizeLimit(int w, int h);
+	void setMouseLocked(bool v);
 
 	// To get the raw window size
 	Vec2 getRawWinSize() const;

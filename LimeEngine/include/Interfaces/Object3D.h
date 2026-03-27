@@ -6,6 +6,7 @@ extern "C" { struct lua_State; }
 class RenderHelper;
 class Vec3;
 class Vec4;
+class DebugAxisPlaneNode;
 // #include "Objects/Vec3.h"
 
 namespace irr {
@@ -55,6 +56,7 @@ public:
 protected:
 	bool debug = false;
 	irr::scene::IBillboardSceneNode* dVisual = nullptr;
+	DebugAxisPlaneNode* dAxis = nullptr;
 private:
 };
 

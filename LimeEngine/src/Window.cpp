@@ -134,6 +134,9 @@ bool Window::Create() {
 		w->WindowResize.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); });
 	});
 
+	if (glfwRawMouseMotionSupported())
+		glfwSetInputMode(glfwWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+
 	glfwSetTime(0.0);
 
 	#ifdef _WIN32
@@ -180,6 +183,11 @@ bool Window::guardEditCheck() {
 		return false;
 	}
 	return true;
+}
+
+void Window::setMouseLocked(bool v) {
+	if (!glfwWindow) return;
+	if (v) glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_CAPTURED); else glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void Window::setTitle(std::string path) {

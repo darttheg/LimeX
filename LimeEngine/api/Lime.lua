@@ -727,6 +727,11 @@ function Lime.Input.isKeyDown(key) end
 ---@return boolean
 function Lime.Input.isMouseButtonDown(button) end
 
+--- Determines if the mouse is confined to the window or not.
+---@param confined boolean
+---@return void
+function Lime.Input.setMouseConfined(confined) end
+
 --- Sets the mouse's position.
 ---@param pos Vec2
 ---@return void

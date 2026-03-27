@@ -208,6 +208,9 @@
     <ClInclude Include="include\External\PerlinNoise.h">
       <Filter>Engine\Runtime\External\Noise</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\DebugAxisPlaneNode.h">
+      <Filter>Engine\Runtime\Objects\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -341,11 +344,13 @@
     <None Include="api\Enums.api.inl">
       <Filter>Engine\Runtime\APIs</Filter>
     </None>
-    <None Include="resources.zip" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="lime.rc">
       <Filter>Engine\Public</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="resources.zip" />
   </ItemGroup>
 </Project>

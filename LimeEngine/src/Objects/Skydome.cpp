@@ -25,6 +25,12 @@ void Skydome::destroy() {
 }
 
 void Skydome::setDebug(bool v) {
+	if (v) {
+		if (dVisual) dVisual->remove();
+		dVisual = rh->createDebugNode(DEBUG3D_TYPE::SKYDOME);
+	} else {
+		if (dVisual) dVisual->remove();
+	}
 }
 
 using namespace irr;

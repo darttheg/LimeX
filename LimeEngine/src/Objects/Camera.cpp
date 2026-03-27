@@ -42,7 +42,15 @@ void Camera::destroy() {
 	camera = nullptr;
 }
 
+#include "Objects/DebugAxisPlaneNode.h"
 void Camera::setDebug(bool v) {
+	if (v) {
+		if (dVisual) dVisual->remove();
+		dVisual = rh->createDebugNode(DEBUG3D_TYPE::CAMERA);
+		dAxis->setPointerLength(1.0f);
+	} else {
+		if (dVisual) dVisual->remove();
+	}
 }
 
 static void updateLookTarget(irr::scene::ICameraSceneNode* c, irr::scene::ISceneNode* forward) {

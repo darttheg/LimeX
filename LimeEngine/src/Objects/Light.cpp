@@ -7,7 +7,7 @@
 #include "Objects/Vec4.h"
 
 #include "irrlicht.h"
-
+#include "Objects/DebugAxisPlaneNode.h"
 #include <sol/sol.hpp>
 
 static RenderHelper* rh;
@@ -26,6 +26,14 @@ void Light::destroy() {
 }
 
 void Light::setDebug(bool v) {
+	if (v) {
+		if (dVisual) dVisual->remove();
+		dVisual = rh->createDebugNode(DEBUG3D_TYPE::LIGHT);
+		dAxis->setPointerLength(light->getType() == 0 ? 0.0f : light->getLightData().Radius);
+		dAxis->setPointerColor(light->getLightData().DiffuseColor);
+	} else {
+		if (dVisual) dVisual->remove();
+	}
 }
 
 irr::scene::ISceneNode* Light::getNode() const {
@@ -46,6 +54,9 @@ int Light::getType() const {
 void Light::setType(int type) {
 	if (!light) return;
 	light->setLightType((irr::video::E_LIGHT_TYPE)type);
+
+	if (!dAxis) return;
+	dAxis->setPointerLength(type == 0 ? 0.0f : 1.0f);
 }
 
 Vec4 Light::getDiffuseColor() const {
@@ -71,6 +82,7 @@ void Light::setAmbientColor(const Vec4& c) {
 	if (!light) return;
 	irr::video::SColorf ca = irr::video::SColorf(c.getW() / 255.0, c.getX() / 255.0, c.getY() / 255.0, c.getZ() / 255.0);
 	light->getLightData().AmbientColor = ca;
+	if (dAxis) dAxis->setPointerColor(light->getLightData().DiffuseColor);
 }
 
 Vec4 Light::getSpecularColor() const {

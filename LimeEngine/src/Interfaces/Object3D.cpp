@@ -2,6 +2,7 @@
 #include "RenderHelper.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
+#include "Objects/DebugAxisPlaneNode.h"
 
 #include "irrlicht.h"
 #include <sol/sol.hpp>
@@ -78,10 +79,18 @@ bool Object3D::hasParent() {
 
 void Object3D::i_setDebug(bool v) {
     if (debug == v) return;
+
+    if (v && !dAxis) {
+        dAxis = new DebugAxisPlaneNode(getNode(), getNode()->getSceneManager());
+        dAxis->setPosition(irr::core::vector3df());
+    } else if (!v && dAxis) {
+        dAxis->remove();
+    }
+
     setDebug(v);
     debug = v;
 
-    if (!getNode() || !dVisual) return;
+    if (!getNode() || !dVisual || !dAxis) return;
     getNode()->updateAbsolutePosition();
     dVisual->setPosition(getNode()->getPosition());
 }
