@@ -162,5 +162,5 @@ bool SoundManager::attachSoundToNode(irrklang::ISound* sound, irr::scene::IScene
 }
 
 void SoundManager::warnGarbageCollection(const std::string& path) {
-	d->Warn("Lua object containing asset at " + path + " fell out of scope!");
+	a->warnGarbageCollection(path);
 }

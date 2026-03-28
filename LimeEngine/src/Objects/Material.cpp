@@ -362,8 +362,8 @@ void Object::MaterialBind::bind(lua_State* ls) {
 	obj.set_function("clearShader", &Material::clearShader);
 
 	// Loads a `Texture` into this `Material`.
-	// Params number layer, Texture img
-	// Params Texture img
+	// Params number layer, Texture texture
+	// Params Texture texture
 	// Returns void
 	obj.set_function("loadTexture",
 		sol::overload(

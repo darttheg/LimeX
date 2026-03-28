@@ -189,7 +189,7 @@ async function checkEngineVersion(context, workspaceFolder) {
     const projectDll = path.join(workspaceFolder, "LimeEngine.dll");
     if (!fs.existsSync(projectDll))
         return;
-    const templateDll = path.join(context.extensionPath, "template", "LimeEngine.dll");
+    const templateDll = path.join(context.extensionPath, "template/lib", "LimeEngine.dll");
     const projectVersion = getFileVersion(projectDll).ProductVersion;
     const templateVersion = getFileVersion(templateDll).ProductVersion;
     if (projectVersion === templateVersion) {
@@ -204,7 +204,7 @@ async function checkEngineVersion(context, workspaceFolder) {
     }
 }
 async function checkMissingDlls(context, workspaceFolder) {
-    const templateDir = path.join(context.extensionPath, "template");
+    const templateDir = path.join(context.extensionPath, "template/lib");
     const templateEntries = fs.readdirSync(templateDir, { withFileTypes: true });
     const missingDlls = templateEntries
         .filter(e => e.isFile() && e.name.endsWith(".dll") && e.name !== "LimeEngine.dll")

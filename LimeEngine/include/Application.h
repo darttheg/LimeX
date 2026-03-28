@@ -80,11 +80,15 @@ public:
 	void displayMessage(const std::string& title, const std::string message, int img = 0);
 	bool addArchive(const std::string& path);
 
+	void warnGarbageCollection(const std::string& path);
+
 private:
 	bool CreateWindows();
 	void DoLuaBinding();
 	bool RunEntry();
 	uint16_t LoadPackage(const void* data, size_t size);
+	static int LuaPackageFinder(lua_State* l);
+	void InstallPackageFinder();
 
 	// Lua
 	std::unique_ptr<sol::state> lua;

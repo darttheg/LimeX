@@ -33,8 +33,8 @@ public:
 	void Log(std::string msg, MESSAGE_TYPE type = MESSAGE_TYPE::NORMAL);
 	void PostError(const char* msg, bool close = false);
 	void PostError(std::string msg, bool close = false);
-	void Warn(const char* msg);
-	void Warn(std::string msg);
+	void Warn(const char* msg, bool loc = true);
+	void Warn(std::string msg, bool loc = true);
 
 	void WriteOutputLog();
 	void SetWriteOutput(bool v) { writeOutput = v; }

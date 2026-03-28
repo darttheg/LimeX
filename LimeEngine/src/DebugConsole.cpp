@@ -168,16 +168,16 @@ void DebugConsole::PostError(std::string msg, bool close) {
     PostError(msg.c_str(), close);
 }
 
-void DebugConsole::Warn(const char* msg) {
+void DebugConsole::Warn(const char* msg, bool loc) {
     std::string full = "WARNING: ";
-    full += app->GetLuaLocation() + ": ";
+    if (loc) full += app->GetLuaLocation() + ": ";
     full += msg;
     Log(full.c_str(), MESSAGE_TYPE::YELLOW);
     warnCount++;
 }
 
-void DebugConsole::Warn(std::string msg) {
-    Warn(msg.c_str());
+void DebugConsole::Warn(std::string msg, bool loc) {
+    Warn(msg.c_str(), loc);
 }
 
 void DebugConsole::Update(int memMB) {

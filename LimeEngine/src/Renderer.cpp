@@ -323,7 +323,7 @@ bool Renderer::guardRenderingCheck() {
 }
 
 void Renderer::warnGarbageCollection(const std::string& path) {
-	d->Warn("Lua object containing asset at " + path + " fell out of scope!");
+	a->warnGarbageCollection(path);
 }
 
 bool Renderer::maximizeDevice() {

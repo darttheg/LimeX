@@ -172,7 +172,7 @@ async function checkEngineVersion(context: vscode.ExtensionContext, workspaceFol
   const projectDll = path.join(workspaceFolder, "LimeEngine.dll");
   if (!fs.existsSync(projectDll)) return;
 
-  const templateDll = path.join(context.extensionPath, "template", "LimeEngine.dll");
+  const templateDll = path.join(context.extensionPath, "template/lib", "LimeEngine.dll");
 
   const projectVersion = getFileVersion(projectDll).ProductVersion;
   const templateVersion = getFileVersion(templateDll).ProductVersion;
@@ -195,7 +195,7 @@ async function checkEngineVersion(context: vscode.ExtensionContext, workspaceFol
 }
 
 async function checkMissingDlls(context: vscode.ExtensionContext, workspaceFolder: string): Promise<void> {
-  const templateDir = path.join(context.extensionPath, "template");
+  const templateDir = path.join(context.extensionPath, "template/lib");
 
   const templateEntries = fs.readdirSync(templateDir, { withFileTypes: true });
   const missingDlls = templateEntries

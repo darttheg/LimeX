@@ -61,7 +61,64 @@ uint16_t Application::LoadPackage(const void* data, size_t size) {
 		entryModuleName = modules.begin()->first;
 	else return 0;
 
+	/*
+	for (const auto& [name, code] : modules) {
+		console->Log("Packaged module: " + name);
+	}
+	*/
+
 	return count;
+}
+
+int Application::LuaPackageFinder(lua_State* l) {
+	Application* app = static_cast<Application*>(lua_touserdata(l, lua_upvalueindex(1)));
+	if (!app) return 1;
+
+	const char* moduleName = luaL_checkstring(l, 1);
+	auto it = app->modules.find(moduleName);
+	if (it == app->modules.end()) {
+		std::string err = "\n\tcould not find packaged module '" + std::string(moduleName) + "'";
+		lua_pushlstring(l, err.c_str(), err.size());
+		return 1;
+	}
+
+	const std::string& chunk = it->second;
+	int status = luaL_loadbuffer(l, chunk.data(), chunk.size(), moduleName);
+	if (status != LUA_OK) {
+		std::string err = "\n\terror loading package module '" + std::string(moduleName) + "': " + lua_tostring(l, -1);
+		lua_pop(l, 1);
+		lua_pushlstring(l, err.c_str(), err.size());
+		return 1;
+	}
+
+	return 1;
+}
+
+void Application::InstallPackageFinder() {
+	lua_getglobal(GetLuaState(), "package");
+	if (!lua_istable(GetLuaState(), -1)) {
+		lua_pop(GetLuaState(), 1);
+		return;
+	}
+
+	lua_getfield(GetLuaState(), -1, "searchers");
+	if (!lua_istable(GetLuaState(), -1)) {
+		lua_pop(GetLuaState(), 2);
+		return;
+	}
+
+	lua_pushlightuserdata(GetLuaState(), this);
+	lua_pushcclosure(GetLuaState(), Application::LuaPackageFinder, 1);
+
+	lua_Integer len = static_cast<lua_Integer>(lua_rawlen(GetLuaState(), -2));
+	
+	for (lua_Integer i = len + 1; i > 2; --i) {
+		lua_rawgeti(GetLuaState(), -2, i - 1);
+		lua_rawseti(GetLuaState(), -3, i);
+	}
+
+	lua_rawseti(GetLuaState(), -2, 2);
+	lua_pop(GetLuaState(), 2);
 }
 
 bool Application::RunEntry() {
@@ -105,6 +162,12 @@ bool Application::Init(const void* data, size_t size) {
 
 	// Create new Lua state
 	lua = std::make_unique<sol::state>();
+
+	if (!lua) {
+		console->PostError("Failed to create Lua state", true);
+		return false;
+	}
+
 	lua->open_libraries(
 		sol::lib::base,
 		sol::lib::string,
@@ -117,10 +180,7 @@ bool Application::Init(const void* data, size_t size) {
 		sol::lib::debug
 	);
 
-	if (!lua) {
-		console->PostError("Failed to create Lua state", true);
-		return false;
-	}
+	InstallPackageFinder();
 
 	// Run randomseed using os time
 	lua->script(R"(
@@ -350,6 +410,22 @@ void Application::displayMessage(const std::string& title, const std::string mes
 
 bool Application::addArchive(const std::string& path) {
 	return renderer->addArchive(path);
+}
+
+void Application::warnGarbageCollection(const std::string& path) {
+	int max = 35;
+	std::string out = path;
+	if (path.length() > max) {
+		int keep = max - 3;
+		int start = path.length() - keep;
+		int slashPos = path.find_first_of("/\\", start);
+		if (slashPos != std::string::npos)
+			out = "..." + path.substr(slashPos);
+		else
+			out + "..." + path.substr(start);
+	}
+
+	console->Warn("Object referencing asset " + out + " was garbage collected.", false);
 }
 
 void Application::setTargetFrameRate(int fps) {
