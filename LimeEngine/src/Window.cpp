@@ -89,48 +89,73 @@ bool Window::Create() {
 	else
 		glfwSetWindowAspectRatio(glfwWindow, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
+	/*glfwSetWindowPosCallback(glfwWindow, [](GLFWwindow* win, int x, int y) {
+		auto* w = a->GetWindow();
+		auto* d = a->GetDebugConsole();
+		if (!w->isFullscreened) {
+			w->preFullWinPos.x = x;
+			w->preFullWinPos.y = y;
+			d->Warn(std::to_string(x) + ", " + std::to_string(y));
+		}
+	});*/
+
 	glfwSetWindowMaximizeCallback(glfwWindow, [](GLFWwindow* win, int maximized) {
 		HWND hwnd = a->GetWindow()->GetHandle();
 		auto* d = a->GetDebugConsole();
+		auto* w = a->GetWindow();
+		auto* r = a->GetRenderer();
+		w->inFullscreenCallback = true;
+
+		if (w->didCallback) return;
+
+		w->didCallback = true;
 
 		if (maximized) {
-			a->GetRenderer()->maximizeDevice();
-			GetWindowPlacement(hwnd, &wpPrev);
-			stylePrev = GetWindowLongPtr(hwnd, GWL_STYLE);
-			exStylePrev = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+			w->preFullWinSize.x = w->windowSize.x;
+			w->preFullWinSize.y = w->windowSize.y;
 
-			SetWindowLongPtr(hwnd, GWL_STYLE, (stylePrev & ~WS_OVERLAPPEDWINDOW) | WS_POPUP | WS_VISIBLE);
-			SetWindowLongPtr(hwnd, GWL_EXSTYLE, (exStylePrev & ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE)));
-
-			HMONITOR mon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
-			MONITORINFO mi{ sizeof(mi) };
-			GetMonitorInfo(mon, &mi);
-
-			const RECT r = mi.rcMonitor;
-			SetWindowPos(hwnd, HWND_TOP,
-				r.left, r.top, r.right - r.left, r.bottom - r.top,
-				SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-			d->Warn("TODO");
+			w->isFullscreened = true;
+			GLFWmonitor* m = glfwGetPrimaryMonitor();
+			const GLFWvidmode* mode = glfwGetVideoMode(m);
+			glfwSetWindowAttrib(win, GLFW_DECORATED, GLFW_FALSE);
+			glfwSetWindowSize(win, mode->width, mode->height);
+			glfwSetWindowPos(win, 0, 0);
+			SetWindowPos(hwnd, HWND_TOP, 0, 0, mode->width, mode->height, SWP_FRAMECHANGED);
 		}
 		else {
-			a->GetRenderer()->restoreDevice();
+			w->isFullscreened = false;
+			glfwSetWindowAttrib(win, GLFW_DECORATED, GLFW_TRUE);
+			int width = w->preFullWinSize.x;
+			int height = w->preFullWinSize.y;
+			w->setSizeSimple(width, height);
+			r->updateWindowSize(width, height);
+			glfwSetWindowSize(win, width, height);
 
-			SetWindowLongPtr(hwnd, GWL_STYLE, stylePrev);
-			SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStylePrev);
-			SetWindowPlacement(hwnd, &wpPrev);
-
-			SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
-				SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-			d->Warn("TODO");
+			int x, y;
+			glfwGetWindowPos(win, &x, &y);
+			glfwSetWindowPos(win, w->preFullWinPos.x, w->preFullWinPos.y);
 		}
 	});
 
 	glfwSetFramebufferSizeCallback(glfwWindow, [](GLFWwindow* window, int width, int height) {
 		auto* r = a->GetRenderer();
 		auto* w = a->GetWindow();
-		w->setSizeSimple(width, height);
 
+		if (w->inFullscreenCallback && !w->isFullscreened) {
+			goto resizeEvent;
+		}
+
+		if (w->isFullscreened) {
+			GLFWmonitor* m = glfwGetPrimaryMonitor();
+			const GLFWvidmode* mode = glfwGetVideoMode(m);
+			width = mode->width;
+			height = mode->height;
+		}
+
+		w->setSizeSimple(width, height);
 		r->updateWindowSize(width, height);
+
+		resizeEvent:;
 		w->WindowResize.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); });
 	});
 
@@ -146,10 +171,16 @@ bool Window::Create() {
 	// Temporary? Set window size limits to avoid weird letterboxing.
 	setSizeLimit(cfg.renderSize[0], cfg.renderSize[1]);
 
+	int x, y;
+	glfwGetWindowPos(glfwWindow, &x, &y);
+	preFullWinPos.x = x;
+	preFullWinPos.y = y;
+
 	return true;
 }
 
 void Window::PollEvents() {
+	didCallback = false;
 	glfwMakeContextCurrent(glfwWindow);
 	glfwPollEvents();
 }
@@ -168,6 +199,7 @@ void Window::PreUpdateBG() {
 
 void Window::EndFrame() {
 	glfwSwapBuffers(glfwWindow);
+	inFullscreenCallback = false;
 }
 
 // ---
@@ -197,12 +229,12 @@ void Window::setTitle(std::string path) {
 
 void Window::doFullscreen(bool v) {
 	if (!guardEditCheck()) return;
+	isFullscreened = v;
 	if (v) {
 		glfwMaximizeWindow(glfwWindow);
 	} else {
 		glfwRestoreWindow(glfwWindow);
 	}
-	isFullscreened = v;
 }
 
 Vec2 Window::getPosition() {

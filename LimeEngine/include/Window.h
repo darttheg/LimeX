@@ -59,6 +59,10 @@ private:
 
 	bool isFullscreened = false;
 	GLFWwindow* glfwWindow = nullptr;
+	Vec2S preFullWinSize{};
+	Vec2S preFullWinPos{};
 	Vec2S windowSize{};
 	bool resizable = true;
+	bool inFullscreenCallback = false;
+	bool didCallback = false; // Used when the maximize/restore callback was called, resets before polling events
 };

@@ -210,6 +210,8 @@ void QuadRenderer::recreateRt()
         rtGUI->grab();
 }
 
+#undef min
+#undef max
 void QuadRenderer::setVp() {
     if (!driver || !rtScene)
         return;
