@@ -48,9 +48,16 @@ public:
 	bool getFocused();
 	void setFocused(bool v);
 
+	int getPos();
+	void setPos(int v);
+
+	bool getIsDrawingBackground();
+	void setIsDrawingBackground(bool v);
+
 	irr::gui::IGUIElement* getNode() const override;
 private:
 	bool wraps = false;
+	bool bg = true;
 	irr::gui::IGUIEditBox* ebox = nullptr;
 };
 

@@ -44,6 +44,8 @@ void EditBox::setAlignment(int h, int v) {
 void EditBox::destroy() {
 	if (ebox) ebox->remove();
 	ebox = nullptr;
+	bg = true;
+	wraps = false;
 }
 
 std::string EditBox::getText() {
@@ -123,6 +125,25 @@ void EditBox::setFocused(bool v) {
 	g->setElementFocused(ebox, v);
 }
 
+int EditBox::getPos() {
+	return ebox ? ebox->getCursorPosition() : 0;
+}
+
+void EditBox::setPos(int v) {
+	if (!ebox) return;
+	ebox->setCursorPosition(v);
+}
+
+bool EditBox::getIsDrawingBackground() {
+	return ebox ? bg : false;
+}
+
+void EditBox::setIsDrawingBackground(bool v) {
+	if (!ebox) return;
+	ebox->setDrawBackground(v);
+	bg = v;
+}
+
 irr::gui::IGUIElement* EditBox::getNode() const {
 	return ebox;
 }
@@ -155,8 +176,14 @@ void Object::EditBoxBind::bind(lua_State* ls, RenderHelper* renh, GUIManager* gu
 		// Field boolean enabled, Determines if this `EditBox` is enabled.
 		"enabled", sol::property(&EditBox::getEnabled, &EditBox::setEnabled),
 
+		// Field number cursorPosition, The position of the cursor in this `EditBox`.
+		"cursorPosition", sol::property(&EditBox::getPos, &EditBox::setPos),
+
 		// Field boolean multiLine, Determines if this `EditBox` supports multiple lines.
 		"multiLine", sol::property(&EditBox::getMultiLine, &EditBox::setMultiLine),
+
+		// Field boolean background, Determines if this `EditBox` has a visible background.
+		"background", sol::property(&EditBox::getIsDrawingBackground, &EditBox::setIsDrawingBackground),
 
 		// Field boolean autoscroll, Determines if this `EditBox` will autoscroll.
 		"autoscroll", sol::property(&EditBox::getAutoScroll, &EditBox::setAutoScroll),

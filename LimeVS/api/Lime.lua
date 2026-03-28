@@ -71,7 +71,9 @@ function Camera.new() end
 ---@field text string @The text content of this object.
 ---@field password boolean @Determines if the text content of this `EditBox` is obfuscated.
 ---@field enabled boolean @Determines if this `EditBox` is enabled.
+---@field cursorPosition number @The position of the cursor in this `EditBox`.
 ---@field multiLine boolean @Determines if this `EditBox` supports multiple lines.
+---@field background boolean @Determines if this `EditBox` has a visible background.
 ---@field autoscroll boolean @Determines if this `EditBox` will autoscroll.
 ---@field focused boolean @Determines if this `EditBox` is focused.
 ---@field wordWrap boolean @Determines if the text wraps when touching the border of its text box.
