@@ -164,7 +164,7 @@ void Object::EditBoxBind::bind(lua_State* ls, RenderHelper* renh, GUIManager* gu
 		// Field boolean focused, Determines if this `EditBox` is focused.
 		"focused", sol::property(&EditBox::getFocused, &EditBox::setFocused),
 
-		// Field boolean wordWrap, Determines if the text wraps when touching the border of its box.
+		// Field boolean wordWrap, Determines if the text wraps when touching the border of its text box.
 		"wordWrap", sol::property(&EditBox::getWordWrap, &EditBox::setWordWrap)
 	);
 

@@ -74,7 +74,7 @@ function Camera.new() end
 ---@field multiLine boolean @Determines if this `EditBox` supports multiple lines.
 ---@field autoscroll boolean @Determines if this `EditBox` will autoscroll.
 ---@field focused boolean @Determines if this `EditBox` is focused.
----@field wordWrap boolean @Determines if the text wraps when touching the border of its box.
+---@field wordWrap boolean @Determines if the text wraps when touching the border of its text box.
 ---@field position Vec2 @The 2D position of this object on the screen.
 ---@field size Vec2 @The 2D size of this object.
 ---@field visible boolean @Determines the visibility of this object and its children.
@@ -257,7 +257,7 @@ function SoundSource.new() end
 
 ---@class Text2D
 ---@field text string @The text content of this object.
----@field wordWrap boolean @Determines if the text wraps when touching the border of its box.
+---@field wordWrap boolean @Determines if the text wraps when touching the border of its text box.
 ---@field opacity number @The opacity of the text, from 0 to 255. For individual characters being not fully opaque, use color tags with an alpha value.
 ---@field position Vec2 @The 2D position of this object on the screen.
 ---@field size Vec2 @The 2D size of this object.
@@ -277,7 +277,7 @@ function Text2D.new() end
 ---@class Text3D
 ---@field text string @The text content of this object.
 ---@field opacity number @The opacity of the text, from 0 to 255. For individual characters being not fully opaque, use color tags with an alpha value.
----@field wordWrap boolean @Determines if the text wraps when touching the border of its box.
+---@field wordWrap boolean @Determines if the text wraps when touching the border of its text box.
 ---@field size Vec2 @The size of the 2D text box.
 ---@field position Vec3 @The 3D position of this object in the scene.
 ---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.

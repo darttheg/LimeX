@@ -144,7 +144,7 @@ void Object::Text3DBind::bind(lua_State* ls, RenderHelper* renh, GUIManager* gu)
 		// Field number opacity, The opacity of the text, from 0 to 255. For individual characters being not fully opaque, use color tags with an alpha value.
 		"opacity", sol::property(&Text3D::getOpacity, &Text3D::setOpacity),
 
-		// Field boolean wordWrap, Determines if the text wraps when touching the border of its box.
+		// Field boolean wordWrap, Determines if the text wraps when touching the border of its text box.
 		"wordWrap", sol::property(&Text3D::getWordWrap, &Text3D::setWordWrap),
 
 		// Field Vec2 size, The size of the 2D text box.
