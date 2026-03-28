@@ -97,6 +97,12 @@ void Object::Vec2Bind::bind(lua_State* ls) {
 	// Constructor number x, number y
 	// Constructor number all
 
+	// Operation Vec2 Vec2 +
+	// Operation Vec2 Vec2 -
+	// Operation Vec2 number *
+	// Operation Vec2 number /
+	// Operation boolean Vec2 ==
+
 	// Returns the length of the vector.
 	// Returns number
 	obj.set_function("length", &Vec2::getLength);

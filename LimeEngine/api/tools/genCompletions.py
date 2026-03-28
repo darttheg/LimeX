@@ -7,6 +7,14 @@ from typing import Dict, List, Optional, Tuple
 KNOWN_TYPES = {"string","number","boolean","table","any","nil","void","function","userdata","thread"}
 ARTICLES = {"the","a","an"}
 
+OP_MAP = {
+    "+":  "add",
+    "-":  "sub",
+    "*":  "mul",
+    "/":  "div",
+    "==": "eq",
+}
+
 @dataclass
 class Param:
     name: str
@@ -39,6 +47,7 @@ class ObjectDoc:
     inherits: List[str] = field(default_factory=list)
     fields: List[Tuple[str, str, Optional[str]]] = field(default_factory=list)
     ctors: List[List[Param]] = field(default_factory=list)
+    operations: List[Tuple[str, str, str]] = field(default_factory=list)
 
 def parse_params(sig: str) -> List[Param]:
     out: List[Param] = []
@@ -235,6 +244,19 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, Interfac
                     current_object.ctors.append(parse_params(rest) if rest else [])
                     continue
 
+                if current_object and s.startswith("Operation "):
+                    rest = s[len("Operation "):].strip()
+                    tokens = rest.split()
+                    if len(tokens) == 2:
+                        rtype, sym = tokens[0], tokens[1]
+                        if sym in OP_MAP:
+                            current_object.operations.append((rtype, rtype, sym))
+                    elif len(tokens) == 3:
+                        rtype, operand, sym = tokens[0], tokens[1], tokens[2]
+                        if sym in OP_MAP:
+                            current_object.operations.append((rtype, operand, sym))
+                    continue
+
                 if s.startswith("Returns "):
                     rtype, rdoc = parse_returns_line(s)
                     if rtype:
@@ -352,6 +374,9 @@ def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc],
                     continue
                 field_seen.add(name)
                 out.append(field_line(name, typ, comment))
+
+        for rtype, operand, sym in obj.operations:
+            out.append(f"---@operator {OP_MAP[sym]}({operand}): {rtype}")
 
         out.append(f"{obj.name} = {obj.name} or {{}}")
 

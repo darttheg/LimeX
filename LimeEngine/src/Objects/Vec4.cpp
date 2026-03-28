@@ -109,6 +109,12 @@ void Object::Vec4Bind::bind(lua_State* ls) {
 	// Constructor number all
 	// Constructor string HEX
 
+	// Operation Vec4 Vec4 +
+	// Operation Vec4 Vec4 -
+	// Operation Vec4 number *
+	// Operation Vec4 number /
+	// Operation boolean Vec4 ==
+
 	// Returns the HEX code for this object. This is useful for converting RGBA to HEX color.
 	// Returns string
 	obj.set_function("getHEX", &Vec4::getHex);

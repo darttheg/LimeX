@@ -122,6 +122,12 @@ void Object::Vec3Bind::bind(lua_State* ls) {
 	// Constructor number x, number y, number z
 	// Constructor number all
 
+	// Operation Vec3 Vec3 +
+	// Operation Vec3 Vec3 -
+	// Operation Vec3 number *
+	// Operation Vec3 number /
+	// Operation boolean Vec3 ==
+
 	// Returns the length of the vector.
 	// Returns number
 	obj.set_function("length", &Vec3::getLength);
