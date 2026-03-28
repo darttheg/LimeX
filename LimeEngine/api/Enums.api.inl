@@ -15,6 +15,22 @@ LIME_ENUM(PopUpIcon,
     LIME_ENUM_VALUE(Information, 3)
 );
 
+LIME_ENUM(Cursor,
+    LIME_ENUM_VALUE(Normal, 0)
+    LIME_ENUM_VALUE(Cross, 1)
+    LIME_ENUM_VALUE(Hand, 2)
+    LIME_ENUM_VALUE(Help, 3)
+    LIME_ENUM_VALUE(Highlighter, 4)
+    LIME_ENUM_VALUE(Forbidden, 5)
+    LIME_ENUM_VALUE(Hourglass, 6)
+    LIME_ENUM_VALUE(ResizeAll, 7)
+    LIME_ENUM_VALUE(ResizeNS, 8)
+    LIME_ENUM_VALUE(ResizeWE, 9)
+    LIME_ENUM_VALUE(ResizeNESW, 10)
+    LIME_ENUM_VALUE(ResizeNWSE, 11)
+    LIME_ENUM_VALUE(Up, 12)
+);
+
 LIME_ENUM(DriverType,
     LIME_ENUM_VALUE(None, 0)
     LIME_ENUM_VALUE(Software, 1)

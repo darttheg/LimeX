@@ -64,6 +64,7 @@ public:
 	bool Shutdown();
 	bool Render(bool clearBackBuffer = false, bool clearZBuffer = true);
 	void EndWholeScene() { hasBegunNewScene = false; }
+	bool RunDevice();
 	void RenderBGPreUpdate(); // For manual rendering, render the BG just so something is showing before the update loop.
 	RenderHelper* GetRenderHelper() const { return rh; }
 

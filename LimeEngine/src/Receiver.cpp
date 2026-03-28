@@ -4,12 +4,14 @@
 #include "DebugConsole.h"
 #include "Objects/Event.h"
 #include "Objects/Vec2.h"
+#include "Window.h"
 
 #include "irrlicht.h"
 
 static Application* a;
 static DebugConsole* d;
 static GUIManager* g;
+static Window* w;
 static IrrlichtDevice* device;
 
 struct Receiver::Impl {
@@ -20,6 +22,7 @@ struct Receiver::Impl {
 
 Receiver::Receiver(Application* app, GUIManager* gui) {
 	a = app;
+	w = app->GetWindow();
 	d = a->GetDebugConsole();
 	g = gui;
 	keyboard.down.fill(false);
@@ -39,8 +42,12 @@ void Receiver::beginFrame() {
 	mouse.rmbPressed = mouse.rmbReleased = false;
 	mouse.mPressed = mouse.mReleased = false;
 
-	mouse.delta = { 0, 0 };
 	mouse.wheel = 0.0f;
+
+	double x, y;
+	w->syncMouse(&x, &y);
+	mouse.pos.x = x;
+	mouse.pos.y = y;
 
 	if (skipDeltaOnResize) {
 		skipDeltaOnResize = false;
@@ -53,8 +60,8 @@ void Receiver::beginFrame() {
 		return;
 	}
 
-	mouse.delta.x = mouse.pos.x - lastMousePos.x;
-	mouse.delta.y = mouse.pos.y - lastMousePos.y;
+	mouse.delta.x = mouse.pos.x - mouse.lastPos.x;
+	mouse.delta.y = mouse.pos.y - mouse.lastPos.y;
 }
 
 void Receiver::endFrame() {
@@ -66,14 +73,24 @@ void Receiver::endFrame() {
 }
 
 void Receiver::syncMouse() {
+	double x, y;
+	w->syncMouse(&x, &y);
+	mouse.pos.x = x;
+	mouse.pos.y = y;
 	mouse.lastPos = mouse.pos;
 	mouse.delta = { 0, 0 };
 	firstMouse = false;
 }
 
 void Receiver::setMousePosition(int x, int y) {
+	/*
 	mouse.pos.x = x;
 	mouse.pos.y = y;
+	mouse.lastPos.x = x;
+	mouse.lastPos.y = y;
+	*/
+
+	syncMouse();
 }
 
 bool Receiver::OnEvent(const irr::SEvent& e) {
@@ -122,23 +139,6 @@ void Receiver::handleKey(const irr::SEvent::SKeyInput& k) {
 #define MOUSE_RIGHT 1
 #define MOUSE_MIDDLE 2
 void Receiver::handleMouse(const irr::SEvent::SMouseInput& m) {
-	Vec2S newPos{ m.X, m.Y };
-	mouse.pos = newPos;
-
-	if (!haveLastMousePos) {
-		lastMousePos = newPos;
-		haveLastMousePos = true;
-	}
-
-	mouse.delta.x += (newPos.x - lastMousePos.x);
-	mouse.delta.y += (newPos.y - lastMousePos.y);
-
-	if (std::abs(mouse.delta.x + mouse.delta.y) >= 0.01f) {
-		InputMouseMoved.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, Vec2(mouse.delta.x, mouse.delta.y));
-	}
-
-	lastMousePos = newPos;
-
 	switch (m.Event) {
 	case irr::EMIE_LMOUSE_PRESSED_DOWN: // LMB pressed
 		if (!mouse.lmbDown) {
@@ -185,6 +185,9 @@ void Receiver::handleMouse(const irr::SEvent::SMouseInput& m) {
 	case irr::EMIE_MOUSE_WHEEL: // M scroll
 		mouse.wheel += m.Wheel;
 		InputMouseWheel.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, m.Wheel);
+		break;
+	case irr::EMIE_MOUSE_MOVED:
+		InputMouseMoved.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, Vec2(mouse.delta.x, mouse.delta.y));
 		break;
 	}
 }

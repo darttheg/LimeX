@@ -140,6 +140,8 @@ bool Window::Create() {
 	glfwSetFramebufferSizeCallback(glfwWindow, [](GLFWwindow* window, int width, int height) {
 		auto* r = a->GetRenderer();
 		auto* w = a->GetWindow();
+		auto* rec = a->GetReceiver();
+		rec->setSkipDelta();
 
 		if (w->inFullscreenCallback && !w->isFullscreened) {
 			goto resizeEvent;
@@ -220,6 +222,11 @@ bool Window::guardEditCheck() {
 void Window::setMouseLocked(bool v) {
 	if (!glfwWindow) return;
 	if (v) glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_CAPTURED); else glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+void Window::syncMouse(double* mx, double* my) {
+	if (!glfwWindow) return;
+	glfwGetCursorPos(glfwWindow, mx, my);
 }
 
 void Window::setTitle(std::string path) {

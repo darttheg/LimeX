@@ -230,10 +230,7 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 	}
 	*/
 
-	if (!i_device->run()) {
-		d->Warn("Render device could not be ran!");
-		return false;
-	}
+	// Moved device->run to its own function to fix event receiver
 
 	if (!doRender) return true;
 
@@ -266,6 +263,15 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 	hasBegunNewScene = true;
 
 	return true;
+}
+
+bool Renderer::RunDevice() {
+	if (!guardRenderingCheck()) return false;
+
+	if (!i_device->run()) {
+		d->Warn("Render device could not be ran!");
+		return false;
+	}
 }
 
 void Renderer::RenderBGPreUpdate() {
@@ -715,7 +721,6 @@ bool Renderer::setMousePosition(const Vec2& pos) {
 	if (!i_device) return false;
 	i_device->getCursorControl()->setPosition(irr::core::vector2di(pos.getX(), pos.getY()));
 	a->GetReceiver()->setMousePosition(pos.getX() - 1, pos.getY() - 1);
-	a->GetReceiver()->syncMouse();
 	return true;
 }
 
@@ -739,7 +744,7 @@ irr::io::IFileSystem* const Renderer::getFileSystem() {
 
 bool Renderer::addArchive(const std::string path) {
 	if (!guardRenderingCheck()) return false;
-	i_device->getFileSystem()->addFileArchive(path.c_str(), true, false, irr::io::EFAT_UNKNOWN);
+	return i_device->getFileSystem()->addFileArchive(path.c_str(), true, false, irr::io::EFAT_UNKNOWN);
 }
 
 #include "Objects/Event.h"

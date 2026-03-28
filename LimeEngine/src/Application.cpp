@@ -196,20 +196,16 @@ bool Application::Run() {
 	while (running) {
 		dt = limiter->beginFrame();
 
-		// Poll window events
-		window->PollEvents();
-		receiver->beginFrame();
-
 		console->Update(getMemUsed());
 
-		// Run update
-		LimeUpdate.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); }, dt);
-
-		// Update sound manager
-		soundManager->Update(dt);
-
-		// Render
 		if (window && window->ShouldClose()) fail = true;
+
+		// Change to device->run -> update event -> render to fix event receiver
+		if (!renderer->RunDevice()) fail = true;
+		receiver->beginFrame();
+		LimeUpdate.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); }, dt);
+		window->PollEvents();
+		soundManager->Update(dt);
 		if (!renderer->Render()) fail = true;
 
 		// Clean-up

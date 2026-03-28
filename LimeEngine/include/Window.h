@@ -44,6 +44,7 @@ public:
 	void keepAspectRatio(bool on);
 	void setSizeLimit(int w, int h);
 	void setMouseLocked(bool v);
+	void syncMouse(double* mx, double* my);
 
 	// To get the raw window size
 	Vec2 getRawWinSize() const;

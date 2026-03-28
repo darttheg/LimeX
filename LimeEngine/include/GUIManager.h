@@ -33,6 +33,7 @@ public:
 	std::string embedTTF(const std::string& ttfPath, int size, const std::string& name, bool aa);
 	void setDefaultFont(const std::string& name);
 	bool isFontEmbedded(const std::string& name);
+	bool isAnyElementHovered();
 	bool isElementFocused(irr::gui::IGUIElement* e);
 	void setElementFocused(irr::gui::IGUIElement* e, bool v);
 	void setQuality(int q);

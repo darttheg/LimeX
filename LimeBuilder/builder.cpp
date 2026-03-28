@@ -147,8 +147,8 @@ static std::string toModuleName(const fs::path& src, const fs::path& file) {
 	std::replace(out.begin(), out.end(), '\\', '/');
 
 	// Remove end
-	if (out.size() >= 6 && out.substr(out.size() - 6) == ".lua")
-		out.erase(out.size() - 6);
+	if (out.size() >= 4 && out.substr(out.size() - 4) == ".lua")
+		out.erase(out.size() - 4);
 
 	std::replace(out.begin(), out.end(), '/', '.');
 

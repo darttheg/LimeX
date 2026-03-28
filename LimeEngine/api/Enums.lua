@@ -28,6 +28,36 @@ Warning = 1,
 Message = 2,
 Information = 3,
 }
+---@alias Lime.Enum.Cursor integer
+---@class Lime.Enum.CursorEnum
+---@field Normal Lime.Enum.Cursor
+---@field Cross Lime.Enum.Cursor
+---@field Hand Lime.Enum.Cursor
+---@field Help Lime.Enum.Cursor
+---@field Highlighter Lime.Enum.Cursor
+---@field Forbidden Lime.Enum.Cursor
+---@field Hourglass Lime.Enum.Cursor
+---@field ResizeAll Lime.Enum.Cursor
+---@field ResizeNS Lime.Enum.Cursor
+---@field ResizeWE Lime.Enum.Cursor
+---@field ResizeNESW Lime.Enum.Cursor
+---@field ResizeNWSE Lime.Enum.Cursor
+---@field Up Lime.Enum.Cursor
+Lime.Enum.Cursor = {
+Normal = 0,
+Cross = 1,
+Hand = 2,
+Help = 3,
+Highlighter = 4,
+Forbidden = 5,
+Hourglass = 6,
+ResizeAll = 7,
+ResizeNS = 8,
+ResizeWE = 9,
+ResizeNESW = 10,
+ResizeNWSE = 11,
+Up = 12,
+}
 ---@alias Lime.Enum.DriverType integer
 ---@class Lime.Enum.DriverTypeEnum
 ---@field None Lime.Enum.DriverType
