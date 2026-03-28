@@ -11,34 +11,49 @@ namespace irr {
 	namespace gui {
 		class IGUIElement;
 		class CGUIColoredText;
+		class IGUIEditBox;
 	}
 }
 
-class Text2D : public Object2D {
+class EditBox : public Object2D {
 public:
-	Text2D();
-	Text2D(const std::string& tx);
-	Text2D(const Vec2& pos, const Vec2& sz);
+	EditBox();
+	EditBox(const std::string& tx);
+	EditBox(const Vec2& pos, const Vec2& sz);
 	void destroy() override;
 
 	std::string getText();
 	void setText(const std::string& tx);
 
-	int getOpacity();
-	void setOpacity(int o);
+	bool setFont(const std::string& f);
+
 	void setAlignment(int all);
 	void setAlignment(int h, int v);
+
 	bool getWordWrap();
 	void setWordWrap(bool enable);
 
-	bool setFont(const std::string& f);
+	bool getIsPassword();
+	void setIsPassword(bool enable);
+
+	bool getIsEnabled();
+	void setIsEnabled(bool enable);
+
+	bool getMultiLine();
+	void setMultiLine(bool enable);
+
+	bool getAutoScroll();
+	void setAutoScroll(bool enable);
+
+	bool getFocused();
+	void setFocused(bool v);
 
 	irr::gui::IGUIElement* getNode() const override;
 private:
 	bool wraps = false;
-	irr::gui::CGUIColoredText* text = nullptr;
+	irr::gui::IGUIEditBox* ebox = nullptr;
 };
 
-namespace Object::Text2DBind {
+namespace Object::EditBoxBind {
 	void bind(lua_State* ls, RenderHelper* renh, GUIManager* gu);
 }

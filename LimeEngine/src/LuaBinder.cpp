@@ -15,7 +15,6 @@
 #include "Modules/ModuleGUI.h"
 #include "Modules/ModuleSound.h"
 #include "Modules/ModuleFile.h"
-#include "Modules/ModuleHelp.h"
 //
 
 // OBJECT INCLUDES
@@ -37,6 +36,8 @@
 #include "Objects/Light.h"
 #include "Objects/ShaderMaterial.h"
 #include "Objects/SoundSource.h"
+#include "Objects/Noise.h"
+#include "Objects/EditBox.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -54,7 +55,6 @@ void LuaBinder::BindAll(Application* app) {
 	Module::GUI::bind(app);
 	Module::Sound::bind(app);
 	Module::File::bind(app);
-	Module::Help::bind(app);
 
 	// Objects
 	Object::EventBind::bind(ls);
@@ -75,4 +75,6 @@ void LuaBinder::BindAll(Application* app) {
 	Object::LightBind::bind(ls, app->GetRenderHelper());
 	Object::ShaderMaterialBind::bind(ls, app->GetRenderer());
 	Object::SoundSourceBind::bind(ls, app->GetSoundManager());
+	Object::NoiseBind::bind(ls);
+	Object::EditBoxBind::bind(ls, app->GetRenderHelper(), app->GetGUIManager());
 }

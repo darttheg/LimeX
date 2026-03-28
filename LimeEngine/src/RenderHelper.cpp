@@ -484,6 +484,12 @@ irr::gui::IGUIElement* RenderHelper::getGUIRoot() {
 	return i_gui ? i_gui->getRootGUIElement() : nullptr;
 }
 
+irr::gui::IGUIEditBox* RenderHelper::createEditBox() {
+	if (!guardRenderingCheck()) return nullptr;
+
+	return i_gui->addEditBox(L"", irr::core::recti(0, 0, 100, 36));
+}
+
 sol::object RenderHelper::getAttribute(irr::scene::ISceneNode* node, sol::object key) {
 	auto it = attributes.find(node);
 	if (it == attributes.end()) return sol::nil;

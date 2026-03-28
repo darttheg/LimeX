@@ -146,6 +146,17 @@ bool GUIManager::isFontEmbedded(const std::string& name) {
 	return fontCache->cache.find(name) != fontCache->cache.end();
 }
 
+bool GUIManager::isElementFocused(irr::gui::IGUIElement* e) {
+	if (!guardRenderingCheck()) return false;
+	auto* focused = guienv->getFocus();
+	return focused && focused == e;
+}
+
+void GUIManager::setElementFocused(irr::gui::IGUIElement* e, bool v) {
+	if (!guardRenderingCheck()) return;
+	if (v) guienv->setFocus(e); else guienv->setFocus(nullptr);
+}
+
 void GUIManager::setQuality(int q) {
 	if (!guardRenderingCheck()) return;
 

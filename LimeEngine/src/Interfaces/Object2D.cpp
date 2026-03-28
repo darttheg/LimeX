@@ -60,11 +60,18 @@ void Object2D::setSize(const Vec2& size) {
 }
 
 bool Object2D::getBorder() const {
-    return getNode() && bgBorder;
+    return getNode() && hasBorder;
 }
 
 void Object2D::setBorder(bool enable) {
     if (!getNode()) return;
+
+
+    if (auto* ebox = dynamic_cast<irr::gui::IGUIEditBox*>(getNode())) {
+        ebox->setDrawBorder(enable);
+        hasBorder = enable;
+        return;
+    }
 
     hasBorder = enable;
     setBGBorder();
@@ -175,6 +182,7 @@ void Object2D::setBGBorder() {
         updateBorderDimensions(getSize());
         bgBorder->setRelativePosition(irr::core::position2di(getPosition().getX(), getPosition().getY()));
     } else if (!(hasBorder || hasBackground) && bgBorder) {
+        bgBorder->drop();
         bgBorder->remove();
     }
 }
@@ -203,6 +211,7 @@ void Object2D::createButton() {
 void Object2D::removeButton() {
     if (!button) return;
     r->removeButtonPair(*this);
+    button->drop();
     button->remove();
 }
 
@@ -238,6 +247,7 @@ int Object2D::getRefCount() const {
 sol::object Object2D::i_destroy() {
     removeButton();
     setBorder(false);
+    if (getNode()) getNode()->drop();
     destroy();
     return sol::make_object(l, sol::nil);
 }

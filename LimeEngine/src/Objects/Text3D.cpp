@@ -38,7 +38,10 @@ void Text3D::setDebug(bool v) {
 		if (dVisual) dVisual->remove();
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::TEXT);
 	} else {
-		if (dVisual) dVisual->remove();
+		if (dVisual) {
+			dVisual->drop();
+			dVisual->remove();
+		}
 	}
 }
 
@@ -77,9 +80,14 @@ void Text3D::setAlignment(int h, int v) {
 	src->setTextAlignment((irr::gui::EGUI_ALIGNMENT)h, (irr::gui::EGUI_ALIGNMENT)v);
 }
 
+bool Text3D::getWordWrap() {
+	return src ? wraps : false;
+}
+
 void Text3D::setWordWrap(bool enable) {
 	if (!src) return;
 	src->setWordWrap(enable);
+	wraps = enable;
 }
 
 bool Text3D::setFont(const std::string& f) {
@@ -135,6 +143,9 @@ void Object::Text3DBind::bind(lua_State* ls, RenderHelper* renh, GUIManager* gu)
 
 		// Field number opacity, The opacity of the text, from 0 to 255. For individual characters being not fully opaque, use color tags with an alpha value.
 		"opacity", sol::property(&Text3D::getOpacity, &Text3D::setOpacity),
+
+		// Field boolean wordWrap, Determines if the text wraps when touching the border of its box.
+		"wordWrap", sol::property(&Text3D::getWordWrap, &Text3D::setWordWrap),
 
 		// Field Vec2 size, The size of the 2D text box.
         "size", sol::property(

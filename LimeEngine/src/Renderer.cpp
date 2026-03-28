@@ -21,6 +21,7 @@
 #include "LightManager.h"
 
 #include "Objects/ShaderMaterial.h"
+#include <stack>
 
 static Application* a = nullptr;
 static DebugConsole* d = nullptr;
@@ -557,6 +558,34 @@ bool Renderer::removeBuffer(irr::scene::IMeshBuffer* buf) {
 	return true;
 }
 
+void Renderer::clearScene() {
+	if (!guardRenderingCheck()) return;
+	int count = 0;
+	std::vector<irr::scene::ISceneNode*> nodes;
+	std::stack<irr::scene::ISceneNode*> stack;
+
+	stack.push(i_smgr->getRootSceneNode());
+	while (!stack.empty()) {
+		irr::scene::ISceneNode* n = stack.top();
+		stack.pop();
+		for (auto* child : n->getChildren())
+			stack.push(child);
+		nodes.push_back(n);
+	}
+
+	count = nodes.size();
+
+	for (auto it : nodes) {
+		int c = it->getReferenceCount();
+		for (int i = 0; i < c; i++)
+			it->drop();
+		it->remove();
+		it = nullptr;
+	}
+
+	d->Warn("Cleared the scene of " + std::to_string(count) + " objects.");
+}
+
 void Renderer::setGUIQuality(int q) {
 	auto setFilters = [&](bool bilinear, bool trilinear, u32 aniso) {
 		for (int i = 0; i < 2; i++) {
@@ -706,6 +735,11 @@ bool Renderer::isElementHovered(const Object2D& o) {
 
 irr::io::IFileSystem* const Renderer::getFileSystem() {
 	return i_device ? i_device->getFileSystem() : nullptr;
+}
+
+bool Renderer::addArchive(const std::string path) {
+	if (!guardRenderingCheck()) return false;
+	i_device->getFileSystem()->addFileArchive(path.c_str(), true, false, irr::io::EFAT_UNKNOWN);
 }
 
 #include "Objects/Event.h"

@@ -249,32 +249,6 @@ bool Application::Stop() {
 	return false;
 }
 
-void Application::DisplayMessage(std::string msg, std::string title, int icon) {
-	std::wstring nTitle = std::wstring(title.begin(), title.end());
-	const wchar_t* nTitleC = nTitle.c_str();
-
-	std::wstring nMessage = std::wstring(msg.begin(), msg.end());
-	const wchar_t* nMessageC = nMessage.c_str();
-
-	UINT oIcon = MB_OK;
-
-	switch (icon) {
-	case 1:
-		oIcon = MB_ICONWARNING;
-		break;
-	case 2:
-		oIcon = MB_ICONQUESTION;
-		break;
-	case 3:
-		oIcon = MB_ICONINFORMATION;
-		break;
-	default:
-		oIcon = MB_OK;
-	}
-
-	MessageBox(nullptr, nMessageC, nTitleC, oIcon);
-}
-
 RenderHelper* Application::GetRenderHelper() {
 	return renderer ? renderer->GetRenderHelper() : nullptr;
 }
@@ -315,6 +289,71 @@ void Application::setDebugConfig(bool on, bool write) {
 
 int Application::getMemoryUsage() {
 	return getMemUsed();
+}
+
+void Application::parseCommandLine(int argc, const char** argv) {
+	for (int i = 1; i < argc; ++i) {
+		std::string key = argv[i];
+		std::string value = "true";
+
+		auto eqPos = key.find('=');
+		if (eqPos != std::string::npos) {
+			value = key.substr(eqPos + 1);
+			key = key.substr(0, eqPos);
+		}
+
+		if (key.rfind("--", 0) == 0)
+			key = key.substr(2);
+		else if (key.rfind("-", 0) == 0)
+			key = key.substr(1);
+
+		if (eqPos == std::string::npos && i + 1 < argc && argv[i + 1][0] != '-')
+			value = std::string(argv[++i]);
+
+		if (value.size() >= 2 && ((value.front() == '"' && value.back() == '"') || (value.front() == '\'' && value.back() == '\''))) {
+			value = value.substr(1, value.size() - 2);
+		}
+
+		cmd[key] = value;
+	}
+}
+
+sol::object Application::getCommandLineValue(const std::string& key) {
+	if (cmd.find(key) != cmd.end())
+		return sol::make_object(GetLuaState(), cmd[key]);
+	return sol::nil;
+}
+
+void Application::displayMessage(const std::string& title, const std::string message, int img) {
+	std::wstring nTitle = std::wstring(title.begin(), title.end());
+	const wchar_t* nTitleC = nTitle.c_str();
+
+	std::wstring nMessage = std::wstring(message.begin(), message.end());
+	const wchar_t* nMessageC = nMessage.c_str();
+
+	UINT icon = MB_OK;
+	img = irr::core::clamp<int>(img, 0, 3);
+
+	switch (img) {
+	case 0:
+		icon = MB_OK;
+		break;
+	case 1:
+		icon = MB_ICONWARNING;
+		break;
+	case 2:
+		icon = MB_ICONQUESTION;
+		break;
+	case 3:
+		icon = MB_ICONINFORMATION;
+		break;
+	}
+
+	MessageBox(nullptr, nMessageC, nTitleC, icon);
+}
+
+bool Application::addArchive(const std::string& path) {
+	return renderer->addArchive(path);
 }
 
 void Application::setTargetFrameRate(int fps) {

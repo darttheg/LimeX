@@ -36,6 +36,7 @@ public:
 	void setOpacity(int o);
 	void setAlignment(int all);
 	void setAlignment(int h, int v);
+	bool getWordWrap();
 	void setWordWrap(bool enable);
 
 	Vec2 getSize() const;
@@ -45,6 +46,7 @@ public:
 
     irr::scene::ISceneNode* getNode() const override;
 private:
+	bool wraps = false;
     irr::scene::CTextAnchorSceneNode* wrap = nullptr;
 	irr::gui::CGUIColoredText* src = nullptr;
 };

@@ -34,9 +34,6 @@ Lime.Sound = Lime.Sound or {}
 ---@field onResize Event @Event called by Lime once the window is resized in any way.
 Lime.Window = Lime.Window or {}
 
----@class math.noise
-math.noise = math.noise or {}
-
 ---@class Billboard
 ---@field size Vec2 @The width and height of this Billboard.
 ---@field position Vec3 @The 3D position of this object in the scene.
@@ -69,6 +66,28 @@ Camera = Camera or {}
 ---@overload fun(pos:Vec3, rot:Vec3): Camera
 ---@return Camera
 function Camera.new() end
+
+---@class EditBox
+---@field text string @The text content of this object.
+---@field password boolean @Determines if the text content of this `EditBox` is obfuscated.
+---@field enabled boolean @Determines if this `EditBox` is enabled.
+---@field multiLine boolean @Determines if this `EditBox` supports multiple lines.
+---@field autoscroll boolean @Determines if this `EditBox` will autoscroll.
+---@field focused boolean @Determines if this `EditBox` is focused.
+---@field wordWrap boolean @Determines if the text wraps when touching the border of its box.
+---@field position Vec2 @The 2D position of this object on the screen.
+---@field size Vec2 @The 2D size of this object.
+---@field visible boolean @Determines the visibility of this object and its children.
+---@field border boolean @Displays a border outlining this object's bounding box on the screen.
+---@field backgroundColor Vec4 @The RGBA background color of this object.
+---@field onHovered Event @Event called by Lime when this object is hovered.
+---@field onPressed Event @Event called by Lime when this object is pressed.
+EditBox = EditBox or {}
+--- A basic 2D object that allows user input. `EditBox` objects can be used for getting user input and can even be made to look like passwords.
+---@overload fun(text:string): EditBox
+---@overload fun(pos:Vec2, size:Vec2): EditBox
+---@return EditBox
+function EditBox.new() end
 
 ---@class Empty
 ---@field position Vec3 @The 3D position of this object in the scene.
@@ -185,6 +204,16 @@ MeshBuffer = MeshBuffer or {}
 ---@return MeshBuffer
 function MeshBuffer.new() end
 
+---@class Noise
+---@field seed number @Sets the seed of this `Noise`.
+---@field octaves number @Sets the number of octaves in this `Noise`.
+Noise = Noise or {}
+--- An object that holds gradient noise. Useful for random terrain, clouds, and more.
+---@overload fun(seed:number): Noise
+---@overload fun(seed:number, octaves:number): Noise
+---@return Noise
+function Noise.new() end
+
 ---@class Shader
 Shader = Shader or {}
 --- A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldTransformed` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
@@ -228,6 +257,7 @@ function SoundSource.new() end
 
 ---@class Text2D
 ---@field text string @The text content of this object.
+---@field wordWrap boolean @Determines if the text wraps when touching the border of its box.
 ---@field opacity number @The opacity of the text, from 0 to 255. For individual characters being not fully opaque, use color tags with an alpha value.
 ---@field position Vec2 @The 2D position of this object on the screen.
 ---@field size Vec2 @The 2D size of this object.
@@ -247,6 +277,7 @@ function Text2D.new() end
 ---@class Text3D
 ---@field text string @The text content of this object.
 ---@field opacity number @The opacity of the text, from 0 to 255. For individual characters being not fully opaque, use color tags with an alpha value.
+---@field wordWrap boolean @Determines if the text wraps when touching the border of its box.
 ---@field size Vec2 @The size of the 2D text box.
 ---@field position Vec3 @The 3D position of this object in the scene.
 ---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
@@ -409,6 +440,46 @@ function Camera:setActive() end
 ---@return void
 function Camera:setAttribute(key, value) end
 
+--- Destroys this object.
+---@return nil
+function EditBox:destroy() end
+
+--- Returns the reference count for this object.
+---@return number
+function EditBox:getReferenceCount() end
+
+--- Returns true if this object is parented to another 2D object.
+---@return boolean
+function EditBox:hasParent() end
+
+--- Returns true if this object is currently hovered.
+---@return boolean
+function EditBox:isHovered() end
+
+--- Moves this object to the back in terms of z ordering. (Rendered first, all other objects then overlap)
+---@return boolean
+function EditBox:moveToBack() end
+
+--- Moves this object to the front in terms of z ordering. (Rendered last, overlaps all other objects)
+---@return boolean
+function EditBox:moveToFront() end
+
+--- Parents this object to another 2D object.
+---@param parent any
+---@return boolean
+function EditBox:parentTo(parent) end
+
+--- Sets the text's alignment within its bounding box.
+---@overload fun(x:Lime.Enum.TextAlign, y:Lime.Enum.TextAlign): void
+---@param all Lime.Enum.TextAlign
+---@return void
+function EditBox:setAlignment(all) end
+
+--- Sets the font to use for this object. Fonts must first be loaded. See `Lime.GUI.loadXML` and `Lime.GUI.loadTTF`.
+---@param name string
+---@return boolean
+function EditBox:setFont(name) end
+
 --- Clears this object's attributes.
 ---@return void
 function Empty:clearAttributes() end
@@ -562,6 +633,23 @@ function Lime.clearDebugConsole() end
 --- Closes the Lime application.
 function Lime.close() end
 
+--- Displays a pop-up message.
+---@param title string
+---@param message string
+---@param icon Lime.Enum.PopUpIcon?
+---@return void
+function Lime.displayMessage(title, message, icon) end
+
+--- Executes `cmd` in the system's command line.
+---@param cmd string
+---@return number
+function Lime.executeCommandLine(cmd) end
+
+--- Returns the value of `arg` from the commmand line, if any. Returns `nil` if no such argument exists.
+---@param arg string
+---@return string
+function Lime.getCommandLineArg(arg) end
+
 --- Returns the elapsed time the application has been running in milliseconds.
 ---@return number
 function Lime.getElapsedTime() end
@@ -585,6 +673,11 @@ function Lime.getVSync() end
 --- Returns the Lime version running.
 ---@return string
 function Lime.getVersion() end
+
+--- Loads an archive of assets to the application. Content is accessed as if it were at the application's root. For example: If the archive contains folder/image.png, the path ./folder/image.png is valid for loading `Texture` objects.
+---@param path string
+---@return boolean
+function Lime.loadArchive(path) end
 
 --- Prints a message to console.
 ---@param msg any
@@ -1097,6 +1190,13 @@ function MeshBuffer:pushFace(pos1, pos2, pos3, normal1, normal2, normal3, uvw1, 
 ---@return void
 function MeshBuffer:recalculateBoundingBox() end
 
+--- Returns the value at `x`, `y`, `z` in this `Noise` object.
+---@overload fun(x:number, y:number): number
+---@overload fun(x:number, y:number, z:number): number
+---@param x number
+---@return number
+function Noise:get(x) end
+
 --- Returns the path to the pixel shader file loaded in this `Shader`.
 ---@return string
 function Shader:getPSPath() end
@@ -1504,28 +1604,3 @@ function Vec3:normalizeRng(min, max) end
 --- Returns the HEX code for this object. This is useful for converting RGBA to HEX color.
 ---@return string
 function Vec4:getHEX() end
-
---- Returns the number of octaves in the noise map.
----@return number
-function math.noise.getOctaves() end
-
---- Returns the seed of the noise map.
----@return number
-function math.noise.getSeed() end
-
---- Returns the value found in the noise map.
----@overload fun(x:number, y:number): number
----@overload fun(x:number, y:number, z:number): number
----@param x number
----@return number
-function math.noise.getValue(x) end
-
---- Sets the number of octaves in the noise map.
----@param octaves number
----@return void
-function math.noise.setOctaves(octaves) end
-
---- Sets the seed of the noise map.
----@param seed number
----@return void
-function math.noise.setSeed(seed) end

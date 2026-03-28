@@ -106,6 +106,7 @@ public:
 	bool removeTexture(irr::video::ITexture* tex);
 	bool removeMesh(irr::scene::IAnimatedMesh* mesh);
 	bool removeBuffer(irr::scene::IMeshBuffer* buf);
+	void clearScene(); // Dangerous, don't expose
 
 	// GUI
 	void setGUIQuality(int q);
@@ -124,6 +125,7 @@ public:
 	bool getIsActivelyRendering() const { return doRender; }
 	irr::video::IVideoDriver* const getVideoDriver() { return i_driver; }
 	irr::io::IFileSystem* const getFileSystem();
+	bool addArchive(const std::string path);
 
 	// Time
 	void addToDtTime(float dt) { dtTime += dt; }

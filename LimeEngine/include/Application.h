@@ -53,8 +53,6 @@ public:
 	// Do not use to end from user! This is used by Lime.
 	bool Stop();
 
-	void DisplayMessage(std::string msg, std::string title, int icon);
-
 	DebugConsole* GetDebugConsole() { return console; }
 	Renderer* GetRenderer() { return renderer; }
 	RenderHelper* GetRenderHelper();
@@ -77,6 +75,10 @@ public:
 	bool getVSync();
 	void setDebugConfig(bool on, bool write = false);
 	int getMemoryUsage();
+	void parseCommandLine(int argc, const char** argv);
+	sol::object getCommandLineValue(const std::string& key);
+	void displayMessage(const std::string& title, const std::string message, int img = 0);
+	bool addArchive(const std::string& path);
 
 private:
 	bool CreateWindows();
@@ -110,4 +112,7 @@ private:
 
 	// Input
 	Receiver* receiver = nullptr;
+
+	// Cmd
+	std::unordered_map<std::string, std::string> cmd;
 };

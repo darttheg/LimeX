@@ -8,7 +8,7 @@ class Application;
 class Renderer;
 class Vec2;
 
-#define LIME_VERSION "beta-0.8"
+#define LIME_VERSION "beta-0.9"
 
 namespace Module {
 	namespace Lime {
@@ -31,6 +31,10 @@ namespace Module {
 			bool GetVSync();
 			void SetVSync(bool on);
 			int GetMemoryUsage();
+			int ExecuteCommandLine(const std::string& cmd);
+			sol::object GetCommandLineEntry(const std::string& key);
+			void DisplayMessage(const std::string& title, const std::string message, int img = 0);
+			bool AddArchive(const std::string& path);
 		}
 	}
 }

@@ -5,7 +5,7 @@
 #include <vector>
 
 typedef void* (*FUNC_Lime_Create)();
-typedef int (*FUNC_Lime_Run)(void* handle, const void* data, size_t size);
+typedef int (*FUNC_Lime_Run)(void* handle, int argc, const char** argv, const void* data, size_t size);
 typedef void (*FUNC_Lime_End)(void* handle);
 
 struct Footer {
@@ -72,7 +72,51 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		return 1;
 	}
 
-	int result = Lime_Run(handle, pkg.data(), pkg.size());
+	int argc = 0;
+	LPWSTR* argvW = CommandLineToArgvW(GetCommandLineW(), &argc);
+	if (!argvW) {
+		MessageBoxA(NULL, "Failed to parse command line", "LimePlayer", MB_ICONERROR);
+		FreeLibrary(engine);
+		return 1;
+	}
+
+	std::vector<std::string> argvStrings;
+	std::vector<const char*> argv;
+
+	argvStrings.reserve(argc);
+	argv.reserve(argc);
+
+	for (int i = 0; i < argc; ++i) {
+		int needed = WideCharToMultiByte(CP_UTF8, 0, argvW[i], -1, nullptr, 0, nullptr, nullptr);
+		if (needed <= 0) {
+			LocalFree(argvW);
+			FreeLibrary(engine);
+			MessageBoxA(NULL, "Failed to convert command line argument", "LimePlayer", MB_ICONERROR);
+			return 1;
+		}
+
+		std::string s;
+		s.resize((size_t)needed);
+
+		int written = WideCharToMultiByte(CP_UTF8, 0, argvW[i], -1, &s[0], needed, nullptr, nullptr);
+
+		if (written <= 0) {
+			LocalFree(argvW);
+			FreeLibrary(engine);
+			MessageBoxA(NULL, "Failed to convert command line argument", "LimePlayer", MB_ICONERROR);
+			return 1;
+		}
+
+		if (!s.empty() && s.back() == '\0')
+			s.pop_back();
+
+		argvStrings.push_back(std::move(s));
+		argv.push_back(argvStrings.back().c_str());
+	}
+
+	LocalFree(argvW);
+
+	int result = Lime_Run(handle, argc, argv.data(), pkg.data(), pkg.size());
 
 	Lime_End(handle);
 

@@ -40,6 +40,7 @@ namespace irr {
 		class IGUIImage;
 		class IGUIButton;
 		class IGUIElement;
+		class IGUIEditBox;
 	}
 }
 using namespace irr;
@@ -109,6 +110,7 @@ public:
 	irr::gui::IGUIImage* createGUIImage();
 	irr::gui::IGUIButton* createButton();
 	irr::gui::IGUIElement* getGUIRoot();
+	irr::gui::IGUIEditBox* createEditBox();
 
 	// Attributes
 	sol::object getAttribute(irr::scene::ISceneNode* node, sol::object key);

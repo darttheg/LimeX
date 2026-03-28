@@ -35,7 +35,6 @@
     <ClInclude Include="include\LuaBinder.h" />
     <ClInclude Include="include\Modules\ModuleFile.h" />
     <ClInclude Include="include\Modules\ModuleGUI.h" />
-    <ClInclude Include="include\Modules\ModuleHelp.h" />
     <ClInclude Include="include\Modules\ModuleInput.h" />
     <ClInclude Include="include\Modules\ModuleLime.h" />
     <ClInclude Include="include\Modules\ModuleScene.h" />
@@ -45,6 +44,7 @@
     <ClInclude Include="include\Objects\Camera.h" />
     <ClInclude Include="include\Objects\DebugAxisPlaneNode.h" />
     <ClInclude Include="include\Objects\DebugRaycastNode.h" />
+    <ClInclude Include="include\Objects\EditBox.h" />
     <ClInclude Include="include\Objects\Empty.h" />
     <ClInclude Include="include\Objects\Event.h" />
     <ClInclude Include="include\Objects\HitResult.h" />
@@ -53,6 +53,7 @@
     <ClInclude Include="include\Objects\Light.h" />
     <ClInclude Include="include\Objects\Mesh.h" />
     <ClInclude Include="include\Objects\MeshBuffer.h" />
+    <ClInclude Include="include\Objects\Noise.h" />
     <ClInclude Include="include\Objects\ShaderMaterial.h" />
     <ClInclude Include="include\Objects\SoundSource.h" />
     <ClInclude Include="include\Objects\Text3D.h" />
@@ -83,7 +84,6 @@
     <ClCompile Include="src\LuaBinder.cpp" />
     <ClCompile Include="src\Modules\ModuleFile.cpp" />
     <ClCompile Include="src\Modules\ModuleGUI.cpp" />
-    <ClCompile Include="src\Modules\ModuleHelp.cpp" />
     <ClCompile Include="src\Modules\ModuleInput.cpp" />
     <ClCompile Include="src\Modules\ModuleLime.cpp" />
     <ClCompile Include="src\Modules\ModuleScene.cpp" />
@@ -91,6 +91,7 @@
     <ClCompile Include="src\Modules\ModuleWindow.cpp" />
     <ClCompile Include="src\Objects\Billboard.cpp" />
     <ClCompile Include="src\Objects\Camera.cpp" />
+    <ClCompile Include="src\Objects\EditBox.cpp" />
     <ClCompile Include="src\Objects\Empty.cpp" />
     <ClCompile Include="src\Objects\Event.cpp" />
     <ClCompile Include="src\Objects\Image2D.cpp" />
@@ -98,6 +99,7 @@
     <ClCompile Include="src\Objects\Light.cpp" />
     <ClCompile Include="src\Objects\Mesh.cpp" />
     <ClCompile Include="src\Objects\MeshBuffer.cpp" />
+    <ClCompile Include="src\Objects\Noise.cpp" />
     <ClCompile Include="src\Objects\ShaderMaterial.cpp" />
     <ClCompile Include="src\Objects\SoundSource.cpp" />
     <ClCompile Include="src\Objects\Text3D.cpp" />

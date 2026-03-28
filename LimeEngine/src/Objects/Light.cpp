@@ -32,7 +32,10 @@ void Light::setDebug(bool v) {
 		dAxis->setPointerLength(light->getType() == 0 ? 0.0f : light->getLightData().Radius);
 		dAxis->setPointerColor(light->getLightData().DiffuseColor);
 	} else {
-		if (dVisual) dVisual->remove();
+		if (dVisual) {
+			dVisual->drop();
+			dVisual->remove();
+		}
 	}
 }
 

@@ -199,9 +199,6 @@
     <ClInclude Include="include\Modules\ModuleFile.h">
       <Filter>Engine\Runtime\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="include\Modules\ModuleHelp.h">
-      <Filter>Engine\Runtime\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="include\External\PerlinHeader.h">
       <Filter>Engine\Runtime\External\Noise</Filter>
     </ClInclude>
@@ -210,6 +207,12 @@
     </ClInclude>
     <ClInclude Include="include\Objects\DebugAxisPlaneNode.h">
       <Filter>Engine\Runtime\Objects\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Objects\Noise.h">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Objects\EditBox.h">
+      <Filter>Engine\Runtime\Objects\2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -336,8 +339,11 @@
     <ClCompile Include="src\Modules\ModuleFile.cpp">
       <Filter>Engine\Runtime\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="src\Modules\ModuleHelp.cpp">
-      <Filter>Engine\Runtime\Modules</Filter>
+    <ClCompile Include="src\Objects\Noise.cpp">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\EditBox.cpp">
+      <Filter>Engine\Runtime\Objects\2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

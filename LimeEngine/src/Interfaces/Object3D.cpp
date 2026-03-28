@@ -84,6 +84,7 @@ void Object3D::i_setDebug(bool v) {
         dAxis = new DebugAxisPlaneNode(getNode(), getNode()->getSceneManager());
         dAxis->setPosition(irr::core::vector3df());
     } else if (!v && dAxis) {
+        dAxis->drop();
         dAxis->remove();
     }
 
@@ -99,6 +100,7 @@ sol::object Object3D::i_destroy() {
     setDebug(false);
     debug = false;
     clearAttributes();
+    if (getNode()) getNode()->drop();
     destroy();
     return sol::make_object(l, sol::nil);
 }

@@ -120,6 +120,26 @@ void Module::Lime::bind(Application* app) {
 	// Returns number
 	module.set_function("getMemoryUsage", &Module::Lime::Bind::GetMemoryUsage);
 
+	// Executes `cmd` in the system's command line.
+	// Params string cmd
+	// Returns number
+	module.set_function("executeCommandLine", &Module::Lime::Bind::ExecuteCommandLine);
+
+	// Returns the value of `arg` from the commmand line, if any. Returns `nil` if no such argument exists.
+	// Params string arg
+	// Returns string
+	module.set_function("getCommandLineArg", &Module::Lime::Bind::GetCommandLineEntry);
+
+	// Displays a pop-up message.
+	// Params string title, string message, Lime.Enum.PopUpIcon? icon
+	// Returns void
+	module.set_function("displayMessage", &Module::Lime::Bind::DisplayMessage);
+
+	// Loads an archive of assets to the application. Content is accessed as if it were at the application's root. For example: If the archive contains folder/image.png, the path ./folder/image.png is valid for loading `Texture` objects.
+	// Params string path
+	// Returns boolean
+	module.set_function("loadArchive", &Module::Lime::Bind::AddArchive);
+
 	a->LimeInit = std::make_shared<Event>();
 	a->LimeStart = std::make_shared<Event>();
 	a->LimeUpdate = std::make_shared<Event>(); // Call with dt
@@ -181,6 +201,22 @@ void Module::Lime::Bind::SetVSync(bool on) {
 
 int Module::Lime::Bind::GetMemoryUsage() {
 	return a->getMemoryUsage();
+}
+
+int Module::Lime::Bind::ExecuteCommandLine(const std::string& cmd) {
+	return std::system(cmd.c_str());
+}
+
+sol::object Module::Lime::Bind::GetCommandLineEntry(const std::string& key) {
+	return a->getCommandLineValue(key);
+}
+
+void Module::Lime::Bind::DisplayMessage(const std::string& title, const std::string message, int img) {
+	return a->displayMessage(title, message, img);
+}
+
+bool Module::Lime::Bind::AddArchive(const std::string& path) {
+	return a->addArchive(path);
 }
 
 bool Module::Lime::Bind::SetInitConfig(int driverType) {

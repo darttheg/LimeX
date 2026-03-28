@@ -50,7 +50,10 @@ void Mesh::setDebug(bool v) {
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::MESH);
 	} else {
 		if (src) src->setDebugDataVisible(irr::scene::EDS_OFF);
-		if (dVisual) dVisual->remove();
+		if (dVisual) {
+			dVisual->drop();
+			dVisual->remove();
+		}
 	}
 }
 

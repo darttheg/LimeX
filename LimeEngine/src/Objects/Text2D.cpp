@@ -73,9 +73,14 @@ void Text2D::setAlignment(int h, int v) {
 	text->setTextAlignment((irr::gui::EGUI_ALIGNMENT)h, (irr::gui::EGUI_ALIGNMENT)v);
 }
 
+bool Text2D::getWordWrap() {
+	return text ? wraps : false;
+}
+
 void Text2D::setWordWrap(bool enable) {
 	if (!text) return;
 	text->setWordWrap(enable);
+	wraps = enable;
 }
 
 bool Text2D::setFont(const std::string& f) {
@@ -113,6 +118,9 @@ void Object::Text2DBind::bind(lua_State* ls, RenderHelper* renh, GUIManager* gu)
 
 		// Field string text, The text content of this object.
 		"text", sol::property(&Text2D::getText, &Text2D::setText),
+
+		// Field boolean wordWrap, Determines if the text wraps when touching the border of its box.
+		"wordWrap", sol::property(&Text2D::getWordWrap, &Text2D::setWordWrap),
 
 		// Field number opacity, The opacity of the text, from 0 to 255. For individual characters being not fully opaque, use color tags with an alpha value.
 		"opacity", sol::property(&Text2D::getOpacity, &Text2D::setOpacity)
