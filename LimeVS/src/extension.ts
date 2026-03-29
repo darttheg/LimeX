@@ -171,10 +171,18 @@ import * as winVersionInfo from "win-version-info";
 const getFileVersion = (winVersionInfo as any).default ?? winVersionInfo;
 
 async function checkEngineVersion(context: vscode.ExtensionContext, workspaceFolder: string): Promise<void> {
-  const projectDll = path.join(workspaceFolder, "LimeEngine.dll");
-  if (!fs.existsSync(projectDll)) return;
-
   const templateDll = path.join(context.extensionPath, "template/lib", "LimeEngine.dll");
+
+  const candidates = [
+    path.join(workspaceFolder, "LimeEngine.dll"),
+    path.join(workspaceFolder, "lib", "LimeEngine.dll"),
+  ];
+
+  const projectDll = candidates.find(p => fs.existsSync(p));
+  if (!projectDll) {
+    await checkMissingDlls(context, workspaceFolder);
+    return;
+  }
 
   const projectVersion = getFileVersion(projectDll).ProductVersion;
   const templateVersion = getFileVersion(templateDll).ProductVersion;
@@ -201,9 +209,12 @@ async function checkMissingDlls(context: vscode.ExtensionContext, workspaceFolde
 
   const templateEntries = fs.readdirSync(templateDir, { withFileTypes: true });
   const missingDlls = templateEntries
-    .filter(e => e.isFile() && e.name.endsWith(".dll") && e.name !== "LimeEngine.dll")
+    .filter(e => e.isFile() && e.name.endsWith(".dll"))
     .map(e => e.name)
-    .filter(name => !fs.existsSync(path.join(workspaceFolder, name)));
+    .filter(name => {
+      const destDir = name.startsWith("ikp") ? workspaceFolder : path.join(workspaceFolder, "lib");
+      return !fs.existsSync(path.join(destDir, name));
+    });
 
   if (missingDlls.length === 0) return;
 
@@ -214,7 +225,9 @@ async function checkMissingDlls(context: vscode.ExtensionContext, workspaceFolde
 
   if (choice === "Update") {
     for (const name of missingDlls) {
-      fs.copyFileSync(path.join(templateDir, name), path.join(workspaceFolder, name));
+      const destDir = name.startsWith("ikp") ? workspaceFolder : path.join(workspaceFolder, "lib");
+      fs.mkdirSync(destDir, { recursive: true });
+      fs.copyFileSync(path.join(templateDir, name), path.join(destDir, name));
     }
     vscode.window.showInformationMessage(`Lime: Added ${missingDlls.length} DLL(s).`);
   }
