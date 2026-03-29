@@ -57,7 +57,7 @@ private:
 	struct Vec3S { float x, y, z; };
 	Vec3S lastCamPos{ 0,0,0 };
 	bool firstVel = true;
-	float velFactor = 1.0f;
+	float velFactor = 0.0f;
 	float mainVol = 1.0f;
 	bool muteUnfocus = false;
 

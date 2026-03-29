@@ -22,7 +22,7 @@ void Object3D::setPosition(const Vec3& pos) {
     getNode()->setPosition(irr::core::vector3df(pos.getX(), pos.getY(), pos.getZ()));
 
     if (dVisual)
-        dVisual->setPosition(getNode()->getAbsolutePosition());
+        dVisual->setPosition(getNode()->getAbsolutePosition()); // Parent them to fix weird random offsets?
 }
 
 Vec3 Object3D::getRotation() const {
