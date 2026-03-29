@@ -45,7 +45,7 @@ void Camera::destroy() {
 #include "Objects/DebugAxisPlaneNode.h"
 void Camera::setDebug(bool v) {
 	if (v) {
-		if (dVisual) dVisual->remove();
+		if (dVisual) { dVisual->drop(); dVisual->remove(); }
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::CAMERA);
 		dAxis->setPointerLength(1.0f);
 	} else {

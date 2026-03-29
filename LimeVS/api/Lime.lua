@@ -1071,10 +1071,10 @@ function Material:clearTexture(layer) end
 function Material:loadShader(shader) end
 
 --- Loads a `Texture` into this `Material`.
----@overload fun(layer:number, img:Texture): void
----@param img Texture
+---@overload fun(layer:number, texture:Texture): void
+---@param texture Texture
 ---@return void
-function Material:loadTexture(img) end
+function Material:loadTexture(texture) end
 
 --- Sets the scale of the mapping of an `Texture`.
 ---@overload fun(layer:number, scale:Vec2): void

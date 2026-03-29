@@ -1,12 +1,15 @@
 #include "Objects/SoundSource.h"
 
+#include "RenderHelper.h"
 #include "SoundManager.h"
 #include "irrKlang.h"
 #include <sol/sol.hpp>
 #include "Objects/Vec3.h"
 #include "Interfaces/Object3D.h"
+#include "Objects/DebugAxisPlaneNode.h"
 
 static SoundManager* s = nullptr;
+static RenderHelper* rh = nullptr;
 static lua_State* l = nullptr;
 
 SoundSource::SoundSource() {
@@ -32,7 +35,6 @@ bool SoundSource::play(bool td) {
 		cur->setMaxDistance(maxDist);
 		cur->setVolume(vol);
 	}
-
 	is3D = td;
 
 	return cur;
@@ -141,12 +143,26 @@ Vec3 SoundSource::getVelocity() {
 }
 
 void SoundSource::setPosition(const Vec3& p) {
+	pos.x = p.getX();
+	pos.y = p.getY();
+	pos.z = p.getZ();
+
 	if (!src || !cur) return;
 	cur->setPosition(irrklang::vec3df(p.getX(), p.getY(), p.getZ()));
+
+	if (dVisual && dAxis) {
+		irr::core::vector3df out;
+		if (parent)
+			out = parent->getAbsolutePosition();
+		else
+			out = irr::core::vector3df(cur->getPosition().X, cur->getPosition().Y, cur->getPosition().Z);
+		dVisual->setPosition(out);
+		dAxis->setPosition(out);
+	}
 }
 
 Vec3 SoundSource::getPosition() {
-	return cur ? Vec3(cur->getPosition().X, cur->getPosition().Y, cur->getPosition().Z) : Vec3();
+	return cur ? Vec3(pos.x, pos.y, pos.z) : Vec3();
 }
 
 bool SoundSource::getDoSFX() {
@@ -158,11 +174,28 @@ void SoundSource::setDoSFX(bool v) {
 }
 
 bool SoundSource::getDebug() {
-	return false; // TODO
+	return cur && is3D && dVisual;
 }
 
 void SoundSource::setDebug(bool v) {
-	// TODO
+	if (v) {
+		if (!is3D || !cur) return;
+		if (dVisual) { dVisual->drop(); dVisual->remove(); }
+		dVisual = rh->createDebugNode(DEBUG3D_TYPE::SOUND);
+		dAxis = new DebugAxisPlaneNode(dVisual->getSceneManager()->getRootSceneNode(), dVisual->getSceneManager());
+		setPosition(getPosition());
+	} else {
+		if (dVisual) {
+			dVisual->drop();
+			dVisual->remove();
+			dVisual = nullptr;
+		}
+		if (dAxis) {
+			dAxis->drop();
+			dAxis->remove();
+			dAxis = nullptr;
+		}
+	}
 }
 
 bool SoundSource::attachTo(sol::optional<Object3D*> p) {
@@ -245,9 +278,10 @@ bool SoundSource::addCompressionEffect(float threshold, float ratio) {
 	return true;
 }
 
-void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou) {
+void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou, RenderHelper* renh) {
 	l = ls;
 	s = sou;
+	rh = renh;
 
 	// Object SoundSource, A source of sound, whether that be for sound effects or music.
 

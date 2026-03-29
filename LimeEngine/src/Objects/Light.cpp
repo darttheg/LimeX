@@ -27,7 +27,7 @@ void Light::destroy() {
 
 void Light::setDebug(bool v) {
 	if (v) {
-		if (dVisual) dVisual->remove();
+		if (dVisual) { dVisual->drop(); dVisual->remove(); }
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::LIGHT);
 		dAxis->setPointerLength(light->getType() == 2 ? 1.0f : light->getLightData().Radius);
 		dAxis->setPointerColor(light->getLightData().DiffuseColor);

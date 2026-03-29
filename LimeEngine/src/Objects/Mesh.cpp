@@ -46,7 +46,7 @@ void Mesh::setDebug(bool v) {
 			irr::scene::EDS_BBOX |
 			// irr::scene::EDS_NORMALS |
 			irr::scene::EDS_MESH_WIRE_OVERLAY);
-		if (dVisual) dVisual->remove();
+		if (dVisual) { dVisual->drop(); dVisual->remove(); }
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::MESH);
 	} else {
 		if (src) src->setDebugDataVisible(irr::scene::EDS_OFF);

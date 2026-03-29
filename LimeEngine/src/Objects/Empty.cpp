@@ -24,7 +24,7 @@ void Empty::destroy() {
 
 void Empty::setDebug(bool v) {
 	if (v) {
-		if (dVisual) dVisual->remove();
+		if (dVisual) { dVisual->drop(); dVisual->remove(); }
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::EMPTY);
 	} else {
 		if (dVisual) {

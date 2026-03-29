@@ -4,6 +4,7 @@
 
 extern "C" { struct lua_State; }
 class SoundManager;
+class RenderHelper;
 
 #include <sol/optional.hpp>
 #include <sol/forward.hpp>
@@ -16,8 +17,10 @@ namespace irrklang {
 
 namespace irr::scene {
 	class ISceneNode;
+	class IBillboardSceneNode;
 }
 
+class DebugAxisPlaneNode;
 class Vec3;
 
 class SoundSource {
@@ -87,8 +90,11 @@ private:
 	float maxDist = 5000.0f;
 	Vec3S pos = Vec3S{ 0,0,0 };
 	irr::scene::ISceneNode* parent = nullptr;
+
+	irr::scene::IBillboardSceneNode* dVisual = nullptr;
+	DebugAxisPlaneNode* dAxis = nullptr;
 };
 
 namespace Object::SoundSourceBind {
-	void bind(lua_State* ls, SoundManager* sou);
+	void bind(lua_State* ls, SoundManager* sou, RenderHelper* renh);
 }

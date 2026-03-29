@@ -80,11 +80,12 @@ function runBat(context, bat, name) {
         existing.dispose();
     const terminal = vscode.window.createTerminal({
         name,
+        cwd: workspaceFolder,
         shellPath: "cmd.exe",
-        shellArgs: ["/Q", "/K", batPath, workspaceFolder],
     });
     terminals.set(name, terminal);
     terminal.show(true);
+    terminal.sendText(`call "${batPath}" "${workspaceFolder}"`, true);
 }
 function loadIgnoreList(workspaceFolder) {
     const entries = new Set([

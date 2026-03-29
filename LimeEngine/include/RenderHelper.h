@@ -52,7 +52,8 @@ enum DEBUG3D_TYPE {
 	TEXT,
 	SKYDOME,
 	EMPTY,
-	BILLBOARD
+	BILLBOARD,
+	SOUND
 };
 
 class RenderHelper {

@@ -26,7 +26,7 @@ void Billboard::destroy() {
 
 void Billboard::setDebug(bool v) {
 	if (v) {
-		if (dVisual) dVisual->remove();
+		if (dVisual) { dVisual->drop(); dVisual->remove(); }
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::BILLBOARD);
 	} else {
 		if (dVisual) {

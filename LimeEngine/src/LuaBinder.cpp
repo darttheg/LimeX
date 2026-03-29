@@ -74,7 +74,7 @@ void LuaBinder::BindAll(Application* app) {
 	Object::MeshBufferBind::bind(ls, app->GetRenderer());
 	Object::LightBind::bind(ls, app->GetRenderHelper());
 	Object::ShaderMaterialBind::bind(ls, app->GetRenderer());
-	Object::SoundSourceBind::bind(ls, app->GetSoundManager());
+	Object::SoundSourceBind::bind(ls, app->GetSoundManager(), app->GetRenderHelper());
 	Object::NoiseBind::bind(ls);
 	Object::EditBoxBind::bind(ls, app->GetRenderHelper(), app->GetGUIManager());
 }

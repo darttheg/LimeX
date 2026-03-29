@@ -1,2 +1,2 @@
 @echo off
-"%~dp0LimeBuilder.exe" "%1"
+"%~dp0LimeBuilder.exe" "%~1"

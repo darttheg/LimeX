@@ -26,7 +26,7 @@ void Skydome::destroy() {
 
 void Skydome::setDebug(bool v) {
 	if (v) {
-		if (dVisual) dVisual->remove();
+		if (dVisual) { dVisual->drop(); dVisual->remove(); }
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::SKYDOME);
 	} else {
 		if (dVisual) {
