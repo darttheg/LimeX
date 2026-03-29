@@ -34,6 +34,7 @@ struct WindowConfig {
 	bool fullscreen = false;
 	bool scaleRenderToWindow = true;
 	bool keepAspectRatio = false;
+	bool stencil = false;
 };
 
 class Application {

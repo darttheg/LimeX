@@ -111,20 +111,27 @@ bool Window::Create() {
 		w->didCallback = true;
 
 		if (maximized) {
+			int preX, preY, preSX, preSY;
+			glfwGetWindowPos(win, &preX, &preY);
+			glfwGetWindowSize(win, &preSX, &preSY);
 			w->preFullWinSize.x = w->windowSize.x;
 			w->preFullWinSize.y = w->windowSize.y;
-
 			w->isFullscreened = true;
+			/*
 			GLFWmonitor* m = glfwGetPrimaryMonitor();
+			int mx, my;
+			glfwGetMonitorPos(m, &mx, &my);
+
 			const GLFWvidmode* mode = glfwGetVideoMode(m);
-			glfwSetWindowAttrib(win, GLFW_DECORATED, GLFW_FALSE);
+			glfwSetWindowPos(win, mx, my);
 			glfwSetWindowSize(win, mode->width, mode->height);
-			glfwSetWindowPos(win, 0, 0);
-			SetWindowPos(hwnd, HWND_TOP, 0, 0, mode->width, mode->height, SWP_FRAMECHANGED);
+			*/
+			glfwSetWindowAttrib(win, GLFW_MAXIMIZED, GLFW_TRUE);
 		}
 		else {
 			w->isFullscreened = false;
 			glfwSetWindowAttrib(win, GLFW_DECORATED, GLFW_TRUE);
+			glfwRestoreWindow(win);
 			int width = w->preFullWinSize.x;
 			int height = w->preFullWinSize.y;
 			w->setSizeSimple(width, height);
@@ -134,6 +141,7 @@ bool Window::Create() {
 			int x, y;
 			glfwGetWindowPos(win, &x, &y);
 			glfwSetWindowPos(win, w->preFullWinPos.x, w->preFullWinPos.y);
+			glfwSetWindowAttrib(win, GLFW_MAXIMIZED, GLFW_FALSE);
 		}
 	});
 
@@ -157,7 +165,8 @@ bool Window::Create() {
 		w->setSizeSimple(width, height);
 		r->updateWindowSize(width, height);
 
-		resizeEvent:;
+	resizeEvent:;
+		r->setOnResize(width, height);
 		w->WindowResize.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); });
 	});
 
@@ -177,6 +186,8 @@ bool Window::Create() {
 	glfwGetWindowPos(glfwWindow, &x, &y);
 	preFullWinPos.x = x;
 	preFullWinPos.y = y;
+
+	glfwFocusWindow(glfwWindow);
 
 	return true;
 }
@@ -236,6 +247,7 @@ void Window::setTitle(std::string path) {
 
 void Window::doFullscreen(bool v) {
 	if (!guardEditCheck()) return;
+	if (v == isFullscreened) return;
 	isFullscreened = v;
 	if (v) {
 		glfwMaximizeWindow(glfwWindow);

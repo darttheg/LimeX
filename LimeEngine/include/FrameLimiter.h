@@ -11,13 +11,13 @@ public:
 
     using clock = std::chrono::steady_clock;
 
-    int targetFPS = 60.0;
-    bool vsync = false;
+    int targetFPS = 60;
+    bool vSync = false;
     clock::duration frameDur{};
     clock::time_point prev{}, next{};
 
     void setVSync(bool v) {
-        vsync = v;
+        vSync = v;
         prev = next = clock::now();
     }
 
@@ -35,7 +35,7 @@ public:
     }
 
     void endFrame() {
-        if (vsync || targetFPS <= 0) return;
+        if (vSync || targetFPS <= 0) return;
         next += frameDur;
         std::this_thread::sleep_until(next);
         if (clock::now() - next > frameDur * 3) next = clock::now();

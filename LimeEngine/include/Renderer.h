@@ -77,6 +77,7 @@ public:
 	int getObjectCount();
 	int updateFrameRate();
 	void updateWindowSize(int w, int h);
+	int getDriverFrameRate();
 
 	// Scene
 	Vec2 getRenderSize();
@@ -127,6 +128,7 @@ public:
 	irr::video::IVideoDriver* const getVideoDriver() { return i_driver; }
 	irr::io::IFileSystem* const getFileSystem();
 	bool addArchive(const std::string path);
+	void setOnResize(int w, int h);
 
 	// Time
 	void addToDtTime(float dt) { dtTime += dt; }

@@ -159,6 +159,7 @@ bool Application::Init(const void* data, size_t size) {
 	soundManager = new SoundManager(this);
 	receiver = new Receiver(this, renderer->getGUIManager()); // Kind of odd, hopefully no issues in the future
 	// Context: Without this ^, button events have to go from receiver, up to application, then through renderer to GUIManager...
+	limiter = new FrameLimiter();
 
 	// Create new Lua state
 	lua = std::make_unique<sol::state>();
@@ -243,8 +244,6 @@ bool Application::Run() {
 	// Run application loop
 	running = true;
 
-	limiter = new FrameLimiter(windowCfg.frameRate);
-	limiter->setVSync(windowCfg.vSync);
 	window->Focus();
 
 	// Run Start Event
@@ -436,7 +435,7 @@ void Application::setTargetFrameRate(int fps) {
 
 int Application::getFrameRate() {
 	if (!limiter) return -1;
-	return curFps;
+	return curFps > 0 ? curFps : GetRenderer()->getDriverFrameRate();
 }
 
 void Application::updateFrameRate() {
@@ -473,6 +472,9 @@ bool Application::CreateWindows() {
 		console->PostError("Could not get valid window handle(s)", true);
 		return false;
 	}
+
+	ShowWindow(glfwHWND, SW_SHOWNORMAL);
+	SetForegroundWindow(glfwHWND);
 
 	return true;
 }

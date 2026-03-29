@@ -107,7 +107,7 @@ bool Renderer::Init() {
 	params.Bits = 16;
 	params.Vsync = cfg.vSync;
 	params.Fullscreen = cfg.fullscreen;
-	params.Stencilbuffer = true;
+	params.Stencilbuffer = cfg.stencil;
 
 	i_device = irr::createDeviceEx(params);
 	if (!i_device) return false;
@@ -365,6 +365,10 @@ void Renderer::updateWindowSize(int w, int h) {
 	qr->setWindowResolution(w, h);
 	MoveWindow(getHandle(), 0, 0, w, h, TRUE);
 	qr->prepareToRecreateRt();
+}
+
+int Renderer::getDriverFrameRate() {
+	return i_device ? i_device->getVideoDriver()->getFPS() : 0;
 }
 
 HWND Renderer::getDeviceVideoData() {
@@ -745,6 +749,11 @@ irr::io::IFileSystem* const Renderer::getFileSystem() {
 bool Renderer::addArchive(const std::string path) {
 	if (!guardRenderingCheck()) return false;
 	return i_device->getFileSystem()->addFileArchive(path.c_str(), true, false, irr::io::EFAT_UNKNOWN);
+}
+
+void Renderer::setOnResize(int w, int h) {
+	if (!i_device) return;
+	i_device->getVideoDriver()->OnResize(irr::core::dimension2du(w, h));
 }
 
 #include "Objects/Event.h"

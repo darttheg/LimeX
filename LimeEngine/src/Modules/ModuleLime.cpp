@@ -238,6 +238,7 @@ bool Module::Lime::Bind::SetInitConfig(int driverType, const Vec2& windowSize, c
 	cfg.driverType = driverType;
 	cfg.windowSize = std::vector<int>{ (int)windowSize.getX(), (int)windowSize.getY() };
 	cfg.renderSize = std::vector<int>{ (int)renderSize.getX(), (int)renderSize.getY() };
+	cfg.stencil = false; // Temporarily
 
 	a->SetConfig(cfg);
 	return true;
