@@ -146,7 +146,8 @@ private:
 
 	// Renderer parameters
 	Vec2S renderSize{};
-	Vec4S bgColor{15,15,25,255};
+	// Vec4S bgColor{15,15,25,255};
+	Vec4S bgColor{ 0,0,0,255 };
 	Vec4S fogColor{};
 	Vec2S fogPlanes{};
 	void updateFog();

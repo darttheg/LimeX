@@ -702,6 +702,7 @@ function Lime.loadArchive(path) end
 ---@return void
 function Lime.log(msg, color) end
 
+--- **This function can only be run before window creation.**  
 --- Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. (NOTE: Enabling the debug console may cause minor hiccups at runtime.)
 ---@param enable boolean
 ---@param writeOutput boolean?
@@ -717,7 +718,8 @@ function Lime.setEndOnError(doEnd) end
 ---@return void
 function Lime.setFrameRate(target) end
 
---- IMPORTANT: This function should always be run prior to window creation (pre-`Lime.onUpdate` Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
+--- **This function can only be run before window creation.**  
+--- This function sets initial parameters for the Lime application.
 ---@overload fun(driver:Lime.Enum.DriverType, windowSize:Vec2): boolean
 ---@overload fun(driver:Lime.Enum.DriverType, windowSize:Vec2, renderSize:Vec2): boolean
 ---@param driver Lime.Enum.DriverType
@@ -852,15 +854,18 @@ function Lime.Input.setMousePosition(pos) end
 ---@return void
 function Lime.Input.setMouseVisible(visible) end
 
+--- **This function cannot be run until window creation.**  
 --- Clears the `Shader` applied to the screen, if any.
 ---@return void
 function Lime.Scene.clearPostProcessingShader() end
 
+--- **This function cannot be run until window creation.**  
 --- Returns a `Mesh` containing a cube.
 ---@param size Vec3
 ---@return Mesh
 function Lime.Scene.createCubeMesh(size) end
 
+--- **This function cannot be run until window creation.**  
 --- Returns a `Mesh` containing a cylinder.
 ---@overload fun(radius:number, length:number, polyCount:number, closed:boolean): Mesh
 ---@param radius number
@@ -868,6 +873,7 @@ function Lime.Scene.createCubeMesh(size) end
 ---@return Mesh
 function Lime.Scene.createCylinderMesh(radius, length) end
 
+--- **This function cannot be run until window creation.**  
 --- Returns a `Mesh` containing a plane. Parameter `repeatCount` controls how much an applied `Texture` will repeat within one tile.
 ---@overload fun(tileSize:Vec2, tileCount:Vec2, repeatCount:Vec2): Mesh
 ---@param tileSize Vec2
@@ -875,12 +881,14 @@ function Lime.Scene.createCylinderMesh(radius, length) end
 ---@return Mesh
 function Lime.Scene.createPlaneMesh(tileSize, tileCount) end
 
+--- **This function cannot be run until window creation.**  
 --- Returns a `Mesh` containing a sphere.
 ---@overload fun(radius:number, polyCount:number): Mesh
 ---@param radius number
 ---@return Mesh
 function Lime.Scene.createSphereMesh(radius) end
 
+--- **This function cannot be run until window creation.**  
 --- Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
 ---@param startPos Vec3
 ---@param endPos Vec3
@@ -888,6 +896,7 @@ function Lime.Scene.createSphereMesh(radius) end
 ---@return HitResult
 function Lime.Scene.fireRaycast(startPos, endPos, rayLifeMs) end
 
+--- **This function cannot be run until window creation.**  
 --- Fires a raycast out from a screenspace position `Vec2` of length `length`. Only objects with collision enabled will be tested.
 ---@param startPos Vec2
 ---@param length number
@@ -895,6 +904,7 @@ function Lime.Scene.fireRaycast(startPos, endPos, rayLifeMs) end
 ---@return HitResult
 function Lime.Scene.fireScreenspaceRaycast(startPos, length, rayLifeMs) end
 
+--- **This function cannot be run until window creation.**  
 --- Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
 ---@return Texture
 function Lime.Scene.getErrorTexture() end
@@ -907,31 +917,37 @@ function Lime.Scene.getObjectCount() end
 ---@return boolean
 function Lime.Scene.isRenderingActive() end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the ambient color of the scene to `rgba`.
 ---@param rgba Vec4
 ---@return void
 function Lime.Scene.setAmbientColor(rgba) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the background color of the scene to `rgba`. This color is generally only visible when there is no `Skydome`.
 ---@param rgba Vec4
 ---@return void
 function Lime.Scene.setBackgroundColor(rgba) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the color of the scene's fog to `rgba`.
 ---@param rgba Vec4
 ---@return void
 function Lime.Scene.setFogColor(rgba) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets where the scene's fog starts and ends.
 ---@param planes Vec2
 ---@return void
 function Lime.Scene.setFogPlanes(planes) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the light management behavior using `Lime.Enum.LightManagementType`.
 ---@param type Lime.Enum.LightManagementType
 ---@return void
 function Lime.Scene.setLightManagementType(type) end
 
+--- **This function cannot be run until window creation.**  
 --- Passes a `Shader` to the renderer be used for special effects on the scene output.
 ---@param shader Shader
 ---@return void
@@ -952,6 +968,7 @@ function Lime.Scene.setRenderingActive(active) end
 ---@return void
 function Lime.Scene.setRescaleRenderToWindowSize(doRescale) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the color of shadows in the scene to `rgba`.
 ---@param rgba Vec4
 ---@return void
@@ -962,11 +979,13 @@ function Lime.Scene.setShadowColor(rgba) end
 ---@return void
 function Lime.Scene.setSize(size) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality.
 ---@param quality Lime.Enum.TextureCreationQuality
 ---@return void
 function Lime.Scene.setTextureCreationQuality(quality) end
 
+--- **This function cannot be run until window creation.**  
 --- Converts a 3D position to `Vec2` on the screen.
 ---@param pos Vec3
 ---@return Vec2
@@ -1010,47 +1029,57 @@ function Lime.Sound.setMuteWhileUnfocused(mute) end
 ---@return void
 function Lime.Sound.setVelocityFactor(factor) end
 
+--- **This function cannot be run until window creation.**  
 --- Returns the size of the monitor the window is running on.
 ---@return Vec2
 function Lime.Window.getMonitorSize() end
 
+--- **This function cannot be run until window creation.**  
 --- Returns the window's position.
 ---@return Vec2
 function Lime.Window.getPosition() end
 
+--- **This function cannot be run until window creation.**  
 --- Returns the size of the window.
 ---@return Vec2
 function Lime.Window.getSize() end
 
+--- **This function cannot be run until window creation.**  
 --- Returns true if the window is focused.
 ---@return boolean
 function Lime.Window.isFocused() end
 
+--- **This function cannot be run until window creation.**  
 --- Toggles fullscreen mode.
 ---@param fullscreen boolean
 ---@return void
 function Lime.Window.setFullscreen(fullscreen) end
 
---- Locks the aspect ratio of the raw window size regardless of resizing/maximizing.
+--- **This function cannot be run until window creation.**  
+--- Locks the aspect ratio of the raw window size. It will not make the window immune to all resizing. Maximizing the window will not preserve the rendering aspect ratio.
 ---@param locked boolean
 ---@return void
 function Lime.Window.setLockAspectRatio(locked) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the window's position to `pos`.
 ---@param pos Vec2
 ---@return void
 function Lime.Window.setPosition(pos) end
 
---- Allows the window to be resizable or locked to its intended size.
+--- **This function cannot be run until window creation.**  
+--- Allows the window to be resizable or locked to its intended size. This disables maximizing the application as well.
 ---@param allow boolean
 ---@return void
 function Lime.Window.setResizable(allow) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the window's size to `size`.
 ---@param size Vec2
 ---@return void
 function Lime.Window.setSize(size) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the window's title to `title`.
 ---@param title string
 ---@return void

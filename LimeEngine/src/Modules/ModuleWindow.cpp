@@ -28,48 +28,48 @@ void Module::Window::bind(Application* app) {
 	// Module Lime.Window
 	sol::table module = lua["Lime"]["Window"].get_or_create<sol::table>();
 
-	// Sets the window's title to `title`.
+	// [+] Sets the window's title to `title`.
 	// Params string title
 	// Returns void
 	module.set_function("setTitle", &Module::Window::Bind::SetTitle);
 
-	// Toggles fullscreen mode.
+	// [+] Toggles fullscreen mode.
 	// Params boolean fullscreen
 	// Returns void
 	module.set_function("setFullscreen", &Module::Window::Bind::SetFullscreen);
 
-	// Returns the window's position.
+	// [+] Returns the window's position.
 	// Returns Vec2
 	module.set_function("getPosition", &Module::Window::Bind::GetPosition);
 
-	// Sets the window's position to `pos`.
+	// [+] Sets the window's position to `pos`.
 	// Params Vec2 pos
 	// Returns void
 	module.set_function("setPosition", &Module::Window::Bind::SetPosition);
 
-	// Returns the size of the window.
+	// [+] Returns the size of the window.
 	// Returns Vec2
 	module.set_function("getSize", &Module::Window::Bind::GetSize);
 
-	// Sets the window's size to `size`.
+	// [+] Sets the window's size to `size`.
 	// Params Vec2 size
 	// Returns void
 	module.set_function("setSize", &Module::Window::Bind::SetSize);
 
-	// Returns the size of the monitor the window is running on.
+	// [+] Returns the size of the monitor the window is running on.
 	// Returns Vec2
 	module.set_function("getMonitorSize", &Module::Window::Bind::GetMonitorSize);
 
-	// Returns true if the window is focused.
+	// [+] Returns true if the window is focused.
 	// Returns boolean
 	module.set_function("isFocused", &Module::Window::Bind::IsFocused);
 
-	// Allows the window to be resizable or locked to its intended size.
+	// [+] Allows the window to be resizable or locked to its intended size. This disables maximizing the application as well.
 	// Params boolean allow
 	// Returns void
 	module.set_function("setResizable", &Module::Window::Bind::SetResizable);
 
-	// Locks the aspect ratio of the raw window size regardless of resizing/maximizing.
+	// [+] Locks the aspect ratio of the raw window size. It will not make the window immune to all resizing. Maximizing the window will not preserve the rendering aspect ratio.
 	// Params boolean locked
 	// Returns void
 	module.set_function("setLockAspectRatio", &Module::Window::Bind::SetMaintainAR);

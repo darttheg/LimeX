@@ -343,6 +343,12 @@ def fn_sig(params: List[Param]) -> str:
 def field_line(name: str, typ: str, comment: Optional[str]) -> str:
     return f"---@field {name} {typ} @{comment}" if comment else f"---@field {name} {typ}"
 
+DOC_TAGS = {
+    "+": "**This function cannot be run until window creation.**",
+    "-": "**This function can only be run before window creation.**",
+    "x": "**DEPRECATED**",
+}
+
 def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc], objects: List[ObjectDoc], functions: List[FunctionDoc]) -> str:
     out: List[str] = []
 
@@ -435,8 +441,24 @@ def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc],
     merged.sort(key=lambda f: (f.owner, f.name, 0 if f.is_method else 1))
 
     for fn in merged:
+        emitted_tags = set()
+
         for line in fn.doc_lines:
-            out.append(f"--- {line}")
+            while line.startswith("["):
+                end = line.find("]")
+                if end == -1:
+                    break
+
+                tag = line[1:end].strip()
+                line = line[end + 1:].lstrip()
+
+                msg = DOC_TAGS.get(tag)
+                if msg and tag not in emitted_tags:
+                    out.append(f"--- {msg}  ")
+                    emitted_tags.add(tag)
+
+            if line:
+                out.append(f"--- {line}")
 
         overloads = fn.overloads or [[]]
         uniq: List[List[Param]] = []

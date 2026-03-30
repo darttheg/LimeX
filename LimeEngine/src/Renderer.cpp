@@ -37,6 +37,7 @@ Renderer::Renderer(Application* owner) {
 	r = a->GetReceiver();
 	guiManager = new GUIManager(d, this);
 	rh = new RenderHelper();
+	qr = new QuadRenderer();
 }
 
 Renderer::~Renderer() {
@@ -193,7 +194,6 @@ bool Renderer::Init() {
 		}
 		});
 
-	qr = new QuadRenderer();
 	qr->init(i_driver);
 	qr->setInternalResolution(renderSize.x, renderSize.y);
 
@@ -388,8 +388,7 @@ int Renderer::getObjectCount() {
 }
 
 void Renderer::setSceneRenderQuality(int q) {
-	if (!guardRenderingCheck()) return;
-
+	//if (!guardRenderingCheck()) return;
 	qr->setSceneRenderQuality(q);
 }
 
@@ -416,6 +415,7 @@ irr::video::ITexture* Renderer::createRenderTargetTexture(const Vec2& size, irr:
 	irr::scene::ICameraSceneNode* prev = i_smgr->getActiveCamera();
 	irr::f32 prevAR = prev ? prev->getAspectRatio() : 0.0f;
 
+	updateFog();
 	i_smgr->setActiveCamera(c ? c : prev);
 	i_smgr->getActiveCamera()->setAspectRatio(size.getX() / size.getY());
 	i_driver->setRenderTarget(out, true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));

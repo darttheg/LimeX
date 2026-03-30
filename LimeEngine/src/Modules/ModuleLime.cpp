@@ -73,7 +73,7 @@ void Module::Lime::bind(Application* app) {
 	// Returns string
 	module.set_function("getVersion", &Module::Lime::Bind::GetVersion);
 
-	// IMPORTANT: This function should always be run prior to window creation (pre-`Lime.onUpdate` Event) as only here can the driver type be changed. This function sets initial parameters for the Lime application.
+	// [-] This function sets initial parameters for the Lime application.
 	// Params Lime.Enum.DriverType driver
 	// Params Lime.Enum.DriverType driver, Vec2 windowSize
 	// Params Lime.Enum.DriverType driver, Vec2 windowSize, Vec2 renderSize
@@ -111,7 +111,7 @@ void Module::Lime::bind(Application* app) {
 	// Returns boolean
 	module.set_function("getVSync", &Module::Lime::Bind::GetVSync);
 
-	// Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. (NOTE: Enabling the debug console may cause minor hiccups at runtime.)
+	// [-] Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. (NOTE: Enabling the debug console may cause minor hiccups at runtime.)
 	// Params boolean enable, boolean? writeOutput
 	// Returns void
 	module.set_function("setDebugConfig", &Module::Lime::Bind::SetDebugConfig);

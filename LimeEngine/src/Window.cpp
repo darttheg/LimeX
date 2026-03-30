@@ -106,6 +106,18 @@ bool Window::Create() {
 			w->preFullWinSize.y = w->windowSize.y;
 			w->isFullscreened = true;
 
+			GLFWmonitor* m = w->getCurrentMonitor();
+			const GLFWvidmode* mode = glfwGetVideoMode(m);
+
+			if (false) { // Black screen persists for dual monitor setups
+				int mx, my;
+				glfwGetMonitorPos(m, &mx, &my);
+				glfwSetWindowAttrib(win, GLFW_DECORATED, GLFW_FALSE);
+
+				glfwSetWindowPos(win, mx, my);
+				glfwSetWindowSize(win, mode->width, mode->height);
+			}
+
 			glfwSetWindowAttrib(win, GLFW_MAXIMIZED, GLFW_TRUE);
 		}
 		else {
@@ -138,6 +150,7 @@ bool Window::Create() {
 			const GLFWvidmode* mode = glfwGetVideoMode(m);
 			width = mode->width;
 			height = mode->height;
+			// d->Warn(std::to_string(width) + ", " + std::to_string(height));
 		}
 
 		w->setSizeSimple(width, height);

@@ -34,42 +34,42 @@ void Module::Scene::bind(Application* app) {
 	// Returns number
 	module.set_function("getObjectCount", &Module::Scene::Bind::GetObjectCount);
 
-	// Sets the ambient color of the scene to `rgba`.
+	// [+] Sets the ambient color of the scene to `rgba`.
 	// Params Vec4 rgba
 	// Returns void
 	module.set_function("setAmbientColor", &Module::Scene::Bind::SetAmbientColor);
 
-	// Sets the background color of the scene to `rgba`. This color is generally only visible when there is no `Skydome`.
+	// [+] Sets the background color of the scene to `rgba`. This color is generally only visible when there is no `Skydome`.
 	// Params Vec4 rgba
 	// Returns void
 	module.set_function("setBackgroundColor", &Module::Scene::Bind::SetBackgroundColor);
 
-	// Sets the color of the scene's fog to `rgba`.
+	// [+] Sets the color of the scene's fog to `rgba`.
 	// Params Vec4 rgba
 	// Returns void
 	module.set_function("setFogColor", &Module::Scene::Bind::SetFogColor);
 
-	// Sets where the scene's fog starts and ends.
+	// [+] Sets where the scene's fog starts and ends.
 	// Params Vec2 planes
 	// Returns void
 	module.set_function("setFogPlanes", &Module::Scene::Bind::SetFogPlanes);
 
-	// Sets the color of shadows in the scene to `rgba`.
+	// [+] Sets the color of shadows in the scene to `rgba`.
 	// Params Vec4 rgba
 	// Returns void
 	module.set_function("setShadowColor", &Module::Scene::Bind::SetShadowColor);
 
-	// Sets the light management behavior using `Lime.Enum.LightManagementType`. 
+	// [+] Sets the light management behavior using `Lime.Enum.LightManagementType`. 
 	// Params Lime.Enum.LightManagementType type
 	// Returns void
 	module.set_function("setLightManagementType", &Module::Scene::Bind::SetLightManagementType);
 
-	// Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality.
+	// [+] Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality.
 	// Params Lime.Enum.TextureCreationQuality quality
 	// Returns void
 	module.set_function("setTextureCreationQuality", &Module::Scene::Bind::SetTextureCreationQuality);
 
-	// Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
+	// [+] Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
 	// Returns Texture
 	module.set_function("getErrorTexture", &Module::Scene::Bind::GetErrorTexture);
 
@@ -88,24 +88,24 @@ void Module::Scene::bind(Application* app) {
 	// Returns void
 	module.set_function("setRenderQuality", &Module::Scene::Bind::SetRenderQuality);
 
-	// Returns a `Mesh` containing a cube.
+	// [+] Returns a `Mesh` containing a cube.
 	// Params Vec3 size
 	// Returns Mesh
 	module.set_function("createCubeMesh", &Module::Scene::Bind::CreateCubeMesh);
 
-	// Returns a `Mesh` containing a sphere.
+	// [+] Returns a `Mesh` containing a sphere.
 	// Params number radius
 	// Params number radius, number polyCount
 	// Returns Mesh
 	module.set_function("createSphereMesh", &Module::Scene::Bind::CreateSphereMesh);
 
-	// Returns a `Mesh` containing a cylinder.
+	// [+] Returns a `Mesh` containing a cylinder.
 	// Params number radius, number length
 	// Params number radius, number length, number polyCount, boolean closed
 	// Returns Mesh
 	module.set_function("createCylinderMesh", &Module::Scene::Bind::CreateCylinderMesh);
 
-	// Returns a `Mesh` containing a plane. Parameter `repeatCount` controls how much an applied `Texture` will repeat within one tile.
+	// [+] Returns a `Mesh` containing a plane. Parameter `repeatCount` controls how much an applied `Texture` will repeat within one tile.
 	// Params Vec2 tileSize, Vec2 tileCount
 	// Params Vec2 tileSize, Vec2 tileCount, Vec2 repeatCount
 	// Returns Mesh
@@ -124,26 +124,26 @@ void Module::Scene::bind(Application* app) {
 	// Returns boolean
 	module.set_function("isRenderingActive", &Module::Scene::Bind::GetActivelyRendering);
 
-	// Passes a `Shader` to the renderer be used for special effects on the scene output.
+	// [+] Passes a `Shader` to the renderer be used for special effects on the scene output.
 	// Params Shader shader
 	// Returns void
 	module.set_function("setPostProcessingShader", &Module::Scene::Bind::SetPostProcessingShader);
 
-	// Clears the `Shader` applied to the screen, if any.
+	// [+] Clears the `Shader` applied to the screen, if any.
 	// Returns void
 	module.set_function("clearPostProcessingShader", &Module::Scene::Bind::ClearPostProcessingShader);
 
-	// Converts a 3D position to `Vec2` on the screen.
+	// [+] Converts a 3D position to `Vec2` on the screen.
 	// Params Vec3 pos
 	// Returns Vec2
 	module.set_function("toScreenPosition", &Module::Scene::Bind::ConvertToScreenSpace);
 
-	// Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
+	// [+] Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
 	// Params Vec3 startPos, Vec3 endPos, number? rayLifeMs
 	// Returns HitResult
 	module.set_function("fireRaycast", &Module::Scene::Bind::FireRaycast);
 
-	// Fires a raycast out from a screenspace position `Vec2` of length `length`. Only objects with collision enabled will be tested.
+	// [+] Fires a raycast out from a screenspace position `Vec2` of length `length`. Only objects with collision enabled will be tested.
 	// Params Vec2 startPos, number length, number? rayLifeMs
 	// Returns HitResult
 	module.set_function("fireScreenspaceRaycast", &Module::Scene::Bind::FireScreenRaycast);
