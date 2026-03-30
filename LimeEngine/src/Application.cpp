@@ -419,7 +419,7 @@ bool Application::addArchive(const std::string& path) {
 }
 
 void Application::warnGarbageCollection(const std::string& path) {
-	int max = 35;
+	int max = 30;
 	std::string out = path;
 	if (path.length() > max) {
 		int keep = max - 3;
@@ -431,7 +431,7 @@ void Application::warnGarbageCollection(const std::string& path) {
 			out + "..." + path.substr(start);
 	}
 
-	console->Warn("Object referencing asset " + out + " was garbage collected.", false);
+	console->Warn("Object referencing asset " + out + " was garbage collected. Was it defined in a method as a local variable?", false);
 }
 
 void Application::setTargetFrameRate(int fps) {
