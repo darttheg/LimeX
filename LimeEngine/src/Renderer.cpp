@@ -274,6 +274,8 @@ bool Renderer::RunDevice() {
 		d->Warn("Render device could not be ran!");
 		return false;
 	}
+
+	return true;
 }
 
 void Renderer::RenderBGPreUpdate() {

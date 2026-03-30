@@ -130,6 +130,7 @@ bool Application::RunEntry() {
 	auto it = modules.find(entryModuleName);
 	if (it == modules.end()) {
 		console->PostError("Could not find entry module " + entryModuleName, true);
+		displayMessage("Lime Init Error", "Could not find entry module " + entryModuleName, 1);
 		return false;
 	}
 
@@ -139,6 +140,7 @@ bool Application::RunEntry() {
 	if (!chunk.valid()) {
 		sol::error err = chunk;
 		console->PostError("Lua load error:\n" + std::string(err.what()), true);
+		displayMessage("Lime Init Error", "Lua load error:\n" + std::string(err.what()), 1);
 		return false;
 	}
 
@@ -146,6 +148,7 @@ bool Application::RunEntry() {
 	if (!result.valid()) {
 		sol::error err = result;
 		console->PostError("Lua entry run error:\n" + std::string(err.what()), true);
+		displayMessage("Lime Init Error", "Lua entry run error:\n" + std::string(err.what()), 1);
 		return false;
 	}
 
@@ -167,6 +170,7 @@ bool Application::Init(const void* data, size_t size) {
 
 	if (!lua) {
 		console->PostError("Failed to create Lua state", true);
+		displayMessage("Lime Init Error", "Failed to create Lua state", 1);
 		return false;
 	}
 
@@ -197,6 +201,7 @@ bool Application::Init(const void* data, size_t size) {
 	uint16_t modulesAmount = LoadPackage(data, size);
 	if (modulesAmount == 0) {
 		console->PostError("Failed to load Lime package from memory", true);
+		displayMessage("Lime Init Error", "Failed to load Lime package from memory", 1);
 		return false;
 	} else
 		console->Log("Lime started with " + std::to_string(modulesAmount) + " modules loaded");
@@ -217,6 +222,7 @@ bool Application::Init(const void* data, size_t size) {
 
 	if (!soundManager->Init()) {
 		console->PostError("Failed to create sound manager", true);
+		displayMessage("Lime Init Error", "Failed to create sound manager", 1);
 		return false;
 	}
 
@@ -258,15 +264,15 @@ bool Application::Run() {
 
 		console->Update(getMemUsed());
 
-		if (window && window->ShouldClose()) fail = true;
+		if (window && window->ShouldClose()) { fail = true; }
 
 		// Change to device->run -> update event -> render to fix event receiver
-		if (!renderer->RunDevice()) fail = true;
+		if (!renderer->RunDevice()) { fail = true; }
 		receiver->beginFrame();
 		LimeUpdate.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); }, dt);
 		window->PollEvents();
 		soundManager->Update(dt);
-		if (!renderer->Render()) fail = true;
+		if (!renderer->Render()) { fail = true; }
 
 		// Clean-up
 		updateFrameRate();
@@ -459,11 +465,13 @@ bool Application::getVSync() {
 bool Application::CreateWindows() {
 	if (!window->Create()) {
 		console->PostError("Failed to create GLFW window", true);
+		displayMessage("Lime Init Error", "Failed to create GLFW window", 1);
 		return false;
 	}
 
 	if (!renderer->Init()) {
 		console->PostError("Failed to create rendering window", true);
+		displayMessage("Lime Init Error", "Failed to create rendering window", 1);
 		return false;
 	}
 
@@ -471,6 +479,7 @@ bool Application::CreateWindows() {
 
 	if (!glfwHWND) {
 		console->PostError("Could not get valid window handle(s)", true);
+		displayMessage("Lime Init Error", "Could not get valid window handle(s)", 1);
 		return false;
 	}
 

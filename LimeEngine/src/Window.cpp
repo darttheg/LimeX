@@ -118,8 +118,6 @@ bool Window::Create() {
 			r->updateWindowSize(width, height);
 			glfwSetWindowSize(win, width, height);
 
-			int x, y;
-			glfwGetWindowPos(win, &x, &y);
 			glfwSetWindowPos(win, w->preFullWinPos.x, w->preFullWinPos.y);
 			glfwSetWindowAttrib(win, GLFW_MAXIMIZED, GLFW_FALSE);
 		}
