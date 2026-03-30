@@ -354,5 +354,10 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 
 	EmbedPackage(finalExe, outPkg.string());
 
+	std::error_code ec;
+	fs::remove(outPkg, ec);
+	if (ec)
+		std::cout << "WARNING: Failed to remove limepkg: " << ec.message() << "\n";
+
 	std::cout << "Created application at " << finalExe << "\n";
 }

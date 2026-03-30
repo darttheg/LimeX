@@ -251,7 +251,17 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       }
     }),
     vscode.commands.registerCommand("lime.build", () => {
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
+      const batPath = path.join(context.extensionPath, "cmd", "build.bat");
+
       runBat(context, "build.bat", "Lime: Build");
+      
+      exec(`"${batPath}" "${workspaceFolder}"`, (error) => {
+        if (error) {
+          vscode.window.showErrorMessage("Lime: Build failed.");
+          return;
+        }
+      });
     }),
     vscode.commands.registerCommand("lime.buildAndRun", () => {
       const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
@@ -260,10 +270,27 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       runBat(context, "build.bat", "Lime: Run");
 
       exec(`"${batPath}" "${workspaceFolder}"`, (error) => {
-        if (!error) {
-          setTimeout(() => launchApp(workspaceFolder), 5000);
-        } else {
+        if (error) {
           vscode.window.showErrorMessage("Lime: Build failed.");
+          return;
+        }
+
+        let finished = false;
+        const timeout = setTimeout(() => {
+          if (!finished) {
+            vscode.window.showErrorMessage("Lime: Run timed out.");
+          }
+        }, 5000);
+
+        try {
+          setTimeout(() => {
+            launchApp(workspaceFolder);
+          }, 200);
+          finished = true;
+          clearTimeout(timeout);
+        } catch (e) {
+          clearTimeout(timeout);
+          vscode.window.showErrorMessage("Lime: Run failed.");
         }
       });
     }),
