@@ -251,7 +251,7 @@ async function activate(context) {
         runBat(context, "build.bat", "Lime: Run");
         (0, child_process_1.exec)(`"${batPath}" "${workspaceFolder}"`, (error) => {
             if (!error) {
-                setTimeout(() => launchApp(workspaceFolder), 300);
+                setTimeout(() => launchApp(workspaceFolder), 5000);
             }
             else {
                 vscode.window.showErrorMessage("Lime: Build failed.");

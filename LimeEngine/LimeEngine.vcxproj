@@ -24,6 +24,7 @@
     <ClInclude Include="include\External\CTextAnchorSceneNode.h" />
     <ClInclude Include="include\External\CGUIColoredText.h" />
     <ClInclude Include="include\External\FontLoader.h" />
+    <ClInclude Include="include\External\GetCurrentMonitor.h" />
     <ClInclude Include="include\External\PerlinHeader.h" />
     <ClInclude Include="include\External\PerlinNoise.h" />
     <ClInclude Include="include\FrameLimiter.h" />

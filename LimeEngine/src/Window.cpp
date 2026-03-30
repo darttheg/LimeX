@@ -1,3 +1,4 @@
+#pragma once
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Window.h"
@@ -89,16 +90,6 @@ bool Window::Create() {
 	else
 		glfwSetWindowAspectRatio(glfwWindow, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
-	/*glfwSetWindowPosCallback(glfwWindow, [](GLFWwindow* win, int x, int y) {
-		auto* w = a->GetWindow();
-		auto* d = a->GetDebugConsole();
-		if (!w->isFullscreened) {
-			w->preFullWinPos.x = x;
-			w->preFullWinPos.y = y;
-			d->Warn(std::to_string(x) + ", " + std::to_string(y));
-		}
-	});*/
-
 	glfwSetWindowMaximizeCallback(glfwWindow, [](GLFWwindow* win, int maximized) {
 		HWND hwnd = a->GetWindow()->GetHandle();
 		auto* d = a->GetDebugConsole();
@@ -111,21 +102,10 @@ bool Window::Create() {
 		w->didCallback = true;
 
 		if (maximized) {
-			int preX, preY, preSX, preSY;
-			glfwGetWindowPos(win, &preX, &preY);
-			glfwGetWindowSize(win, &preSX, &preSY);
 			w->preFullWinSize.x = w->windowSize.x;
 			w->preFullWinSize.y = w->windowSize.y;
 			w->isFullscreened = true;
-			/*
-			GLFWmonitor* m = glfwGetPrimaryMonitor();
-			int mx, my;
-			glfwGetMonitorPos(m, &mx, &my);
 
-			const GLFWvidmode* mode = glfwGetVideoMode(m);
-			glfwSetWindowPos(win, mx, my);
-			glfwSetWindowSize(win, mode->width, mode->height);
-			*/
 			glfwSetWindowAttrib(win, GLFW_MAXIMIZED, GLFW_TRUE);
 		}
 		else {
@@ -156,7 +136,7 @@ bool Window::Create() {
 		}
 
 		if (w->isFullscreened) {
-			GLFWmonitor* m = glfwGetPrimaryMonitor();
+			GLFWmonitor* m = w->getCurrentMonitor();
 			const GLFWvidmode* mode = glfwGetVideoMode(m);
 			width = mode->width;
 			height = mode->height;
@@ -302,14 +282,18 @@ void Window::setSize(const Vec2& size) {
 Vec2 Window::getMonitorSize() {
 	if (!guardEditCheck()) return Vec2();
 
-#ifdef _WIN32
+	int foo, bar, w, h;
+	glfwGetMonitorWorkarea(getCurrentMonitor(), &foo, &bar, &w, &h);
+	/*
+	#ifdef _WIN32
 	return Vec2(
 		static_cast<float>(GetSystemMetrics(SM_CXSCREEN)),
 		static_cast<float>(GetSystemMetrics(SM_CYSCREEN))
 	);
-#endif
+	#endif
+	*/
 
-	return Vec2();
+	return Vec2(w, h);
 }
 
 bool Window::isFocused() {
@@ -358,7 +342,14 @@ void Window::setSwapInterval(int i) {
 }
 
 int Window::getPrimaryHz() {
-	GLFWmonitor* m = glfwGetPrimaryMonitor();
+	GLFWmonitor* m = getCurrentMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(m);
 	return mode ? mode->refreshRate : 0;
+}
+
+#include "External/GetCurrentMonitor.h"
+GLFWmonitor* Window::getCurrentMonitor() {
+	GLFWmonitor* m = nullptr;
+	glfw_get_window_monitor(&m, glfwWindow);
+	return m;
 }

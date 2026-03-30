@@ -42,18 +42,15 @@
       "editor/title": [
         {
           "command": "lime.build",
-          "group": "navigation@1",
-          "when": "resourceLangId == lua"
+          "group": "navigation@1"
         },
         {
           "command": "lime.buildAndRun",
-          "group": "navigation@2",
-          "when": "resourceLangId == lua"
+          "group": "navigation@2"
         },
         {
           "command": "lime.package",
-          "group": "navigation@3",
-          "when": "resourceLangId == lua"
+          "group": "navigation@3"
         },
         {
           "command": "lime.newProject",

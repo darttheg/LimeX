@@ -261,7 +261,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
       exec(`"${batPath}" "${workspaceFolder}"`, (error) => {
         if (!error) {
-          setTimeout(() => launchApp(workspaceFolder), 300);
+          setTimeout(() => launchApp(workspaceFolder), 5000);
         } else {
           vscode.window.showErrorMessage("Lime: Build failed.");
         }

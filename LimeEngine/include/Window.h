@@ -66,4 +66,6 @@ private:
 	bool resizable = true;
 	bool inFullscreenCallback = false;
 	bool didCallback = false; // Used when the maximize/restore callback was called, resets before polling events
+
+	GLFWmonitor* getCurrentMonitor();
 };

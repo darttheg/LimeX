@@ -55,6 +55,9 @@
     <Filter Include="Engine\Runtime\External\Noise">
       <UniqueIdentifier>{430fc752-dff3-48ca-8664-ce27d2f38726}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Runtime\External\Monitor">
+      <UniqueIdentifier>{eaf4de9b-a3fe-44ef-bd8a-3d8251b9b020}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\LimeEngine.h">
@@ -213,6 +216,9 @@
     </ClInclude>
     <ClInclude Include="include\Objects\EditBox.h">
       <Filter>Engine\Runtime\Objects\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="include\External\GetCurrentMonitor.h">
+      <Filter>Engine\Runtime\External\Monitor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
