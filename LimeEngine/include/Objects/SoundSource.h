@@ -69,6 +69,7 @@ public:
 	bool addEchoEffect(float wetDry = 50.0f, float feedback = 50.0f, float delay = 250.0f);
 	bool addReverbEffect(float inputGain = 0.0f, float mix = 0.0f, float time = 1000.0f, float freqRatio = 0.001f);
 	bool addCompressionEffect(float threshold = -20.0f, float ratio = 3.0f);
+	bool addParamEqEffect(float fCenter = 8000.0f, float fBandwidth = 12.0f, float fGain = 0.0f);
 
 	void collected();
 

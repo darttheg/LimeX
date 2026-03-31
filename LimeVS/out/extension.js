@@ -253,6 +253,14 @@ async function activate(context) {
                 return;
             }
         });
+    }), vscode.commands.registerCommand("lime.run", () => {
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
+        try {
+            launchApp(workspaceFolder);
+        }
+        catch (e) {
+            vscode.window.showErrorMessage("Lime: Run failed.");
+        }
     }), vscode.commands.registerCommand("lime.buildAndRun", () => {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
         const batPath = path.join(context.extensionPath, "cmd", "build.bat");

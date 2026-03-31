@@ -23,9 +23,14 @@
         "icon": "$(tools)"
       },
       {
+        "command": "lime.run",
+        "title": "Lime: Run",
+        "icon": "$(play)"
+      },
+      {
         "command": "lime.buildAndRun",
         "title": "Lime: Build and Run",
-        "icon": "$(play)"
+        "icon": "$(play-circle)"
       },
       {
         "command": "lime.package",
@@ -45,16 +50,20 @@
           "group": "navigation@1"
         },
         {
-          "command": "lime.buildAndRun",
+          "command": "lime.run",
           "group": "navigation@2"
         },
         {
-          "command": "lime.package",
+          "command": "lime.buildAndRun",
           "group": "navigation@3"
         },
         {
-          "command": "lime.newProject",
+          "command": "lime.package",
           "group": "navigation@4"
+        },
+        {
+          "command": "lime.newProject",
+          "group": "navigation@5"
         }
       ]
     },

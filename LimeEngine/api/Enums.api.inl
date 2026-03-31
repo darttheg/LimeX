@@ -42,12 +42,15 @@ LIME_ENUM(DriverType,
 
 LIME_ENUM(MaterialType,
     LIME_ENUM_VALUE(Solid, 0)
-    LIME_ENUM_VALUE(SolidMultiplyLayers, 1)
+    LIME_ENUM_VALUE(SolidMultiply, 1)
     LIME_ENUM_VALUE(Add, 12)
     LIME_ENUM_VALUE(AlphaSoft, 13)
     LIME_ENUM_VALUE(AlphaHarsh, 14)
     LIME_ENUM_VALUE(SphereMap, 10)
     LIME_ENUM_VALUE(ReflectMap, 11)
+    LIME_ENUM_VALUE(LightMap, 2)
+    LIME_ENUM_VALUE(LightMapAdd, 3)
+    LIME_ENUM_VALUE(LightMapDynamic, 2)
 );
 
 LIME_ENUM(LightType,

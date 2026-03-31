@@ -253,7 +253,7 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 	// Constructor string path
 	// Constructor MeshBuffer buffer
 
-	// Loads a 3D model into this `Mesh`. If importing from file, acceptable formats include `.obj`, `.fbx`, and `.x`.
+	// Loads a 3D model into this `Mesh`.
 	// Params string path
 	// Params MeshBuffer buffer
 	// Returns boolean
@@ -273,7 +273,7 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 			sol::resolve<bool(const Material&)>(&Mesh::loadMaterial)
 		));
 
-	// Returns the material count of this `Mesh`.
+	// Returns the number of `Material` slots in this `Mesh`.
 	// Returns number
 	obj.set_function("getMaterialCount", &Mesh::getMaterialCount);
 

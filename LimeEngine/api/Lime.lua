@@ -1143,7 +1143,7 @@ function Mesh:getAttributes() end
 ---@return Vec4
 function Mesh:getBoundingBox() end
 
---- Returns the material count of this `Mesh`.
+--- Returns the number of `Material` slots in this `Mesh`.
 ---@return number
 function Mesh:getMaterialCount() end
 
@@ -1170,7 +1170,7 @@ function Mesh:isPointInside(pos) end
 ---@return boolean
 function Mesh:loadMaterial(material) end
 
---- Loads a 3D model into this `Mesh`. If importing from file, acceptable formats include `.obj`, `.fbx`, and `.x`.
+--- Loads a 3D model into this `Mesh`.
 ---@overload fun(buffer:MeshBuffer): boolean
 ---@param path string
 ---@return boolean
@@ -1324,6 +1324,11 @@ function SoundSource:addDistortionEffect() end
 --- Returns bool
 ---@overload fun(wetDry:number, feedback:number, delayMs:number)
 function SoundSource:addEchoEffect() end
+
+--- Enables parametric equilization on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect amplifies or attenuates signals at a given frequency.
+--- Returns bool
+---@overload fun(threshold:number, ratio:number)
+function SoundSource:addParamEqEffect() end
 
 --- Enables reverb on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect mixes the sound to bounce off surfaces in a room or a cave.
 --- Returns bool

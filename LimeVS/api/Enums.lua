@@ -77,20 +77,26 @@ OpenGL = 5,
 ---@alias Lime.Enum.MaterialType integer
 ---@class Lime.Enum.MaterialTypeEnum
 ---@field Solid Lime.Enum.MaterialType
----@field SolidMultiplyLayers Lime.Enum.MaterialType
+---@field SolidMultiply Lime.Enum.MaterialType
 ---@field Add Lime.Enum.MaterialType
 ---@field AlphaSoft Lime.Enum.MaterialType
 ---@field AlphaHarsh Lime.Enum.MaterialType
 ---@field SphereMap Lime.Enum.MaterialType
 ---@field ReflectMap Lime.Enum.MaterialType
+---@field LightMap Lime.Enum.MaterialType
+---@field LightMapAdd Lime.Enum.MaterialType
+---@field LightMapDynamic Lime.Enum.MaterialType
 Lime.Enum.MaterialType = {
 Solid = 0,
-SolidMultiplyLayers = 1,
+SolidMultiply = 1,
 Add = 12,
 AlphaSoft = 13,
 AlphaHarsh = 14,
 SphereMap = 10,
 ReflectMap = 11,
+LightMap = 2,
+LightMapAdd = 3,
+LightMapDynamic = 2,
 }
 ---@alias Lime.Enum.LightType integer
 ---@class Lime.Enum.LightTypeEnum

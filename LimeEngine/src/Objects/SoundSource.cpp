@@ -278,6 +278,13 @@ bool SoundSource::addCompressionEffect(float threshold, float ratio) {
 	return true;
 }
 
+bool SoundSource::addParamEqEffect(float fCenter, float fBandwidth, float fGain) {
+	if (!cur || !doSFX) return false;
+	if (!cur->getSoundEffectControl()) return false;
+	cur->getSoundEffectControl()->enableParamEqSoundEffect(fCenter, fBandwidth, fGain);
+	return true;
+}
+
 void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou, RenderHelper* renh) {
 	l = ls;
 	s = sou;
@@ -413,6 +420,12 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou, RenderHelpe
 	// Params number threshold, number ratio
 	// Returns bool
 	obj.set_function("addCompressionEffect", &SoundSource::addCompressionEffect);
+
+	// Enables parametric equilization on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect amplifies or attenuates signals at a given frequency.
+	// Params
+	// Params number threshold, number ratio
+	// Returns bool
+	obj.set_function("addParamEqEffect", &SoundSource::addParamEqEffect);
 
 	// End Object
 }
