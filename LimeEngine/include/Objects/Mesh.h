@@ -60,6 +60,10 @@ public:
     void setShadows(bool v);
     void updateShadowCasting();
 
+    int getFrame() const;
+    void setFrame(int f);
+    int getFrameCount() const;
+
     void clear();
     void purge();
 private:

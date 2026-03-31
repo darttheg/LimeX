@@ -187,6 +187,7 @@ function Material.new() end
 ---@field vertexColor Vec4 @Sets the color of all vertexes in this `Mesh`.
 ---@field collision boolean @Allows response to raypicks and other simple collision methods. (NOTE: This flag does not affect this `Mesh` when wrapped by a physics object.)
 ---@field shadows boolean @Enables shadows. If there is no light source, the scene will be dark until one is created.
+---@field frame number @Controls the current frame of animation.
 ---@field position Vec3 @The 3D position of this object in the scene.
 ---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
 ---@field scale Vec3 @The 3D scale of this object in the scene.
@@ -1143,6 +1144,10 @@ function Mesh:getAttributes() end
 ---@return Vec4
 function Mesh:getBoundingBox() end
 
+--- Returns the number of animation frames.
+---@return number
+function Mesh:getFrameCount() end
+
 --- Returns the number of `Material` slots in this `Mesh`.
 ---@return number
 function Mesh:getMaterialCount() end
@@ -1191,7 +1196,7 @@ function Mesh:purge() end
 ---@return void
 function Mesh:setAttribute(key, value) end
 
---- Tells the graphics system how to store this `Mesh`. By default, `Mesh` objects use Static. Use Dynamic (or more intensely, Stream) if the `Mesh` is updated frequently.
+--- Informs the graphics system of how this `Mesh` should be stored. By default, `Mesh` objects use Static. Use Dynamic (or more intensely, Stream) if the `Mesh` is updated frequently.
 ---@param hint Lime.Enum.StorageHint
 ---@return void
 function Mesh:setStorageHint(hint) end

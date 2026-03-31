@@ -69,6 +69,7 @@ bool Mesh::loadMesh(const std::string& path) {
 	if (!src) d->Warn("Failed to create Mesh!");
 
 	setDebug(Object3D::getDebug());
+	src->setAnimationSpeed(0.0f);
 
 	// Reapply collision state
 	bool cur = col;
@@ -189,6 +190,19 @@ void Mesh::updateShadowCasting() {
 	sh->updateShadowVolumes();
 }
 
+int Mesh::getFrame() const {
+	return src ? src->getFrameNr() : 0;
+}
+
+int Mesh::getFrameCount() const {
+	return src ? src->getEndFrame() - src->getStartFrame() : 0;
+}
+
+void Mesh::setFrame(int f) {
+	if (!src) return;
+	src->setCurrentFrame(f);
+}
+
 void Mesh::clear() {
 	if (!src) return;
 	if (!getMesh()) return;
@@ -242,7 +256,10 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 		"collision", sol::property(&Mesh::getSimpleCollision, &Mesh::setSimpleCollision),
 
 		// Field boolean shadows, Enables shadows. If there is no light source, the scene will be dark until one is created.
-		"shadows", sol::property(&Mesh::getShadows, &Mesh::setShadows)
+		"shadows", sol::property(&Mesh::getShadows, &Mesh::setShadows),
+
+		// Field number frame, Controls the current frame of animation.
+		"frame", sol::property(&Mesh::getFrame, &Mesh::setFrame)
 	);
 
 	obj[sol::meta_function::to_string] = [](const Mesh& v) {
@@ -285,7 +302,11 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 	// Returns void
 	obj.set_function("updateShadow", &Mesh::updateShadowCasting);
 
-	// Tells the graphics system how to store this `Mesh`. By default, `Mesh` objects use Static. Use Dynamic (or more intensely, Stream) if the `Mesh` is updated frequently.
+	// Returns the number of animation frames.
+	// Returns number
+	obj.set_function("getFrameCount", &Mesh::getFrameCount);
+
+	// Informs the graphics system of how this `Mesh` should be stored. By default, `Mesh` objects use Static. Use Dynamic (or more intensely, Stream) if the `Mesh` is updated frequently.
 	// Params Lime.Enum.StorageHint hint
 	// Returns void
 	obj.set_function("setStorageHint", &Mesh::setHardwareHint);
