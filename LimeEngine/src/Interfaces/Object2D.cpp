@@ -54,6 +54,7 @@ void Object2D::setSize(const Vec2& size) {
     irr::core::recti r = getNode()->getRelativePosition();
     r.LowerRightCorner.X = r.UpperLeftCorner.X + size.getX();
     r.LowerRightCorner.Y = r.UpperLeftCorner.Y + size.getY();
+    getNode()->setMaxSize(irr::core::dimension2du(size.getX(), size.getY()));
     getNode()->setRelativePosition(r);
     updateBorderDimensions(size);
     updateButtonDimensions();
@@ -155,18 +156,12 @@ void Object2D::setPressedEvent(std::shared_ptr<Event> e) {
 
 void Object2D::updateBorderDimensions(const Vec2& sz) {
     if (!getNode() || !bgBorder) return;
-
-    irr::core::recti r;
-    r.LowerRightCorner.X = r.UpperLeftCorner.X + sz.getX();
-    r.LowerRightCorner.Y = r.UpperLeftCorner.Y + sz.getY();
-
-    bgBorder->setRelativePosition(r);
+    bgBorder->setRelativePosition(getNode()->getRelativePosition());
 }
 
 void Object2D::updateButtonDimensions() {
-    if (!button) return;
-    irr::core::recti rect = getNode()->getRelativePosition();
-    button->setRelativePosition(rect);
+    if (!getNode() || !button) return;
+    button->setRelativePosition(getNode()->getRelativePosition());
 }
 
 void Object2D::setBGBorder() {

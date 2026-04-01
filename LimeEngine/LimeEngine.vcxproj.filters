@@ -58,6 +58,9 @@
     <Filter Include="Engine\Runtime\External\Monitor">
       <UniqueIdentifier>{eaf4de9b-a3fe-44ef-bd8a-3d8251b9b020}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Runtime\External\IrrBullet">
+      <UniqueIdentifier>{41f8358e-cd54-4bea-97e7-9528f58e2c2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\LimeEngine.h">
@@ -220,6 +223,9 @@
     <ClInclude Include="include\External\GetCurrentMonitor.h">
       <Filter>Engine\Runtime\External\Monitor</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\RigidBody.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -350,6 +356,9 @@
     </ClCompile>
     <ClCompile Include="src\Objects\EditBox.cpp">
       <Filter>Engine\Runtime\Objects\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\RigidBody.cpp">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
