@@ -1,0 +1,7 @@
+--------------
+[4/1/26] Changes in beta 0.12
+- Added GLTF mesh support
+- Included lightmap material types into the Lime.Enum.MaterialType entry
+- Fixed an issue where Image2D objects could not be sized up beyond the base Texture size
+- Fixed an issue with borders on Image2D objects not setting their bounding boxes correctly after resizing
+- Moved Lime: Create New Project command to developer command prompt

@@ -374,4 +374,9 @@
   <ItemGroup>
     <CopyFileToFolders Include="resources.zip" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="changes.txt">
+      <Filter>Engine</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

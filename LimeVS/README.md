@@ -15,13 +15,17 @@ To run your Lime application, it must be successfully built. Every Lime project 
 Running **Lime: Build** will build your project, with output detailing the build process. 
 
 ## Shipping
-(To be added)
+Shipping your Lime application is as simple as this:
+- Add extensions or specific files/directories to the .ignore file in your project root.
+- Run **Lime:: Package Project** after building your finalized application. It will create a new directory, ./bin, and copy files (filtered with .ignore) there.
+- Zip ./bin and release!
 
 ## Help
 
 | Command | Action |
 | ----- | ----- |
 | **Lime: Build** | Builds your project. |
+| **Lime: Run** | Runs your project. |
 | **Lime: Build and Run** | Builds and runs your project. |
 | **Lime: Package Project** | Packages your built application. See `Shipping`. |
 | **Lime: Create New Project** | Creates a new project. |

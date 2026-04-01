@@ -12,6 +12,7 @@
     "Other"
   ],
   "activationEvents": [
+    "*",
     "onLanguage:lua"
   ],
   "main": "./out/extension.js",
@@ -43,6 +44,15 @@
         "icon": "$(new-folder)"
       }
     ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "lime",
+          "title": "Lime",
+          "icon": "icon.png"
+        }
+      ]
+    },
     "menus": {
       "editor/title": [
         {
@@ -60,10 +70,6 @@
         {
           "command": "lime.package",
           "group": "navigation@4"
-        },
-        {
-          "command": "lime.newProject",
-          "group": "navigation@5"
         }
       ]
     },
