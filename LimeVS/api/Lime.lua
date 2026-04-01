@@ -136,7 +136,6 @@ function Image2D.new() end
 
 ---@class Light
 ---@field type Lime.Enum.LightType @Sets the type of this `Light`.
----@field shadows boolean @Enables shadow-casting for this `Light`. `Mesh` objects must also have shadows enabled. (NOTE: Due to performance limitations, it is recommended to only have one main shadow-casting `Light`)
 ---@field intensity number @Scales the intensity of luminosity from this `Light`.
 ---@field radius number @The cut-off distance for light reach around its center. Not effective for directional light sources.
 ---@field falloff number @Dictates the blend from inner to outer cones for spotlights. For example, <1.0 is soft, 1.0 is linear, 2.0 is a bit harsher, 10.0+ is a very harsh cut-off.
@@ -186,7 +185,6 @@ function Material.new() end
 ---@class Mesh
 ---@field vertexColor Vec4 @Sets the color of all vertexes in this `Mesh`.
 ---@field collision boolean @Allows response to raypicks and other simple collision methods. (NOTE: This flag does not affect this `Mesh` when wrapped by a physics object.)
----@field shadows boolean @Enables shadows. If there is no light source, the scene will be dark until one is created.
 ---@field frame number @Controls the current frame of animation.
 ---@field position Vec3 @The 3D position of this object in the scene.
 ---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
@@ -1101,19 +1099,19 @@ function Material:clearTexture(layer) end
 function Material:loadShader(shader) end
 
 --- Loads a `Texture` into this `Material`.
----@overload fun(layer:number, texture:Texture): void
+---@overload fun(texture:Texture, layer:number): void
 ---@param texture Texture
 ---@return void
 function Material:loadTexture(texture) end
 
 --- Sets the scale of the mapping of an `Texture`.
----@overload fun(layer:number, scale:Vec2): void
+---@overload fun(scale:Vec2, layer:number): void
 ---@param scale Vec2
 ---@return void
 function Material:setTextureScale(scale) end
 
 --- Changes the method for `Texture` UV wrapping.
----@overload fun(layer:number, uMethod:Lime.Enum.TextureWrapType, vMethod:Lime.Enum.TextureWrapType): void
+---@overload fun(uMethod:Lime.Enum.TextureWrapType, vMethod:Lime.Enum.TextureWrapType, layer:number): void
 ---@param uMethod Lime.Enum.TextureWrapType
 ---@param vMethod Lime.Enum.TextureWrapType
 ---@return void
@@ -1170,7 +1168,7 @@ function Mesh:hasParent() end
 function Mesh:isPointInside(pos) end
 
 --- Loads a `Material` into this `Mesh`.
----@overload fun(layer:number, material:Material): boolean
+---@overload fun(material:Material, layer:number): boolean
 ---@param material Material
 ---@return boolean
 function Mesh:loadMaterial(material) end
@@ -1190,6 +1188,10 @@ function Mesh:parentTo(parent) end
 ---@return nil
 function Mesh:purge() end
 
+--- Recalculates the bounding box of this `Mesh`. This is useful for potential loading errors, where this `Mesh` stops rendering even if it is within the active `Camera`'s view.
+---@return void
+function Mesh:recalculateBoundingBox() end
+
 --- Sets `key` to `value` within this object's attributes.
 ---@param key any
 ---@param value any
@@ -1200,10 +1202,6 @@ function Mesh:setAttribute(key, value) end
 ---@param hint Lime.Enum.StorageHint
 ---@return void
 function Mesh:setStorageHint(hint) end
-
---- If shadows are enabled for this `Mesh`, this will update the projection of the shadow. Use this if light sources have moved.
----@return void
-function Mesh:updateShadow() end
 
 --- Clears this `MeshBuffer`. This will not remove itself from memory.
 ---@return void

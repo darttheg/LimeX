@@ -26,19 +26,19 @@ public:
 	void setID(int v);
 
 	Vec2 getTextureScroll(int layer = 0) const;
-	void setTextureScroll(int layer, const Vec2& coords);
+	void setTextureScroll(const Vec2& coords, int layer);
 	void setTextureScroll(const Vec2& coords);
 
-	void loadTexture(int layer, const Texture& img);
+	void loadTexture(const Texture& img, int layer);
 	void loadTexture(const Texture& img);
 	void clearTexture(int layer = 0);
 
 	Vec2 getTextureUVWrapBehavior(int layer = 0) const;
-	void setTextureUVWrapBehavior(int layer, int u, int v);
+	void setTextureUVWrapBehavior(int u, int v, int layer);
 	void setTextureUVWrapBehavior(int u, int v);
 
 	Vec2 getTextureScale(int layer = 0) const;
-	void setTextureScale(int layer, const Vec2& scale);
+	void setTextureScale(const Vec2& scale, int layer);
 	void setTextureScale(const Vec2& scale);
 
 	int getType() const;

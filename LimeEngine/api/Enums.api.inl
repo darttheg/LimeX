@@ -50,7 +50,12 @@ LIME_ENUM(MaterialType,
     LIME_ENUM_VALUE(ReflectMap, 11)
     LIME_ENUM_VALUE(LightMap, 2)
     LIME_ENUM_VALUE(LightMapAdd, 3)
-    LIME_ENUM_VALUE(LightMapDynamic, 2)
+    LIME_ENUM_VALUE(LightMapBright, 4)
+    LIME_ENUM_VALUE(LightMapBrightest, 5)
+    LIME_ENUM_VALUE(DynamicLightMap, 6)
+    LIME_ENUM_VALUE(DynamicLightMapBright, 7)
+    LIME_ENUM_VALUE(DynamicLightMapBrightest, 8)
+    LIME_ENUM_VALUE(DetailMap, 9)
 );
 
 LIME_ENUM(LightType,

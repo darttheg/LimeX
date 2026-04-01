@@ -105,7 +105,7 @@ bool Mesh::loadMeshBuffer(const MeshBuffer& mb) {
 	return true;
 }
 
-bool Mesh::loadMaterial(int layer, const Material& mat) {
+bool Mesh::loadMaterial(const Material& mat, int layer) {
 	if (!src) return false;
 
 	if (layer < 0) layer = 0;
@@ -116,7 +116,7 @@ bool Mesh::loadMaterial(int layer, const Material& mat) {
 }
 
 bool Mesh::loadMaterial(const Material& mat) {
-	return loadMaterial(0, mat);
+	return loadMaterial(mat, 0);
 }
 
 int Mesh::getMaterialCount() const {
@@ -198,6 +198,13 @@ int Mesh::getFrameCount() const {
 	return src ? src->getEndFrame() - src->getStartFrame() : 0;
 }
 
+void Mesh::recalculateBoundingBox() const {
+	if (!src || !src->getMesh()) return;
+
+	for (u32 i = 0; i < src->getMesh()->getMeshBufferCount(); ++i)
+		src->getMesh()->getMeshBuffer(i)->recalculateBoundingBox();
+}
+
 void Mesh::setFrame(int f) {
 	if (!src) return;
 	src->setCurrentFrame(f);
@@ -255,9 +262,6 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 		// Field boolean collision, Allows response to raypicks and other simple collision methods. (NOTE: This flag does not affect this `Mesh` when wrapped by a physics object.)
 		"collision", sol::property(&Mesh::getSimpleCollision, &Mesh::setSimpleCollision),
 
-		// Field boolean shadows, Enables shadows. If there is no light source, the scene will be dark until one is created.
-		"shadows", sol::property(&Mesh::getShadows, &Mesh::setShadows),
-
 		// Field number frame, Controls the current frame of animation.
 		"frame", sol::property(&Mesh::getFrame, &Mesh::setFrame)
 	);
@@ -281,12 +285,12 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 		));
 
 	// Loads a `Material` into this `Mesh`.
-	// Params number layer, Material material
+	// Params Material material, number layer
 	// Params Material material
 	// Returns boolean
 	obj.set_function("loadMaterial",
 		sol::overload(
-			sol::resolve<bool(int, const Material&)>(&Mesh::loadMaterial),
+			sol::resolve<bool(const Material&, int)>(&Mesh::loadMaterial),
 			sol::resolve<bool(const Material&)>(&Mesh::loadMaterial)
 		));
 
@@ -298,13 +302,13 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 	// Returns number
 	obj.set_function("getVertexCount", &Mesh::getVertexCount);
 
-	// If shadows are enabled for this `Mesh`, this will update the projection of the shadow. Use this if light sources have moved.
-	// Returns void
-	obj.set_function("updateShadow", &Mesh::updateShadowCasting);
-
 	// Returns the number of animation frames.
 	// Returns number
 	obj.set_function("getFrameCount", &Mesh::getFrameCount);
+
+	// Recalculates the bounding box of this `Mesh`. This is useful for potential loading errors, where this `Mesh` stops rendering even if it is within the active `Camera`'s view.
+	// Returns void
+	obj.set_function("recalculateBoundingBox", &Mesh::recalculateBoundingBox);
 
 	// Informs the graphics system of how this `Mesh` should be stored. By default, `Mesh` objects use Static. Use Dynamic (or more intensely, Stream) if the `Mesh` is updated frequently.
 	// Params Lime.Enum.StorageHint hint
@@ -321,3 +325,12 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 
 	// End Object
 }
+
+// DEPRECATED
+
+// Field boolean shadows, Enables shadows. If there is no light source, the scene will be dark until one is created.
+// "shadows", sol::property(&Mesh::getShadows, &Mesh::setShadows),
+
+// If shadows are enabled for this `Mesh`, this will update the projection of the shadow. Use this if light sources have moved.
+// Returns void
+// obj.set_function("updateShadow", &Mesh::updateShadowCasting);

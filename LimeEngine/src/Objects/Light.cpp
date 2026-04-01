@@ -176,9 +176,6 @@ void Object::LightBind::bind(lua_State* ls, RenderHelper* renh) {
 		// Field Lime.Enum.LightType type, Sets the type of this `Light`.
 		"type", sol::property(&Light::getType, &Light::setType),
 
-		// Field boolean shadows, Enables shadow-casting for this `Light`. `Mesh` objects must also have shadows enabled. (NOTE: Due to performance limitations, it is recommended to only have one main shadow-casting `Light`)
-		"shadows", sol::property(&Light::getShadows, &Light::setShadows),
-
 		// Field number intensity, Scales the intensity of luminosity from this `Light`.
 		"intensity", sol::property(&Light::getIntensity, &Light::setIntensity),
 
@@ -228,3 +225,8 @@ void Object::LightBind::bind(lua_State* ls, RenderHelper* renh) {
 
 	// End Object
 }
+
+// DEPRECATED
+
+// Field boolean shadows, Enables shadow-casting for this `Light`. `Mesh` objects must also have shadows enabled. (NOTE: Due to performance limitations, it is recommended to only have one main shadow-casting `Light`)
+// "shadows", sol::property(&Light::getShadows, &Light::setShadows),

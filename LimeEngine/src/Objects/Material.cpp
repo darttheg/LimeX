@@ -45,7 +45,7 @@ Vec2 Material::getTextureScroll(int layer) const {
 	return Vec2(m.getTranslation().X, m.getTranslation().Y);
 }
 
-void Material::setTextureScroll(int layer, const Vec2& coords) {
+void Material::setTextureScroll(const Vec2& coords, int layer) {
 	if (layer < 0) layer = 0;
 	auto& m = material->getTextureMatrix(layer);
 	m.setTextureTranslate(coords.getX(), coords.getY());
@@ -53,16 +53,16 @@ void Material::setTextureScroll(int layer, const Vec2& coords) {
 }
 
 void Material::setTextureScroll(const Vec2& coords) {
-	setTextureScroll(0, coords);
+	setTextureScroll(coords, 0);
 }
 
-void Material::loadTexture(int layer, const Texture& img) {
+void Material::loadTexture(const Texture& img, int layer) {
 	if (layer < 0) layer = 0;
 	material->setTexture(layer, img.getTexture());
 }
 
 void Material::loadTexture(const Texture& img) {
-	loadTexture(0, img);
+	loadTexture(img, 0);
 }
 
 void Material::clearTexture(int layer) {
@@ -91,7 +91,7 @@ Vec2 Material::getTextureScale(int layer) const {
 	return Vec2(m.getScale().X, m.getScale().Y);
 }
 
-void Material::setTextureScale(int layer, const Vec2& scale) {
+void Material::setTextureScale(const Vec2& scale, int layer) {
 	if (layer < 0) layer = 0;
 	auto& m = material->getTextureMatrix(layer);
 	m.setTextureScale(scale.getX(), scale.getY());
@@ -99,7 +99,7 @@ void Material::setTextureScale(int layer, const Vec2& scale) {
 }
 
 void Material::setTextureScale(const Vec2& scale) {
-	setTextureScale(0, scale);
+	setTextureScale(scale, 0);
 }
 
 int Material::getType() const {
@@ -362,12 +362,12 @@ void Object::MaterialBind::bind(lua_State* ls) {
 	obj.set_function("clearShader", &Material::clearShader);
 
 	// Loads a `Texture` into this `Material`.
-	// Params number layer, Texture texture
+	// Params Texture texture, number layer
 	// Params Texture texture
 	// Returns void
 	obj.set_function("loadTexture",
 		sol::overload(
-			sol::resolve<void(int, const Texture&)>(&Material::loadTexture),
+			sol::resolve<void(const Texture&, int)>(&Material::loadTexture),
 			sol::resolve<void(const Texture&)>(&Material::loadTexture)
 		));
 
@@ -377,7 +377,7 @@ void Object::MaterialBind::bind(lua_State* ls) {
 	obj.set_function("clearTexture", &Material::clearTexture);
 
 	// Changes the method for `Texture` UV wrapping.
-	// Params number layer, Lime.Enum.TextureWrapType uMethod, Lime.Enum.TextureWrapType vMethod
+	// Params Lime.Enum.TextureWrapType uMethod, Lime.Enum.TextureWrapType vMethod, number layer
 	// Params Lime.Enum.TextureWrapType uMethod, Lime.Enum.TextureWrapType vMethod
 	// Returns void
 	obj.set_function("setTextureWrapMethod",
@@ -387,12 +387,12 @@ void Object::MaterialBind::bind(lua_State* ls) {
 		));
 
 	// Sets the scale of the mapping of an `Texture`.
-	// Params number layer, Vec2 scale
+	// Params Vec2 scale, number layer
 	// Params Vec2 scale
 	// Returns void
 	obj.set_function("setTextureScale",
 		sol::overload(
-			sol::resolve<void(int, const Vec2&)>(&Material::setTextureScale),
+			sol::resolve<void(const Vec2&, int)>(&Material::setTextureScale),
 			sol::resolve<void(const Vec2&)>(&Material::setTextureScale)
 		));
 

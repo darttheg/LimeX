@@ -85,7 +85,12 @@ OpenGL = 5,
 ---@field ReflectMap Lime.Enum.MaterialType
 ---@field LightMap Lime.Enum.MaterialType
 ---@field LightMapAdd Lime.Enum.MaterialType
----@field LightMapDynamic Lime.Enum.MaterialType
+---@field LightMapBright Lime.Enum.MaterialType
+---@field LightMapBrightest Lime.Enum.MaterialType
+---@field DynamicLightMap Lime.Enum.MaterialType
+---@field DynamicLightMapBright Lime.Enum.MaterialType
+---@field DynamicLightMapBrightest Lime.Enum.MaterialType
+---@field DetailMap Lime.Enum.MaterialType
 Lime.Enum.MaterialType = {
 Solid = 0,
 SolidMultiply = 1,
@@ -96,7 +101,12 @@ SphereMap = 10,
 ReflectMap = 11,
 LightMap = 2,
 LightMapAdd = 3,
-LightMapDynamic = 2,
+LightMapBright = 4,
+LightMapBrightest = 5,
+DynamicLightMap = 6,
+DynamicLightMapBright = 7,
+DynamicLightMapBrightest = 8,
+DetailMap = 9,
 }
 ---@alias Lime.Enum.LightType integer
 ---@class Lime.Enum.LightTypeEnum

@@ -38,7 +38,7 @@ public:
 
     bool loadMesh(const std::string& path);
     bool loadMeshBuffer(const MeshBuffer& mb);
-    bool loadMaterial(int layer, const Material& mat);
+    bool loadMaterial(const Material& mat, int layer);
     bool loadMaterial(const Material& mat);
     int getMaterialCount() const;
 
@@ -63,6 +63,8 @@ public:
     int getFrame() const;
     void setFrame(int f);
     int getFrameCount() const;
+
+    void recalculateBoundingBox() const;
 
     void clear();
     void purge();
