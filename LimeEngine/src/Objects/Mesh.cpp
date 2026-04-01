@@ -60,13 +60,13 @@ void Mesh::setDebug(bool v) {
 bool Mesh::loadMesh(const std::string& path) {
 	if (src) {
 		if (getMesh()->getReferenceCount() == 1) // Necessary? Probably nice to know though.
-			d->Warn("This Mesh is loading a new Mesh, but the old buffer is not held elsewhere! Purge Meshes if they are to be unused.");
+			d->Warn("This Mesh is loading a new Mesh, but the old Mesh is not held elsewhere! Purge Meshes if they are to be unused.");
 
 		src->remove();
 	}
 
 	src = rh->createAnimatedMesh(rh->createMesh(path));
-	if (!src) d->Warn("Failed to create Mesh!");
+	if (!src || src->getMesh() == src->getSceneManager()->getMesh("meshes/error.obj")) return false;
 
 	setDebug(Object3D::getDebug());
 	src->setAnimationSpeed(0.0f);
