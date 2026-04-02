@@ -72,6 +72,7 @@ function loadIgnoreList(workspaceFolder: string): Set<string> {
     ".emmyrc.json",
     ".vscode",
     ".ignore",
+    "bin"
   ]);
 
   const ignorePath = path.join(workspaceFolder, ".ignore");
@@ -97,19 +98,18 @@ function isIgnored(fileName: string, ignoreList: Set<string>): boolean {
   return false;
 }
 
-function copyRecursive(src: string, dest: string, ignoreList: Set<string>, binFolder: string): void {
+function copyRecursive(src: string, dest: string, ignoreList: Set<string>): void {
   const entries = fs.readdirSync(src, { withFileTypes: true });
 
   for (const entry of entries) {
+    if (isIgnored(entry.name, ignoreList)) continue;
+
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
 
-    if (srcPath === binFolder) continue;
-    if (isIgnored(entry.name, ignoreList)) continue;
-
     if (entry.isDirectory()) {
       fs.mkdirSync(destPath, { recursive: true });
-      copyRecursive(srcPath, destPath, ignoreList, binFolder);
+      copyRecursive(srcPath, destPath, ignoreList);
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
@@ -137,7 +137,7 @@ async function packageProject(workspaceFolder: string): Promise<void> {
   if (fs.existsSync(binFolder)) fs.rmSync(binFolder, { recursive: true, force: true });
   fs.mkdirSync(binFolder);
 
-  copyRecursive(workspaceFolder, binFolder, ignoreList, binFolder);
+  copyRecursive(workspaceFolder, binFolder, ignoreList);
 
   vscode.window.showInformationMessage("Lime: Application packaged to bin/");
 }

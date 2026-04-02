@@ -98,6 +98,7 @@ function loadIgnoreList(workspaceFolder) {
         ".emmyrc.json",
         ".vscode",
         ".ignore",
+        "bin"
     ]);
     const ignorePath = path.join(workspaceFolder, ".ignore");
     if (!fs.existsSync(ignorePath))
@@ -123,18 +124,16 @@ function isIgnored(fileName, ignoreList) {
     }
     return false;
 }
-function copyRecursive(src, dest, ignoreList, binFolder) {
+function copyRecursive(src, dest, ignoreList) {
     const entries = fs.readdirSync(src, { withFileTypes: true });
     for (const entry of entries) {
-        const srcPath = path.join(src, entry.name);
-        const destPath = path.join(dest, entry.name);
-        if (srcPath === binFolder)
-            continue;
         if (isIgnored(entry.name, ignoreList))
             continue;
+        const srcPath = path.join(src, entry.name);
+        const destPath = path.join(dest, entry.name);
         if (entry.isDirectory()) {
             fs.mkdirSync(destPath, { recursive: true });
-            copyRecursive(srcPath, destPath, ignoreList, binFolder);
+            copyRecursive(srcPath, destPath, ignoreList);
         }
         else {
             fs.copyFileSync(srcPath, destPath);
@@ -161,7 +160,7 @@ async function packageProject(workspaceFolder) {
     if (fs.existsSync(binFolder))
         fs.rmSync(binFolder, { recursive: true, force: true });
     fs.mkdirSync(binFolder);
-    copyRecursive(workspaceFolder, binFolder, ignoreList, binFolder);
+    copyRecursive(workspaceFolder, binFolder, ignoreList);
     vscode.window.showInformationMessage("Lime: Application packaged to bin/");
 }
 async function createNewProject(context) {
