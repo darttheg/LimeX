@@ -13,6 +13,7 @@
 #include "Objects/Event.h"
 #include "Objects/Vec2.h"
 #include "FrameLimiter.h"
+#include "PhysicsManager.h"
 
 std::string readFile(const char* path) {
 	std::ifstream file(path);
@@ -472,6 +473,12 @@ bool Application::CreateWindows() {
 	if (!renderer->Init()) {
 		console->PostError("Failed to create rendering window", true);
 		displayMessage("Lime Init Error", "Failed to create rendering window", 1);
+		return false;
+	}
+
+	if (!renderer->InitPhysics()) {
+		console->PostError("Failed to create physics manager", true);
+		displayMessage("Lime Init Error", "Failed to create physics manager", 1);
 		return false;
 	}
 

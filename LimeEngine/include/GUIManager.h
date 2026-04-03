@@ -21,7 +21,7 @@ using namespace irr;
 // This class lays under the Renderer, as GUI parts are elements of Irrlicht.
 class GUIManager {
 public:
-	GUIManager(DebugConsole* de, Renderer* re);
+	GUIManager(Renderer* re, DebugConsole* de);
 	~GUIManager();
 
 	void SetGUIEnv(irr::gui::IGUIEnvironment* g, irr::IrrlichtDevice* downer);

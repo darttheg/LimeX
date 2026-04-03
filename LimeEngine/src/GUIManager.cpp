@@ -24,7 +24,7 @@ struct GUIManager::ButtonPair {
 	std::shared_ptr<Event> onPressed;
 };
 
-GUIManager::GUIManager(DebugConsole* de, Renderer* re) {
+GUIManager::GUIManager(Renderer* re, DebugConsole* de) {
 	d = de;
 	r = re;
 

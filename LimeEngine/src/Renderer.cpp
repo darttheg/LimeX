@@ -12,6 +12,7 @@
 #include "GUIManager.h"
 #include "QuadRenderer.h"
 #include "RenderHelper.h"
+#include "PhysicsManager.h"
 
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
@@ -35,9 +36,10 @@ Renderer::Renderer(Application* owner) {
 	d = a->GetDebugConsole();
 	w = a->GetWindow();
 	r = a->GetReceiver();
-	guiManager = new GUIManager(d, this);
+	guiManager = new GUIManager(this, d);
 	rh = new RenderHelper();
 	qr = new QuadRenderer();
+	physics = new PhysicsManager(this, d);
 }
 
 Renderer::~Renderer() {
@@ -210,7 +212,12 @@ bool Renderer::Init() {
 	isCreated = true;
 	setTextureCreationQuality(1); // Medium
 	setLightManagementType(0); // EightNearest
+
 	return true;
+}
+
+bool Renderer::InitPhysics() {
+	return physics->Init(i_device);
 }
 
 bool Renderer::Shutdown() {

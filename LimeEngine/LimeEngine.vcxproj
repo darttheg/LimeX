@@ -66,6 +66,7 @@
     <ClInclude Include="include\Objects\Vec2.h" />
     <ClInclude Include="include\Objects\Vec3.h" />
     <ClInclude Include="include\Objects\Vec4.h" />
+    <ClInclude Include="include\PhysicsManager.h" />
     <ClInclude Include="include\QuadRenderer.h" />
     <ClInclude Include="include\Receiver.h" />
     <ClInclude Include="include\Renderer.h" />
@@ -113,6 +114,7 @@
     <ClCompile Include="src\Objects\Vec2.cpp" />
     <ClCompile Include="src\Objects\Vec3.cpp" />
     <ClCompile Include="src\Objects\Vec4.cpp" />
+    <ClCompile Include="src\PhysicsManager.cpp" />
     <ClCompile Include="src\QuadRenderer.cpp" />
     <ClCompile Include="src\Receiver.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
@@ -258,15 +260,15 @@ call "$(SolutionDir)build.bat"</Command>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)thirdparty;$(ProjectDir)api;..\..\glfw-3.4.bin.WIN64\include;..\..\lua-5.4.8\src;..\..\sol2\include;..\..\irrlicht-1.8.5\include;..\..\irrKlang-1.6.0\include;..\..\freetype-master\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)thirdparty;$(ProjectDir)api;..\..\glfw-3.4.bin.WIN64\include;..\..\lua-5.4.8\src;..\..\sol2\include;..\..\irrlicht-1.8.5\include;..\..\irrKlang-1.6.0\include;..\..\freetype-master\include;..\..\bullet3-2.83.7\src;..\..\irrBullet</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>$(CoreLibraryDependencies);winmm.lib;ws2_32.lib;glfw3.lib;Lua54.lib;opengl32.lib;irrlicht.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\glfw-3.4.bin.WIN64\lib-vc2022;..\..\Lua54\x64\Release;..\..\irrlicht-1.8.5\lib\Win64-visualStudio;..\..\irrKlang-1.6.0\lib\Winx64-visualStudio;..\..\freetype-master\build\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);winmm.lib;ws2_32.lib;glfw3.lib;Lua54.lib;opengl32.lib;irrlicht.lib;freetype.lib;irrBullet.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\glfw-3.4.bin.WIN64\lib-vc2022;..\..\Lua54\x64\Release;..\..\irrlicht-1.8.5\lib\Win64-visualStudio;..\..\irrKlang-1.6.0\lib\Winx64-visualStudio;..\..\freetype-master\build\Release;..\..\bullet3-2.83.7\build\lib\Release;..\..\irrBullet\x64\Release</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>call "$(ProjectDir)compileRc.bat"

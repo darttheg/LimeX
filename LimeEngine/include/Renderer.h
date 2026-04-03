@@ -19,6 +19,7 @@ class Object2D;
 class QuadRenderer;
 class RenderHelper;
 class ShaderMaterial;
+class PhysicsManager;
 
 namespace irr {
 	class IrrlichtDevice;
@@ -61,6 +62,7 @@ public:
 	~Renderer();
 
 	bool Init();
+	bool InitPhysics();
 	bool Shutdown();
 	bool Render(bool clearBackBuffer = false, bool clearZBuffer = true);
 	void EndWholeScene() { hasBegunNewScene = false; }
@@ -175,4 +177,7 @@ private:
 
 	// GUI Environment
 	GUIManager* guiManager = nullptr;
+
+	// Physics
+	PhysicsManager* physics = nullptr;
 };
