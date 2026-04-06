@@ -14,6 +14,7 @@ class Vec3;
 class PhysicsObject;
 class IRigidBody;
 class Mesh;
+class Object3D;
 
 namespace irr {
 	class IrrlichtDevice;
@@ -30,7 +31,7 @@ public:
 	bool guardPhysicsCheck();
 
 	// Create
-	IRigidBody* createRigidBody(const Mesh& m, const Mesh& c);
+	IRigidBody* createRigidBody(const Object3D& m, const Mesh& c);
 
 	// Clean-up
 	void removeRigidBody(IRigidBody* rb);

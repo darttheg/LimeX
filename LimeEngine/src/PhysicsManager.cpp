@@ -4,6 +4,7 @@
 
 #include "Objects/Mesh.h"
 #include "Objects/Vec3.h"
+#include "Interfaces/Object3D.h"
 #include "irrBullet.h"
 
 static Renderer* r = nullptr;
@@ -52,17 +53,17 @@ bool PhysicsManager::guardPhysicsCheck() {
 	return true;
 }
 
-IRigidBody* PhysicsManager::createRigidBody(const Mesh& m, const Mesh& c) {
+IRigidBody* PhysicsManager::createRigidBody(const Object3D& m, const Mesh& c) {
 	if (!guardPhysicsCheck()) return nullptr;
 
-	irr::scene::IAnimatedMeshSceneNode* mesh = static_cast<irr::scene::IAnimatedMeshSceneNode*>(m.getNode());
+	irr::scene::ISceneNode* src = m.getNode();
 	irr::scene::IAnimatedMeshSceneNode* collision = static_cast<irr::scene::IAnimatedMeshSceneNode*>(c.getNode());
-	if (!mesh || !collision) return nullptr;
+	if (!src || !collision) return nullptr;
 
-	auto shape = new IGImpactMeshShape(mesh, collision->getMesh(), 1.0f);
+	auto shape = new IGImpactMeshShape(src, collision->getMesh(), 1.0f);
 	IRigidBody* rb = world->addRigidBody(shape);
 	rb->includeNodeOnRemoval(false);
-	rb->setSleepingThresholds(0.1, 0.1);
+	rb->setSleepingThresholds(0.5, 0.5);
 	
 	return rb;
 }

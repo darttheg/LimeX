@@ -4,6 +4,7 @@
 #include "Objects/Mesh.h"
 #include "irrBullet.h"
 #include "Objects/Vec3.h"
+#include "Interfaces/Object3D.h"
 
 #include <sol/sol.hpp>
 
@@ -20,7 +21,7 @@ irr::scene::ISceneNode* RigidBody::getNode() const {
 
 RigidBody::RigidBody(const Mesh& m) : RigidBody(m, m) {}
 
-RigidBody::RigidBody(const Mesh& m, const Mesh& c) {
+RigidBody::RigidBody(const Object3D& m, const Mesh& c) {
     rb = p->createRigidBody(m, c);
     if (rb) mesh = m.getNode();
 }
@@ -292,6 +293,7 @@ void RigidBody::setGhost(bool v) {
 }
 
 sol::object RigidBody::destroy() {
+    mesh = nullptr;
     p->removeRigidBody(rb);
     isGhost = false;
     // Store mesh pts for removing them
@@ -302,16 +304,16 @@ void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps) {
     l = ls;
 	p = ps;
 
-	// Object RigidBody, A wrapper to `Mesh` objects that allows for them to react to physics.
+	// Object RigidBody, A wrapper to `Mesh` objects that allows for them to react to physics. It can be created with a `Mesh` as its visual and collision shape, or with a custom collision shape independent of any 3D object.
 	// Inherits PhysicsObject
 
 	// Constructor Mesh base
-	// Constructor Mesh base, Mesh collision
+	// Constructor any root, Mesh collision
 
 	sol::state_view view(ls);
 	sol::usertype<RigidBody> obj = view.new_usertype<RigidBody>(
 		"RigidBody",
-		sol::constructors<RigidBody(const Mesh& m), RigidBody(const Mesh& m, const Mesh& c)>(),
+		sol::constructors<RigidBody(const Mesh& m), RigidBody(const Object3D& m, const Mesh& c)>(),
 
 		sol::base_classes, sol::bases<PhysicsObject>(),
 		sol::meta_function::type, [](const RigidBody&) { return "RigidBody"; },

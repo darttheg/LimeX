@@ -238,8 +238,8 @@ function Noise.new() end
 ---@field onInside Event @Event called when another physics object is inside this physics object.
 ---@field onExit Event @Event called when another physics object exits this physics object.
 RigidBody = RigidBody or {}
---- A wrapper to `Mesh` objects that allows for them to react to physics.
----@overload fun(base:Mesh, collision:Mesh): RigidBody
+--- A wrapper to `Mesh` objects that allows for them to react to physics. It can be created with a `Mesh` as its visual and collision shape, or with a custom collision shape independent of any 3D object.
+---@overload fun(root:any, collision:Mesh): RigidBody
 ---@param base Mesh
 ---@return RigidBody
 function RigidBody.new(base) end
@@ -1383,7 +1383,7 @@ function RigidBody:applyTorque(force, impulse) end
 ---@return void
 function RigidBody:clearForces() end
 
---- Destroys this `RigidBody`.
+--- Destroys this `RigidBody` wrapper. The underlying `Mesh` does not get destroyed in the process.
 ---@return nil
 function RigidBody:destroy() end
 

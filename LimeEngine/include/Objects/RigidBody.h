@@ -10,6 +10,7 @@ class IRigidBody;
 class btCollisionObject;
 class Mesh;
 class Vec3;
+class Object3D;
 
 namespace irr::scene {
     class ISceneNode;
@@ -21,7 +22,7 @@ public:
     irr::scene::ISceneNode* getNode() const override;
 
     RigidBody(const Mesh& m);
-    RigidBody(const Mesh& m, const Mesh& c);
+    RigidBody(const Object3D& m, const Mesh& c);
 
     bool loadMesh(const Mesh& m);
 
