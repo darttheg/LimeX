@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <unordered_map>
 #include <set>
 
 class DebugConsole;
@@ -10,7 +11,9 @@ class irrBulletWorld;
 class btCollisionObject;
 class ContactInfo;
 class Vec3;
-class PhysicsObject; // implement
+class PhysicsObject;
+class IRigidBody;
+class Mesh;
 
 namespace irr {
 	class IrrlichtDevice;
@@ -26,28 +29,31 @@ public:
 
 	bool guardPhysicsCheck();
 
-	Vec3 getGravity() const;
+	// Create
+	IRigidBody* createRigidBody(const Mesh& m, const Mesh& c);
+
+	// Clean-up
+	void removeRigidBody(IRigidBody* rb);
+
+	// Configuration
+	Vec3 getGravity();
 	void setGravity(const Vec3& grav);
-
-	bool isPaused() const;
+	bool isPaused();
 	void setPaused(bool v);
-
-	float getStepFactor() const { return stepFactor; }
+	float getStepFactor() { return stepFactor; }
 	void setStepFactor(float v) { stepFactor = v; } // Multiplier to dt
-
 	void setDebugMode(int v);
-
-	// Callbacks
-	void handleCollisions();
-	std::set<std::pair<btCollisionObject*, btCollisionObject*>> lastCollisions;
-	std::set<std::pair<btCollisionObject*, btCollisionObject*>> currentCollisions;
-	std::unordered_map<btCollisionObject*, ContactInfo> curData;
-	std::unordered_map<btCollisionObject*, PhysicsObject*> colliderPair;
-
 	void setIgnoreSameID(bool v) { collisionsIgnoreSameID = v; }
 private:
 	irrBulletWorld* world = nullptr;
 
 	float stepFactor = 1.0f;
 	bool collisionsIgnoreSameID = false;
+
+	// Callbacks
+	/*void handleCollisions();
+	std::set<std::pair<btCollisionObject*, btCollisionObject*>> lastCollisions;
+	std::set<std::pair<btCollisionObject*, btCollisionObject*>> currentCollisions;
+	std::unordered_map<btCollisionObject*, ContactInfo> curData;
+	std::unordered_map<btCollisionObject*, PhysicsObject*> colliderPair;*/
 };

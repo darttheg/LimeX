@@ -24,6 +24,9 @@ Lime.GUI = Lime.GUI or {}
 ---@field onControllerButtonReleased Event @Event called by Lime when a controller button is released. This Event is run with number `id`, Lime.Enum.Controller `button` arguments.
 Lime.Input = Lime.Input or {}
 
+---@class Lime.Physics
+Lime.Physics = Lime.Physics or {}
+
 ---@class Lime.Scene
 Lime.Scene = Lime.Scene or {}
 
@@ -214,6 +217,17 @@ Noise = Noise or {}
 ---@overload fun(seed:number, octaves:number): Noise
 ---@return Noise
 function Noise.new() end
+
+---@class RigidBody
+---@field onEnter Event @Event called when another physics object collides with this object for the first time.
+---@field onInside Event @Event called when another physics object is inside this physics object.
+---@field onExit Event @Event called when another physics object exits this physics object.
+RigidBody = RigidBody or {}
+--- A wrapper to `Mesh` objects that allows for them to react to physics.
+---@overload fun(base:Mesh, collision:Mesh): RigidBody
+---@param base Mesh
+---@return RigidBody
+function RigidBody.new(base) end
 
 ---@class Shader
 Shader = Shader or {}
@@ -770,11 +784,13 @@ function Lime.File.readFile(path) end
 ---@return boolean
 function Lime.File.writeFile(path) end
 
+--- **This function cannot be run until window creation.**  
 --- Returns true if the font `name` is loaded.
 ---@param name string
 ---@return boolean
 function Lime.GUI.isFontLoaded(name) end
 
+--- **This function cannot be run until window creation.**  
 --- Loads a Truetype font. Provide `name` to set the name manually, otherwise Lime will register the font as fontname_size. Returns the output font name.
 ---@overload fun(path:string, fontSize:number, name:string, aa:boolean?): string
 ---@param path string
@@ -783,16 +799,19 @@ function Lime.GUI.isFontLoaded(name) end
 ---@return string
 function Lime.GUI.loadTTF(path, fontSize, aa) end
 
+--- **This function cannot be run until window creation.**  
 --- Loads a bitmap font. Returns the name of this font, cut from `path`. (NOTE: `path` must be the path to a .xml file. The .xml files must be paired by an image file.)
 ---@param path string
 ---@return string
 function Lime.GUI.loadXML(path) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the default font for new GUI elements to font `name`.
 ---@param name string
 ---@return void
 function Lime.GUI.setDefaultFont(name) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the quality of all GUI elements using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
 ---@param quality Lime.Enum.Quality
 ---@return void
@@ -852,6 +871,51 @@ function Lime.Input.setMousePosition(pos) end
 ---@param visible boolean
 ---@return void
 function Lime.Input.setMouseVisible(visible) end
+
+--- **This function cannot be run until window creation.**  
+--- Returns the direction and magnitude of global gravity.
+---@return Vec3
+function Lime.Physics.getGravity() end
+
+--- **This function cannot be run until window creation.**  
+--- Returns the physics simulation step factor.
+---@return number
+function Lime.Physics.getStepFactor() end
+
+--- **This function cannot be run until window creation.**  
+--- Returns whether or not the scene's physics simulation is paused.
+---@return boolean
+function Lime.Physics.isPaused() end
+
+--- **This function cannot be run until window creation.**  
+--- Sets the physics simulation debug mode.
+---@param type Lime.Enum.PhysicsDebugType
+---@return void
+function Lime.Physics.setDebug(type) end
+
+--- **This function cannot be run until window creation.**  
+--- Sets the direction and magnitude of global gravity.
+---@param gravity Vec3
+---@return void
+function Lime.Physics.setGravity(gravity) end
+
+--- **This function cannot be run until window creation.**  
+--- Sets whether or not collisions with objects sharing the same ID should ignore one another.
+---@param ignore boolean
+---@return void
+function Lime.Physics.setIgnoreIdenticalID(ignore) end
+
+--- **This function cannot be run until window creation.**  
+--- Sets whether or not the scene's physics simulation is paused.
+---@param paused boolean
+---@return void
+function Lime.Physics.setPaused(paused) end
+
+--- **This function cannot be run until window creation.**  
+--- Sets the physics simulation step factor.
+---@param factor number
+---@return void
+function Lime.Physics.setStepFactor(factor) end
 
 --- **This function cannot be run until window creation.**  
 --- Clears the `Shader` applied to the screen, if any.
@@ -915,6 +979,30 @@ function Lime.Scene.getObjectCount() end
 --- Returns whether or not the application is actively rendering new output from the scene.
 ---@return boolean
 function Lime.Scene.isRenderingActive() end
+
+--- **This function cannot be run until window creation.**  
+--- Preloads a mesh by `path` into the scene for later use. Returns true on success or if the mesh at `path` has already been preloaded.
+---@param path string
+---@return boolean
+function Lime.Scene.preloadMesh(path) end
+
+--- **This function cannot be run until window creation.**  
+--- Preloads a texture by `path` into the scene for later use. Returns true on success or if the texture at `path` has already been preloaded.
+---@param path string
+---@return boolean
+function Lime.Scene.preloadTexture(path) end
+
+--- **This function cannot be run until window creation.**  
+--- Purges a mesh by `path` from the scene. Returns true on success or if the mesh at `path` has already been purged. `Mesh` objects referencing this mesh will use an engine-defined `Mesh` instead.
+---@param path string
+---@return boolean
+function Lime.Scene.purgeMesh(path) end
+
+--- **This function cannot be run until window creation.**  
+--- Purges a texture by `path` from the scene. Returns true on success or if the texture at `path` has already been purged. `Texture` objects referencing this texture will use an engine-defined `Texture` instead.
+---@param path string
+---@return boolean
+function Lime.Scene.purgeTexture(path) end
 
 --- **This function cannot be run until window creation.**  
 --- Sets the ambient color of the scene to `rgba`.

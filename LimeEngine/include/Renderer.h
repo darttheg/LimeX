@@ -69,6 +69,7 @@ public:
 	bool RunDevice();
 	void RenderBGPreUpdate(); // For manual rendering, render the BG just so something is showing before the update loop.
 	RenderHelper* GetRenderHelper() const { return rh; }
+	PhysicsManager* GetPhysicsManager() const { return physics; }
 
 	bool guardRenderingCheck();
 	void warnGarbageCollection(const std::string& path);
@@ -100,6 +101,8 @@ public:
 	void clearPostProcessingShader();
 	irr::scene::ICameraSceneNode* getActiveCameraNode();
 	irr::video::ITexture* createRenderTargetTexture(const Vec2& size, irr::scene::ICameraSceneNode* c);
+	bool preloadMesh(const std::string path);
+	bool preloadTexture(const std::string path);
 
 	// Preloading - Add to queue and load one mesh+texture per frame
 	// bool preloadMesh(sol::variadic_args va);
@@ -111,6 +114,8 @@ public:
 	bool removeMesh(irr::scene::IAnimatedMesh* mesh);
 	bool removeBuffer(irr::scene::IMeshBuffer* buf);
 	void clearScene(); // Dangerous, don't expose
+	bool purgeMesh(const std::string path);
+	bool purgeTexture(const std::string path);
 
 	// GUI
 	void setGUIQuality(int q);

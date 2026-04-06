@@ -40,6 +40,15 @@ LIME_ENUM(DriverType,
     LIME_ENUM_VALUE(OpenGL, 5)
 );
 
+LIME_ENUM(PhysicsDebugType,
+    LIME_ENUM_VALUE(None, 0)
+    LIME_ENUM_VALUE(BoundingBoxes, 1)
+    LIME_ENUM_VALUE(ContactPoints, 2)
+    LIME_ENUM_VALUE(Wireframe, 3)
+    LIME_ENUM_VALUE(Constraints, 4)
+    LIME_ENUM_VALUE(All, 5)
+);
+
 LIME_ENUM(MaterialType,
     LIME_ENUM_VALUE(Solid, 0)
     LIME_ENUM_VALUE(SolidMultiply, 1)

@@ -46,6 +46,11 @@ namespace Module {
 			Mesh CreateCylinderMesh(float r, float l, int polyCount = 8, bool closed = true);
 			Mesh CreatePlaneMesh(const Vec2& tileSize, const Vec2& tileCount);
 			Mesh CreatePlaneMesh(const Vec2& tileSize, const Vec2& tileCount, const Vec2& texRepeat);
+
+			bool PreloadMesh(const std::string path);
+			bool PurgeMesh(const std::string path);
+			bool PreloadTexture(const std::string path);
+			bool PurgeTexture(const std::string path);
 		}
 	}
 }

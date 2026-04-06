@@ -246,6 +246,7 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 	//if (!i_smgr->getActiveCamera()) // Is it appropriate to prematurely not render even a background?
 	//	return false;
 
+	// Step physics
 	updateFog(); // Update fog params pre-render
 
 	if (doMatchResolution && i_smgr->getActiveCamera()) {
@@ -434,6 +435,39 @@ irr::video::ITexture* Renderer::createRenderTargetTexture(const Vec2& size, irr:
 
 	rttc++;
 	return out;
+}
+
+bool Renderer::preloadMesh(const std::string path) {
+	if (!guardRenderingCheck()) return false;
+	return i_smgr->getMesh(path.c_str()) != nullptr;
+}
+
+bool Renderer::preloadTexture(const std::string path) {
+	if (!guardRenderingCheck()) return false;
+	return i_driver->getTexture(path.c_str()) != nullptr;
+}
+
+bool Renderer::purgeMesh(const std::string path) {
+	if (!guardRenderingCheck()) return false;
+	irr::scene::IMeshCache* c = i_smgr->getMeshCache();
+	if (c->getMeshByName(path.c_str())) {
+		irr::scene::IAnimatedMesh* m = c->getMeshByName(path.c_str());
+		m->drop();
+		removeMesh(m);
+		return true;
+	}
+	return false;
+}
+
+bool Renderer::purgeTexture(const std::string path) {
+	if (!guardRenderingCheck()) return false;
+	if (i_driver->findTexture(path.c_str())) {
+		irr::video::ITexture* t = i_driver->findTexture(path.c_str());
+		t->drop();
+		removeTexture(t);
+		return true;
+	}
+	return false;
 }
 
 void Renderer::addToDeletionQueue(irr::scene::ISceneNode* node) {

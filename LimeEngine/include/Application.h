@@ -21,6 +21,7 @@ class FrameLimiter;
 class RenderHelper;
 class GUIManager;
 class SoundManager;
+class PhysicsManager;
 
 struct WindowConfig {
 	int driverType = 0;
@@ -63,6 +64,7 @@ public:
 	bool IsRunning() { return running; }
 	sol::state& GetLuaState() { return *lua; }
 	SoundManager* GetSoundManager() { return soundManager; }
+	PhysicsManager* GetPhysicsManager();
 	
 	std::string GetLuaLocation();
 

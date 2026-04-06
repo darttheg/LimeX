@@ -2,6 +2,7 @@
 #include "DebugConsole.h"
 #include "Renderer.h"
 
+#include "Objects/Mesh.h"
 #include "Objects/Vec3.h"
 #include "irrBullet.h"
 
@@ -30,8 +31,28 @@ bool PhysicsManager::guardPhysicsCheck() {
 	return true;
 }
 
-Vec3 PhysicsManager::getGravity() const {
-	if (!world) return Vec3();
+IRigidBody* PhysicsManager::createRigidBody(const Mesh& m, const Mesh& c) {
+	if (!guardPhysicsCheck()) return nullptr;
+
+	irr::scene::IAnimatedMeshSceneNode* mesh = static_cast<irr::scene::IAnimatedMeshSceneNode*>(m.getNode());
+	irr::scene::IAnimatedMeshSceneNode* collision = static_cast<irr::scene::IAnimatedMeshSceneNode*>(c.getNode());
+	if (!mesh || !collision) return nullptr;
+
+	auto shape = new IGImpactMeshShape(mesh, collision->getMesh(), 0.0f);
+	IRigidBody* rb = world->addRigidBody(shape);
+	rb->includeNodeOnRemoval(false);
+	rb->setSleepingThresholds(0.5, 0.5);
+	
+	return rb;
+}
+
+void PhysicsManager::removeRigidBody(IRigidBody* rb) {
+	if (!guardPhysicsCheck()) return;
+	world->removeCollisionObject(rb, true);
+}
+
+Vec3 PhysicsManager::getGravity() {
+	if (!guardPhysicsCheck()) return Vec3();
 	btVector3 grav = world->getPointer()->getGravity();
 	return Vec3(grav.getX(), grav.getY(), grav.getZ());
 }
@@ -41,11 +62,39 @@ void PhysicsManager::setGravity(const Vec3& grav) {
 	world->setGravity(irr::core::vector3df(grav.getX(), grav.getY(), grav.getZ()));
 }
 
-bool PhysicsManager::isPaused() const {
-	return world ? world->simulationPaused() : false;
+bool PhysicsManager::isPaused() {
+	return guardPhysicsCheck() ? world->simulationPaused() : false;
 }
 
 void PhysicsManager::setPaused(bool v) {
 	if (!guardPhysicsCheck()) return;
 	world->pauseSimulation(v);
+}
+
+void PhysicsManager::setDebugMode(int v) {
+	if (!guardPhysicsCheck()) return;
+
+	irrPhysicsDebugMode out = irrPhysicsDebugMode::EPDM_NoDebug;
+	switch (v) {
+	case 1:
+		out = irrPhysicsDebugMode::EPDM_DrawAabb;
+		break;
+	case 2:
+		out = irrPhysicsDebugMode::EPDM_DrawContactPoints;
+		break;
+	case 3:
+		out = irrPhysicsDebugMode::EPDM_DrawWireframe;
+		break;
+	case 4:
+		out = irrPhysicsDebugMode::EPDM_DrawConstraints | irrPhysicsDebugMode::EPDM_DrawConstraintLimits;
+		break;
+	case 5:
+		out = irrPhysicsDebugMode::EPDM_DrawAabb | irrPhysicsDebugMode::EPDM_DrawContactPoints | irrPhysicsDebugMode::EPDM_DrawWireframe |
+			irrPhysicsDebugMode::EPDM_DrawConstraints | irrPhysicsDebugMode::EPDM_DrawConstraintLimits;
+		break;
+	default:
+		out = irrPhysicsDebugMode::EPDM_NoDebug;
+	}
+
+	world->setDebugMode(out);
 }

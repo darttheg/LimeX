@@ -138,6 +138,26 @@ void Module::Scene::bind(Application* app) {
 	// Returns Vec2
 	module.set_function("toScreenPosition", &Module::Scene::Bind::ConvertToScreenSpace);
 
+	// [+] Preloads a mesh by `path` into the scene for later use. Returns true on success or if the mesh at `path` has already been preloaded.
+	// Params string path
+	// Returns boolean
+	module.set_function("preloadMesh", &Module::Scene::Bind::PreloadMesh);
+
+	// [+] Purges a mesh by `path` from the scene. Returns true on success or if the mesh at `path` has already been purged. `Mesh` objects referencing this mesh will use an engine-defined `Mesh` instead.
+	// Params string path
+	// Returns boolean
+	module.set_function("purgeMesh", &Module::Scene::Bind::PurgeMesh);
+
+	// [+] Preloads a texture by `path` into the scene for later use. Returns true on success or if the texture at `path` has already been preloaded.
+	// Params string path
+	// Returns boolean
+	module.set_function("preloadTexture", &Module::Scene::Bind::PreloadTexture);
+
+	// [+] Purges a texture by `path` from the scene. Returns true on success or if the texture at `path` has already been purged. `Texture` objects referencing this texture will use an engine-defined `Texture` instead.
+	// Params string path
+	// Returns boolean
+	module.set_function("purgeTexture", &Module::Scene::Bind::PurgeTexture);
+
 	// [+] Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
 	// Params Vec3 startPos, Vec3 endPos, number? rayLifeMs
 	// Returns HitResult
@@ -288,4 +308,20 @@ Mesh Module::Scene::Bind::CreatePlaneMesh(const Vec2& tileSize, const Vec2& tile
 
 Mesh Module::Scene::Bind::CreatePlaneMesh(const Vec2& tileSize, const Vec2& tileCount, const Vec2& texRepeat) {
 	return rh->createPlaneMesh(tileSize, tileCount, texRepeat);
+}
+
+bool Module::Scene::Bind::PreloadMesh(const std::string path) {
+	return r->preloadMesh(path);
+}
+
+bool Module::Scene::Bind::PurgeMesh(const std::string path) {
+	return r->purgeMesh(path);
+}
+
+bool Module::Scene::Bind::PreloadTexture(const std::string path) {
+	return r->preloadTexture(path);
+}
+
+bool Module::Scene::Bind::PurgeTexture(const std::string path) {
+	return r->purgeTexture(path);
 }

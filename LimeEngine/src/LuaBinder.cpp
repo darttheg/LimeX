@@ -5,6 +5,7 @@
 // INTERFACE INCLUDES
 #include "Interfaces/Object2D.h"
 #include "Interfaces/Object3D.h"
+#include "Interfaces/PhysicsObject.h"
 //
 
 // MODULE INLCUDES
@@ -15,6 +16,7 @@
 #include "Modules/ModuleGUI.h"
 #include "Modules/ModuleSound.h"
 #include "Modules/ModuleFile.h"
+#include "Modules/ModulePhysics.h"
 //
 
 // OBJECT INCLUDES
@@ -38,6 +40,7 @@
 #include "Objects/SoundSource.h"
 #include "Objects/Noise.h"
 #include "Objects/EditBox.h"
+#include "Objects/RigidBody.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -46,6 +49,7 @@ void LuaBinder::BindAll(Application* app) {
 	// Interfaces
 	Interface::Object2DBind::bind(ls, app->GetRenderer());
 	Interface::Object3DBind::bind(ls, app->GetRenderHelper());
+	Interface::PhysicsObjectBind::bind(ls, app->GetPhysicsManager());
 
 	// Modules
 	Module::Lime::bind(app);
@@ -55,6 +59,7 @@ void LuaBinder::BindAll(Application* app) {
 	Module::GUI::bind(app);
 	Module::Sound::bind(app);
 	Module::File::bind(app);
+	Module::Physics::bind(app);
 
 	// Objects
 	Object::EventBind::bind(ls);
@@ -77,4 +82,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::SoundSourceBind::bind(ls, app->GetSoundManager(), app->GetRenderHelper());
 	Object::NoiseBind::bind(ls);
 	Object::EditBoxBind::bind(ls, app->GetRenderHelper(), app->GetGUIManager());
+	Object::RigidBodyBind::bind(ls, app->GetPhysicsManager());
 }

@@ -273,6 +273,7 @@ bool Application::Run() {
 		LimeUpdate.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); }, dt);
 		window->PollEvents();
 		soundManager->Update(dt);
+		renderer->GetPhysicsManager()->Update(dt);
 		if (!renderer->Render()) { fail = true; }
 
 		// Clean-up
@@ -318,6 +319,10 @@ RenderHelper* Application::GetRenderHelper() {
 
 GUIManager* Application::GetGUIManager() {
 	return renderer ? renderer->getGUIManager() : nullptr;
+}
+
+PhysicsManager* Application::GetPhysicsManager() {
+	return renderer ? renderer->GetPhysicsManager() : nullptr;
 }
 
 std::string Application::GetLuaLocation() {

@@ -74,6 +74,22 @@ Direct3D8 = 3,
 Direct3D9 = 4,
 OpenGL = 5,
 }
+---@alias Lime.Enum.PhysicsDebugType integer
+---@class Lime.Enum.PhysicsDebugTypeEnum
+---@field None Lime.Enum.PhysicsDebugType
+---@field BoundingBoxes Lime.Enum.PhysicsDebugType
+---@field ContactPoints Lime.Enum.PhysicsDebugType
+---@field Wireframe Lime.Enum.PhysicsDebugType
+---@field Constraints Lime.Enum.PhysicsDebugType
+---@field All Lime.Enum.PhysicsDebugType
+Lime.Enum.PhysicsDebugType = {
+None = 0,
+BoundingBoxes = 1,
+ContactPoints = 2,
+Wireframe = 3,
+Constraints = 4,
+All = 5,
+}
 ---@alias Lime.Enum.MaterialType integer
 ---@class Lime.Enum.MaterialTypeEnum
 ---@field Solid Lime.Enum.MaterialType

@@ -30,6 +30,7 @@
     <ClInclude Include="include\FrameLimiter.h" />
     <ClInclude Include="include\Interfaces\Object2D.h" />
     <ClInclude Include="include\Interfaces\Object3D.h" />
+    <ClInclude Include="include\Interfaces\PhysicsObject.h" />
     <ClInclude Include="include\Interfaces\SceneObject.h" />
     <ClInclude Include="include\LightManager.h" />
     <ClInclude Include="include\LimeEngine.h" />
@@ -38,6 +39,7 @@
     <ClInclude Include="include\Modules\ModuleGUI.h" />
     <ClInclude Include="include\Modules\ModuleInput.h" />
     <ClInclude Include="include\Modules\ModuleLime.h" />
+    <ClInclude Include="include\Modules\ModulePhysics.h" />
     <ClInclude Include="include\Modules\ModuleScene.h" />
     <ClInclude Include="include\Modules\ModuleSound.h" />
     <ClInclude Include="include\Modules\ModuleWindow.h" />
@@ -82,6 +84,7 @@
     <ClCompile Include="src\External\FontLoader.cpp" />
     <ClCompile Include="src\Interfaces\Object2D.cpp" />
     <ClCompile Include="src\Interfaces\Object3D.cpp" />
+    <ClCompile Include="src\Interfaces\PhysicsObject.cpp" />
     <ClCompile Include="src\Interfaces\SceneObject.cpp" />
     <ClCompile Include="src\LimeEngine.cpp" />
     <ClCompile Include="src\LuaBinder.cpp" />
@@ -89,6 +92,7 @@
     <ClCompile Include="src\Modules\ModuleGUI.cpp" />
     <ClCompile Include="src\Modules\ModuleInput.cpp" />
     <ClCompile Include="src\Modules\ModuleLime.cpp" />
+    <ClCompile Include="src\Modules\ModulePhysics.cpp" />
     <ClCompile Include="src\Modules\ModuleScene.cpp" />
     <ClCompile Include="src\Modules\ModuleSound.cpp" />
     <ClCompile Include="src\Modules\ModuleWindow.cpp" />

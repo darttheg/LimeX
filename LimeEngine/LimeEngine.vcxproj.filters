@@ -226,6 +226,12 @@
     <ClInclude Include="include\PhysicsManager.h">
       <Filter>Engine\Runtime\Core\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="include\Modules\ModulePhysics.h">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Interfaces\PhysicsObject.h">
+      <Filter>Engine\Runtime\Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -362,6 +368,12 @@
     </ClCompile>
     <ClCompile Include="src\PhysicsManager.cpp">
       <Filter>Engine\Runtime\Core\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\ModulePhysics.cpp">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Interfaces\PhysicsObject.cpp">
+      <Filter>Engine\Runtime\Interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
