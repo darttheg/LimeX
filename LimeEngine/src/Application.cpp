@@ -273,8 +273,7 @@ bool Application::Run() {
 		LimeUpdate.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); }, dt);
 		window->PollEvents();
 		soundManager->Update(dt);
-		renderer->GetPhysicsManager()->Update(dt);
-		if (!renderer->Render()) { fail = true; }
+		if (!renderer->Render(dt)) { fail = true; }
 
 		// Clean-up
 		updateFrameRate();

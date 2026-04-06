@@ -228,18 +228,9 @@ bool Renderer::Shutdown() {
 	return true;
 }
 
-bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
+bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	if (!guardRenderingCheck()) return false;
 	if (!isCreated || !w->getGLFWWindow()) return false;
-
-	/* Doesn't really do anything crazy
-	if (!w->isFocused()) {
-		i_device->yield();
-		return true;
-	}
-	*/
-
-	// Moved device->run to its own function to fix event receiver
 
 	if (!doRender) return true;
 
@@ -257,7 +248,6 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		i_smgr->drawAll();
 		guiManager->Render();
-		i_driver->endScene();
 	} else {
 		qr->beginInternal();
 		i_smgr->drawAll(); // Draw scene objects to rtScene
@@ -267,8 +257,11 @@ bool Renderer::Render(bool clearBackBuffer, bool clearZBuffer) {
 
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		qr->presentToWindow();
-		i_driver->endScene();
 	}
+
+	physics->Update(dt);
+
+	i_driver->endScene();
 
 	hasBegunNewScene = true;
 

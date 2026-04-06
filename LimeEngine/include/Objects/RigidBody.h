@@ -76,6 +76,8 @@ public:
     Vec3 getForward();
 
     void wakeUp(); // Wakes up sleeping object
+    bool isSleeping();
+    void setSleeping(bool v);
 
     sol::table getAttributes();
 

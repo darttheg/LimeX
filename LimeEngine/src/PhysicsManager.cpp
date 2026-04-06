@@ -8,6 +8,7 @@
 
 static Renderer* r = nullptr;
 static DebugConsole* d = nullptr;
+static irr::video::IVideoDriver* driver = nullptr;
 
 PhysicsManager::PhysicsManager(Renderer* owner, DebugConsole* debug) {
 	r = owner;
@@ -15,10 +16,30 @@ PhysicsManager::PhysicsManager(Renderer* owner, DebugConsole* debug) {
 }
 
 bool PhysicsManager::Init(irr::IrrlichtDevice* device) {
+	if (!device) return false;
 	world = createIrrBulletWorld(device, true, true);
 	if (!world) return false;
 
 	world->setGravity(irr::core::vector3df(0, -9.8, 0));
+
+	driver = device->getVideoDriver();
+
+	return true;
+}
+
+bool PhysicsManager::Update(float dt) {
+	if (!world) return false;
+
+	const btScalar fixed = 1.0f / 60.0f;
+	const int maxSubSteps = 8;
+	int out = world->stepSimulation(dt * stepFactor, maxSubSteps, fixed);
+
+	irr::video::SMaterial m;
+	m.Lighting = false;
+	driver->setMaterial(m);
+	driver->setTransform(video::ETS_WORLD, core::matrix4());
+	world->debugDrawWorld();
+	// world->debugDrawProperties(true); // Prints to console too
 
 	return true;
 }
@@ -38,10 +59,10 @@ IRigidBody* PhysicsManager::createRigidBody(const Mesh& m, const Mesh& c) {
 	irr::scene::IAnimatedMeshSceneNode* collision = static_cast<irr::scene::IAnimatedMeshSceneNode*>(c.getNode());
 	if (!mesh || !collision) return nullptr;
 
-	auto shape = new IGImpactMeshShape(mesh, collision->getMesh(), 0.0f);
+	auto shape = new IGImpactMeshShape(mesh, collision->getMesh(), 1.0f);
 	IRigidBody* rb = world->addRigidBody(shape);
 	rb->includeNodeOnRemoval(false);
-	rb->setSleepingThresholds(0.5, 0.5);
+	rb->setSleepingThresholds(0.1, 0.1);
 	
 	return rb;
 }

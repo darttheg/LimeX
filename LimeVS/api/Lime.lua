@@ -219,6 +219,21 @@ Noise = Noise or {}
 function Noise.new() end
 
 ---@class RigidBody
+---@field position Vec3 @The 3D position of this object in the scene.
+---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
+---@field friction number @Sets the friction coefficient.
+---@field anisotropicFriction Vec3 @Sets per-axis friction scaling.
+---@field mass number @Sets the mass and recalculates inertia.
+---@field sleeping boolean @Whether or not this physics object is sleeping.
+---@field ghost boolean @Sets whether or not other physics objects can pass through this object.
+---@field linearDamping number @Sets the linear damping, reducing linear velocity over time.
+---@field angularDamping number @Sets the angular damping, reducing rotational velocity over time.
+---@field elasticity number @Sets the elasticity, controlling bounciness on collision.
+---@field sleepThreshold number @Sets the velocity threshold this `RigidBody` must be below in order to trigger sleeping.
+---@field linearVelocity Vec3 @Sets the linear velocity.
+---@field angularVelocity Vec3 @Sets the angular velocity.
+---@field linearFactor Vec3 @Sets the linear factor, controlling which axes linear motion is allowed on. (0 locks, 1 allows)
+---@field angularFactor Vec3 @Sets the angular factor, controlling which axes rotation is allowed on. (0 locks, 1 allows)
 ---@field onEnter Event @Event called when another physics object collides with this object for the first time.
 ---@field onInside Event @Event called when another physics object is inside this physics object.
 ---@field onExit Event @Event called when another physics object exits this physics object.
@@ -1333,6 +1348,61 @@ function MeshBuffer:recalculateBoundingBox() end
 ---@param x number
 ---@return number
 function Noise:get(x) end
+
+--- Applies a continous force to this `RigidBody`, where `pos` is in world space.
+---@param force number
+---@param pos Vec3
+---@return void
+function RigidBody:applyForce(force, pos) end
+
+--- Applies a continous force to this `RigidBody`, where `pos` is relative to the center of this `RigidBody`.
+---@param force Vec3
+---@param pos Vec3
+---@return void
+function RigidBody:applyForceRelative(force, pos) end
+
+--- Applies an impulse to this `RigidBody`, where `pos` is in world space.
+---@param force number
+---@param pos Vec3
+---@return void
+function RigidBody:applyImpulse(force, pos) end
+
+--- Applies an impulse to this `RigidBody`, where `pos` is relative to the center of this `RigidBody`.
+---@param impulse Vec3
+---@param pos Vec3
+---@return void
+function RigidBody:applyImpulseRelative(impulse, pos) end
+
+--- Applies a torque to this `RigidBody`, where `pos` is in world space.
+---@param force Vec3
+---@param impulse bool
+---@return void
+function RigidBody:applyTorque(force, impulse) end
+
+--- Clears all forces applied to this `RigidBody`.
+---@return void
+function RigidBody:clearForces() end
+
+--- Destroys this `RigidBody`.
+---@return nil
+function RigidBody:destroy() end
+
+--- Returns the center of mass position of this `RigidBody` in world space.
+---@return Vec3
+function RigidBody:getCenterOfMass() end
+
+--- Returns the forward vector of this `RigidBody`.
+---@return Vec3
+function RigidBody:getForward() end
+
+--- Loads a new visual `Mesh` into this `RigidBody`.
+---@return boolean
+function RigidBody:loadMesh() end
+
+--- Rotates this `RigidBody` to look at a position in world space.
+---@param pos Vec3
+---@return void
+function RigidBody:lookAt(pos) end
 
 --- Returns the path to the pixel shader file loaded in this `Shader`.
 ---@return string

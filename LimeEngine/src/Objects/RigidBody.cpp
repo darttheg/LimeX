@@ -103,7 +103,7 @@ Vec3 RigidBody::getAnisotropicFriction() {
 void RigidBody::setMass(float f) {
     if (!rb) return;
 
-    btVector3 inertia;
+    btVector3 inertia(0,0,0);
     btCollisionShape* shape = rb->getPointer()->getCollisionShape();
 
     if (f > 0.0f)
@@ -178,6 +178,15 @@ void RigidBody::faceTarget(const Vec3& pos) {
 void RigidBody::wakeUp() {
     if (!rb) return;
     rb->activate(true);
+}
+
+bool RigidBody::isSleeping() {
+    return rb ? rb->isActive() : false;
+}
+
+void RigidBody::setSleeping(bool v) {
+    if (!rb) return;
+    rb->forceActivationState(v ? EActivationState::EAS_SLEEPING : EActivationState::EAS_ACTIVE);
 }
 
 void RigidBody::clearForces() {
@@ -309,13 +318,13 @@ void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps) {
 
         // Field Vec3 position, The 3D position of this object in the scene.
         "position", sol::property(
-            [](Object3D& c) { return Vec3{ [&] { return c.getPosition(); }, [&](auto v) { c.setPosition(v); } }; },
-            [](Object3D& c, const Vec3& v) { c.setPosition(v); }
+            [](RigidBody& c) { return Vec3{ [&] { return c.getPosition(); }, [&](auto v) { c.setPosition(v); } }; },
+            [](RigidBody& c, const Vec3& v) { c.setPosition(v); }
         ),
         // Field Vec3 rotation, The 3D rotation of this object in the scene in degrees.
         "rotation", sol::property(
-            [](Object3D& c) { return Vec3{ [&] { return c.getRotation(); }, [&](auto v) { c.setRotation(v); } }; },
-            [](Object3D& c, const Vec3& v) { c.setRotation(v); }
+            [](RigidBody& c) { return Vec3{ [&] { return c.getRotation(); }, [&](auto v) { c.setRotation(v); } }; },
+            [](RigidBody& c, const Vec3& v) { c.setRotation(v); }
         ),
         // Field number friction, Sets the friction coefficient.
         "friction", sol::property(&RigidBody::getFriction, &RigidBody::setFriction),
@@ -326,6 +335,8 @@ void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps) {
         ),
         // Field number mass, Sets the mass and recalculates inertia.
         "mass", sol::property(&RigidBody::getMass, &RigidBody::setMass),
+        // Field boolean sleeping, Whether or not this physics object is sleeping.
+        "sleeping", sol::property(&RigidBody::isSleeping, &RigidBody::setSleeping),
         // Field boolean ghost, Sets whether or not other physics objects can pass through this object.
         "ghost", sol::property(&RigidBody::getGhost, &RigidBody::setGhost),
         // Field number linearDamping, Sets the linear damping, reducing linear velocity over time.
@@ -362,7 +373,7 @@ void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps) {
 		return "RigidBody";
 		};
 
-    // Destroys this `RigidBody`.
+    // Destroys this `RigidBody` wrapper. The underlying `Mesh` does not get destroyed in the process.
     // Returns nil
     obj.set_function("destroy", &RigidBody::destroy);
 
@@ -377,10 +388,6 @@ void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps) {
     // Returns the center of mass position of this `RigidBody` in world space.
     // Returns Vec3
     obj.set_function("getCenterOfMass", &RigidBody::getCenterOfMass);
-
-    // Wakes up this `RigidBody` if it is sleeping.
-    // Returns void
-    obj.set_function("wake", &RigidBody::wakeUp);
 
     // Rotates this `RigidBody` to look at a position in world space.
     // Params Vec3 pos
