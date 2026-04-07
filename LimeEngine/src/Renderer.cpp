@@ -39,7 +39,7 @@ Renderer::Renderer(Application* owner) {
 	guiManager = new GUIManager(this, d);
 	rh = new RenderHelper();
 	qr = new QuadRenderer();
-	physics = new PhysicsManager(this, d);
+	physics = new PhysicsManager(this, a->GetLuaState(), d);
 }
 
 Renderer::~Renderer() {

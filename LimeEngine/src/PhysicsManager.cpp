@@ -1,19 +1,38 @@
 #include "PhysicsManager.h"
 #include "DebugConsole.h"
 #include "Renderer.h"
+#include "Objects/Event.h"
 
 #include "Objects/Mesh.h"
 #include "Objects/Vec3.h"
 #include "Interfaces/Object3D.h"
 #include "irrBullet.h"
+#include <sol/sol.hpp>
 
 static Renderer* r = nullptr;
 static DebugConsole* d = nullptr;
 static irr::video::IVideoDriver* driver = nullptr;
+static lua_State* l = nullptr;
 
-PhysicsManager::PhysicsManager(Renderer* owner, DebugConsole* debug) {
+struct ContactInfo {
+	btScalar depth;
+	btVector3 posA;
+	btVector3 posB;
+	btVector3 normalB;
+	btVector3 linearVelA;
+	btVector3 linearVelB;
+	btVector3 angularVelA;
+	btVector3 angularVelB;
+	btVector3 velocityAtPointA;
+	btVector3 velocityAtPointB;
+	btVector3 relativeVelocity;
+	btScalar normalSpeed;
+};
+
+PhysicsManager::PhysicsManager(Renderer* owner, lua_State* ls, DebugConsole* debug) {
 	r = owner;
 	d = debug;
+	l = ls;
 }
 
 bool PhysicsManager::Init(irr::IrrlichtDevice* device) {
@@ -34,6 +53,8 @@ bool PhysicsManager::Update(float dt) {
 	const btScalar fixed = 1.0f / 60.0f;
 	const int maxSubSteps = 8;
 	int out = world->stepSimulation(dt * stepFactor, maxSubSteps, fixed);
+	handleCollisions();
+	processCollisions();
 
 	irr::video::SMaterial m;
 	m.Lighting = false;
@@ -157,4 +178,136 @@ void PhysicsManager::appendToMatchedRBSrc(irr::scene::IAnimatedMesh* src, RigidB
 
 void PhysicsManager::appendToMatchedRBCol(irr::scene::IAnimatedMesh* col, RigidBody* rb) {
 	rbMappedCol[col] = rb;
+}
+
+void PhysicsManager::handleCollisions() {
+	if (!world) return;
+
+	btDispatcher* dispatcher = world->getPointer()->getDispatcher();
+	if (!dispatcher) return;
+
+	currentCollisions.clear();
+	curData.clear();
+
+	for (int i = 0; i < dispatcher->getNumManifolds(); ++i) {
+		btPersistentManifold* manifold = dispatcher->getManifoldByIndexInternal(i);
+		if (!manifold || manifold->getNumContacts() <= 0) continue;
+
+		btCollisionObject* bodyA = const_cast<btCollisionObject*>(manifold->getBody0());
+		btCollisionObject* bodyB = const_cast<btCollisionObject*>(manifold->getBody1());
+		if (!bodyA || !bodyB) continue;
+
+		auto mapA = colliderPair.find(bodyA);
+		auto mapB = colliderPair.find(bodyB);
+		if (mapA == colliderPair.end() || mapB == colliderPair.end()) continue;
+
+		PhysicsObject* physA = mapA->second;
+		PhysicsObject* physB = mapB->second;
+
+		if (collisionsIgnoreSameID) {
+			auto* nodeA = physA->getNode();
+			auto* nodeB = physB->getNode();
+			if (nodeA && nodeB && nodeA->getID() == nodeB->getID())
+				continue;
+		}
+
+		const btManifoldPoint* closest = nullptr;
+		btScalar lowestDist = BT_LARGE_FLOAT;
+
+		for (int j = 0; j < manifold->getNumContacts(); ++j) {
+			btManifoldPoint& pt = manifold->getContactPoint(j);
+
+			if (pt.getDistance() <= 0.0f && pt.getDistance() < lowestDist) {
+				lowestDist = pt.getDistance();
+				closest = &pt;
+			}
+		}
+
+		if (!closest) continue;
+		if (bodyA > bodyB) std::swap(bodyA, bodyB);
+
+		std::pair<btCollisionObject*, btCollisionObject*> pair = { bodyA, bodyB };
+		currentCollisions.insert(pair);
+
+		ContactInfo info;
+		info.depth = lowestDist;
+		info.posA = closest->getPositionWorldOnA();
+		info.posB = closest->getPositionWorldOnB();
+		info.normalB = closest->m_normalWorldOnB;
+
+		// Change when adding softbodies
+		btRigidBody* bulletA = btRigidBody::upcast(bodyA);
+		btRigidBody* bulletB = btRigidBody::upcast(bodyB);
+
+		if (bulletA) {
+			info.linearVelA = bulletA->getLinearVelocity();
+			info.angularVelA = bulletA->getAngularVelocity();
+			btVector3 relPosA = info.posA - bulletA->getWorldTransform().getOrigin();
+			info.velocityAtPointA = bulletA->getVelocityInLocalPoint(relPosA);
+		}
+
+		if (bulletB) {
+			info.linearVelB = bulletB->getLinearVelocity();
+			info.angularVelB = bulletB->getAngularVelocity();
+			btVector3 relPosB = info.posB - bulletB->getWorldTransform().getOrigin();
+			info.velocityAtPointB = bulletB->getVelocityInLocalPoint(relPosB);
+		}
+
+		info.relativeVelocity = info.velocityAtPointB - info.velocityAtPointA;
+		info.normalSpeed = info.relativeVelocity.dot(info.normalB);
+
+		curData[pair] = info;
+	}
+}
+
+void PhysicsManager::processCollisions() {
+	// Enter, Inside
+	for (const auto& pair : currentCollisions) {
+		auto aIt = colliderPair.find(pair.first);
+		auto bIt = colliderPair.find(pair.second);
+		if (aIt == colliderPair.end() || bIt == colliderPair.end()) continue;
+
+		PhysicsObject* physA = aIt->second;
+		PhysicsObject* physB = bIt->second;
+		if (!physA || !physB) continue;
+
+		auto infoIt = curData.find(pair);
+		if (infoIt == curData.end()) continue;
+
+		const ContactInfo& info = infoIt->second;
+		if (!lastCollisions.count(pair)) {
+			// Call Enter
+			physA->setCollisionInfo(info, false);
+			physB->setCollisionInfo(info, true);
+
+			physA->getEnterEvent().get()->engineRun(l, [&](const std::string& msg) { d->PostError(msg); });
+			physB->getEnterEvent().get()->engineRun(l, [&](const std::string& msg) { d->PostError(msg); });
+		} else {
+			// Call Inside
+			physA->setCollisionInfo(info, false);
+			physB->setCollisionInfo(info, true);
+
+			physA->getInsideEvent().get()->engineRun(l, [&](const std::string& msg) { d->PostError(msg); });
+			physB->getInsideEvent().get()->engineRun(l, [&](const std::string& msg) { d->PostError(msg); });
+		}
+	}
+
+	// Exit
+	for (const auto& pair : lastCollisions) {
+		if (currentCollisions.count(pair)) continue;
+
+		auto aIt = colliderPair.find(pair.first);
+		auto bIt = colliderPair.find(pair.second);
+		if (aIt == colliderPair.end() || bIt == colliderPair.end()) continue;
+
+		PhysicsObject* physA = aIt->second;
+		PhysicsObject* physB = bIt->second;
+		if (!physA || !physB) continue;
+
+		// Run Exit, doesn't have info
+		physA->getExitEvent().get()->engineRun(l, [&](const std::string& msg) { d->PostError(msg); });
+		physB->getExitEvent().get()->engineRun(l, [&](const std::string& msg) { d->PostError(msg); });
+	}
+
+	lastCollisions = currentCollisions;
 }

@@ -2,6 +2,8 @@
 #include <string>
 #include <unordered_map>
 #include <set>
+#include <map>
+#include <sol/forward.hpp>
 
 class DebugConsole;
 class Renderer;
@@ -25,9 +27,11 @@ namespace irr {
 	}
 }
 
+struct ContactInfo;
+
 class PhysicsManager {
 public:
-	PhysicsManager(Renderer* owner, DebugConsole* debug);
+	PhysicsManager(Renderer* owner, lua_State* ls, DebugConsole* debug);
 	~PhysicsManager() = default;
 
 	bool Init(irr::IrrlichtDevice* device);
@@ -67,9 +71,10 @@ private:
 	std::unordered_map<irr::scene::IAnimatedMesh*, RigidBody*> rbMappedCol;
 
 	// Callbacks
-	/*void handleCollisions();
+	void handleCollisions();
+	void processCollisions();
 	std::set<std::pair<btCollisionObject*, btCollisionObject*>> lastCollisions;
 	std::set<std::pair<btCollisionObject*, btCollisionObject*>> currentCollisions;
-	std::unordered_map<btCollisionObject*, ContactInfo> curData;
-	std::unordered_map<btCollisionObject*, PhysicsObject*> colliderPair;*/
+	std::map<std::pair<btCollisionObject*, btCollisionObject*>, ContactInfo> curData;
+	std::unordered_map<btCollisionObject*, PhysicsObject*> colliderPair; //rename
 };

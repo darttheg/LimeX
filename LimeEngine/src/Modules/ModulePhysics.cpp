@@ -60,6 +60,21 @@ void Module::Physics::bind(Application* app) {
 	module.set_function("setIgnoreIdenticalID", &Module::Physics::Bind::SetIgnoreSameID);
 
 	// End Module
+
+	// Object CollisionResult, An object that stores collision data between two physics objects.
+	// Field number depth, Penetration depth
+	// Field Vec3 posA, Contact point on physics object A
+	// Field Vec3 posB, Contact point on physics object B
+	// Field Vec3 normal, Collision normal from physics object A to B
+	// Field Vec3 linearVelocityA, Linear velocity of physics object A
+	// Field Vec3 linearVelocityB, Linear velocity of physics object B
+	// Field Vec3 angularVelocityA, Angular velocity of physics object A
+	// Field Vec3 angularVelocityB, Angular velocity of physics object B
+	// Field Vec3 velocityAtPointA, Actual velocity at physics object A contact point
+	// Field Vec3 velocityAtPointB, Actual velocity at physics object B contact point
+	// Field Vec3 relativeVelocity, velocityAtPointB - velocityAtPointA
+	// Field number normalSpeed, Impact strength where negative is moving closer and positive is moving away
+	// End Object
 }
 
 // Functions
