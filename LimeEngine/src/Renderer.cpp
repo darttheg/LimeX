@@ -539,7 +539,7 @@ bool Renderer::removeTexture(irr::video::ITexture* tex) {
 bool Renderer::removeMesh(irr::scene::IAnimatedMesh* mesh) {
 	if (!i_smgr || !mesh) return false;
 
-	bool safe = mesh->getReferenceCount() == 0;
+	bool safe = mesh->getReferenceCount() == 1;
 
 	irr::scene::IAnimatedMesh* fallback = i_smgr->getMesh("meshes/error.obj");
 
@@ -567,12 +567,12 @@ bool Renderer::removeMesh(irr::scene::IAnimatedMesh* mesh) {
 		while (!stack.empty()) {
 			ISceneNode* node = stack.getLast();
 			stack.erase(stack.size() - 1);
+			if (!node) continue;
 			for (auto* c : node->getChildren()) stack.push_back(c);
-
-			if (!node->getType() == irr::scene::ESNT_ANIMATED_MESH) continue;
+			if (node->getType() != irr::scene::ESNT_ANIMATED_MESH) continue;
 
 			auto* am = static_cast<irr::scene::IAnimatedMeshSceneNode*>(node);
-			if (am->getMesh() == mesh) {
+			if (am && am->getMesh() == mesh) {
 				am->setMesh(fallback);
 				am->setMaterialTexture(0, checkerTex);
 
@@ -581,11 +581,13 @@ bool Renderer::removeMesh(irr::scene::IAnimatedMesh* mesh) {
 				am->setMaterialFlag(irr::video::E_MATERIAL_FLAG::EMF_FOG_ENABLE, false);
 			}
 		}
+
+		physics->cleanRigidBodySource(mesh);
 	}
 
 	if (auto* cache = i_smgr->getMeshCache()) {
 		cache->removeMesh(mesh);
-		cache->clearUnusedMeshes();
+		//cache->clearUnusedMeshes();
 	}
 
 	return true;

@@ -223,9 +223,13 @@ void Mesh::clear() {
 void Mesh::purge() {
 	if (!src) return;
 	irr::scene::IAnimatedMesh* out = src->getMesh();
-
+	if (out) out->grab();
 	src->remove();
-	r->removeMesh(out);
+	src = nullptr;
+	if (out) {
+		r->removeMesh(out);
+		out->drop();
+	}
 }
 
 irr::scene::IMesh* Mesh::getMesh() const {

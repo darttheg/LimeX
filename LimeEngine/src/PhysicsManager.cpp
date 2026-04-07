@@ -64,6 +64,9 @@ IRigidBody* PhysicsManager::createRigidBody(const Object3D& m, const Mesh& c) {
 	IRigidBody* rb = world->addRigidBody(shape);
 	rb->includeNodeOnRemoval(false);
 	rb->setSleepingThresholds(0.5, 0.5);
+
+	src->grab();
+	collision->grab();
 	
 	return rb;
 }
@@ -119,4 +122,39 @@ void PhysicsManager::setDebugMode(int v) {
 	}
 
 	world->setDebugMode(out);
+}
+
+#include "Objects/RigidBody.h"
+#include <sol/sol.hpp>
+bool PhysicsManager::cleanRigidBodySource(irr::scene::IAnimatedMesh* src) {
+	if (!world || !src) return false;
+
+	RigidBody* rb = nullptr;
+	bool col = false;
+	auto s = rbMappedSrc.find(src);
+	if (s != rbMappedSrc.end()) {
+		rb = s->second;
+		rbMappedSrc.erase(src);
+	}
+
+	auto c = rbMappedCol.find(src);
+	if (c != rbMappedCol.end()) {
+		if (!rb) { rb = c->second; col = true; }
+		rbMappedCol.erase(src);
+	}
+
+	bool ok = rb != nullptr;
+	if (ok) {
+		rb->nullify();
+		rb->destroy();
+	}
+	return ok;
+}
+
+void PhysicsManager::appendToMatchedRBSrc(irr::scene::IAnimatedMesh* src, RigidBody* rb) {
+	rbMappedSrc[src] = rb;
+}
+
+void PhysicsManager::appendToMatchedRBCol(irr::scene::IAnimatedMesh* col, RigidBody* rb) {
+	rbMappedCol[col] = rb;
 }

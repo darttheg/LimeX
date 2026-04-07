@@ -290,6 +290,7 @@ Mesh RenderHelper::createCubeMesh(const Vec3& size) {
 	const irr::scene::IGeometryCreator* g = i_smgr->getGeometryCreator();
 	irr::scene::IMesh* out = g->createCubeMesh(irr::core::vector3df(size.getX(), size.getY(), size.getZ()));
 	Mesh o = Mesh(out);
+	out->drop();
 	return o;
 }
 
@@ -298,6 +299,7 @@ Mesh RenderHelper::createSphereMesh(float r, int polyCount) {
 	const irr::scene::IGeometryCreator* g = i_smgr->getGeometryCreator();
 	irr::scene::IMesh* out = g->createSphereMesh(r, polyCount, polyCount);
 	Mesh o = Mesh(out);
+	out->drop();
 	return o;
 }
 
@@ -306,6 +308,7 @@ Mesh RenderHelper::createCylinderMesh(float r, float l, int polyCount, bool clos
 	const irr::scene::IGeometryCreator* g = i_smgr->getGeometryCreator();
 	irr::scene::IMesh* out = g->createCylinderMesh(r, l, polyCount, irr::video::SColor(255), closed);
 	Mesh o = Mesh(out);
+	out->drop();
 	return o;
 }
 
@@ -314,6 +317,7 @@ Mesh RenderHelper::createPlaneMesh(const Vec2& tileSize, const Vec2& tileCount, 
 	const irr::scene::IGeometryCreator* g = i_smgr->getGeometryCreator();
 	irr::scene::IMesh* out = g->createPlaneMesh(irr::core::dimension2df(tileSize.getX(), tileSize.getY()), irr::core::dimension2du(tileCount.getX(), tileCount.getY()), 0, irr::core::dimension2df(texRepeat.getX(), texRepeat.getY()));
 	Mesh o = Mesh(out);
+	out->drop();
 	return o;
 }
 

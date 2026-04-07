@@ -1383,7 +1383,7 @@ function RigidBody:applyTorque(force, impulse) end
 ---@return void
 function RigidBody:clearForces() end
 
---- Destroys this `RigidBody` wrapper. The underlying `Mesh` does not get destroyed in the process.
+--- Destroys this `RigidBody` wrapper. It is good practice to destroy the underlying root and collision objects before destroying this `RigidBody`.
 ---@return nil
 function RigidBody:destroy() end
 

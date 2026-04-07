@@ -16,20 +16,28 @@ btCollisionObject* RigidBody::getCollisionObject() const {
 }
 
 irr::scene::ISceneNode* RigidBody::getNode() const {
-    return mesh;
+    return src;
 }
 
 RigidBody::RigidBody(const Mesh& m) : RigidBody(m, m) {}
 
 RigidBody::RigidBody(const Object3D& m, const Mesh& c) {
     rb = p->createRigidBody(m, c);
-    if (rb) mesh = m.getNode();
+    if (!rb) return;
+    src = m.getNode(); col = c.getNode();
+
+    irr::scene::IAnimatedMeshSceneNode* s = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(m.getNode());
+    if (s)
+        p->appendToMatchedRBSrc(s->getMesh(), this);
+    irr::scene::IAnimatedMeshSceneNode* cm = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(c.getNode());
+    if (cm)
+        p->appendToMatchedRBSrc(cm->getMesh(), this);
 }
 
 bool RigidBody::loadMesh(const Mesh& m) {
     if (!rb || !m.getNode()) return false;
-    mesh = m.getNode();
-    return mesh;
+    src = m.getNode();
+    return src;
 }
 
 Vec3 RigidBody::getPosition() {
@@ -293,11 +301,19 @@ void RigidBody::setGhost(bool v) {
 }
 
 sol::object RigidBody::destroy() {
-    mesh = nullptr;
+    if (src) src->drop();
+    if (col) col->drop();
+    src = nullptr;
+    col = nullptr;
     p->removeRigidBody(rb);
     isGhost = false;
     // Store mesh pts for removing them
     return sol::make_object(l, sol::nil);
+}
+
+void RigidBody::loadVisual(irr::scene::ISceneNode* visual) {
+    if (!rb) return;
+    src = visual;
 }
 
 void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps) {
@@ -375,7 +391,7 @@ void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps) {
 		return "RigidBody";
 		};
 
-    // Destroys this `RigidBody` wrapper. The underlying `Mesh` does not get destroyed in the process.
+    // Destroys this `RigidBody` wrapper. It is good practice to destroy the underlying root and collision objects before destroying this `RigidBody`.
     // Returns nil
     obj.set_function("destroy", &RigidBody::destroy);
 

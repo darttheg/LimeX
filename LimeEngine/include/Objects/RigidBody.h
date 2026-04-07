@@ -82,10 +82,14 @@ public:
 
     sol::table getAttributes();
 
+    void nullify() { src = nullptr; col = nullptr; }
     sol::object destroy();
+
+    void loadVisual(irr::scene::ISceneNode* visual);
 private:
     IRigidBody* rb = nullptr;
-    irr::scene::ISceneNode* mesh = nullptr;
+    irr::scene::ISceneNode* src = nullptr;
+    irr::scene::ISceneNode* col = nullptr;
     bool isGhost = false;
 };
 
