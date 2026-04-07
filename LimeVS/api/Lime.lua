@@ -70,6 +70,21 @@ Camera = Camera or {}
 ---@return Camera
 function Camera.new() end
 
+---@class CollisionResult
+---@field depth number @Penetration depth
+---@field posA Vec3 @Contact point on physics object A
+---@field posB Vec3 @Contact point on physics object B
+---@field normal Vec3 @Collision normal from physics object A to B
+---@field linearVelocityA Vec3 @Linear velocity of physics object A
+---@field linearVelocityB Vec3 @Linear velocity of physics object B
+---@field angularVelocityA Vec3 @Angular velocity of physics object A
+---@field angularVelocityB Vec3 @Angular velocity of physics object B
+---@field velocityAtPointA Vec3 @Actual velocity at physics object A contact point
+---@field velocityAtPointB Vec3 @Actual velocity at physics object B contact point
+---@field relativeVelocity Vec3 @velocityAtPointB - velocityAtPointA
+---@field impactSpeed number @Impact speed
+---@field attributesB table @Attributes of physics object B
+CollisionResult = CollisionResult or {}
 ---@class EditBox
 ---@field text string @The text content of this object.
 ---@field password boolean @Determines if the text content of this `EditBox` is obfuscated.
@@ -234,8 +249,8 @@ function Noise.new() end
 ---@field angularVelocity Vec3 @Sets the angular velocity.
 ---@field linearFactor Vec3 @Sets the linear factor, controlling which axes linear motion is allowed on. (0 locks, 1 allows)
 ---@field angularFactor Vec3 @Sets the angular factor, controlling which axes rotation is allowed on. (0 locks, 1 allows)
----@field onEnter Event @Event called when another physics object collides with this object for the first time.
----@field onInside Event @Event called when another physics object is inside this physics object.
+---@field onEnter Event @Event called when another physics object collides with this object for the first time. Use `:getCollisionResult()` to retrieve collision data.
+---@field onInside Event @Event called when another physics object is inside this physics object. Use `:getCollisionResult()` to retrieve collision data.
 ---@field onExit Event @Event called when another physics object exits this physics object.
 RigidBody = RigidBody or {}
 --- A wrapper to `Mesh` objects that allows for them to react to physics. It can be created with a `Mesh` as its visual and collision shape, or with a custom collision shape independent of any 3D object.
@@ -1383,13 +1398,17 @@ function RigidBody:applyTorque(force, impulse) end
 ---@return void
 function RigidBody:clearForces() end
 
---- Destroys this `RigidBody` wrapper. The underlying `Mesh` does not get destroyed in the process.
+--- Destroys this `RigidBody` wrapper. It is good practice to destroy the underlying root and collision objects before destroying this `RigidBody`.
 ---@return nil
 function RigidBody:destroy() end
 
 --- Returns the center of mass position of this `RigidBody` in world space.
 ---@return Vec3
 function RigidBody:getCenterOfMass() end
+
+--- Returns a `CollisionResult` object containing data about the current collision `Event`.
+---@return CollisionResult
+function RigidBody:getCollisionResult() end
 
 --- Returns the forward vector of this `RigidBody`.
 ---@return Vec3

@@ -79,11 +79,11 @@ public:
     void wakeUp(); // Wakes up sleeping object
     bool isSleeping();
     void setSleeping(bool v);
-
+     
     sol::table getAttributes();
 
     void nullify() { src = nullptr; col = nullptr; }
-    sol::object destroy();
+    void destroy() override;
 
     void loadVisual(irr::scene::ISceneNode* visual);
 private:

@@ -73,7 +73,8 @@ void Module::Physics::bind(Application* app) {
 	// Field Vec3 velocityAtPointA, Actual velocity at physics object A contact point
 	// Field Vec3 velocityAtPointB, Actual velocity at physics object B contact point
 	// Field Vec3 relativeVelocity, velocityAtPointB - velocityAtPointA
-	// Field number normalSpeed, Impact strength where negative is moving closer and positive is moving away
+	// Field number impactSpeed, Impact speed
+	// Field table attributesB, Attributes of physics object B
 	// End Object
 }
 

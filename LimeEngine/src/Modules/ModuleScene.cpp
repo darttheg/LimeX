@@ -268,7 +268,7 @@ sol::table Module::Scene::Bind::FireRaycast(const Vec3& start, const Vec3& end, 
 	out["normal"] = hit.normal;
 	out["objID"] = hit.objID;
 	out["matID"] = hit.matID;
-	out["attr"] = hit.attr;
+	out["attr"] = hit.attr.valid() ? hit.attr : lua.create_table();
 
 	return out;
 }

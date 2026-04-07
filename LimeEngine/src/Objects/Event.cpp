@@ -2,7 +2,7 @@
 #include "Application.h"
 #include "DebugConsole.h"
 
-static lua_State* ls;
+lua_State* ls;
 
 Event::Event() {
 }

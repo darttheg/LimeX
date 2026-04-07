@@ -1,5 +1,6 @@
 #include "PhysicsManager.h"
 #include "DebugConsole.h"
+#include "Application.h"
 #include "Renderer.h"
 #include "Objects/Event.h"
 
@@ -9,13 +10,14 @@
 #include "irrBullet.h"
 #include <sol/sol.hpp>
 
+static Application* a = nullptr;
 static Renderer* r = nullptr;
 static DebugConsole* d = nullptr;
 static irr::video::IVideoDriver* driver = nullptr;
 static lua_State* l = nullptr;
 
 struct ContactInfo {
-	btScalar depth;
+	btScalar depth = 0.0f;
 	btVector3 posA;
 	btVector3 posB;
 	btVector3 normalB;
@@ -26,13 +28,14 @@ struct ContactInfo {
 	btVector3 velocityAtPointA;
 	btVector3 velocityAtPointB;
 	btVector3 relativeVelocity;
-	btScalar normalSpeed;
+	btScalar normalSpeed = 0.0f;
+	sol::table attributesA;
+	sol::table attributesB;
 };
 
-PhysicsManager::PhysicsManager(Renderer* owner, lua_State* ls, DebugConsole* debug) {
+PhysicsManager::PhysicsManager(Renderer* owner, DebugConsole* debug) {
 	r = owner;
 	d = debug;
-	l = ls;
 }
 
 bool PhysicsManager::Init(irr::IrrlichtDevice* device) {
@@ -64,6 +67,10 @@ bool PhysicsManager::Update(float dt) {
 	// world->debugDrawProperties(true); // Prints to console too
 
 	return true;
+}
+
+void PhysicsManager::SetLuaState(lua_State* ls) {
+	l = ls;
 }
 
 bool PhysicsManager::guardPhysicsCheck() {
@@ -180,6 +187,16 @@ void PhysicsManager::appendToMatchedRBCol(irr::scene::IAnimatedMesh* col, RigidB
 	rbMappedCol[col] = rb;
 }
 
+void PhysicsManager::appendToCollisionDetection(btCollisionObject* col, PhysicsObject* phys) {
+	if (!col || !phys) return;
+	colliderPair[col] = phys;
+}
+
+void PhysicsManager::removeFromCollisionDetection(btCollisionObject* col) {
+	if (!col) return;
+	colliderPair.erase(col);
+}
+
 void PhysicsManager::handleCollisions() {
 	if (!world) return;
 
@@ -274,21 +291,26 @@ void PhysicsManager::processCollisions() {
 		auto infoIt = curData.find(pair);
 		if (infoIt == curData.end()) continue;
 
-		const ContactInfo& info = infoIt->second;
+		ContactInfo& info = infoIt->second;
+		sol::state_view view(l);
+		info.attributesA = view.create_table();
+		info.attributesB = view.create_table();
+
 		if (!lastCollisions.count(pair)) {
 			// Call Enter
 			physA->setCollisionInfo(info, false);
 			physB->setCollisionInfo(info, true);
 
-			physA->getEnterEvent().get()->engineRun(l, [&](const std::string& msg) { d->PostError(msg); });
-			physB->getEnterEvent().get()->engineRun(l, [&](const std::string& msg) { d->PostError(msg); });
+			auto eventA = physA->getEnterEvent();
+			auto eventB = physB->getEnterEvent();
+			if (eventA) eventA->engineRun([&](const std::string& msg) { d->PostError(msg); });
+			if (eventB) eventB->engineRun([&](const std::string& msg) { d->PostError(msg); });
 		} else {
 			// Call Inside
-			physA->setCollisionInfo(info, false);
-			physB->setCollisionInfo(info, true);
-
-			physA->getInsideEvent().get()->engineRun(l, [&](const std::string& msg) { d->PostError(msg); });
-			physB->getInsideEvent().get()->engineRun(l, [&](const std::string& msg) { d->PostError(msg); });
+			auto eventA = physA->getInsideEvent();
+			auto eventB = physB->getInsideEvent();
+			if (eventA) eventA->engineRun([&](const std::string& msg) { d->PostError(msg); });
+			if (eventB) eventB->engineRun([&](const std::string& msg) { d->PostError(msg); });
 		}
 	}
 
@@ -305,8 +327,10 @@ void PhysicsManager::processCollisions() {
 		if (!physA || !physB) continue;
 
 		// Run Exit, doesn't have info
-		physA->getExitEvent().get()->engineRun(l, [&](const std::string& msg) { d->PostError(msg); });
-		physB->getExitEvent().get()->engineRun(l, [&](const std::string& msg) { d->PostError(msg); });
+		auto eventA = physA->getExitEvent();
+		auto eventB = physB->getExitEvent();
+		if (eventA) eventA->engineRun([&](const std::string& msg) { d->PostError(msg); });
+		if (eventB) eventB->engineRun([&](const std::string& msg) { d->PostError(msg); });
 	}
 
 	lastCollisions = currentCollisions;

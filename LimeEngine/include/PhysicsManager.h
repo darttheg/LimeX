@@ -31,11 +31,12 @@ struct ContactInfo;
 
 class PhysicsManager {
 public:
-	PhysicsManager(Renderer* owner, lua_State* ls, DebugConsole* debug);
+	PhysicsManager(Renderer* owner, DebugConsole* debug);
 	~PhysicsManager() = default;
 
 	bool Init(irr::IrrlichtDevice* device);
 	bool Update(float dt);
+	void SetLuaState(lua_State* ls);
 
 	bool guardPhysicsCheck();
 
@@ -61,6 +62,10 @@ public:
 	bool cleanRigidBodySource(irr::scene::IAnimatedMesh* src);
 	void appendToMatchedRBSrc(irr::scene::IAnimatedMesh* src, RigidBody* rb);
 	void appendToMatchedRBCol(irr::scene::IAnimatedMesh* col, RigidBody* rb);
+
+	// Push to collision detection
+	void appendToCollisionDetection(btCollisionObject* col, PhysicsObject* phys);
+	void removeFromCollisionDetection(btCollisionObject* col);
 private:
 	irrBulletWorld* world = nullptr;
 
@@ -76,5 +81,5 @@ private:
 	std::set<std::pair<btCollisionObject*, btCollisionObject*>> lastCollisions;
 	std::set<std::pair<btCollisionObject*, btCollisionObject*>> currentCollisions;
 	std::map<std::pair<btCollisionObject*, btCollisionObject*>, ContactInfo> curData;
-	std::unordered_map<btCollisionObject*, PhysicsObject*> colliderPair; //rename
+	std::unordered_map<btCollisionObject*, PhysicsObject*> colliderPair;
 };

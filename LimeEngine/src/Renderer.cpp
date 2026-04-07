@@ -39,7 +39,7 @@ Renderer::Renderer(Application* owner) {
 	guiManager = new GUIManager(this, d);
 	rh = new RenderHelper();
 	qr = new QuadRenderer();
-	physics = new PhysicsManager(this, a->GetLuaState(), d);
+	physics = new PhysicsManager(this, d);
 }
 
 Renderer::~Renderer() {
@@ -800,6 +800,6 @@ void Renderer::setOnResize(int w, int h) {
 bool Renderer::runEventFromGUI(std::shared_ptr<Event> e, std::function<void(const std::string&)> onError) {
 	if (!e)
 		return false;
-	e.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); });
+	e.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
 	return true;
 }

@@ -5,6 +5,7 @@
 #include <functional>
 
 extern "C" { struct lua_State; }
+extern lua_State* ls;
 
 namespace Object::EventBind {
 	void bind(lua_State* l);
@@ -35,19 +36,19 @@ public:
 	}
 
 	template<class ...Args>
-	void engineRun(lua_State* L, std::function<void(const std::string&)> onError, Args&&... args);
+	void engineRun(std::function<void(const std::string&)> onError, Args&&... args);
 };
 
 template<class... Args>
-inline void Event::engineRun(lua_State* L, std::function<void(const std::string&)> onError, Args&&... args) {
+inline void Event::engineRun(std::function<void(const std::string&)> onError, Args&&... args) {
 	for (int ref : funcs) {
-		lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
-		(sol::stack::push(L, std::forward<Args>(args)), ...);
-		if (lua_pcall(L, sizeof...(Args), 0, 0) != LUA_OK) {
+		lua_rawgeti(ls, LUA_REGISTRYINDEX, ref);
+		(sol::stack::push(ls, std::forward<Args>(args)), ...);
+		if (lua_pcall(ls, sizeof...(Args), 0, 0) != LUA_OK) {
 			size_t n = 0;
-			const char* s = luaL_tolstring(L, -1, &n);
+			const char* s = luaL_tolstring(ls, -1, &n);
 			std::string msg(s, n);
-			lua_pop(L, 1);
+			lua_pop(ls, 1);
 			if (onError) onError(msg);
 		}
 	}

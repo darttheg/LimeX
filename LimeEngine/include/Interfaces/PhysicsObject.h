@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <sol/forward.hpp>
+#include <sol/sol.hpp>
 extern "C" { struct lua_State; }
 
 class PhysicsManager;
@@ -18,13 +18,16 @@ struct ContactInfo;
 // Interface for RigidBody3D and SoftBody3D
 class PhysicsObject {
 public:
-    virtual ~PhysicsObject() = default;
     virtual btCollisionObject* getCollisionObject() const = 0;
     virtual irr::scene::ISceneNode* getNode() const = 0;
+    virtual void destroy() = 0;
+    sol::object i_destroy();
 
     sol::table getCollision();
 
     void createCallbacks();
+    void insertIntoCallbacks();
+    void removeFromCallbacks();
 
     std::shared_ptr<Event> onEnter = nullptr;
     std::shared_ptr<Event> onInside = nullptr;
@@ -34,7 +37,7 @@ public:
     std::shared_ptr<Event> getInsideEvent() { return onInside; }
     std::shared_ptr<Event> getExitEvent() { return onExit; }
 
-    sol::table curCollisionInfo;
+    sol::table colInfo;
     void setCollisionInfo(ContactInfo info, bool isB);
 };
 

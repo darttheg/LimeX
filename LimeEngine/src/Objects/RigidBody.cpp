@@ -32,6 +32,9 @@ RigidBody::RigidBody(const Object3D& m, const Mesh& c) {
     irr::scene::IAnimatedMeshSceneNode* cm = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(c.getNode());
     if (cm)
         p->appendToMatchedRBSrc(cm->getMesh(), this);
+
+    PhysicsObject::createCallbacks();
+    PhysicsObject::insertIntoCallbacks();
 }
 
 bool RigidBody::loadMesh(const Mesh& m) {
@@ -300,15 +303,13 @@ void RigidBody::setGhost(bool v) {
     isGhost = v;
 }
 
-sol::object RigidBody::destroy() {
+void RigidBody::destroy() {
     if (src) src->drop();
     if (col) col->drop();
     src = nullptr;
     col = nullptr;
     p->removeRigidBody(rb);
     isGhost = false;
-    // Store mesh pts for removing them
-    return sol::make_object(l, sol::nil);
 }
 
 void RigidBody::loadVisual(irr::scene::ISceneNode* visual) {
@@ -391,10 +392,6 @@ void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps) {
 		return "RigidBody";
 		};
 
-    // Destroys this `RigidBody` wrapper. It is good practice to destroy the underlying root and collision objects before destroying this `RigidBody`.
-    // Returns nil
-    obj.set_function("destroy", &RigidBody::destroy);
-
     // Loads a new visual `Mesh` into this `RigidBody`.
     // Returns boolean
     obj.set_function("loadMesh", &RigidBody::loadMesh);
@@ -434,7 +431,7 @@ void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps) {
     // Applies an impulse to this `RigidBody`, where `pos` is in world space.
     // Params number force, Vec3 pos
     // Returns void
-    obj.set_function("applyImpulse", &RigidBody::applyImpulse);
+    obj.set_function("applyImpulse", &RigidBody::applySimpleImpulse);
 
     // Applies a torque to this `RigidBody`, where `pos` is in world space.
     // Params Vec3 force, bool impulse

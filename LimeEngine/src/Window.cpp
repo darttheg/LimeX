@@ -158,7 +158,7 @@ bool Window::Create() {
 
 	resizeEvent:;
 		r->setOnResize(width, height);
-		w->WindowResize.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); });
+		w->WindowResize.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
 	});
 
 	if (glfwRawMouseMotionSupported())

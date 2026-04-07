@@ -157,6 +157,8 @@ bool Application::RunEntry() {
 }
 
 bool Application::Init(const void* data, size_t size) {
+	// Create new Lua state
+
 	// Allocate memory for now
 	console = new DebugConsole(this);
 	window = new Window(this);
@@ -166,7 +168,6 @@ bool Application::Init(const void* data, size_t size) {
 	// Context: Without this ^, button events have to go from receiver, up to application, then through renderer to GUIManager...
 	limiter = new FrameLimiter();
 
-	// Create new Lua state
 	lua = std::make_unique<sol::state>();
 
 	if (!lua) {
@@ -212,7 +213,7 @@ bool Application::Init(const void* data, size_t size) {
 		return false;
 
 	// Run Init Event
-	LimeInit.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); });
+	LimeInit.get()->engineRun([&](const std::string& msg) { console->PostError(msg); });
 
 	if (!didInitCfg)
 		console->Warn("Lime.setInitConfig was not called. Setting one-time parameters--such as driver type--can only be done via this function.");
@@ -220,6 +221,8 @@ bool Application::Init(const void* data, size_t size) {
 	// Create device/true window using windowCfg
 	if (!CreateWindows())
 		return false;
+
+	renderer->GetPhysicsManager()->SetLuaState(lua.get()->lua_state());
 
 	if (!soundManager->Init()) {
 		console->PostError("Failed to create sound manager", true);
@@ -255,7 +258,7 @@ bool Application::Run() {
 	window->Focus();
 
 	// Run Start Event
-	LimeStart.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); });
+	LimeStart.get()->engineRun([&](const std::string& msg) { console->PostError(msg); });
 
 	renderer->RenderBGPreUpdate();
 	bool fail = false;
@@ -270,7 +273,7 @@ bool Application::Run() {
 		// Change to device->run -> update event -> render to fix event receiver
 		if (!renderer->RunDevice()) { fail = true; }
 		receiver->beginFrame();
-		LimeUpdate.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); }, dt);
+		LimeUpdate.get()->engineRun([&](const std::string& msg) { console->PostError(msg); }, dt);
 		window->PollEvents();
 		soundManager->Update(dt);
 		if (!renderer->Render(dt)) { fail = true; }
@@ -287,7 +290,7 @@ bool Application::Run() {
 		if (fail) break;
 	}
 
-	LimeEnd.get()->engineRun(GetLuaState(), [&](const std::string& msg) { console->PostError(msg); });
+	LimeEnd.get()->engineRun([&](const std::string& msg) { console->PostError(msg); });
 
 	Stop();
 	return true;

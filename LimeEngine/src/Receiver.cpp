@@ -120,12 +120,12 @@ void Receiver::handleKey(const irr::SEvent::SKeyInput& k) {
 
 	if (!wasDown && nowDown) {
 		keyboard.pressed[idx] = true;
-		InputKeyPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, idx);
+		InputKeyPressed.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, idx);
 	}
 
 	if (wasDown && !nowDown) {
 		keyboard.released[idx] = true;
-		InputKeyReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, idx);
+		InputKeyReleased.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, idx);
 	}
 
 	keyboard.repeat[idx] = nowDown && wasDown;
@@ -143,51 +143,51 @@ void Receiver::handleMouse(const irr::SEvent::SMouseInput& m) {
 	case irr::EMIE_LMOUSE_PRESSED_DOWN: // LMB pressed
 		if (!mouse.lmbDown) {
 			mouse.lmbPressed = true;
-			InputMouseButtonPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, MOUSE_LEFT);
+			InputMouseButtonPressed.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, MOUSE_LEFT);
 		}
 		mouse.lmbDown = true;
 		break;
 	case irr::EMIE_LMOUSE_LEFT_UP: // LMB released
 		if (mouse.lmbDown) {
 			mouse.lmbReleased = true;
-			InputMouseButtonReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, MOUSE_LEFT);
+			InputMouseButtonReleased.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, MOUSE_LEFT);
 		}
 		mouse.lmbDown = false;
 		break;
 	case irr::EMIE_RMOUSE_PRESSED_DOWN: // RMB pressed
 		if (!mouse.rmbDown) {
 			mouse.rmbPressed = true;
-			InputMouseButtonPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, MOUSE_RIGHT);
+			InputMouseButtonPressed.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, MOUSE_RIGHT);
 		}
 		mouse.rmbDown = true;
 		break;
 	case irr::EMIE_RMOUSE_LEFT_UP: // RMB released
 		if (mouse.rmbDown) {
 			mouse.rmbReleased = true;
-			InputMouseButtonReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, MOUSE_RIGHT);
+			InputMouseButtonReleased.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, MOUSE_RIGHT);
 		}
 		mouse.rmbDown = false;
 		break;
 	case irr::EMIE_MMOUSE_PRESSED_DOWN: // M pressed
 		if (!mouse.mDown) {
 			mouse.mPressed = true;
-			InputMouseButtonPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, MOUSE_MIDDLE);
+			InputMouseButtonPressed.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, MOUSE_MIDDLE);
 		}
 		mouse.mDown = true;
 		break;
 	case irr::EMIE_MMOUSE_LEFT_UP: // M released
 		if (mouse.mDown) {
 			mouse.mReleased = true;
-			InputMouseButtonReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, MOUSE_MIDDLE);
+			InputMouseButtonReleased.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, MOUSE_MIDDLE);
 		}
 		mouse.mDown = false;
 		break;
 	case irr::EMIE_MOUSE_WHEEL: // M scroll
 		mouse.wheel += m.Wheel;
-		InputMouseWheel.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, m.Wheel);
+		InputMouseWheel.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, m.Wheel);
 		break;
 	case irr::EMIE_MOUSE_MOVED:
-		InputMouseMoved.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, Vec2(mouse.delta.x, mouse.delta.y));
+		InputMouseMoved.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, Vec2(mouse.delta.x, mouse.delta.y));
 		break;
 	}
 }
@@ -246,7 +246,7 @@ void Receiver::pollNewJoysticks() {
 	if (newC > oldC) {
 		for (irr::u32 i = oldC; i < newC; ++i) {
 			const int32_t id = (int32_t)i;
-			InputJoystickConnect.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id);
+			InputJoystickConnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, id);
 		}
 	}
 }
@@ -259,7 +259,7 @@ void Receiver::pollDisconnectedJoysticks() {
 		const uint64_t lastSeen = it->second;
 
 		if (t - lastSeen > pulseFreq) {
-			InputJoystickDisconnect.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id);
+			InputJoystickDisconnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, id);
 
 			joystickImpl->lastSeenMs.erase(it++);
 			joystickImpl->lastJoystickState.erase(id);
@@ -332,7 +332,7 @@ void Receiver::handleJoystick(const irr::SEvent::SJoystickEvent& j) {
 
 	if (firstTime) {
 		joystickImpl->lastJoystickState[id] = j;
-		InputJoystickConnect.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id);
+		InputJoystickConnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, id);
 	}
 
 	auto& prevState = joystickImpl->lastJoystickState[id];
@@ -354,10 +354,10 @@ void Receiver::handleJoystick(const irr::SEvent::SJoystickEvent& j) {
 		const uint32_t bit = 1u << i;
 
 		if (pressedMask & bit)
-			InputJoystickButtonPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id, (int)i);
+			InputJoystickButtonPressed.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, id, (int)i);
 
 		if (releasedMask & bit)
-			InputJoystickButtonReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id, (int)i);
+			InputJoystickButtonReleased.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, id, (int)i);
 	}
 
 	uint32_t base = 32u;
@@ -380,9 +380,9 @@ void Receiver::handleJoystick(const irr::SEvent::SJoystickEvent& j) {
 
 	auto edge = [&](bool was, bool now, int virtualIndex) {
 		if (!was && now)
-			InputJoystickButtonPressed.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id, virtualIndex);
+			InputJoystickButtonPressed.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, id, virtualIndex);
 		if (was && !now)
-			InputJoystickButtonReleased.get()->engineRun(a->GetLuaState(), [&](const std::string& msg) { d->PostError(msg); }, id, virtualIndex);
+			InputJoystickButtonReleased.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, id, virtualIndex);
 		};
 
 	edge(pup, nup, (int)(base + 0)); // POV_Up
