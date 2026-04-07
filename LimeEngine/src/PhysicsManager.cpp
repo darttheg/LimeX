@@ -33,6 +33,13 @@ struct ContactInfo {
 	sol::table attributesB;
 };
 
+struct ColliderInfo {
+	irr::scene::ISceneNode* node;
+	std::shared_ptr<Event> onEnter;
+	std::shared_ptr<Event> onInside;
+	std::shared_ptr<Event> onExit;
+};
+
 PhysicsManager::PhysicsManager(Renderer* owner, DebugConsole* debug) {
 	r = owner;
 	d = debug;
@@ -187,9 +194,13 @@ void PhysicsManager::appendToMatchedRBCol(irr::scene::IAnimatedMesh* col, RigidB
 	rbMappedCol[col] = rb;
 }
 
-void PhysicsManager::appendToCollisionDetection(btCollisionObject* col, PhysicsObject* phys) {
-	if (!col || !phys) return;
-	colliderPair[col] = phys;
+void PhysicsManager::appendToCollisionDetection(btCollisionObject* col, const PhysicsObject& phys) {
+	if (!col || !phys.getCollisionObject()) return;
+	// colliderPair[col] = phys;
+	// Follow how GUIManager stores a struct of events + other info!
+
+	ColliderInfo out{ phys.getNode(), phys.onEnter, phys.onInside, phys.onExit };
+	colliderPair[col] = out;
 }
 
 void PhysicsManager::removeFromCollisionDetection(btCollisionObject* col) {
@@ -218,12 +229,12 @@ void PhysicsManager::handleCollisions() {
 		auto mapB = colliderPair.find(bodyB);
 		if (mapA == colliderPair.end() || mapB == colliderPair.end()) continue;
 
-		PhysicsObject* physA = mapA->second;
-		PhysicsObject* physB = mapB->second;
+		ColliderInfo infoA = mapA->second;
+		ColliderInfo infoB = mapB->second;
 
 		if (collisionsIgnoreSameID) {
-			auto* nodeA = physA->getNode();
-			auto* nodeB = physB->getNode();
+			auto* nodeA = infoA.node;
+			auto* nodeB = infoB.node;
 			if (nodeA && nodeB && nodeA->getID() == nodeB->getID())
 				continue;
 		}
@@ -284,33 +295,29 @@ void PhysicsManager::processCollisions() {
 		auto bIt = colliderPair.find(pair.second);
 		if (aIt == colliderPair.end() || bIt == colliderPair.end()) continue;
 
-		PhysicsObject* physA = aIt->second;
-		PhysicsObject* physB = bIt->second;
-		if (!physA || !physB) continue;
+		ColliderInfo physA = aIt->second;
+		ColliderInfo physB = bIt->second;
+		if (!physA.node || !physB.node) continue;
 
 		auto infoIt = curData.find(pair);
 		if (infoIt == curData.end()) continue;
 
 		ContactInfo& info = infoIt->second;
 		sol::state_view view(l);
-		info.attributesA = view.create_table();
+		info.attributesA = view.create_table(); // Use renderhelper get attributes
 		info.attributesB = view.create_table();
 
 		if (!lastCollisions.count(pair)) {
 			// Call Enter
-			physA->setCollisionInfo(info, false);
-			physB->setCollisionInfo(info, true);
+			//physA->setCollisionInfo(info, false);
+			//physB->setCollisionInfo(info, true);
 
-			auto eventA = physA->getEnterEvent();
-			auto eventB = physB->getEnterEvent();
-			if (eventA) eventA->engineRun([&](const std::string& msg) { d->PostError(msg); });
-			if (eventB) eventB->engineRun([&](const std::string& msg) { d->PostError(msg); });
+			physA.onEnter.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
+			physB.onEnter.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
 		} else {
 			// Call Inside
-			auto eventA = physA->getInsideEvent();
-			auto eventB = physB->getInsideEvent();
-			if (eventA) eventA->engineRun([&](const std::string& msg) { d->PostError(msg); });
-			if (eventB) eventB->engineRun([&](const std::string& msg) { d->PostError(msg); });
+			physA.onInside.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
+			physB.onInside.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
 		}
 	}
 
@@ -322,15 +329,13 @@ void PhysicsManager::processCollisions() {
 		auto bIt = colliderPair.find(pair.second);
 		if (aIt == colliderPair.end() || bIt == colliderPair.end()) continue;
 
-		PhysicsObject* physA = aIt->second;
-		PhysicsObject* physB = bIt->second;
-		if (!physA || !physB) continue;
+		ColliderInfo physA = aIt->second;
+		ColliderInfo physB = bIt->second;
+		if (!physA.node || !physB.node) continue;
 
 		// Run Exit, doesn't have info
-		auto eventA = physA->getExitEvent();
-		auto eventB = physB->getExitEvent();
-		if (eventA) eventA->engineRun([&](const std::string& msg) { d->PostError(msg); });
-		if (eventB) eventB->engineRun([&](const std::string& msg) { d->PostError(msg); });
+		physA.onExit.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
+		physB.onExit.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
 	}
 
 	lastCollisions = currentCollisions;

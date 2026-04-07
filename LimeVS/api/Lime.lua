@@ -1398,7 +1398,7 @@ function RigidBody:applyTorque(force, impulse) end
 ---@return void
 function RigidBody:clearForces() end
 
---- Destroys this `RigidBody` wrapper. It is good practice to destroy the underlying root and collision objects before destroying this `RigidBody`.
+--- Destroys this object.
 ---@return nil
 function RigidBody:destroy() end
 

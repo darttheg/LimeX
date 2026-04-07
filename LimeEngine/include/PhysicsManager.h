@@ -28,6 +28,7 @@ namespace irr {
 }
 
 struct ContactInfo;
+struct ColliderInfo;
 
 class PhysicsManager {
 public:
@@ -64,7 +65,7 @@ public:
 	void appendToMatchedRBCol(irr::scene::IAnimatedMesh* col, RigidBody* rb);
 
 	// Push to collision detection
-	void appendToCollisionDetection(btCollisionObject* col, PhysicsObject* phys);
+	void appendToCollisionDetection(btCollisionObject* col, const PhysicsObject& phys);
 	void removeFromCollisionDetection(btCollisionObject* col);
 private:
 	irrBulletWorld* world = nullptr;
@@ -81,5 +82,5 @@ private:
 	std::set<std::pair<btCollisionObject*, btCollisionObject*>> lastCollisions;
 	std::set<std::pair<btCollisionObject*, btCollisionObject*>> currentCollisions;
 	std::map<std::pair<btCollisionObject*, btCollisionObject*>, ContactInfo> curData;
-	std::unordered_map<btCollisionObject*, PhysicsObject*> colliderPair;
+	std::unordered_map<btCollisionObject*, ColliderInfo> colliderPair;
 };

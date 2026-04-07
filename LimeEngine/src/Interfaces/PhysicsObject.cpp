@@ -35,7 +35,7 @@ void PhysicsObject::createCallbacks() {
 }
 
 void PhysicsObject::insertIntoCallbacks() {
-	p->appendToCollisionDetection(getCollisionObject(), this);
+	p->appendToCollisionDetection(getCollisionObject(), *this);
 }
 
 void PhysicsObject::removeFromCallbacks() {
