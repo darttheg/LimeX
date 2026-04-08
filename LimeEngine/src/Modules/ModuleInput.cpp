@@ -35,18 +35,28 @@ void Module::Input::bind(Application* app) {
 	receiver->InputMouseMoved = std::make_shared<Event>();
 	receiver->InputMouseWheel = std::make_shared<Event>();
 
-	// Field Event onKeyPressed, Event called by Lime when a key is pressed. This Event is run with a Lime.Enum.Key `key` argument.
-	// Field Event onKeyReleased, Event called by Lime when a key is released. This Event is run with a Lime.Enum.Key `key` argument.
-	// Field Event onMouseButtonPressed, Event called by Lime when a mouse button is pressed. This Event is run with a Lime.Enum.Mouse `button` argument.
-	// Field Event onMouseButtonReleased, Event called by Lime when a mouse button is released. This Event is run with a Lime.Enum.Mouse `button` argument.
-	// Field Event onMouseMoved, Event called by Lime when a mouse is moved. This Event is run with a Vec2 `delta` argument.
-	// Field Event onMouseScroll, Event called by Lime when the mouse scroll wheel is moved. This Event is run with a number `delta` argument.
-
+	// Field Event onKeyPressed, Event called by Lime when a key is pressed.
+	// Params Lime.Enum.Key key
 	module["onKeyPressed"] = receiver->InputKeyPressed;
+
+	// Field Event onKeyReleased, Event called by Lime when a key is released.
+	// Params Lime.Enum.Key key
 	module["onKeyReleased"] = receiver->InputKeyReleased;
+
+	// Field Event onMouseButtonPressed, Event called by Lime when a mouse button is pressed.
+	// Params Lime.Enum.Mouse button
 	module["onMouseButtonPressed"] = receiver->InputMouseButtonPressed;
+
+	// Field Event onMouseButtonReleased, Event called by Lime when a mouse button is released.
+	// Params Lime.Enum.Mouse button
 	module["onMouseButtonReleased"] = receiver->InputMouseButtonReleased;
+
+	// Field Event onMouseMoved, Event called by Lime when a mouse is moved.
+	// Params Vec2 delta
 	module["onMouseMoved"] = receiver->InputMouseMoved;
+
+	// Field Event onMouseScroll, Event called by Lime when the mouse scroll wheel is moved.
+	// Params number delta
 	module["onMouseScroll"] = receiver->InputMouseWheel;
 
 	// Returns true if `key` is currently pressed.
@@ -82,14 +92,20 @@ void Module::Input::bind(Application* app) {
 	receiver->InputJoystickButtonPressed = std::make_shared<Event>();
 	receiver->InputJoystickButtonReleased = std::make_shared<Event>();
 
-	// Field Event onControllerConnected, Event called by Lime when a controller is connected. This Event is run with a number `id` argument.
-	// Field Event onControllerDisconnected, Event called by Lime when a controller is disconnected. This Event is run with a number `id` argument.
-	// Field Event onControllerButtonPressed, Event called by Lime when a controller button is pressed. This Event is run with number `id`, Lime.Enum.Controller `button` arguments.
-	// Field Event onControllerButtonReleased, Event called by Lime when a controller button is released. This Event is run with number `id`, Lime.Enum.Controller `button` arguments.
-
+	// Field Event onControllerConnected, Event called by Lime when a controller is connected.
+	// Params number id
 	module["onControllerConnected"] = receiver->InputJoystickConnect;
+
+	// Field Event onControllerDisconnected, Event called by Lime when a controller is disconnected.
+	// Params number id
 	module["onControllerDisconnected"] = receiver->InputJoystickDisconnect;
+
+	// Field Event onControllerButtonPressed, Event called by Lime when a controller button is pressed.
+	// Params number id, Lime.Enum.Controller button
 	module["onControllerButtonPressed"] = receiver->InputJoystickButtonPressed;
+
+	// Field Event onControllerButtonReleased, Event called by Lime when a controller button is released.
+	// Params number id, Lime.Enum.Controller button
 	module["onControllerButtonReleased"] = receiver->InputJoystickButtonReleased;
 
 	// Returns true if controller with id `id` has button `button` pressed down.

@@ -2,6 +2,7 @@
 #include "DebugConsole.h"
 #include "Application.h"
 #include "Renderer.h"
+#include "RenderHelper.h"
 #include "Objects/Event.h"
 
 #include "Objects/Mesh.h"
@@ -288,8 +289,35 @@ void PhysicsManager::handleCollisions() {
 	}
 }
 
+static Vec3 toVec3(btVector3 v) {
+	return Vec3(v.getX(), v.getY(), v.getZ());
+}
+
+static sol::table getResult(ContactInfo info, bool isB) {
+	sol::state_view view(l);
+	sol::table out = view.create_table();
+
+	out["depth"] = info.depth;
+	out["posA"] = !isB ? toVec3(info.posA) : toVec3(info.posB);
+	out["posB"] = isB ? toVec3(info.posA) : toVec3(info.posB);
+	out["normal"] = toVec3(info.normalB);
+	out["linearVelocityA"] = !isB ? toVec3(info.linearVelA) : toVec3(info.linearVelB);
+	out["linearVelocityB"] = isB ? toVec3(info.linearVelA) : toVec3(info.linearVelB);
+	out["angularVelocityA"] = !isB ? toVec3(info.angularVelA) : toVec3(info.angularVelB);
+	out["angularVelocityB"] = isB ? toVec3(info.angularVelA) : toVec3(info.angularVelB);
+	out["velocityAtPointA"] = !isB ? toVec3(info.velocityAtPointA) : toVec3(info.velocityAtPointB);
+	out["velocityAtPointB"] = isB ? toVec3(info.velocityAtPointA) : toVec3(info.velocityAtPointB);
+	out["relativeVelocity"] = toVec3(info.relativeVelocity);
+	out["impactSpeed"] = (0.0 > -info.normalSpeed) ? 0.0 : -info.normalSpeed;
+	out["attributesB"] = isB ? info.attributesA : info.attributesB;
+
+	return out;
+}
+
 void PhysicsManager::processCollisions() {
 	// Enter, Inside
+	RenderHelper* rh = r->GetRenderHelper();
+
 	for (const auto& pair : currentCollisions) {
 		auto aIt = colliderPair.find(pair.first);
 		auto bIt = colliderPair.find(pair.second);
@@ -304,20 +332,17 @@ void PhysicsManager::processCollisions() {
 
 		ContactInfo& info = infoIt->second;
 		sol::state_view view(l);
-		info.attributesA = view.create_table(); // Use renderhelper get attributes
-		info.attributesB = view.create_table();
+		info.attributesA = rh->getAttributes(physA.node);
+		info.attributesB = view.create_table(physB.node);
 
 		if (!lastCollisions.count(pair)) {
 			// Call Enter
-			//physA->setCollisionInfo(info, false);
-			//physB->setCollisionInfo(info, true);
-
-			physA.onEnter.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
-			physB.onEnter.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
+			physA.onEnter.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, getResult(info, false));
+			physB.onEnter.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, getResult(info, true));
 		} else {
 			// Call Inside
-			physA.onInside.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
-			physB.onInside.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
+			physA.onInside.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, getResult(info, false));
+			physB.onInside.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, getResult(info, true));
 		}
 	}
 

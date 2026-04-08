@@ -312,6 +312,62 @@ void RigidBody::destroy() {
     isGhost = false;
 }
 
+void RigidBody::applyPreset(int v) {
+    if (!rb) return;
+
+    btRigidBody* bt = rb->getPointer();
+    Vec3 gr = p->getGravity();
+    btVector3 grav = btVector3(gr.getX(), gr.getY(), gr.getZ());
+
+    switch (v) {
+    case 1: // Static
+        bt->setFriction(0.5f);
+        bt->setRestitution(0.0f);
+        bt->setDamping(0.0f, 0.0f);
+        bt->setLinearFactor(btVector3());
+        bt->setAngularFactor(btVector3());
+        break;
+    case 2: // Bouncy
+        bt->setFriction(0.3f);
+        bt->setRestitution(0.7f);
+        bt->setDamping(0.0f, 0.0f);
+        bt->setLinearFactor(btVector3(1,1,1));
+        bt->setAngularFactor(btVector3(1,1,1));
+        break;
+    case 3: // Icy
+        bt->setFriction(0.02f);
+        bt->setRestitution(0.1f);
+        bt->setDamping(0.0f, 0.0f);
+        bt->setLinearFactor(btVector3(1, 1, 1));
+        bt->setAngularFactor(btVector3(1, 1, 1));
+        break;
+    case 4: // Heavy
+        bt->setFriction(0.8f);
+        bt->setRestitution(0.0f);
+        bt->setDamping(0.2f, 0.2f);
+        bt->setGravity(btVector3(0, -30, 0));
+        bt->setLinearFactor(btVector3(1, 1, 1));
+        bt->setAngularFactor(btVector3(1, 1, 1));
+        break;
+    case 5: // Floaty
+        bt->setFriction(0.3f);
+        bt->setRestitution(0.1f);
+        bt->setDamping(0.5f, 0.5f);
+        bt->setGravity(btVector3(0, -2, 0));
+        bt->setLinearFactor(btVector3(1, 1, 1));
+        bt->setAngularFactor(btVector3(1, 1, 1));
+        break;
+    default: // Normal
+        bt->setFriction(0.5f);
+        bt->setRestitution(0.0f);
+        bt->setDamping(0.0f, 0.0f);
+        bt->setGravity(grav);
+        bt->setLinearFactor(btVector3(1, 1, 1));
+        bt->setAngularFactor(btVector3(1, 1, 1));
+        break;
+    }
+}
+
 void RigidBody::loadVisual(irr::scene::ISceneNode* visual) {
     if (!rb) return;
     src = visual;
@@ -391,6 +447,11 @@ void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps) {
 	obj[sol::meta_function::to_string] = [](const RigidBody& v) {
 		return "RigidBody";
 		};
+
+    // Applies a preset to this `RigidBody` that alters its physical properties.
+    // Params Lime.Enum.PhysicalPreset preset
+    // Returns void
+    obj.set_function("loadPreset", &RigidBody::applyPreset);
 
     // Loads a new visual `Mesh` into this `RigidBody`.
     // Returns boolean

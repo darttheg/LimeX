@@ -85,6 +85,8 @@ public:
     void nullify() { src = nullptr; col = nullptr; }
     void destroy() override;
 
+    void applyPreset(int v);
+
     void loadVisual(irr::scene::ISceneNode* visual);
 private:
     IRigidBody* rb = nullptr;

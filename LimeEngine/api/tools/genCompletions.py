@@ -21,6 +21,13 @@ class Param:
     typ: str
 
 @dataclass
+class FieldDoc:
+    name: str
+    typ: str
+    comment: Optional[str] = None
+    event_params: List[Param] = field(default_factory=list)
+
+@dataclass
 class FunctionDoc:
     owner: str
     name: str
@@ -32,12 +39,12 @@ class FunctionDoc:
 @dataclass
 class ModuleDoc:
     name: str
-    fields: List[Tuple[str, str, Optional[str]]] = field(default_factory=list)
+    fields: List[FieldDoc] = field(default_factory=list)
 
 @dataclass
 class InterfaceDoc:
     name: str
-    fields: List[Tuple[str, str, Optional[str]]] = field(default_factory=list)
+    fields: List[FieldDoc] = field(default_factory=list)
     methods: List[FunctionDoc] = field(default_factory=list)
 
 @dataclass
@@ -45,7 +52,7 @@ class ObjectDoc:
     name: str
     ctor_comment: Optional[str] = None
     inherits: List[str] = field(default_factory=list)
-    fields: List[Tuple[str, str, Optional[str]]] = field(default_factory=list)
+    fields: List[FieldDoc] = field(default_factory=list)
     ctors: List[List[Param]] = field(default_factory=list)
     operations: List[Tuple[str, str, str]] = field(default_factory=list)
 
@@ -69,7 +76,7 @@ def looks_like_type(t: str) -> bool:
 def looks_like_sig_type(t: str) -> bool:
     if not t:
         return False
-    return t in KNOWN_TYPES or "." in t or "?" in t
+    return t in KNOWN_TYPES or "." in t or "?" in t or t[0].isupper()
 
 def is_param_signature(s: str) -> bool:
     s = s.strip()
@@ -89,7 +96,7 @@ def is_param_signature(s: str) -> bool:
             return False
     return True
 
-def parse_field_decl(s: str) -> Optional[Tuple[str, str, Optional[str]]]:
+def parse_field_decl(s: str) -> Optional[FieldDoc]:
     rest = s.strip()
     comment = None
     if "," in rest:
@@ -99,7 +106,7 @@ def parse_field_decl(s: str) -> Optional[Tuple[str, str, Optional[str]]]:
     tokens = rest.split()
     if len(tokens) < 2:
         return None
-    return (tokens[1].strip(), tokens[0].strip(), comment)
+    return FieldDoc(name=tokens[1].strip(), typ=tokens[0].strip(), comment=comment)
 
 def sig_key(params: List[Param]) -> Tuple[Tuple[str, str], ...]:
     return tuple((p.name, p.typ) for p in params)
@@ -146,16 +153,28 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, Interfac
     pending_doc: List[str] = []
     pending_overloads: List[List[Param]] = []
     pending_returns: Optional[str] = None
+    pending_event_field: Optional[FieldDoc] = None
 
     comment_re = re.compile(r'^\s*//\s?(.*)$')
     bind_func_re = re.compile(r'\.set_function\s*\(\s*"([^"]+)"')
     module_field_assign_re = re.compile(r'\bmodule\s*\[\s*"([^"]+)"\s*\]\s*=')
 
     def reset_pending():
-        nonlocal pending_doc, pending_overloads, pending_returns
+        nonlocal pending_doc, pending_overloads, pending_returns, pending_event_field
         pending_doc = []
         pending_overloads = []
         pending_returns = None
+        pending_event_field = None
+
+    def add_field_to_current(decl: FieldDoc):
+        nonlocal pending_event_field
+        if current_module:
+            modules[current_module].fields.append(decl)
+        elif current_interface:
+            current_interface.fields.append(decl)
+        elif current_object:
+            current_object.fields.append(decl)
+        pending_event_field = decl if decl.typ == "Event" else None
 
     for cpp in sorted([p for p in src.rglob("*.cpp") if p.is_file()]):
         try:
@@ -219,29 +238,19 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, Interfac
                     inh = parse_inherits_line(s)
                     if inh:
                         current_object.inherits = inh
+                        pending_event_field = None
                         continue
 
-                if current_module and s.startswith("Field "):
+                if (current_module or current_interface or current_object) and s.startswith("Field "):
                     decl = parse_field_decl(s[len("Field "):])
                     if decl:
-                        modules[current_module].fields.append(decl)
-                    continue
-
-                if current_interface and s.startswith("Field "):
-                    decl = parse_field_decl(s[len("Field "):])
-                    if decl:
-                        current_interface.fields.append(decl)
-                    continue
-
-                if current_object and s.startswith("Field "):
-                    decl = parse_field_decl(s[len("Field "):])
-                    if decl:
-                        current_object.fields.append(decl)
+                        add_field_to_current(decl)
                     continue
 
                 if current_object and s.startswith("Constructor"):
                     rest = s[len("Constructor"):].strip()
                     current_object.ctors.append(parse_params(rest) if rest else [])
+                    pending_event_field = None
                     continue
 
                 if current_object and s.startswith("Operation "):
@@ -255,7 +264,22 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, Interfac
                         rtype, operand, sym = tokens[0], tokens[1], tokens[2]
                         if sym in OP_MAP:
                             current_object.operations.append((rtype, operand, sym))
+                    pending_event_field = None
                     continue
+
+                if pending_event_field and s == "Params":
+                    pending_event_field.event_params = []
+                    continue
+
+                if pending_event_field and s.startswith("Params "):
+                    pending_event_field.event_params = parse_params(s[len("Params "):].strip())
+                    continue
+
+                if pending_event_field and is_param_signature(s):
+                    pending_event_field.event_params = parse_params(s)
+                    continue
+
+                pending_event_field = None
 
                 if s.startswith("Returns "):
                     rtype, rdoc = parse_returns_line(s)
@@ -280,6 +304,8 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, Interfac
                 if s:
                     pending_doc.append(s.rstrip())
                 continue
+
+            pending_event_field = None
 
             if current_interface:
                 fm = bind_func_re.search(raw)
@@ -321,8 +347,8 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, Interfac
                     key = am.group(1).strip()
                     if key:
                         md = modules.setdefault(current_module, ModuleDoc(name=current_module))
-                        if not any(n == key for (n, _, _) in md.fields):
-                            md.fields.append((key, "any", None))
+                        if not any(f.name == key for f in md.fields):
+                            md.fields.append(FieldDoc(name=key, typ="any", comment=None))
                     continue
 
     objects = [objects_by_name[k] for k in sorted(objects_by_name.keys())]
@@ -340,8 +366,34 @@ def fn_sig(params: List[Param]) -> str:
         parts.append(f"...:{p.typ}" if p.name == "..." else f"{p.name}:{p.typ}")
     return ", ".join(parts)
 
-def field_line(name: str, typ: str, comment: Optional[str]) -> str:
-    return f"---@field {name} {typ} @{comment}" if comment else f"---@field {name} {typ}"
+def callback_sig(params: List[Param]) -> str:
+    parts: List[str] = []
+    for p in params:
+        parts.append(f"{p.name}: {p.typ}" if p.name != "..." else f"...: {p.typ}")
+    return ", ".join(parts)
+
+def sanitize_ident(s: str) -> str:
+    cleaned = re.sub(r"[^0-9A-Za-z_]", "_", s)
+    if cleaned and cleaned[0].isdigit():
+        cleaned = "_" + cleaned
+    return cleaned or "Generated"
+
+def pascal_case(s: str) -> str:
+    parts = re.split(r"[^0-9A-Za-z]+", s)
+    out = "".join(part[:1].upper() + part[1:] for part in parts if part)
+    if out and out[0].isdigit():
+        out = "_" + out
+    return out or "Generated"
+
+def event_alias_name(owner: str, field_name: str) -> str:
+    return f"{pascal_case(field_name)}Callback"
+
+def event_class_name(owner: str, field_name: str) -> str:
+    return f"{pascal_case(field_name)}Event"
+
+def field_line(owner: str, fld: FieldDoc) -> str:
+    typ = event_class_name(owner, fld.name) if fld.typ == "Event" else fld.typ
+    return f"---@field {fld.name} {typ} @{fld.comment}" if fld.comment else f"---@field {fld.name} {typ}"
 
 DOC_TAGS = {
     "+": "**This function cannot be run until window creation.**",
@@ -349,14 +401,47 @@ DOC_TAGS = {
     "x": "**DEPRECATED**",
 }
 
+def append_event_defs(out: List[str], owner: str, fields: List[FieldDoc], emitted: set) -> None:
+    for fld in fields:
+        if fld.typ != "Event":
+            continue
+        cls = event_class_name(owner, fld.name)
+        if cls in emitted:
+            continue
+        emitted.add(cls)
+        alias = event_alias_name(owner, fld.name)
+        sig = callback_sig(fld.event_params)
+        out.append(f"---@alias {alias} fun({sig})" if sig else f"---@alias {alias} fun()")
+        out.append(f"---@class {cls} : Event")
+        if fld.comment:
+            out.append(f"--- {fld.comment}")
+        out.append(f"{cls} = {cls} or {{}}")
+        out.append(f"---@param callback {alias}")
+        out.append(f"function {cls}:hook(callback) end")
+        out.append("")
+
 def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc], objects: List[ObjectDoc], functions: List[FunctionDoc]) -> str:
     out: List[str] = []
+    emitted_event_defs = set()
+
+    for mname in sorted(modules.keys()):
+        append_event_defs(out, mname, modules[mname].fields, emitted_event_defs)
+
+    for iname in sorted(interfaces.keys()):
+        append_event_defs(out, iname, interfaces[iname].fields, emitted_event_defs)
+
+    for obj in objects:
+        append_event_defs(out, obj.name, obj.fields, emitted_event_defs)
+        for iname in obj.inherits:
+            idef = interfaces.get(iname)
+            if idef:
+                append_event_defs(out, obj.name, idef.fields, emitted_event_defs)
 
     for mname in sorted(modules.keys()):
         md = modules[mname]
         out.append(f"---@class {mname}")
-        for fname, ftyp, fcomment in md.fields:
-            out.append(field_line(fname, ftyp, fcomment))
+        for fld in md.fields:
+            out.append(field_line(mname, fld))
         out.append(f"{mname} = {mname} or {{}}")
         out.append("")
 
@@ -367,19 +452,19 @@ def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc],
         out.append(f"---@class {obj.name}")
 
         field_seen = set()
-        for name, typ, comment in obj.fields:
-            field_seen.add(name)
-            out.append(field_line(name, typ, comment))
+        for fld in obj.fields:
+            field_seen.add(fld.name)
+            out.append(field_line(obj.name, fld))
 
         for iname in obj.inherits:
             idef = interfaces.get(iname)
             if not idef:
                 continue
-            for name, typ, comment in idef.fields:
-                if name in field_seen:
+            for fld in idef.fields:
+                if fld.name in field_seen:
                     continue
-                field_seen.add(name)
-                out.append(field_line(name, typ, comment))
+                field_seen.add(fld.name)
+                out.append(field_line(obj.name, fld))
 
         for rtype, operand, sym in obj.operations:
             out.append(f"---@operator {OP_MAP[sym]}({operand}): {rtype}")

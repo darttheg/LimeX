@@ -28,6 +28,22 @@ Warning = 1,
 Message = 2,
 Information = 3,
 }
+---@alias Lime.Enum.PhysicalPreset integer
+---@class Lime.Enum.PhysicalPresetEnum
+---@field Default Lime.Enum.PhysicalPreset
+---@field Static Lime.Enum.PhysicalPreset
+---@field Bouncy Lime.Enum.PhysicalPreset
+---@field Icy Lime.Enum.PhysicalPreset
+---@field Heavy Lime.Enum.PhysicalPreset
+---@field Floaty Lime.Enum.PhysicalPreset
+Lime.Enum.PhysicalPreset = {
+Default = 0,
+Static = 1,
+Bouncy = 2,
+Icy = 3,
+Heavy = 4,
+Floaty = 5,
+}
 ---@alias Lime.Enum.Cursor integer
 ---@class Lime.Enum.CursorEnum
 ---@field Normal Lime.Enum.Cursor

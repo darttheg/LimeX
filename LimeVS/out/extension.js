@@ -216,8 +216,9 @@ async function checkMissingDlls(context, workspaceFolder) {
         .filter(e => e.isFile() && e.name.endsWith(".dll"))
         .map(e => e.name)
         .filter(name => {
-        const destDir = name.startsWith("ikp") ? workspaceFolder : path.join(workspaceFolder, "lib");
-        return !fs.existsSync(path.join(destDir, name));
+        const inRoot = fs.existsSync(path.join(workspaceFolder, name));
+        const inLib = fs.existsSync(path.join(workspaceFolder, "lib", name));
+        return !(inRoot || inLib);
     });
     if (missingDlls.length === 0)
         return;

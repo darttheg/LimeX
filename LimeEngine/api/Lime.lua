@@ -1,8 +1,148 @@
+---@alias OnInitCallback fun()
+---@class OnInitEvent : Event
+--- Event called by Lime prior to initializing the window.
+OnInitEvent = OnInitEvent or {}
+---@param callback OnInitCallback
+function OnInitEvent:hook(callback) end
+
+---@alias OnStartCallback fun()
+---@class OnStartEvent : Event
+--- Event called by Lime following window creation and rendering services are available.
+OnStartEvent = OnStartEvent or {}
+---@param callback OnStartCallback
+function OnStartEvent:hook(callback) end
+
+---@alias OnUpdateCallback fun(dt: number)
+---@class OnUpdateEvent : Event
+--- Event called by Lime every rendering frame. This Event is run with a number `dt` argument.
+OnUpdateEvent = OnUpdateEvent or {}
+---@param callback OnUpdateCallback
+function OnUpdateEvent:hook(callback) end
+
+---@alias OnCloseCallback fun()
+---@class OnCloseEvent : Event
+--- Event called by Lime once the application closes in any way.
+OnCloseEvent = OnCloseEvent or {}
+---@param callback OnCloseCallback
+function OnCloseEvent:hook(callback) end
+
+---@alias OnKeyPressedCallback fun(key: Lime.Enum.Key)
+---@class OnKeyPressedEvent : Event
+--- Event called by Lime when a key is pressed.
+OnKeyPressedEvent = OnKeyPressedEvent or {}
+---@param callback OnKeyPressedCallback
+function OnKeyPressedEvent:hook(callback) end
+
+---@alias OnKeyReleasedCallback fun(key: Lime.Enum.Key)
+---@class OnKeyReleasedEvent : Event
+--- Event called by Lime when a key is released.
+OnKeyReleasedEvent = OnKeyReleasedEvent or {}
+---@param callback OnKeyReleasedCallback
+function OnKeyReleasedEvent:hook(callback) end
+
+---@alias OnMouseButtonPressedCallback fun(button: Lime.Enum.Mouse)
+---@class OnMouseButtonPressedEvent : Event
+--- Event called by Lime when a mouse button is pressed.
+OnMouseButtonPressedEvent = OnMouseButtonPressedEvent or {}
+---@param callback OnMouseButtonPressedCallback
+function OnMouseButtonPressedEvent:hook(callback) end
+
+---@alias OnMouseButtonReleasedCallback fun(button: Lime.Enum.Mouse)
+---@class OnMouseButtonReleasedEvent : Event
+--- Event called by Lime when a mouse button is released.
+OnMouseButtonReleasedEvent = OnMouseButtonReleasedEvent or {}
+---@param callback OnMouseButtonReleasedCallback
+function OnMouseButtonReleasedEvent:hook(callback) end
+
+---@alias OnMouseMovedCallback fun(delta: Vec2)
+---@class OnMouseMovedEvent : Event
+--- Event called by Lime when a mouse is moved.
+OnMouseMovedEvent = OnMouseMovedEvent or {}
+---@param callback OnMouseMovedCallback
+function OnMouseMovedEvent:hook(callback) end
+
+---@alias OnMouseScrollCallback fun(delta: number)
+---@class OnMouseScrollEvent : Event
+--- Event called by Lime when the mouse scroll wheel is moved.
+OnMouseScrollEvent = OnMouseScrollEvent or {}
+---@param callback OnMouseScrollCallback
+function OnMouseScrollEvent:hook(callback) end
+
+---@alias OnControllerConnectedCallback fun(id: number)
+---@class OnControllerConnectedEvent : Event
+--- Event called by Lime when a controller is connected.
+OnControllerConnectedEvent = OnControllerConnectedEvent or {}
+---@param callback OnControllerConnectedCallback
+function OnControllerConnectedEvent:hook(callback) end
+
+---@alias OnControllerDisconnectedCallback fun(id: number)
+---@class OnControllerDisconnectedEvent : Event
+--- Event called by Lime when a controller is disconnected.
+OnControllerDisconnectedEvent = OnControllerDisconnectedEvent or {}
+---@param callback OnControllerDisconnectedCallback
+function OnControllerDisconnectedEvent:hook(callback) end
+
+---@alias OnControllerButtonPressedCallback fun(id: number, button: Lime.Enum.Controller)
+---@class OnControllerButtonPressedEvent : Event
+--- Event called by Lime when a controller button is pressed.
+OnControllerButtonPressedEvent = OnControllerButtonPressedEvent or {}
+---@param callback OnControllerButtonPressedCallback
+function OnControllerButtonPressedEvent:hook(callback) end
+
+---@alias OnControllerButtonReleasedCallback fun(id: number, button: Lime.Enum.Controller)
+---@class OnControllerButtonReleasedEvent : Event
+--- Event called by Lime when a controller button is released.
+OnControllerButtonReleasedEvent = OnControllerButtonReleasedEvent or {}
+---@param callback OnControllerButtonReleasedCallback
+function OnControllerButtonReleasedEvent:hook(callback) end
+
+---@alias OnResizeCallback fun()
+---@class OnResizeEvent : Event
+--- Event called by Lime once the window is resized in any way.
+OnResizeEvent = OnResizeEvent or {}
+---@param callback OnResizeCallback
+function OnResizeEvent:hook(callback) end
+
+---@alias OnHoveredCallback fun()
+---@class OnHoveredEvent : Event
+--- Event called by Lime when this object is hovered.
+OnHoveredEvent = OnHoveredEvent or {}
+---@param callback OnHoveredCallback
+function OnHoveredEvent:hook(callback) end
+
+---@alias OnPressedCallback fun()
+---@class OnPressedEvent : Event
+--- Event called by Lime when this object is pressed.
+OnPressedEvent = OnPressedEvent or {}
+---@param callback OnPressedCallback
+function OnPressedEvent:hook(callback) end
+
+---@alias OnEnterCallback fun(result: CollisionResult)
+---@class OnEnterEvent : Event
+--- Event called when another physics object collides with this object for the first time.
+OnEnterEvent = OnEnterEvent or {}
+---@param callback OnEnterCallback
+function OnEnterEvent:hook(callback) end
+
+---@alias OnInsideCallback fun()
+---@class OnInsideEvent : Event
+--- Event called when another physics object is inside this physics object.
+OnInsideEvent = OnInsideEvent or {}
+---@param callback OnInsideCallback
+function OnInsideEvent:hook(callback) end
+
+---@alias OnExitCallback fun()
+---@class OnExitEvent : Event
+--- Event called when another physics object exits this physics object.
+OnExitEvent = OnExitEvent or {}
+---@param callback OnExitCallback
+function OnExitEvent:hook(callback) end
+
 ---@class Lime
----@field onInit Event @Event called by Lime prior to initializing the window.
----@field onStart Event @Event called by Lime following window creation and rendering services are available.
----@field onUpdate Event @Event called by Lime every rendering frame. This Event is run with a number `dt` argument.
----@field onClose Event @Event called by Lime once the application closes in any way.
+---@field onInit OnInitEvent @Event called by Lime prior to initializing the window.
+---@field onStart OnStartEvent @Event called by Lime following window creation and rendering services are available.
+---@field onUpdate OnUpdateEvent @Event called by Lime every rendering frame. This Event is run with a number `dt` argument.
+---@field onClose OnCloseEvent @Event called by Lime once the application closes in any way.
 Lime = Lime or {}
 
 ---@class Lime.File
@@ -12,16 +152,16 @@ Lime.File = Lime.File or {}
 Lime.GUI = Lime.GUI or {}
 
 ---@class Lime.Input
----@field onKeyPressed Event @Event called by Lime when a key is pressed. This Event is run with a Lime.Enum.Key `key` argument.
----@field onKeyReleased Event @Event called by Lime when a key is released. This Event is run with a Lime.Enum.Key `key` argument.
----@field onMouseButtonPressed Event @Event called by Lime when a mouse button is pressed. This Event is run with a Lime.Enum.Mouse `button` argument.
----@field onMouseButtonReleased Event @Event called by Lime when a mouse button is released. This Event is run with a Lime.Enum.Mouse `button` argument.
----@field onMouseMoved Event @Event called by Lime when a mouse is moved. This Event is run with a Vec2 `delta` argument.
----@field onMouseScroll Event @Event called by Lime when the mouse scroll wheel is moved. This Event is run with a number `delta` argument.
----@field onControllerConnected Event @Event called by Lime when a controller is connected. This Event is run with a number `id` argument.
----@field onControllerDisconnected Event @Event called by Lime when a controller is disconnected. This Event is run with a number `id` argument.
----@field onControllerButtonPressed Event @Event called by Lime when a controller button is pressed. This Event is run with number `id`, Lime.Enum.Controller `button` arguments.
----@field onControllerButtonReleased Event @Event called by Lime when a controller button is released. This Event is run with number `id`, Lime.Enum.Controller `button` arguments.
+---@field onKeyPressed OnKeyPressedEvent @Event called by Lime when a key is pressed.
+---@field onKeyReleased OnKeyReleasedEvent @Event called by Lime when a key is released.
+---@field onMouseButtonPressed OnMouseButtonPressedEvent @Event called by Lime when a mouse button is pressed.
+---@field onMouseButtonReleased OnMouseButtonReleasedEvent @Event called by Lime when a mouse button is released.
+---@field onMouseMoved OnMouseMovedEvent @Event called by Lime when a mouse is moved.
+---@field onMouseScroll OnMouseScrollEvent @Event called by Lime when the mouse scroll wheel is moved.
+---@field onControllerConnected OnControllerConnectedEvent @Event called by Lime when a controller is connected.
+---@field onControllerDisconnected OnControllerDisconnectedEvent @Event called by Lime when a controller is disconnected.
+---@field onControllerButtonPressed OnControllerButtonPressedEvent @Event called by Lime when a controller button is pressed.
+---@field onControllerButtonReleased OnControllerButtonReleasedEvent @Event called by Lime when a controller button is released.
 Lime.Input = Lime.Input or {}
 
 ---@class Lime.Physics
@@ -34,7 +174,7 @@ Lime.Scene = Lime.Scene or {}
 Lime.Sound = Lime.Sound or {}
 
 ---@class Lime.Window
----@field onResize Event @Event called by Lime once the window is resized in any way.
+---@field onResize OnResizeEvent @Event called by Lime once the window is resized in any way.
 Lime.Window = Lime.Window or {}
 
 ---@class Billboard
@@ -100,8 +240,8 @@ CollisionResult = CollisionResult or {}
 ---@field visible boolean @Determines the visibility of this object and its children.
 ---@field border boolean @Displays a border outlining this object's bounding box on the screen.
 ---@field backgroundColor Vec4 @The RGBA background color of this object.
----@field onHovered Event @Event called by Lime when this object is hovered.
----@field onPressed Event @Event called by Lime when this object is pressed.
+---@field onHovered OnHoveredEvent @Event called by Lime when this object is hovered.
+---@field onPressed OnPressedEvent @Event called by Lime when this object is pressed.
 EditBox = EditBox or {}
 --- A basic 2D object that allows user input. `EditBox` objects can be used for getting user input and can even be made to look like passwords.
 ---@overload fun(text:string): EditBox
@@ -143,8 +283,8 @@ Hook = Hook or {}
 ---@field border boolean @Displays a border outlining this object's bounding box on the screen.
 ---@field backgroundColor Vec4 @The RGBA background color of this object.
 ---@field enabled boolean @Determines if this object is hoverable and clickable.
----@field onHovered Event @Event called by Lime when this object is hovered.
----@field onPressed Event @Event called by Lime when this object is pressed.
+---@field onHovered OnHoveredEvent @Event called by Lime when this object is hovered.
+---@field onPressed OnPressedEvent @Event called by Lime when this object is pressed.
 Image2D = Image2D or {}
 --- A basic 2D object to display images. Without loading a Texture, this object can be used as a container for other GUI objects if parented together.
 ---@overload fun(tex:Texture): Image2D
@@ -249,9 +389,9 @@ function Noise.new() end
 ---@field angularVelocity Vec3 @Sets the angular velocity.
 ---@field linearFactor Vec3 @Sets the linear factor, controlling which axes linear motion is allowed on. (0 locks, 1 allows)
 ---@field angularFactor Vec3 @Sets the angular factor, controlling which axes rotation is allowed on. (0 locks, 1 allows)
----@field onEnter Event @Event called when another physics object collides with this object for the first time. Use `:getCollisionResult()` to retrieve collision data.
----@field onInside Event @Event called when another physics object is inside this physics object. Use `:getCollisionResult()` to retrieve collision data.
----@field onExit Event @Event called when another physics object exits this physics object.
+---@field onEnter OnEnterEvent @Event called when another physics object collides with this object for the first time.
+---@field onInside OnInsideEvent @Event called when another physics object is inside this physics object.
+---@field onExit OnExitEvent @Event called when another physics object exits this physics object.
 RigidBody = RigidBody or {}
 --- A wrapper to `Mesh` objects that allows for them to react to physics. It can be created with a `Mesh` as its visual and collision shape, or with a custom collision shape independent of any 3D object.
 ---@overload fun(root:any, collision:Mesh): RigidBody
@@ -310,8 +450,8 @@ function SoundSource.new() end
 ---@field border boolean @Displays a border outlining this object's bounding box on the screen.
 ---@field backgroundColor Vec4 @The RGBA background color of this object.
 ---@field enabled boolean @Determines if this object is hoverable and clickable.
----@field onHovered Event @Event called by Lime when this object is hovered.
----@field onPressed Event @Event called by Lime when this object is pressed.
+---@field onHovered OnHoveredEvent @Event called by Lime when this object is hovered.
+---@field onPressed OnPressedEvent @Event called by Lime when this object is pressed.
 Text2D = Text2D or {}
 --- A basic 2D object to display text. Text objects support colors and basic styling. Use tags `<#HEX>` for color, `<s>` for strike, `<d>` for drop shadow, `<u>` for underline, `<b>` for bold, and `<r>` to reset styles. Example: `<#6ABE30>This is green! <b>Now, it's green and bold! <r>Now, it's back to normal.`
 ---@overload fun(text:string): Text2D
@@ -1406,10 +1546,6 @@ function RigidBody:destroy() end
 ---@return Vec3
 function RigidBody:getCenterOfMass() end
 
---- Returns a `CollisionResult` object containing data about the current collision `Event`.
----@return CollisionResult
-function RigidBody:getCollisionResult() end
-
 --- Returns the forward vector of this `RigidBody`.
 ---@return Vec3
 function RigidBody:getForward() end
@@ -1417,6 +1553,11 @@ function RigidBody:getForward() end
 --- Loads a new visual `Mesh` into this `RigidBody`.
 ---@return boolean
 function RigidBody:loadMesh() end
+
+--- Applies a preset to this `RigidBody` that alters its physical properties.
+---@param preset Lime.Enum.PhysicalPreset
+---@return void
+function RigidBody:loadPreset(preset) end
 
 --- Rotates this `RigidBody` to look at a position in world space.
 ---@param pos Vec3
@@ -1545,10 +1686,10 @@ function SoundSource:isPlaying() end
 ---@return boolean
 function SoundSource:load(path, type) end
 
---- Parents this `SoundSource` to a 3D object. (NOTE: This `SoundSource` must be playing in 3D)
----@param parent any
+---@overload fun(parent:any): boolean
+---@param this Parents
 ---@return boolean
-function SoundSource:parentTo(parent) end
+function SoundSource:parentTo(this) end
 
 --- Play this `SoundSource`.
 ---@param is3D boolean?

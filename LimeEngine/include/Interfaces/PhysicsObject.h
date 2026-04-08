@@ -23,8 +23,6 @@ public:
     virtual void destroy() = 0;
     sol::object i_destroy();
 
-    sol::table getCollision();
-
     void createCallbacks();
     void insertIntoCallbacks();
     void removeFromCallbacks();
@@ -36,9 +34,6 @@ public:
     std::shared_ptr<Event> getEnterEvent() { return onEnter; }
     std::shared_ptr<Event> getInsideEvent() { return onInside; }
     std::shared_ptr<Event> getExitEvent() { return onExit; }
-
-    sol::table colInfo;
-    void setCollisionInfo(ContactInfo info, bool isB);
 };
 
 namespace Interface::PhysicsObjectBind {

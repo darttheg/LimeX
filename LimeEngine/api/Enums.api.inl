@@ -15,6 +15,15 @@ LIME_ENUM(PopUpIcon,
     LIME_ENUM_VALUE(Information, 3)
 );
 
+LIME_ENUM(PhysicalPreset,
+    LIME_ENUM_VALUE(Default, 0)
+    LIME_ENUM_VALUE(Static, 1)
+    LIME_ENUM_VALUE(Bouncy, 2)
+    LIME_ENUM_VALUE(Icy, 3)
+    LIME_ENUM_VALUE(Heavy, 4)
+    LIME_ENUM_VALUE(Floaty, 5)
+);
+
 LIME_ENUM(Cursor,
     LIME_ENUM_VALUE(Normal, 0)
     LIME_ENUM_VALUE(Cross, 1)
