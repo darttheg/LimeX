@@ -70,11 +70,13 @@ void Event::run() {
 static void bindEvent() {
 	sol::state_view view(ls);
 	sol::usertype<Event> bindType = view.new_usertype<Event>("Event",
-		sol::no_constructor,
+		sol::constructors<Event()>(),
 		sol::meta_function::type, [](const Event&) { return "Event"; }
 	);
 
 	// Object Event, A container of functions that will run in sequence when called upon.
+	
+	// Constructor
 
 	// Hook a function to this Event.
 	// Params function Function

@@ -281,6 +281,10 @@ function Empty.new() end
 
 ---@class Event
 Event = Event or {}
+--- A container of functions that will run in sequence when called upon.
+---@return Event
+function Event.new() end
+
 ---@class HingeConstraint
 ---@field limits Vec2 @The angular limits of the hinge, where `x` is lower limit and `y` is upper limit.
 ---@field motor boolean @Whether or not this `Constraint` applies angular velocity every physics step, rotating itself like a motor.
