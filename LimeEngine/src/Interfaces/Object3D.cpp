@@ -20,9 +20,6 @@ Vec3 Object3D::getPosition() const {
 void Object3D::setPosition(const Vec3& pos) {
     if (!getNode()) return;
     getNode()->setPosition(irr::core::vector3df(pos.getX(), pos.getY(), pos.getZ()));
-
-    if (dVisual)
-        dVisual->setPosition(getNode()->getAbsolutePosition()); // Parent them to fix weird random offsets?
 }
 
 Vec3 Object3D::getRotation() const {
@@ -93,14 +90,13 @@ void Object3D::i_setDebug(bool v) {
 
     if (!getNode() || !dVisual || !dAxis) return;
     getNode()->updateAbsolutePosition();
-    dVisual->setPosition(getNode()->getPosition());
 }
 
 sol::object Object3D::i_destroy() {
     setDebug(false);
     debug = false;
     clearAttributes();
-    if (getNode()) getNode()->drop();
+    // if (getNode()) getNode()->drop();
     destroy();
     return sol::make_object(l, sol::nil);
 }

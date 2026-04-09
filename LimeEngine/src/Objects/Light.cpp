@@ -29,6 +29,7 @@ void Light::setDebug(bool v) {
 	if (v) {
 		if (dVisual) { dVisual->drop(); dVisual->remove(); }
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::LIGHT);
+		dVisual->setParent(getNode());
 		dAxis->setPointerLength(light->getType() == 2 ? 1.0f : light->getLightData().Radius);
 		dAxis->setPointerColor(light->getLightData().DiffuseColor);
 	} else {

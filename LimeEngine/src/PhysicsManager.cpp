@@ -92,6 +92,7 @@ bool PhysicsManager::guardPhysicsCheck() {
 bool PhysicsManager::addConstraintToWorld(btTypedConstraint* constraint, bool ignoreCollision) {
 	if (!guardPhysicsCheck() || !constraint) return false;
 	world->getPointer()->addConstraint(constraint, ignoreCollision);
+	return true;
 }
 
 bool PhysicsManager::removeConstraintFromWorld(btTypedConstraint* constraint) {

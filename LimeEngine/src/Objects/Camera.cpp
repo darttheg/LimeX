@@ -47,6 +47,7 @@ void Camera::setDebug(bool v) {
 	if (v) {
 		if (dVisual) { dVisual->drop(); dVisual->remove(); }
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::CAMERA);
+		dVisual->setParent(getNode());
 		dAxis->setPointerLength(1.0f);
 	} else {
 		if (dVisual) {

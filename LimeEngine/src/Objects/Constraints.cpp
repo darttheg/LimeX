@@ -19,7 +19,7 @@ static btVector3 toBtVec3(Vec3 v) {
 
 bool Constraint::addToWorld() {
 	if (!getConstraint()) return false;
-	if (!getConstraint()->getRigidBodyA().getUserPointer() || getConstraint()->getRigidBodyB().getUserPointer()) return false;
+	if (!getConstraint()->getRigidBodyA().getUserPointer() || !getConstraint()->getRigidBodyB().getUserPointer()) return false;
 	bool ok = p->addConstraintToWorld(getConstraint(), ignoreSelves);
 	if (ok) inWorld = true;
 	return ok;
