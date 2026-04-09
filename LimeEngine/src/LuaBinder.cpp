@@ -41,6 +41,7 @@
 #include "Objects/Noise.h"
 #include "Objects/EditBox.h"
 #include "Objects/RigidBody.h"
+#include "Objects/Constraints.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -50,6 +51,7 @@ void LuaBinder::BindAll(Application* app) {
 	Interface::Object2DBind::bind(ls, app->GetRenderer());
 	Interface::Object3DBind::bind(ls, app->GetRenderHelper());
 	Interface::PhysicsObjectBind::bind(ls, app->GetPhysicsManager());
+	Interface::ConstraintBind::bind(ls, app->GetPhysicsManager());
 
 	// Modules
 	Module::Lime::bind(app);
@@ -83,4 +85,6 @@ void LuaBinder::BindAll(Application* app) {
 	Object::NoiseBind::bind(ls);
 	Object::EditBoxBind::bind(ls, app->GetRenderHelper(), app->GetGUIManager());
 	Object::RigidBodyBind::bind(ls, app->GetPhysicsManager());
+	Object::HingeConstraintBind::bind(ls);
+	Object::ConeTwistConstraintBind::bind(ls);
 }

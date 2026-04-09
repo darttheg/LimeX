@@ -102,7 +102,7 @@ void Module::Lime::bind(Application* app) {
 	// Returns void
 	module.set_function("setFrameRate", &Module::Lime::Bind::SetFrameRate);
 
-	// Sets vertical syncronization, matching the frame rate to the primary monitor's refresh rate.
+	// Sets vertical syncronization, matching the frame rate to the current monitor's refresh rate.
 	// Params boolean vSyncOn
 	// Returns void
 	module.set_function("setVSync", &Module::Lime::Bind::SetVSync);

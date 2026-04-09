@@ -15,9 +15,14 @@ class ContactInfo;
 class Vec3;
 class PhysicsObject;
 class IRigidBody;
+class btRigidBody;
 class RigidBody;
 class Mesh;
 class Object3D;
+class btTypedConstraint;
+class btHingeConstraint;
+class btConeTwistConstraint;
+class btTransform;
 
 namespace irr {
 	class IrrlichtDevice;
@@ -42,7 +47,11 @@ public:
 	bool guardPhysicsCheck();
 
 	// Create
+	bool addConstraintToWorld(btTypedConstraint* constraint, bool ignoreCollision = false);
+	bool removeConstraintFromWorld(btTypedConstraint* constraint);
 	IRigidBody* createRigidBody(const Object3D& m, const Mesh& c);
+	btHingeConstraint* createHingeConstraint(btRigidBody* a, btRigidBody* b, const Vec3& pivA, const Vec3& pivB, const Vec3& axisA, const Vec3& axisB);
+	btConeTwistConstraint* createConeTwistConstraint(btRigidBody* a, btRigidBody* b, btTransform ta, btTransform tb);
 
 	// Clean-up
 	void removeRigidBody(IRigidBody* rb);
@@ -58,7 +67,7 @@ public:
 	void setIgnoreSameID(bool v) { collisionsIgnoreSameID = v; }
 
 	// Helpers
-
+	
 	// Clean rigid body with src as its visual/collision shape.
 	bool cleanRigidBodySource(irr::scene::IAnimatedMesh* src);
 	void appendToMatchedRBSrc(irr::scene::IAnimatedMesh* src, RigidBody* rb);

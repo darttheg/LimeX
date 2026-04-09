@@ -89,6 +89,40 @@ bool PhysicsManager::guardPhysicsCheck() {
 	return true;
 }
 
+bool PhysicsManager::addConstraintToWorld(btTypedConstraint* constraint, bool ignoreCollision) {
+	if (!guardPhysicsCheck() || !constraint) return false;
+	world->getPointer()->addConstraint(constraint, ignoreCollision);
+}
+
+bool PhysicsManager::removeConstraintFromWorld(btTypedConstraint* constraint) {
+	if (!guardPhysicsCheck() || !constraint) return false;
+	world->getPointer()->removeConstraint(constraint);
+}
+
+static btVector3 toBtVec3(Vec3 v) {
+	return btVector3(v.getX(), v.getY(), v.getZ());
+}
+
+btHingeConstraint* PhysicsManager::createHingeConstraint(btRigidBody* a, btRigidBody* b, const Vec3& pivA, const Vec3& pivB, const Vec3& axisA, const Vec3& axisB) {
+	if (!guardPhysicsCheck()) return nullptr;
+	if (!a || !b) {
+		d->Warn("Could not create HingeConstraint: Supplied RigidBody objects are invalid");
+		return nullptr;
+	}
+	btHingeConstraint* out = new btHingeConstraint(*a, *b, toBtVec3(pivA), toBtVec3(pivB), toBtVec3(axisA), toBtVec3(axisB));
+	return out;
+}
+
+btConeTwistConstraint* PhysicsManager::createConeTwistConstraint(btRigidBody* a, btRigidBody* b, btTransform ta, btTransform tb) {
+	if (!guardPhysicsCheck()) return nullptr;
+	if (!a || !b) {
+		d->Warn("Could not create ConeTwistConstraint: Supplied RigidBody objects are invalid");
+		return nullptr;
+	}
+	btConeTwistConstraint* out = new btConeTwistConstraint(*a, *b, ta, tb);
+	return out;
+}
+
 IRigidBody* PhysicsManager::createRigidBody(const Object3D& m, const Mesh& c) {
 	if (!guardPhysicsCheck()) return nullptr;
 

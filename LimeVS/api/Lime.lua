@@ -225,6 +225,23 @@ function Camera.new() end
 ---@field impactSpeed number @Impact speed
 ---@field attributesB table @Attributes of physics object B
 CollisionResult = CollisionResult or {}
+---@class ConeTwistConstraint
+---@field swingLimits Vec2 @The angular swing limits of this `Constraint`, where `x` is sideways and `y` is forward and backward.
+---@field twistLimit number @The angular twist limit.
+---@field active boolean @Whether or not this `Constraint` is active.
+---@field ignoreCollision boolean @Whether or not the `RigidBody` objects of this `Constraint` should ignore collision between one another. This value should be altered prior to activating this `Constraint` to take effect in the scene.
+---@field breakThreshold number @The impulse threshold this `Constraint` can endure before it breaks, deactivating itself. Physics objects default to unbreakable, but altering this value will enable this object to be prone to breaking.
+ConeTwistConstraint = ConeTwistConstraint or {}
+--- A physics `Constraint` that twists two `RigidBody` objects together like a limited socket joint. Pivots and axis parameters are in local space. Axis vector values range from 0 to 1, where 1 allows rotation around said axis and vice versa.
+---@param rbA RigidBody
+---@param rbB RigidBody
+---@param localPivotA Vec3
+---@param localPivotB Vec3
+---@param localAxisA Vec3
+---@param localAxisB Vec3
+---@return ConeTwistConstraint
+function ConeTwistConstraint.new(rbA, rbB, localPivotA, localPivotB, localAxisA, localAxisB) end
+
 ---@class EditBox
 ---@field text string @The text content of this object.
 ---@field password boolean @Determines if the text content of this `EditBox` is obfuscated.
@@ -264,6 +281,25 @@ function Empty.new() end
 
 ---@class Event
 Event = Event or {}
+---@class HingeConstraint
+---@field limits Vec2 @The angular limits of the hinge, where `x` is lower limit and `y` is upper limit.
+---@field motor boolean @Whether or not this `Constraint` applies angular velocity every physics step, rotating itself like a motor.
+---@field motorVelocity number @If this `Constraint` is a motor, this determines the target rotational velocity.
+---@field maxMotorImpulse number @If this `Constraint` is a motor, this determines the maximum force allowed to spin to reach the target motorVelocity.
+---@field active boolean @Whether or not this `Constraint` is active.
+---@field ignoreCollision boolean @Whether or not the `RigidBody` objects of this `Constraint` should ignore collision between one another. This value should be altered prior to activating this `Constraint` to take effect in the scene.
+---@field breakThreshold number @The impulse threshold this `Constraint` can endure before it breaks, deactivating itself. Physics objects default to unbreakable, but altering this value will enable this object to be prone to breaking.
+HingeConstraint = HingeConstraint or {}
+--- A physics `Constraint` that hinges two `RigidBody` objects together. Pivots and axis parameters are in local space. Axis vector values range from 0 to 1, where 1 allows rotation around said axis and vice versa.
+---@param rbA RigidBody
+---@param rbB RigidBody
+---@param localPivotA Vec3
+---@param localPivotB Vec3
+---@param localAxisA Vec3
+---@param localAxisB Vec3
+---@return HingeConstraint
+function HingeConstraint.new(rbA, rbB, localPivotA, localPivotB, localAxisA, localAxisB) end
+
 ---@class HitResult
 ---@field startPos Vec3 @The starting position of this raycast.
 ---@field endPos Vec3 @The ending position of this raycast. If an object was hit, this will be the hit position.
@@ -909,7 +945,7 @@ function Lime.setFrameRate(target) end
 ---@return boolean
 function Lime.setInitConfig(driver) end
 
---- Sets vertical syncronization, matching the frame rate to the primary monitor's refresh rate.
+--- Sets vertical syncronization, matching the frame rate to the current monitor's refresh rate.
 ---@param vSyncOn boolean
 ---@return void
 function Lime.setVSync(vSyncOn) end

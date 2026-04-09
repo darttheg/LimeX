@@ -232,6 +232,9 @@
     <ClInclude Include="include\Interfaces\PhysicsObject.h">
       <Filter>Engine\Runtime\Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\Constraints.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -374,6 +377,9 @@
     </ClCompile>
     <ClCompile Include="src\Interfaces\PhysicsObject.cpp">
       <Filter>Engine\Runtime\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Constraints.cpp">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
