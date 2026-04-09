@@ -415,6 +415,7 @@ function Noise.new() end
 
 ---@class RigidBody
 ---@field position Vec3 @The 3D position of this object in the scene.
+---@field gravity Vec3 @The force of gravity applied to this object per physics step.
 ---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
 ---@field friction number @Sets the friction coefficient.
 ---@field anisotropicFriction Vec3 @Sets per-axis friction scaling.
@@ -926,11 +927,12 @@ function Lime.loadArchive(path) end
 function Lime.log(msg, color) end
 
 --- **This function can only be run before window creation.**  
---- Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. (NOTE: Enabling the debug console may cause minor hiccups at runtime.)
+--- Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. If `suppressWarnings" is true, all warnings will not be logged in the debug console to reduce potential clutter while testing. **Warnings should not be suppressed in shipped applications.**
 ---@param enable boolean
 ---@param writeOutput boolean?
+---@param suppressWarnings boolean?
 ---@return void
-function Lime.setDebugConfig(enable, writeOutput) end
+function Lime.setDebugConfig(enable, writeOutput, suppressWarnings) end
 
 --- If set to true, Lime will close on any error. A pop-up will be disclosed prior with error details.
 ---@param doEnd boolean

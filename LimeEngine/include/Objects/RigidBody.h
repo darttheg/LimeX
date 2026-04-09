@@ -70,6 +70,9 @@ public:
     Vec3 getAngularFactor();
     void setAngularFactor(const Vec3& f);
 
+    Vec3 getGravity();
+    void setGravity(const Vec3& grav);
+
     float getSleepingThreshold();
     void setSleepingThreshold(float f);
     bool getGhost();

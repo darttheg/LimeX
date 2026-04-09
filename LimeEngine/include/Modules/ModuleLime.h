@@ -15,7 +15,7 @@ namespace Module {
 		void bind(Application* app);
 
 		namespace Bind {
-			void SetDebugConfig(bool on, bool write = false);
+			void SetDebugConfig(bool on, bool write = false, bool suppressWarnings = false);
 			void ClearDebug();
 			void Log(std::string msg, int color = 0);
 			void SetEndOnError(bool v);

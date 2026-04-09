@@ -234,6 +234,8 @@ bool Application::Init(const void* data, size_t size) {
 	if (debugCfg.on) {
 		console->Create();
 		console->SetWriteOutput(debugCfg.write);
+		if (debugCfg.suppress) console->Warn("Warnings are suppressed. Potential issues with this application will not be logged.", false);
+		console->setSuppressWarnings(debugCfg.suppress);
 	}
 
 	return true;
@@ -347,7 +349,7 @@ std::string Application::GetLuaLocation() {
 	return oss.str();
 }
 
-void Application::setDebugConfig(bool on, bool write) {
+void Application::setDebugConfig(bool on, bool write, bool suppress) {
 	if (running) {
 		console->Warn("Debug configuration must be called prior to window creation!");
 		return;
@@ -355,6 +357,7 @@ void Application::setDebugConfig(bool on, bool write) {
 
 	debugCfg.on = on;
 	debugCfg.write = write;
+	debugCfg.suppress = suppress;
 }
 
 int Application::getMemoryUsage() {

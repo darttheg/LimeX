@@ -76,7 +76,7 @@ public:
 	void updateFrameRate();
 	void setVSync(bool on);
 	bool getVSync();
-	void setDebugConfig(bool on, bool write = false);
+	void setDebugConfig(bool on, bool write = false, bool suppress = false);
 	int getMemoryUsage();
 	void parseCommandLine(int argc, const char** argv);
 	sol::object getCommandLineValue(const std::string& key);
@@ -99,7 +99,7 @@ private:
 	std::unordered_map<std::string, std::string> modules;
 
 	// Debug console
-	struct DebugConfig { bool on, write; };
+	struct DebugConfig { bool on, write, suppress; };
 	DebugConfig debugCfg{};
 	DebugConsole* console = nullptr;
 

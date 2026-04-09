@@ -42,6 +42,8 @@ public:
 
 	int GetWarningCount() { return warnCount; }
 	int GetErrorCount() { return errCount; }
+
+	void setSuppressWarnings(bool v) { suppressWarnings = v; }
 private:
 	Application* app;
 
@@ -51,6 +53,7 @@ private:
 	int memUsed = 0;
 	int warnCount = 0;
 	int errCount = 0;
+	bool suppressWarnings = false;
 
 	struct Line {
 		Line(MESSAGE_TYPE m, std::string c) : type(m), content(std::move(c)) {}

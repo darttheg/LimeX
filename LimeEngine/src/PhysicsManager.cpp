@@ -244,6 +244,10 @@ void PhysicsManager::removeFromCollisionDetection(btCollisionObject* col) {
 	colliderPair.erase(col);
 }
 
+static bool skipNoEvents(ColliderInfo physA) {
+	return physA.onEnter->empty() + physA.onInside->empty() + physA.onExit->empty();
+}
+
 void PhysicsManager::handleCollisions() {
 	if (!world) return;
 
@@ -267,6 +271,8 @@ void PhysicsManager::handleCollisions() {
 
 		ColliderInfo infoA = mapA->second;
 		ColliderInfo infoB = mapB->second;
+
+		if (!skipNoEvents(infoA) && !skipNoEvents(infoB)) continue;
 
 		if (collisionsIgnoreSameID) {
 			auto* nodeA = infoA.node;

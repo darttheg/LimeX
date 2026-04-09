@@ -303,6 +303,15 @@ void RigidBody::setGhost(bool v) {
     isGhost = v;
 }
 
+Vec3 RigidBody::getGravity() {
+    return rb ? Vec3(rb->getGravity().X, rb->getGravity().Y, rb->getGravity().Z) : Vec3();
+}
+
+void RigidBody::setGravity(const Vec3& f) {
+    if (!rb) return;
+    rb->setGravity(irr::core::vector3df(f.getX(), f.getY(), f.getZ()));
+}
+
 void RigidBody::destroy() {
     if (src) src->drop();
     if (col) col->drop();
@@ -395,6 +404,11 @@ void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps) {
         "position", sol::property(
             [](RigidBody& c) { return Vec3{ [&] { return c.getPosition(); }, [&](auto v) { c.setPosition(v); } }; },
             [](RigidBody& c, const Vec3& v) { c.setPosition(v); }
+        ),
+        // Field Vec3 gravity, The force of gravity applied to this object per physics step.
+        "gravity", sol::property(
+            [](RigidBody& c) { return Vec3{ [&] { return c.getGravity(); }, [&](auto v) { c.setGravity(v); } }; },
+            [](RigidBody& c, const Vec3& v) { c.setGravity(v); }
         ),
         // Field Vec3 rotation, The 3D rotation of this object in the scene in degrees.
         "rotation", sol::property(
