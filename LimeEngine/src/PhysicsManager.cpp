@@ -61,11 +61,13 @@ bool PhysicsManager::Init(irr::IrrlichtDevice* device) {
 bool PhysicsManager::Update(float dt) {
 	if (!world) return false;
 
-	const btScalar fixed = 1.0f / 30.0f;
-	const int maxSubSteps = 8;
-	int out = world->stepSimulation(dt * stepFactor, maxSubSteps, fixed);
-	handleCollisions();
-	processCollisions();
+	int out = world->stepSimulation(dt * stepFactor, maxSubSteps, fixedStep);
+	btDispatcher* dispatcher = world->getPointer()->getDispatcher();
+	bool ok = dispatcher && dispatcher->getNumManifolds() > 0;
+	if (ok) {
+		handleCollisions();
+		processCollisions();
+	}
 
 	irr::video::SMaterial m;
 	m.Lighting = false;
@@ -244,7 +246,17 @@ void PhysicsManager::removeFromCollisionDetection(btCollisionObject* col) {
 	colliderPair.erase(col);
 }
 
-static bool skipNoEvents(ColliderInfo physA) {
+void PhysicsManager::setFixedStep(float fs) {
+	if (fs < 0.0) fs = 0.0;
+	fixedStep = fs;
+}
+
+void PhysicsManager::setMaxSubSteps(int sub) {
+	if (sub < 0.0) sub = 0.0;
+	maxSubSteps = sub;
+}
+
+static bool skipNoEvents(const ColliderInfo& physA) {
 	return physA.onEnter->empty() && physA.onInside->empty() && physA.onExit->empty();
 }
 
@@ -253,11 +265,10 @@ void PhysicsManager::handleCollisions() {
 
 	btDispatcher* dispatcher = world->getPointer()->getDispatcher();
 	if (!dispatcher) return;
+	if (dispatcher->getNumManifolds() == 0) return;
 
 	currentCollisions.clear();
 	curData.clear();
-
-	if (dispatcher->getNumManifolds() == 0) return;
 
 	for (int i = 0; i < dispatcher->getNumManifolds(); ++i) {
 		btPersistentManifold* manifold = dispatcher->getManifoldByIndexInternal(i);
@@ -271,8 +282,8 @@ void PhysicsManager::handleCollisions() {
 		auto mapB = colliderPair.find(bodyB);
 		if (mapA == colliderPair.end() || mapB == colliderPair.end()) continue;
 
-		ColliderInfo infoA = mapA->second;
-		ColliderInfo infoB = mapB->second;
+		const ColliderInfo& infoA = mapA->second;
+		const ColliderInfo& infoB = mapB->second;
 
 		if (!skipNoEvents(infoA) && !skipNoEvents(infoB)) continue;
 
@@ -336,7 +347,7 @@ static Vec3 toVec3(btVector3 v) {
 	return Vec3(v.getX(), v.getY(), v.getZ());
 }
 
-static sol::table getResult(ContactInfo info, bool isB) {
+static sol::table getResult(const ContactInfo& info, bool isB) {
 	sol::state_view view(l);
 	sol::table out = view.create_table();
 
@@ -366,8 +377,8 @@ void PhysicsManager::processCollisions() {
 		auto bIt = colliderPair.find(pair.second);
 		if (aIt == colliderPair.end() || bIt == colliderPair.end()) continue;
 
-		ColliderInfo physA = aIt->second;
-		ColliderInfo physB = bIt->second;
+		const ColliderInfo& physA = aIt->second;
+		const ColliderInfo& physB = bIt->second;
 		if (!physA.node || !physB.node) continue;
 
 		auto infoIt = curData.find(pair);
@@ -397,8 +408,8 @@ void PhysicsManager::processCollisions() {
 		auto bIt = colliderPair.find(pair.second);
 		if (aIt == colliderPair.end() || bIt == colliderPair.end()) continue;
 
-		ColliderInfo physA = aIt->second;
-		ColliderInfo physB = bIt->second;
+		const ColliderInfo& physA = aIt->second;
+		const ColliderInfo& physB = bIt->second;
 		if (!physA.node || !physB.node) continue;
 
 		// Run Exit, doesn't have info

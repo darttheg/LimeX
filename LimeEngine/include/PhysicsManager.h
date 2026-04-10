@@ -83,6 +83,9 @@ public:
 	// Push to collision detection
 	void appendToCollisionDetection(btCollisionObject* col, const PhysicsObject& phys);
 	void removeFromCollisionDetection(btCollisionObject* col);
+
+	void setFixedStep(float fs);
+	void setMaxSubSteps(int sub);
 private:
 	irrBulletWorld* world = nullptr;
 
@@ -99,4 +102,7 @@ private:
 	std::unordered_set<std::pair<btCollisionObject*, btCollisionObject*>, PairHash> currentCollisions;
 	std::unordered_map<std::pair<btCollisionObject*, btCollisionObject*>, ContactInfo, PairHash> curData;
 	std::unordered_map<btCollisionObject*, ColliderInfo> colliderPair;
+
+	float fixedStep = 1.0 / 30.0;
+	int maxSubSteps = 8;
 };

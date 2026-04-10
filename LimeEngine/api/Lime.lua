@@ -1105,6 +1105,11 @@ function Lime.Physics.isPaused() end
 ---@return void
 function Lime.Physics.setDebug(type) end
 
+--- Sets the internal simulation timestep size. Smaller timesteps are more accurate at the cost of more computation per frame. Default is 1/30.
+---@param fixedStep number
+---@return void
+function Lime.Physics.setFixedStep(fixedStep) end
+
 --- **This function cannot be run until window creation.**  
 --- Sets the direction and magnitude of global gravity.
 ---@param gravity Vec3
@@ -1116,6 +1121,11 @@ function Lime.Physics.setGravity(gravity) end
 ---@param ignore boolean
 ---@return void
 function Lime.Physics.setIgnoreEqualID(ignore) end
+
+--- Sets the maximum number of sub-steps allowed to run per frame. This restricts the physics simulation from taking too many sub-steps to catch up if a frame takes longer than usual to compute. Default is 8.
+---@param maxSteps number
+---@return void
+function Lime.Physics.setMaxSubSteps(maxSteps) end
 
 --- **This function cannot be run until window creation.**  
 --- Sets whether or not the scene's physics simulation is paused.

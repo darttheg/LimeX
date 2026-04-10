@@ -18,6 +18,8 @@ namespace Module {
 			void SetStepFactor(float v);
 			void SetDebugMode(int v);
 			void SetIgnoreSameID(bool v);
+			void SetFixedSteps(float f);
+			void SetMaxSubSteps(int sub);
 		}
 	}
 }
