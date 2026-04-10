@@ -212,6 +212,7 @@ bool Renderer::Init() {
 	isCreated = true;
 	setTextureCreationQuality(1); // Medium
 	setLightManagementType(0); // EightNearest
+	setSceneRenderQuality(0); // Low
 
 	return true;
 }
@@ -244,6 +245,7 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		i_smgr->getActiveCamera()->setAspectRatio(w->getWinAR());
 	}
 
+	/*
 	if (doMatchResolution) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		i_smgr->drawAll();
@@ -258,6 +260,16 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		qr->presentToWindow();
 	}
+	*/
+
+	qr->beginInternal();
+	i_smgr->drawAll(); // Draw scene objects to rtScene
+	qr->beginGUIPass();
+	guiManager->Render(); // Draw GUI objects to rtGUI
+	qr->endInternal();
+
+	i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
+	qr->presentToWindow();
 
 	physics->Update(dt);
 

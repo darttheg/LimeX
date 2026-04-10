@@ -50,7 +50,7 @@ private:
 
 	int timeToRecreate = 0;
 	bool didRecreate = true;
-	bool highQuality = true;
+	bool highQuality = false;
 
 	void buildQuad();
 	void recreateRt();
