@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <set>
 #include <map>
 #include <sol/forward.hpp>
@@ -34,6 +35,12 @@ namespace irr {
 
 struct ContactInfo;
 struct ColliderInfo;
+
+struct PairHash {
+	size_t operator()(const std::pair<btCollisionObject*, btCollisionObject*>& p) const {
+		return std::hash<uintptr_t>()((uintptr_t)p.first) ^ (std::hash<uintptr_t>()((uintptr_t)p.second) << 32);
+	}
+};
 
 class PhysicsManager {
 public:
@@ -88,8 +95,8 @@ private:
 	// Callbacks
 	void handleCollisions();
 	void processCollisions();
-	std::set<std::pair<btCollisionObject*, btCollisionObject*>> lastCollisions;
-	std::set<std::pair<btCollisionObject*, btCollisionObject*>> currentCollisions;
-	std::map<std::pair<btCollisionObject*, btCollisionObject*>, ContactInfo> curData;
+	std::unordered_set<std::pair<btCollisionObject*, btCollisionObject*>, PairHash> lastCollisions;
+	std::unordered_set<std::pair<btCollisionObject*, btCollisionObject*>, PairHash> currentCollisions;
+	std::unordered_map<std::pair<btCollisionObject*, btCollisionObject*>, ContactInfo, PairHash> curData;
 	std::unordered_map<btCollisionObject*, ColliderInfo> colliderPair;
 };

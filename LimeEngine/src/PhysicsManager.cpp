@@ -61,7 +61,7 @@ bool PhysicsManager::Init(irr::IrrlichtDevice* device) {
 bool PhysicsManager::Update(float dt) {
 	if (!world) return false;
 
-	const btScalar fixed = 1.0f / 60.0f;
+	const btScalar fixed = 1.0f / 30.0f;
 	const int maxSubSteps = 8;
 	int out = world->stepSimulation(dt * stepFactor, maxSubSteps, fixed);
 	handleCollisions();
@@ -245,7 +245,7 @@ void PhysicsManager::removeFromCollisionDetection(btCollisionObject* col) {
 }
 
 static bool skipNoEvents(ColliderInfo physA) {
-	return physA.onEnter->empty() + physA.onInside->empty() + physA.onExit->empty();
+	return physA.onEnter->empty() && physA.onInside->empty() && physA.onExit->empty();
 }
 
 void PhysicsManager::handleCollisions() {
@@ -256,6 +256,8 @@ void PhysicsManager::handleCollisions() {
 
 	currentCollisions.clear();
 	curData.clear();
+
+	if (dispatcher->getNumManifolds() == 0) return;
 
 	for (int i = 0; i < dispatcher->getNumManifolds(); ++i) {
 		btPersistentManifold* manifold = dispatcher->getManifoldByIndexInternal(i);
@@ -374,7 +376,7 @@ void PhysicsManager::processCollisions() {
 		ContactInfo& info = infoIt->second;
 		sol::state_view view(l);
 		info.attributesA = rh->getAttributes(physA.node);
-		info.attributesB = view.create_table(physB.node);
+		info.attributesB = rh->getAttributes(physB.node);
 
 		if (!lastCollisions.count(pair)) {
 			// Call Enter
@@ -404,5 +406,5 @@ void PhysicsManager::processCollisions() {
 		physB.onExit.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
 	}
 
-	lastCollisions = currentCollisions;
+	lastCollisions = std::move(currentCollisions);
 }

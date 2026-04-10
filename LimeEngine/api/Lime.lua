@@ -1112,10 +1112,10 @@ function Lime.Physics.setDebug(type) end
 function Lime.Physics.setGravity(gravity) end
 
 --- **This function cannot be run until window creation.**  
---- Sets whether or not collisions with objects sharing the same ID should ignore one another.
+--- Sets whether or not collisions with objects sharing the same ID should call a collision `Event`.
 ---@param ignore boolean
 ---@return void
-function Lime.Physics.setIgnoreIdenticalID(ignore) end
+function Lime.Physics.setIgnoreEqualID(ignore) end
 
 --- **This function cannot be run until window creation.**  
 --- Sets whether or not the scene's physics simulation is paused.

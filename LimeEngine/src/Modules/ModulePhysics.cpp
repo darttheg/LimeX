@@ -54,10 +54,10 @@ void Module::Physics::bind(Application* app) {
 	// Returns void
 	module.set_function("setDebug", &Module::Physics::Bind::SetDebugMode);
 
-	// [+] Sets whether or not collisions with objects sharing the same ID should ignore one another.
+	// [+] Sets whether or not collisions with objects sharing the same ID should call a collision `Event`.
 	// Params boolean ignore
 	// Returns void
-	module.set_function("setIgnoreIdenticalID", &Module::Physics::Bind::SetIgnoreSameID);
+	module.set_function("setIgnoreEqualID", &Module::Physics::Bind::SetIgnoreSameID);
 
 	// End Module
 
