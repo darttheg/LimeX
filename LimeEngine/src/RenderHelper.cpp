@@ -273,7 +273,6 @@ irr::scene::IAnimatedMeshSceneNode* RenderHelper::createAnimatedMesh(irr::scene:
 	}
 
 	irr::scene::IAnimatedMeshSceneNode* out = i_smgr->addAnimatedMeshSceneNode(m);
-	m->drop();
 
 	return out;
 }

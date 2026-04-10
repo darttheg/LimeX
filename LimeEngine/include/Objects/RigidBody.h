@@ -11,6 +11,7 @@ class btCollisionObject;
 class Mesh;
 class Vec3;
 class Object3D;
+class Renderer;
 
 namespace irr::scene {
     class ISceneNode;
@@ -85,7 +86,6 @@ public:
      
     sol::table getAttributes();
 
-    void nullify() { src = nullptr; col = nullptr; }
     void destroy() override;
 
     void applyPreset(int v);
@@ -99,5 +99,5 @@ private:
 };
 
 namespace Object::RigidBodyBind {
-    void bind(lua_State* ls, PhysicsManager* ps);
+    void bind(lua_State* ls, PhysicsManager* ps, Renderer* ren);
 }

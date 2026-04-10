@@ -51,6 +51,12 @@ void Constraint::setBreakingImpulse(float v) {
 	getConstraint()->setBreakingImpulseThreshold(v);
 }
 
+sol::object Constraint::destroy() {
+	if (getConstraint() && inWorld) removeFromWorld();
+	if (getConstraint()) delete getConstraint();
+	return sol::make_object(l, sol::nil);
+}
+
 void Interface::ConstraintBind::bind(lua_State* ls, PhysicsManager* ps) {
 	l = ls;
 	p = ps;
@@ -68,6 +74,10 @@ void Interface::ConstraintBind::bind(lua_State* ls, PhysicsManager* ps) {
 		// Field number breakThreshold, The impulse threshold this `Constraint` can endure before it breaks, deactivating itself. Physics objects default to unbreakable, but altering this value will enable this object to be prone to breaking.
 		"breakThreshold", sol::property(&Constraint::getBreakingImpulse, &Constraint::setBreakingImpulse)
 	);
+
+	// Destroys this `Constraint`.
+	// Returns nil
+	obj.set_function("destroy", &Constraint::destroy);
 
 	// End Interface
 }

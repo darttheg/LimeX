@@ -78,6 +78,8 @@ public:
 	bool isFocused();
 	HWND getDeviceVideoData();
 	int getObjectCount();
+	int getTextureCount();
+	int getMeshCount();
 	int updateFrameRate();
 	void updateWindowSize(int w, int h);
 	int getDriverFrameRate();
@@ -103,6 +105,7 @@ public:
 	irr::video::ITexture* createRenderTargetTexture(const Vec2& size, irr::scene::ICameraSceneNode* c);
 	bool preloadMesh(const std::string path);
 	bool preloadTexture(const std::string path);
+	std::string getMeshName(irr::scene::IAnimatedMesh* msh);
 
 	// Preloading - Add to queue and load one mesh+texture per frame
 	// bool preloadMesh(sol::variadic_args va);

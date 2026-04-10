@@ -60,7 +60,7 @@ void Mesh::setDebug(bool v) {
 
 bool Mesh::loadMesh(const std::string& path) {
 	if (src) {
-		if (getMesh()->getReferenceCount() == 1) // Necessary? Probably nice to know though.
+		if (getMesh()->getReferenceCount() > 1) // Necessary? Probably nice to know though.
 			d->Warn("This Mesh is loading a new Mesh, but the old Mesh is not held elsewhere! Purge Meshes if they are to be unused.");
 
 		src->remove();
@@ -228,8 +228,8 @@ void Mesh::purge() {
 	src->remove();
 	src = nullptr;
 	if (out) {
-		r->removeMesh(out);
-		out->drop();
+		bool ok = r->removeMesh(out);
+		if (ok) out->drop();
 	}
 }
 

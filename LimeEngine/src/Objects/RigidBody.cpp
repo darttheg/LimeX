@@ -4,12 +4,14 @@
 #include "Objects/Mesh.h"
 #include "irrBullet.h"
 #include "Objects/Vec3.h"
+#include "Renderer.h"
 #include "Interfaces/Object3D.h"
 
 #include <sol/sol.hpp>
 
 static lua_State* l;
 static PhysicsManager* p;
+static Renderer* r;
 
 btCollisionObject* RigidBody::getCollisionObject() const {
 	return rb ? rb->getPointer() : nullptr;
@@ -26,12 +28,12 @@ RigidBody::RigidBody(const Object3D& m, const Mesh& c) {
     if (!rb) return;
     src = m.getNode(); col = c.getNode();
 
-    irr::scene::IAnimatedMeshSceneNode* s = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(m.getNode());
+    /*irr::scene::IAnimatedMeshSceneNode* s = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(m.getNode());
     if (s)
         p->appendToMatchedRBSrc(s->getMesh(), this);
     irr::scene::IAnimatedMeshSceneNode* cm = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(c.getNode());
     if (cm)
-        p->appendToMatchedRBSrc(cm->getMesh(), this);
+        p->appendToMatchedRBSrc(cm->getMesh(), this);*/
 
     PhysicsObject::createCallbacks();
     PhysicsObject::insertIntoCallbacks();
@@ -313,11 +315,20 @@ void RigidBody::setGravity(const Vec3& f) {
 }
 
 void RigidBody::destroy() {
+    if (!rb) return;
+    irr::scene::IAnimatedMesh* colOut = nullptr;
+    irr::scene::IAnimatedMeshSceneNode* cm = static_cast<irr::scene::IAnimatedMeshSceneNode*>(col);
+    if (cm) colOut = cm->getMesh();
+
+    ICollisionShape* shape = rb->getCollisionShape();
+    p->removeRigidBody(rb, colOut);
     if (src) src->drop();
     if (col) col->drop();
+    r->removeMesh(colOut);
+
     src = nullptr;
     col = nullptr;
-    p->removeRigidBody(rb);
+    rb = nullptr;
     isGhost = false;
 }
 
@@ -382,9 +393,10 @@ void RigidBody::loadVisual(irr::scene::ISceneNode* visual) {
     src = visual;
 }
 
-void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps) {
+void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps, Renderer* ren) {
     l = ls;
 	p = ps;
+    r = ren;
 
 	// Object RigidBody, A wrapper to `Mesh` objects that allows for them to react to physics. It can be created with a `Mesh` as its visual and collision shape, or with a custom collision shape independent of any 3D object.
 	// Inherits PhysicsObject

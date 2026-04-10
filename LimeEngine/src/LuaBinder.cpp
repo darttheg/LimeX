@@ -84,7 +84,7 @@ void LuaBinder::BindAll(Application* app) {
 	Object::SoundSourceBind::bind(ls, app->GetSoundManager(), app->GetRenderHelper());
 	Object::NoiseBind::bind(ls);
 	Object::EditBoxBind::bind(ls, app->GetRenderHelper(), app->GetGUIManager());
-	Object::RigidBodyBind::bind(ls, app->GetPhysicsManager());
+	Object::RigidBodyBind::bind(ls, app->GetPhysicsManager(), app->GetRenderer());
 	Object::HingeConstraintBind::bind(ls);
 	Object::ConeTwistConstraintBind::bind(ls);
 }

@@ -21,6 +21,8 @@ namespace Module {
 
 		namespace Bind {
 			int GetObjectCount();
+			int GetTextureCount();
+			int GetMeshCount();
 			void SetBackgroundColor(const Vec4& color);
 			void SetFogColor(const Vec4& color);
 			void SetFogPlanes(const Vec2& planes);

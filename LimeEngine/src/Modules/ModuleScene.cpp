@@ -34,6 +34,14 @@ void Module::Scene::bind(Application* app) {
 	// Returns number
 	module.set_function("getObjectCount", &Module::Scene::Bind::GetObjectCount);
 
+	// Returns the amount of textures in the scene.
+	// Returns number
+	module.set_function("getTextureCount", &Module::Scene::Bind::GetTextureCount);
+
+	// Returns the amount of cached meshes in the scene.
+	// Returns number
+	module.set_function("getMeshCount", &Module::Scene::Bind::GetMeshCount);
+
 	// [+] Sets the ambient color of the scene to `rgba`.
 	// Params Vec4 rgba
 	// Returns void
@@ -185,6 +193,14 @@ void Module::Scene::bind(Application* app) {
 
 int Module::Scene::Bind::GetObjectCount() {
 	return r->getObjectCount();
+}
+
+int Module::Scene::Bind::GetTextureCount() {
+	return r->getTextureCount();
+}
+
+int Module::Scene::Bind::GetMeshCount() {
+	return r->getMeshCount();
 }
 
 void Module::Scene::Bind::SetBackgroundColor(const Vec4& color) {

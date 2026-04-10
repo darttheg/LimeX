@@ -33,6 +33,8 @@ public:
 	bool getIgnoreSelves() const { return ignoreSelves; }
 	void setIgnoreSelves(bool v) { ignoreSelves = v; }
 
+	sol::object destroy();
+
 	virtual btTypedConstraint* getConstraint() const = 0;
 private:
 	bool inWorld = false;

@@ -681,6 +681,10 @@ function Camera:setActive() end
 ---@return void
 function Camera:setAttribute(key, value) end
 
+--- Destroys this `Constraint`.
+---@return nil
+function ConeTwistConstraint:destroy() end
+
 --- Destroys this object.
 ---@return nil
 function EditBox:destroy() end
@@ -781,6 +785,10 @@ function Event:length() end
 --- Run this Event.
 ---@param ... any
 function Event:run(...) end
+
+--- Destroys this `Constraint`.
+---@return nil
+function HingeConstraint:destroy() end
 
 --- Returns true if this hook is still hooked to an Event.
 ---@return boolean
@@ -1194,9 +1202,17 @@ function Lime.Scene.fireScreenspaceRaycast(startPos, length, rayLifeMs) end
 ---@return Texture
 function Lime.Scene.getErrorTexture() end
 
+--- Returns the amount of cached meshes in the scene.
+---@return number
+function Lime.Scene.getMeshCount() end
+
 --- Returns the amount of 3D objects in the scene.
 ---@return number
 function Lime.Scene.getObjectCount() end
+
+--- Returns the amount of textures in the scene.
+---@return number
+function Lime.Scene.getTextureCount() end
 
 --- Returns whether or not the application is actively rendering new output from the scene.
 ---@return boolean

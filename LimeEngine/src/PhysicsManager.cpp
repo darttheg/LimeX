@@ -10,6 +10,7 @@
 #include "Interfaces/Object3D.h"
 #include "irrBullet.h"
 #include <sol/sol.hpp>
+#include "Interfaces/PhysicsObject.h"
 
 static Application* a = nullptr;
 static Renderer* r = nullptr;
@@ -48,6 +49,7 @@ PhysicsManager::PhysicsManager(Renderer* owner, DebugConsole* debug) {
 
 bool PhysicsManager::Init(irr::IrrlichtDevice* device) {
 	if (!device) return false;
+
 	world = createIrrBulletWorld(device, true, true);
 	if (!world) return false;
 
@@ -74,7 +76,6 @@ bool PhysicsManager::Update(float dt) {
 	driver->setMaterial(m);
 	driver->setTransform(video::ETS_WORLD, core::matrix4());
 	world->debugDrawWorld();
-	// world->debugDrawProperties(true); // Prints to console too
 
 	return true;
 }
@@ -140,13 +141,20 @@ IRigidBody* PhysicsManager::createRigidBody(const Object3D& m, const Mesh& c) {
 
 	src->grab();
 	collision->grab();
+
+	meshesInUse.insert(collision->getMesh());
 	
 	return rb;
 }
 
-void PhysicsManager::removeRigidBody(IRigidBody* rb) {
+void PhysicsManager::removeRigidBody(IRigidBody* rb, irr::scene::IAnimatedMesh* col) {
 	if (!guardPhysicsCheck()) return;
-	world->removeCollisionObject(rb, true);
+	world->removeCollisionObject(rb, false);
+	meshesInUse.erase(col);
+}
+
+int PhysicsManager::getMeshUseCount(irr::scene::IAnimatedMesh* mesh) {
+	return meshesInUse.count(mesh);
 }
 
 Vec3 PhysicsManager::getGravity() {
@@ -195,41 +203,6 @@ void PhysicsManager::setDebugMode(int v) {
 	}
 
 	world->setDebugMode(out);
-}
-
-#include "Objects/RigidBody.h"
-#include <sol/sol.hpp>
-bool PhysicsManager::cleanRigidBodySource(irr::scene::IAnimatedMesh* src) {
-	if (!world || !src) return false;
-
-	RigidBody* rb = nullptr;
-	bool col = false;
-	auto s = rbMappedSrc.find(src);
-	if (s != rbMappedSrc.end()) {
-		rb = s->second;
-		rbMappedSrc.erase(src);
-	}
-
-	auto c = rbMappedCol.find(src);
-	if (c != rbMappedCol.end()) {
-		if (!rb) { rb = c->second; col = true; }
-		rbMappedCol.erase(src);
-	}
-
-	bool ok = rb != nullptr;
-	if (ok) {
-		rb->nullify();
-		rb->destroy();
-	}
-	return ok;
-}
-
-void PhysicsManager::appendToMatchedRBSrc(irr::scene::IAnimatedMesh* src, RigidBody* rb) {
-	rbMappedSrc[src] = rb;
-}
-
-void PhysicsManager::appendToMatchedRBCol(irr::scene::IAnimatedMesh* col, RigidBody* rb) {
-	rbMappedCol[col] = rb;
 }
 
 void PhysicsManager::appendToCollisionDetection(btCollisionObject* col, const PhysicsObject& phys) {

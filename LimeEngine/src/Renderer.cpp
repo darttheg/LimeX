@@ -376,6 +376,10 @@ int Renderer::getDriverFrameRate() {
 	return i_device ? i_device->getVideoDriver()->getFPS() : 0;
 }
 
+std::string Renderer::getMeshName(irr::scene::IAnimatedMesh* msh) {
+	return msh ? i_smgr->getMeshCache()->getMeshName(msh).getPath().c_str() : "";
+}
+
 HWND Renderer::getDeviceVideoData() {
 	return i_device ? reinterpret_cast<HWND>(i_device->getVideoDriver()->getExposedVideoData().OpenGLWin32.HWnd) : nullptr;
 }
@@ -386,6 +390,14 @@ int Renderer::getObjectCount() {
 	if (!root) return 0;
 
 	return getNumChildren(root) - 1;
+}
+
+int Renderer::getTextureCount() {
+	return i_driver ? i_driver->getTextureCount() : 0;
+}
+
+int Renderer::getMeshCount() {
+	return i_smgr ? i_smgr->getMeshCache()->getMeshCount() : 0;
 }
 
 void Renderer::setSceneRenderQuality(int q) {
@@ -539,7 +551,19 @@ bool Renderer::removeTexture(irr::video::ITexture* tex) {
 bool Renderer::removeMesh(irr::scene::IAnimatedMesh* mesh) {
 	if (!i_smgr || !mesh) return false;
 
-	bool safe = mesh->getReferenceCount() == 1;
+	bool safe = mesh->getReferenceCount() <= 1;
+	int physicsCount = physics->getMeshUseCount(mesh);
+	if (physicsCount > 0) {
+		std::string out = "MESH PURGE REFUSED: Mesh ";
+		out += i_smgr->getMeshCache()->getMeshName(mesh).getPath().c_str();
+		out += " is used in ";
+		out += std::to_string(physicsCount);
+		out += " physics object";
+		if (physicsCount > 1) out += "s";
+		out += ".";
+		d->Warn(out);
+		return false;
+	}
 
 	irr::scene::IAnimatedMesh* fallback = i_smgr->getMesh("meshes/error.obj");
 
@@ -557,7 +581,9 @@ bool Renderer::removeMesh(irr::scene::IAnimatedMesh* mesh) {
 
 		std::string out = "UNSAFE MESH REMOVAL: Mesh is being called for purging but has ";
 		out += std::to_string(mesh->getReferenceCount());
-		out += " reference(s)! (";
+		out += " reference";
+		if (mesh->getReferenceCount() > 1) out += "s";
+		out += "! (";
 		out += name;
 		out += ")";
 		d->Warn(out);
@@ -581,8 +607,6 @@ bool Renderer::removeMesh(irr::scene::IAnimatedMesh* mesh) {
 				am->setMaterialFlag(irr::video::E_MATERIAL_FLAG::EMF_FOG_ENABLE, false);
 			}
 		}
-
-		physics->cleanRigidBodySource(mesh);
 	}
 
 	if (auto* cache = i_smgr->getMeshCache()) {

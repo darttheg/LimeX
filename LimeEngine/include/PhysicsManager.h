@@ -61,7 +61,8 @@ public:
 	btConeTwistConstraint* createConeTwistConstraint(btRigidBody* a, btRigidBody* b, btTransform ta, btTransform tb);
 
 	// Clean-up
-	void removeRigidBody(IRigidBody* rb);
+	void removeRigidBody(IRigidBody* rb, irr::scene::IAnimatedMesh* col);
+	int getMeshUseCount(irr::scene::IAnimatedMesh* mesh);
 
 	// Configuration
 	Vec3 getGravity();
@@ -74,11 +75,6 @@ public:
 	void setIgnoreSameID(bool v) { collisionsIgnoreSameID = v; }
 
 	// Helpers
-	
-	// Clean rigid body with src as its visual/collision shape.
-	bool cleanRigidBodySource(irr::scene::IAnimatedMesh* src);
-	void appendToMatchedRBSrc(irr::scene::IAnimatedMesh* src, RigidBody* rb);
-	void appendToMatchedRBCol(irr::scene::IAnimatedMesh* col, RigidBody* rb);
 
 	// Push to collision detection
 	void appendToCollisionDetection(btCollisionObject* col, const PhysicsObject& phys);
@@ -92,9 +88,6 @@ private:
 	float stepFactor = 1.0f;
 	bool collisionsIgnoreSameID = false;
 
-	std::unordered_map<irr::scene::IAnimatedMesh*, RigidBody*> rbMappedSrc;
-	std::unordered_map<irr::scene::IAnimatedMesh*, RigidBody*> rbMappedCol;
-
 	// Callbacks
 	void handleCollisions();
 	void processCollisions();
@@ -102,6 +95,7 @@ private:
 	std::unordered_set<std::pair<btCollisionObject*, btCollisionObject*>, PairHash> currentCollisions;
 	std::unordered_map<std::pair<btCollisionObject*, btCollisionObject*>, ContactInfo, PairHash> curData;
 	std::unordered_map<btCollisionObject*, ColliderInfo> colliderPair;
+	std::unordered_set<irr::scene::IAnimatedMesh*> meshesInUse;
 
 	float fixedStep = 1.0f / 30.0f;
 	int maxSubSteps = 8;
