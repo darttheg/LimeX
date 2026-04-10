@@ -10,10 +10,7 @@
 #include <fstream>
 
 static void CreateDebugConsole() {
-    if (GetConsoleWindow() == nullptr) {
-        if (!AttachConsole(ATTACH_PARENT_PROCESS))
-            AllocConsole();
-    }
+    AllocConsole();
 
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);

@@ -43,7 +43,16 @@ static bool LoadPkg(std::vector<char>& outData) {
 }
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd) {
-	SetDllDirectoryA("lib");
+	char exePath[MAX_PATH];
+	GetModuleFileNameA(nullptr, exePath, MAX_PATH);
+	std::string dir(exePath);
+	dir = dir.substr(0, dir.find_last_of("\\/"));
+
+	SetCurrentDirectoryA(dir.c_str());
+
+	std::string libPath = dir + "\\lib";
+	SetDllDirectoryA(libPath.c_str());
+
 	HMODULE engine = LoadLibraryA("LimeEngine.dll");
 
 	if (!engine) {

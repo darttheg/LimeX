@@ -156,7 +156,7 @@ bool Application::RunEntry() {
 	return true;
 }
 
-bool Application::Init(const void* data, size_t size) {
+bool Application::Init(const void* data, size_t size, int argc, const char** argv) {
 	// Create new Lua state
 
 	// Allocate memory for now
@@ -207,6 +207,9 @@ bool Application::Init(const void* data, size_t size) {
 		return false;
 	} else
 		console->Log("Lime started with " + std::to_string(modulesAmount) + " modules loaded");
+
+	// Parse commands
+	parseCommandLine(argc, argv);
 
 	// Run main file once
 	if (!RunEntry())

@@ -15,8 +15,7 @@ extern "C" {
 		Application* app = reinterpret_cast<Application*>(handle);
 		if (!app) return 1;
 
-		if (!app->Init(data, size)) return 1;
-		app->parseCommandLine(argc, argv);
+		if (!app->Init(data, size, argc, argv)) return 1;
 
 		return app->Run();
 	}
