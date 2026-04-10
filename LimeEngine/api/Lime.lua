@@ -1105,10 +1105,10 @@ function Lime.Physics.isPaused() end
 ---@return void
 function Lime.Physics.setDebug(type) end
 
---- Sets the internal simulation timestep size. Smaller timesteps are more accurate at the cost of more computation per frame. Default is 1/30.
+--- Sets the fixed internal simulation timestep size. Smaller timesteps are more accurate at the cost of more computation per frame. Default is 1/30.
 ---@param fixedStep number
 ---@return void
-function Lime.Physics.setFixedStep(fixedStep) end
+function Lime.Physics.setFixedTimeStep(fixedStep) end
 
 --- **This function cannot be run until window creation.**  
 --- Sets the direction and magnitude of global gravity.

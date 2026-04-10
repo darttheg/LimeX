@@ -59,10 +59,10 @@ void Module::Physics::bind(Application* app) {
 	// Returns void
 	module.set_function("setIgnoreEqualID", &Module::Physics::Bind::SetIgnoreSameID);
 
-	// Sets the internal simulation timestep size. Smaller timesteps are more accurate at the cost of more computation per frame. Default is 1/30.
+	// Sets the fixed internal simulation timestep size. Smaller timesteps are more accurate at the cost of more computation per frame. Default is 1/30.
 	// Params number fixedStep
 	// Returns void
-	module.set_function("setFixedStep", &Module::Physics::Bind::SetFixedSteps);
+	module.set_function("setFixedTimeStep", &Module::Physics::Bind::SetFixedSteps);
 
 	// Sets the maximum number of sub-steps allowed to run per frame. This restricts the physics simulation from taking too many sub-steps to catch up if a frame takes longer than usual to compute. Default is 8.
 	// Params number maxSteps

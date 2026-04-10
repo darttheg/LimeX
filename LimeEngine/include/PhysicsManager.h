@@ -103,6 +103,6 @@ private:
 	std::unordered_map<std::pair<btCollisionObject*, btCollisionObject*>, ContactInfo, PairHash> curData;
 	std::unordered_map<btCollisionObject*, ColliderInfo> colliderPair;
 
-	float fixedStep = 1.0 / 30.0;
+	float fixedStep = 1.0f / 30.0f;
 	int maxSubSteps = 8;
 };
