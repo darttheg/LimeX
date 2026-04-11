@@ -125,7 +125,9 @@ void SoundManager::setDopplerEffectParameters(float dopplerFactor, float distanc
 irrklang::ISoundSource* SoundManager::createSoundSource(const std::string& path, int type) {
 	if (!guardSoundCheck()) return nullptr;
 	auto* out = i_sound->addSoundSourceFromFile(path.c_str(), (irrklang::E_STREAM_MODE)type, true);
-	if (!out) d->Warn("Could not create SoundSource from path " + path);
+	if (!out) { // Found, but let's return the source.
+		out = i_sound->getSoundSource(path.c_str());
+	}
 	return out;
 }
 
@@ -137,7 +139,7 @@ void SoundManager::unloadSound(irrklang::ISoundSource* src) {
 
 irrklang::ISound* SoundManager::play(irrklang::ISoundSource* src, bool td, bool loops, bool sfx) {
 	if (!guardSoundCheck() || !src) return nullptr;
-	
+
 	irrklang::ISound* out = nullptr;
 	if (td)
 		out = i_sound->play3D(src, irrklang::vec3df(), loops, false, true, sfx);

@@ -22,10 +22,8 @@ SoundSource::SoundSource(const std::string& path, int type) {
 
 bool SoundSource::play(bool td) {
 	if (!src) return false;
-	if (cur) {
+	if (cur)
 		cur->stop();
-		cur->drop();
-	}
 
 	cur = s->play(src, td, loops, doSFX);
 	if (cur && td)
@@ -43,7 +41,6 @@ bool SoundSource::play(bool td) {
 void SoundSource::stop() {
 	if (!src || !cur) return;
 	cur->stop();
-	cur->drop();
 	parent = nullptr;
 	is3D = false;
 }
