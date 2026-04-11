@@ -64,6 +64,7 @@ LIME_ENUM(MaterialType,
     LIME_ENUM_VALUE(Add, 12)
     LIME_ENUM_VALUE(AlphaSoft, 13)
     LIME_ENUM_VALUE(AlphaHarsh, 14)
+    LIME_ENUM_VALUE(VertexAlpha, 15)
     LIME_ENUM_VALUE(SphereMap, 10)
     LIME_ENUM_VALUE(ReflectMap, 11)
     LIME_ENUM_VALUE(LightMap, 2)
@@ -74,6 +75,14 @@ LIME_ENUM(MaterialType,
     LIME_ENUM_VALUE(DynamicLightMapBright, 7)
     LIME_ENUM_VALUE(DynamicLightMapBrightest, 8)
     LIME_ENUM_VALUE(DetailMap, 9)
+);
+
+LIME_ENUM(EmitterType,
+    LIME_ENUM_VALUE(Point, 0)
+    LIME_ENUM_VALUE(Box, 1)
+    LIME_ENUM_VALUE(Sphere, 2)
+    LIME_ENUM_VALUE(Ring, 3)
+    LIME_ENUM_VALUE(Cylinder, 4)
 );
 
 LIME_ENUM(LightType,

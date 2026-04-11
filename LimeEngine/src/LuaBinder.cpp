@@ -42,6 +42,7 @@
 #include "Objects/EditBox.h"
 #include "Objects/RigidBody.h"
 #include "Objects/Constraints.h"
+#include "Objects/ParticleSystem.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -87,4 +88,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::RigidBodyBind::bind(ls, app->GetPhysicsManager(), app->GetRenderer());
 	Object::HingeConstraintBind::bind(ls);
 	Object::ConeTwistConstraintBind::bind(ls);
+	Object::ParticleSystemBind::bind(ls, app->GetRenderHelper());
 }

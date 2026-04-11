@@ -27,6 +27,7 @@ namespace irr {
 		class IMeshSceneNode;
 		class ISceneCollisionManager;
 		class ILightSceneNode;
+		class IParticleSystemSceneNode;
 	}
 	namespace video {
 		class IVideoDriver;
@@ -53,7 +54,8 @@ enum DEBUG3D_TYPE {
 	SKYDOME,
 	EMPTY,
 	BILLBOARD,
-	SOUND
+	SOUND,
+	PARTICLES
 };
 
 class RenderHelper {
@@ -87,6 +89,7 @@ public:
 	irr::scene::IBillboardSceneNode* createBillboardNode();
 	irr::scene::CTextAnchorSceneNode* createText3DNode(irr::gui::CGUIColoredText* src);
 	irr::scene::ILightSceneNode* createLight();
+	irr::scene::IParticleSystemSceneNode* createParticleSystem();
 	irr::scene::ITriangleSelector* createTriangleSelector(irr::scene::IAnimatedMeshSceneNode* m);
 	Mesh createCubeMesh(const Vec3& size);
 	Mesh createSphereMesh(float r, int polyCount);

@@ -258,7 +258,7 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 		sol::base_classes, sol::bases<Object3D>(),
 		sol::meta_function::type, [](const Mesh&) { return "Mesh"; },
 
-		// Field Vec4 vertexColor, Sets the color of all vertexes in this `Mesh`.
+		// Field Vec4 vertexColor, Sets the color of all vertexes in this `Mesh`. The `Material` of this `Mesh` must have type `VertexAlpha` to take effect.
 		"vertexColor", sol::property(
 			[](Mesh& m) { return Vec4{ [&] { return m.getColor(); }, [&](auto v) { m.setColor(v); } }; },
 			[](Mesh& m, const Vec4& v) { m.setColor(v); }

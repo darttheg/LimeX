@@ -35,8 +35,8 @@ public:
 	std::string getPath() const;
 	int getRefCount();
 
-	void makeRenderTexture(const Vec2& size);
-	void makeRenderTexture(const Vec2& size, const Camera& c);
+	std::string makeRenderTexture(const Vec2& size);
+	std::string makeRenderTexture(const Vec2& size, const Camera& c);
 
 	void collected();
 

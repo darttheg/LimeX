@@ -85,6 +85,9 @@ irr::scene::IBillboardSceneNode* RenderHelper::createDebugNode(DEBUG3D_TYPE t) {
 	case DEBUG3D_TYPE::TEXT:
 		tex = i_driver->getTexture("icons/debug_text.png");
 		break;
+	case DEBUG3D_TYPE::PARTICLES:
+		tex = i_driver->getTexture("icons/debug_pfx.png");
+		break;
 	default:
 		tex = i_driver->getTexture("icons/debug_pfx.png"); // Make ? icon?
 		break;
@@ -197,32 +200,32 @@ bool RenderHelper::setVertexColor(irr::scene::IAnimatedMeshSceneNode* m, const V
 
 irr::scene::ISceneNode* RenderHelper::createEmptyNode() {
 	if (!guardRenderingCheck()) return nullptr;
-
 	return i_smgr->addEmptySceneNode();
 }
 
 irr::scene::ISceneNode* RenderHelper::createSkydomeNode(irr::video::ITexture* tex) {
 	if (!guardRenderingCheck()) return nullptr;
-
 	return i_smgr->addSkyDomeSceneNode(tex, 16, 8, 1.0, 2.0, 100.0);
 }
 
 irr::scene::IBillboardSceneNode* RenderHelper::createBillboardNode() {
 	if (!guardRenderingCheck()) return nullptr;
-
 	return i_smgr->addBillboardSceneNode();
 }
 
 irr::scene::CTextAnchorSceneNode* RenderHelper::createText3DNode(irr::gui::CGUIColoredText* src) {
 	if (!guardRenderingCheck()) return nullptr;
-
 	return new CTextAnchorSceneNode(i_smgr->getRootSceneNode(), i_smgr, i_gui, src);
 }
 
 irr::scene::ILightSceneNode* RenderHelper::createLight() {
 	if (!guardRenderingCheck()) return nullptr;
-
 	return i_smgr->addLightSceneNode(i_smgr->getRootSceneNode());
+}
+
+irr::scene::IParticleSystemSceneNode* RenderHelper::createParticleSystem() {
+	if (!guardRenderingCheck()) return nullptr;
+	return i_smgr->addParticleSystemSceneNode(i_smgr->getRootSceneNode());
 }
 
 irr::scene::ITriangleSelector* RenderHelper::createTriangleSelector(irr::scene::IAnimatedMeshSceneNode* m) {

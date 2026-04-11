@@ -113,6 +113,7 @@ All = 5,
 ---@field Add Lime.Enum.MaterialType
 ---@field AlphaSoft Lime.Enum.MaterialType
 ---@field AlphaHarsh Lime.Enum.MaterialType
+---@field VertexAlpha Lime.Enum.MaterialType
 ---@field SphereMap Lime.Enum.MaterialType
 ---@field ReflectMap Lime.Enum.MaterialType
 ---@field LightMap Lime.Enum.MaterialType
@@ -129,6 +130,7 @@ SolidMultiply = 1,
 Add = 12,
 AlphaSoft = 13,
 AlphaHarsh = 14,
+VertexAlpha = 15,
 SphereMap = 10,
 ReflectMap = 11,
 LightMap = 2,
@@ -139,6 +141,20 @@ DynamicLightMap = 6,
 DynamicLightMapBright = 7,
 DynamicLightMapBrightest = 8,
 DetailMap = 9,
+}
+---@alias Lime.Enum.EmitterType integer
+---@class Lime.Enum.EmitterTypeEnum
+---@field Point Lime.Enum.EmitterType
+---@field Box Lime.Enum.EmitterType
+---@field Sphere Lime.Enum.EmitterType
+---@field Ring Lime.Enum.EmitterType
+---@field Cylinder Lime.Enum.EmitterType
+Lime.Enum.EmitterType = {
+Point = 0,
+Box = 1,
+Sphere = 2,
+Ring = 3,
+Cylinder = 4,
 }
 ---@alias Lime.Enum.LightType integer
 ---@class Lime.Enum.LightTypeEnum
