@@ -13,8 +13,8 @@ void Module::Sound::bind(Application* app) {
 	s = app->GetSoundManager();
 	sol::state& lua = app->GetLuaState();
 
-	// Module Lime.Sound
-	sol::table module = lua["Lime"]["Sound"].get_or_create<sol::table>();
+	// Module Lime.Audio
+	sol::table module = lua["Lime"]["Audio"].get_or_create<sol::table>();
 
 	// Returns the listener velocity factor.
 	// Returns number

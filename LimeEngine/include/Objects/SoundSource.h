@@ -26,6 +26,7 @@ class Vec3;
 class SoundSource {
 public:
 	SoundSource();
+	SoundSource(const SoundSource& s);
 	SoundSource(const std::string& path, int type = 0);
 
 	bool play(bool td = false);

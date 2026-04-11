@@ -15,6 +15,10 @@ static lua_State* l = nullptr;
 SoundSource::SoundSource() {
 }
 
+SoundSource::SoundSource(const SoundSource& s) {
+	src = s.src;
+}
+
 SoundSource::SoundSource(const std::string& path, int type) {
 	loadFromFile(path, type);
 	if (!src) return;
@@ -290,47 +294,48 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou, RenderHelpe
 	// Object SoundSource, A source of sound, whether that be for sound effects or music.
 
 	// Constructor
+	// Constructor Sound
 	// Constructor string path, Lime.Enum.SoundType? type
 
 	sol::state_view view(ls);
 	sol::usertype<SoundSource> obj = view.new_usertype<SoundSource>(
-		"SoundSource",
-		sol::constructors<SoundSource(), SoundSource(const std::string&), SoundSource(const std::string&, int)>(),
+		"Sound",
+		sol::constructors<SoundSource(), SoundSource(const SoundSource& s), SoundSource(const std::string&), SoundSource(const std::string&, int)>(),
 
-		sol::meta_function::type, [](const SoundSource&) { return "SoundSource"; },
+		sol::meta_function::type, [](const SoundSource&) { return "Sound"; },
 		sol::meta_function::garbage_collect, [](SoundSource& ss) { ss.collected(); },
 
-		// Field boolean paused, Whether or not this `SoundSource` is paused.
+		// Field boolean paused, Whether or not this `Sound` is paused.
 		"paused", sol::property(&SoundSource::getPaused, &SoundSource::setPaused),
 
-		// Field boolean looping, Whether or not this `SoundSource` loops on playback. 
+		// Field boolean looping, Whether or not this `Sound` loops on playback. 
 		"looping", sol::property(&SoundSource::getLooping, &SoundSource::setLooping),
 
-		// Field number volume, The volume of this `SoundSource`.
+		// Field number volume, The volume of this `Sound`.
 		"volume", sol::property(&SoundSource::getVolume, &SoundSource::setVolume),
 
-		// Field number speed, The playback speed of this `SoundSource`.
+		// Field number speed, The playback speed of this `Sound`.
 		"speed", sol::property(&SoundSource::getPitch, &SoundSource::setPitch),
 
-		// Field number pan, The pan of this `SoundSource`, where -1.0 is left and 1.0 is right. 
+		// Field number pan, The pan of this `Sound`, where -1.0 is left and 1.0 is right. 
 		"pan", sol::property(&SoundSource::getPan, &SoundSource::setPan),
 
-		// Field number minimumDistance, Sets the minimum listening distance for this `SoundSource`. Only applicable if this object is played in 3D.
+		// Field number minimumDistance, Sets the minimum listening distance for this `Sound`. Only applicable if this object is played in 3D.
 		"minimumDistance", sol::property(&SoundSource::getMinDist, &SoundSource::setMinDist),
 
-		// Field number maximumDistance, Sets the maximum listening distance for this `SoundSource`. Only applicable if this object is played in 3D.
+		// Field number maximumDistance, Sets the maximum listening distance for this `Sound`. Only applicable if this object is played in 3D.
 		"maximumDistance", sol::property(&SoundSource::getMaxDist, &SoundSource::setMaxDist),
 
-		// Field number playbackPosition, The current playback position of this `SoundSource`.
+		// Field number playbackPosition, The current playback position of this `Sound`.
 		"playbackPosition", sol::property(&SoundSource::getPlayPosition, &SoundSource::setPlayPosition),
 
-		// Field Vec3 velocity, The velocity of this `SoundSource`. Only applicable if this object is played in 3D.
+		// Field Vec3 velocity, The velocity of this `Sound`. Only applicable if this object is played in 3D.
 		"velocity", sol::property(
 			[](SoundSource& c) { return Vec3{ [&] { return c.getVelocity(); }, [&](auto v) { c.setVelocity(v); } }; },
 			[](SoundSource& c, const Vec3& v) { c.setVelocity(v); }
 		),
 
-		// Field Vec3 position, The position of this `SoundSource` in the scene. Only applicable if this `SoundSource` is played in 3D.
+		// Field Vec3 position, The position of this `Sound` in the scene. Only applicable if this `Sound` is played in 3D.
 		"position", sol::property(
 			[](SoundSource& c) { return Vec3{ [&] { return c.getPosition(); }, [&](auto v) { c.setPosition(v); } }; },
 			[](SoundSource& c, const Vec3& v) { c.setPosition(v); }
@@ -344,81 +349,81 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou, RenderHelpe
 	);
 
 	obj[sol::meta_function::to_string] = [](const SoundSource& v) {
-		return "SoundSource";
+		return "Sound";
 		};
 
-	// Play this `SoundSource`.
+	// Play this `Sound`.
 	// Params boolean? is3D
 	// Returns boolean
 	obj.set_function("play", &SoundSource::play);
 
-	// Stop this `SoundSource`.
+	// Stop this `Sound`.
 	// Returns void
 	obj.set_function("stop", &SoundSource::stop);
 
-	// Returns true if this `SoundSource` is playing.
+	// Returns true if this `Sound` is playing.
 	// Returns boolean
 	obj.set_function("isPlaying", &SoundSource::isPlaying);
 
-	// Returns the playback length of this `SoundSource`.
+	// Returns the playback length of this `Sound`.
 	// Returns number
 	obj.set_function("getLength", &SoundSource::getPlayLength);
 
-	// Returns the file path of the sound loaded into this `SoundSource`.
+	// Returns the file path of the sound loaded into this `Sound`.
 	// Returns string
 	obj.set_function("getPath", &SoundSource::getPath);
 
-	// Parents this `SoundSource` to a 3D object. (NOTE: This `SoundSource` must be playing in 3D)
+	// Parents this `Sound` to a 3D object. (NOTE: This `Sound` must be playing in 3D)
 	// Params any parent
 	// Returns boolean
 	obj.set_function("parentTo", &SoundSource::attachTo);
 
-	// Returns true if this `SoundSource` is parented to a 3D object.
+	// Returns true if this `Sound` is parented to a 3D object.
 	// Returns boolean
 	obj.set_function("hasParent", &SoundSource::isAttached);
 
-	// Loads a new sound into this `SoundSource`. (WARNING: Unused sounds should be purged to free up unused memory)
+	// Loads a new sound into this `Sound`. (WARNING: Unused sounds should be purged to free up unused memory)
 	// Params string path, Lime.Enum.SoundType? type
 	// Returns boolean
 	obj.set_function("load", &SoundSource::loadFromFile);
 
-	// Destroys this `SoundSource`, which stops itself from playing in the scene as well as detaching from a parent 3D object. To free this sound from memory, see `SoundSource:purge`.
+	// Destroys this `Sound`, which stops itself from playing in the scene as well as detaching from a parent 3D object. To free this sound from memory, see `SoundSource:purge`.
 	// Returns nil
 	obj.set_function("destroy", &SoundSource::destroy);
 
-	// Purges this `SoundSource`, effectively removing it from memory. If other `SoundSource` objects use this sound, there may be issues.
+	// Purges this `Sound`, effectively removing it from memory. If other `Sound` objects use this sound, there may be issues.
 	// Returns nil
 	obj.set_function("purge", &SoundSource::purge);
 
-	// Clears all effects applied to this `SoundSource`. Stopping or destroying this `SoundSource` will clear its effects.
+	// Clears all effects applied to this `Sound`. Stopping or destroying this `Sound` will clear its effects.
 	// Returns void
 	obj.set_function("clearEffects", &SoundSource::clearEffects);
 
-	// Enables distortion on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect messes with the sound's frequency and other attributes to produce an odd result.
+	// Enables distortion on this `Sound`. Only applicable if this `Sound` is playing. This effect messes with the sound's frequency and other attributes to produce an odd result.
 	// Params
 	// Params number gain, number edge
 	// Returns bool
 	obj.set_function("addDistortionEffect", &SoundSource::addDistortionEffect);
 
-	// Enables echoing on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect repeats the sound with decay over time.
+	// Enables echoing on this `Sound`. Only applicable if this `Sound` is playing. This effect repeats the sound with decay over time.
 	// Params
 	// Params number wetDry, number feedback, number delayMs
 	// Returns bool
 	obj.set_function("addEchoEffect", &SoundSource::addEchoEffect);
 
-	// Enables reverb on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect mixes the sound to bounce off surfaces in a room or a cave.
+	// Enables reverb on this `Sound`. Only applicable if this `Sound` is playing. This effect mixes the sound to bounce off surfaces in a room or a cave.
 	// Params
 	// Params number inputGain, number mix, number timeMs, number freqRatio
 	// Returns bool
 	obj.set_function("addReverbEffect", &SoundSource::addReverbEffect);
 
-	// Enables compression on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect reduces the dynamic range of the sound's waveform.
+	// Enables compression on this `Sound`. Only applicable if this `Sound` is playing. This effect reduces the dynamic range of the sound's waveform.
 	// Params
 	// Params number threshold, number ratio
 	// Returns bool
 	obj.set_function("addCompressionEffect", &SoundSource::addCompressionEffect);
 
-	// Enables parametric equilization on this `SoundSource`. Only applicable if this `SoundSource` is playing. This effect amplifies or attenuates signals at a given frequency.
+	// Enables parametric equilization on this `Sound`. Only applicable if this `Sound` is playing. This effect amplifies or attenuates signals at a given frequency.
 	// Params
 	// Params number threshold, number ratio
 	// Returns bool
