@@ -291,7 +291,7 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou, RenderHelpe
 	s = sou;
 	rh = renh;
 
-	// Object SoundSource, A source of sound, whether that be for sound effects or music.
+	// Object Sound, A source of sound, whether that be for sound effects or music.
 
 	// Constructor
 	// Constructor Sound

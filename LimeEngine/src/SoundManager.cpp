@@ -93,23 +93,27 @@ void SoundManager::setMainVolume(int v) {
 }
 
 void SoundManager::setAllSoundsPaused(bool v) {
+	if (!guardSoundCheck()) return;
 	i_sound->setAllSoundsPaused(v);
 }
 
 void SoundManager::stopAllSounds() {
+	if (!guardSoundCheck()) return;
 	i_sound->stopAllSounds();
 	soundNodePairs.clear();
 }
 
 int SoundManager::getLoadedSoundsCount() {
-	return i_sound->getSoundSourceCount();
+	return i_sound ? i_sound->getSoundSourceCount() : 0;
 }
 
 void SoundManager::setDefaultMin(float min) {
+	if (!guardSoundCheck()) return;
 	i_sound->setDefault3DSoundMinDistance(min);
 }
 
 void SoundManager::setDefaultMax(float max) {
+	if (!guardSoundCheck()) return;
 	i_sound->setDefault3DSoundMaxDistance(max);
 }
 
@@ -165,4 +169,9 @@ bool SoundManager::attachSoundToNode(irrklang::ISound* sound, irr::scene::IScene
 
 void SoundManager::warnGarbageCollection(const std::string& path) {
 	a->warnGarbageCollection(path);
+}
+
+bool SoundManager::preloadSound(const std::string& path) {
+	if (!guardSoundCheck()) return false;
+	return i_sound->addSoundSourceFromFile(path.c_str(), irrklang::ESM_AUTO_DETECT, true) != nullptr;
 }

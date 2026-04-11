@@ -462,7 +462,7 @@ Skydome = Skydome or {}
 ---@return Skydome
 function Skydome.new() end
 
----@class SoundSource
+---@class Sound
 ---@field paused boolean @Whether or not this `Sound` is paused.
 ---@field looping boolean @Whether or not this `Sound` loops on playback.
 ---@field volume number @The volume of this `Sound`.
@@ -475,11 +475,11 @@ function Skydome.new() end
 ---@field position Vec3 @The position of this `Sound` in the scene. Only applicable if this `Sound` is played in 3D.
 ---@field effects boolean @Whether or not sound effects are enabled on playback. This flag must first be enabled to apply effects, as it is false by default. Sound effects are more resource-intensive.
 ---@field debug boolean @Show debug information about this object in the scene.
-SoundSource = SoundSource or {}
+Sound = Sound or {}
 --- A source of sound, whether that be for sound effects or music.
----@overload fun(path:string, type:Lime.Enum.SoundType?): SoundSource
----@return SoundSource
-function SoundSource.new() end
+---@overload fun(path:string, type:Lime.Enum.SoundType?): Sound
+---@return Sound
+function Sound.new() end
 
 ---@class Text2D
 ---@field text string @The text content of this object.
@@ -964,29 +964,45 @@ function Lime.setInitConfig(driver) end
 ---@return void
 function Lime.setVSync(vSyncOn) end
 
+--- **This function cannot be run until window creation.**  
 --- Returns the application's main volume.
 ---@return number
 function Lime.Audio.getMainVolume() end
+
+--- **This function cannot be run until window creation.**  
+--- Returns the amount of sounds loaded in the scene.
+---@return number
+function Lime.Audio.getSoundCount() end
 
 --- Returns the listener velocity factor.
 ---@return number
 function Lime.Audio.getVelocityFactor() end
 
+--- **This function cannot be run until window creation.**  
+--- Preloads a sound by `path` for later use. Returns true on success or if the sound at `path` has already been preloaded.
+---@param path string
+---@return boolean
+function Lime.Audio.preloadSound(path) end
+
+--- **This function cannot be run until window creation.**  
 --- Sets all `Sound` objects to paused or unpaused.
 ---@param paused boolean
 ---@return void
 function Lime.Audio.setAllSoundsPaused(paused) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the default maximum listening distance for new sounds.
 ---@param distance number
 ---@return void
 function Lime.Audio.setDefaultMaximumDistance(distance) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the default minimum listening distance for new sounds.
 ---@param distance number
 ---@return void
 function Lime.Audio.setDefaultMinimumDistance(distance) end
 
+--- **This function cannot be run until window creation.**  
 --- Sets the application's main volume.
 ---@param volume number
 ---@return void
@@ -1702,75 +1718,75 @@ function Skydome:setAttribute(key, value) end
 --- Enables compression on this `Sound`. Only applicable if this `Sound` is playing. This effect reduces the dynamic range of the sound's waveform.
 --- Returns bool
 ---@overload fun(threshold:number, ratio:number)
-function SoundSource:addCompressionEffect() end
+function Sound:addCompressionEffect() end
 
 --- Enables distortion on this `Sound`. Only applicable if this `Sound` is playing. This effect messes with the sound's frequency and other attributes to produce an odd result.
 --- Returns bool
 ---@overload fun(gain:number, edge:number)
-function SoundSource:addDistortionEffect() end
+function Sound:addDistortionEffect() end
 
 --- Enables echoing on this `Sound`. Only applicable if this `Sound` is playing. This effect repeats the sound with decay over time.
 --- Returns bool
 ---@overload fun(wetDry:number, feedback:number, delayMs:number)
-function SoundSource:addEchoEffect() end
+function Sound:addEchoEffect() end
 
 --- Enables parametric equilization on this `Sound`. Only applicable if this `Sound` is playing. This effect amplifies or attenuates signals at a given frequency.
 --- Returns bool
 ---@overload fun(threshold:number, ratio:number)
-function SoundSource:addParamEqEffect() end
+function Sound:addParamEqEffect() end
 
 --- Enables reverb on this `Sound`. Only applicable if this `Sound` is playing. This effect mixes the sound to bounce off surfaces in a room or a cave.
 --- Returns bool
 ---@overload fun(inputGain:number, mix:number, timeMs:number, freqRatio:number)
-function SoundSource:addReverbEffect() end
+function Sound:addReverbEffect() end
 
 --- Clears all effects applied to this `Sound`. Stopping or destroying this `Sound` will clear its effects.
 ---@return void
-function SoundSource:clearEffects() end
+function Sound:clearEffects() end
 
 --- Destroys this `Sound`, which stops itself from playing in the scene as well as detaching from a parent 3D object. To free this sound from memory, see `SoundSource:purge`.
 ---@return nil
-function SoundSource:destroy() end
+function Sound:destroy() end
 
 --- Returns the playback length of this `Sound`.
 ---@return number
-function SoundSource:getLength() end
+function Sound:getLength() end
 
 --- Returns the file path of the sound loaded into this `Sound`.
 ---@return string
-function SoundSource:getPath() end
+function Sound:getPath() end
 
 --- Returns true if this `Sound` is parented to a 3D object.
 ---@return boolean
-function SoundSource:hasParent() end
+function Sound:hasParent() end
 
 --- Returns true if this `Sound` is playing.
 ---@return boolean
-function SoundSource:isPlaying() end
+function Sound:isPlaying() end
 
 --- Loads a new sound into this `Sound`. (WARNING: Unused sounds should be purged to free up unused memory)
 ---@param path string
 ---@param type Lime.Enum.SoundType?
 ---@return boolean
-function SoundSource:load(path, type) end
+function Sound:load(path, type) end
 
 ---@overload fun(parent:any): boolean
 ---@param this Parents
 ---@return boolean
-function SoundSource:parentTo(this) end
+function Sound:parentTo(this) end
 
 --- Play this `Sound`.
 ---@param is3D boolean?
 ---@return boolean
-function SoundSource:play(is3D) end
+function Sound:play(is3D) end
 
 --- Purges this `Sound`, effectively removing it from memory. If other `Sound` objects use this sound, there may be issues.
 ---@return nil
-function SoundSource:purge() end
+function Sound:purge() end
 
 --- Stop this `Sound`.
 ---@return void
-function SoundSource:stop() end
+function Sound:stop() end
 
 --- Destroys this object.
 ---@return nil

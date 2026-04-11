@@ -23,6 +23,7 @@ namespace Module {
 			void SetDefaultMinDistance(float min);
 			void SetDefaultMaxDistance(float max);
 			void SetDopplerEffectParameters(float dopplerFactor, float distanceFactor);
+			bool PreloadSound(const std::string& path);
 			// bool AppendSourceToAlias(const Sound& src, const std::string& name);
 			// bool RemoveAliasAndSources(const std::string& name);
 		}

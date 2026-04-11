@@ -25,26 +25,26 @@ void Module::Sound::bind(Application* app) {
 	// Returns void
 	module.set_function("setVelocityFactor", &Module::Sound::Bind::SetVelFactor);
 
-	// Returns the application's main volume.
+	// [+] Returns the application's main volume.
 	// Returns number
 	module.set_function("getMainVolume", &Module::Sound::Bind::GetMainVolume);
 
-	// Sets the application's main volume.
+	// [+] Sets the application's main volume.
 	// Params number volume
 	// Returns void
 	module.set_function("setMainVolume", &Module::Sound::Bind::SetMainVolume);
 
-	// Sets all `Sound` objects to paused or unpaused.
+	// [+] Sets all `Sound` objects to paused or unpaused.
 	// Params boolean paused
 	// Returns void
 	module.set_function("setAllSoundsPaused", &Module::Sound::Bind::SetAllPaused);
 
-	// Sets the default minimum listening distance for new sounds.
+	// [+] Sets the default minimum listening distance for new sounds.
 	// Params number distance
 	// Returns void
 	module.set_function("setDefaultMinimumDistance", &Module::Sound::Bind::SetDefaultMinDistance);
 
-	// Sets the default maximum listening distance for new sounds.
+	// [+] Sets the default maximum listening distance for new sounds.
 	// Params number distance
 	// Returns void
 	module.set_function("setDefaultMaximumDistance", &Module::Sound::Bind::SetDefaultMaxDistance);
@@ -53,6 +53,15 @@ void Module::Sound::bind(Application* app) {
 	// Params boolean mute
 	// Returns void
 	module.set_function("setMuteWhileUnfocused", &Module::Sound::Bind::SetMuteUnfocus);
+
+	// [+] Preloads a sound by `path` for later use. Returns true on success or if the sound at `path` has already been preloaded.
+	// Params string path
+	// Returns boolean
+	module.set_function("preloadSound", &Module::Sound::Bind::PreloadSound);
+
+	// [+] Returns the amount of sounds loaded in the scene.
+	// Returns number
+	module.set_function("getSoundCount", &Module::Sound::Bind::GetLoadedCount);
 
 	// End Module
 }
@@ -101,4 +110,8 @@ void Module::Sound::Bind::SetDefaultMinDistance(float min) {
 
 void Module::Sound::Bind::SetDopplerEffectParameters(float dopplerFactor, float distanceFactor) {
 	s->setDopplerEffectParameters(dopplerFactor, distanceFactor);
+}
+
+bool Module::Sound::Bind::PreloadSound(const std::string& path) {
+	return s->preloadSound(path);
 }
