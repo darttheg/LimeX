@@ -414,6 +414,18 @@ Noise = Noise or {}
 function Noise.new() end
 
 ---@class ParticleSystem
+---@field type Lime.Enum.EmitterType @The emitter type.
+---@field global boolean @Whether or not particles emitted stay parented to this `ParticleSystem`.
+---@field active boolean @Whether or not this `ParticleSystem` is actively emitting particles.
+---@field particlesPerSecond Vec2 @The particles per second emitted.
+---@field speed number @The particle emit speed in units per second, where 0.001 is one unit per second.
+---@field maxAngle number @The max angle variation for emitting particles. If set to 0 (360... etc.) then it will emit omnidirectionally.
+---@field scaleRange Vec2 @The minimum and maximum range of scale for particles first being emitted.
+---@field lifeRange Vec2 @The minimum and maximum range of lifetime for particles first being emitted.
+---@field boxSize Vec3 @If the emitter type is **box**, this alters the size of the box.
+---@field radius number @If the emitter type is **sphere**, **ring**, or **cylinder**, this alters the radius of the emitter.
+---@field ringThickness number @If the emitter type is **ring**, this alters the ring thickness.
+---@field cylinderLength number @If the emitter type is **cylinder**, this alters the length of the cylinder.
 ---@field position Vec3 @The 3D position of this object in the scene.
 ---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
 ---@field scale Vec3 @The 3D scale of this object in the scene.
@@ -421,7 +433,8 @@ function Noise.new() end
 ---@field id number @The identifier for this object to be used in raycasts and object selection.
 ---@field debug boolean @Show debug information about this object in the scene.
 ParticleSystem = ParticleSystem or {}
---- A particle emitter.
+--- An object with various emitter types to emit particles.
+---@overload fun(type:Lime.Enum.EmitterType): ParticleSystem
 ---@return ParticleSystem
 function ParticleSystem.new() end
 
@@ -586,6 +599,29 @@ Vec4 = Vec4 or {}
 ---@return Vec4
 function Vec4.new() end
 
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+---@param ms number
+---@return void
+function Billboard:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+---@param posA Vec3
+---@param posB Vec3
+---@param ms number
+---@param loops boolean?
+---@param pingPong boolean?
+---@return void
+function Billboard:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+---@param rot Vec3
+---@return void
+function Billboard:addRotateAnimator(rot) end
+
+--- Clears all animators attached to this object.
+---@return void
+function Billboard:clearAnimators() end
+
 --- Clears this object's attributes.
 ---@return void
 function Billboard:clearAttributes() end
@@ -635,6 +671,29 @@ function Billboard:parentTo(parent) end
 ---@param value any
 ---@return void
 function Billboard:setAttribute(key, value) end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+---@param ms number
+---@return void
+function Camera:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+---@param posA Vec3
+---@param posB Vec3
+---@param ms number
+---@param loops boolean?
+---@param pingPong boolean?
+---@return void
+function Camera:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+---@param rot Vec3
+---@return void
+function Camera:addRotateAnimator(rot) end
+
+--- Clears all animators attached to this object.
+---@return void
+function Camera:clearAnimators() end
 
 --- Clears this object's attributes.
 ---@return void
@@ -736,6 +795,29 @@ function EditBox:setAlignment(all) end
 ---@param name string
 ---@return boolean
 function EditBox:setFont(name) end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+---@param ms number
+---@return void
+function Empty:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+---@param posA Vec3
+---@param posB Vec3
+---@param ms number
+---@param loops boolean?
+---@param pingPong boolean?
+---@return void
+function Empty:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+---@param rot Vec3
+---@return void
+function Empty:addRotateAnimator(rot) end
+
+--- Clears all animators attached to this object.
+---@return void
+function Empty:clearAnimators() end
 
 --- Clears this object's attributes.
 ---@return void
@@ -842,6 +924,29 @@ function Image2D:moveToFront() end
 ---@param parent any
 ---@return boolean
 function Image2D:parentTo(parent) end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+---@param ms number
+---@return void
+function Light:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+---@param posA Vec3
+---@param posB Vec3
+---@param ms number
+---@param loops boolean?
+---@param pingPong boolean?
+---@return void
+function Light:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+---@param rot Vec3
+---@return void
+function Light:addRotateAnimator(rot) end
+
+--- Clears all animators attached to this object.
+---@return void
+function Light:clearAnimators() end
 
 --- Clears this object's attributes.
 ---@return void
@@ -1320,6 +1425,11 @@ function Lime.Scene.setAmbientColor(rgba) end
 ---@return void
 function Lime.Scene.setBackgroundColor(rgba) end
 
+--- If set to true, the rendering resolution will be that of the window resolution, updating on any window size changes. If false, the rendering resolution will remain the same size but upscale to the window resolution using a letterboxed viewport.
+---@param dynamic boolean
+---@return void
+function Lime.Scene.setDynamicResolution(dynamic) end
+
 --- **This function cannot be run until window creation.**  
 --- Sets the color of the scene's fog to `rgba`.
 ---@param rgba Vec4
@@ -1353,11 +1463,6 @@ function Lime.Scene.setRenderQuality(quality) end
 ---@param active boolean
 ---@return void
 function Lime.Scene.setRenderingActive(active) end
-
---- If set to true, the rendering resolution will be that of the window resolution, updating on any window size changes. If false, the rendering resolution will remain the same size but upscale without anti-aliasing to the window resolution.
----@param doRescale boolean
----@return void
-function Lime.Scene.setRescaleRenderToWindowSize(doRescale) end
 
 --- **This function cannot be run until window creation.**  
 --- Sets the color of shadows in the scene to `rgba`.
@@ -1471,9 +1576,32 @@ function Material:setTextureScale(scale) end
 ---@return void
 function Material:setTextureWrapMethod(uMethod, vMethod) end
 
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+---@param ms number
+---@return void
+function Mesh:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+---@param posA Vec3
+---@param posB Vec3
+---@param ms number
+---@param loops boolean?
+---@param pingPong boolean?
+---@return void
+function Mesh:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+---@param rot Vec3
+---@return void
+function Mesh:addRotateAnimator(rot) end
+
 --- Clears the `MeshBuffer` from within this `Mesh`. This will not remove its `MeshBuffer` from memory.
 ---@return void
 function Mesh:clear() end
+
+--- Clears all animators attached to this object.
+---@return void
+function Mesh:clearAnimators() end
 
 --- Clears this object's attributes.
 ---@return void
@@ -1569,6 +1697,12 @@ function MeshBuffer:getReferenceCount() end
 ---@return number
 function MeshBuffer:getVertexCount() end
 
+--- Loads the `MeshBuffer` stored within the provided `Mesh`.
+---@overload fun(mesh:Mesh, layer:number?): boolean
+---@param mesh Mesh
+---@return boolean
+function MeshBuffer:loadMesh(mesh) end
+
 --- Purges this `MeshBuffer`, effectively removing it from memory. Objects using this `MeshBuffer` will use an engine-defined `MeshBuffer` instead, but it is recommended to remove references to this `MeshBuffer` first.
 ---@return nil
 function MeshBuffer:purge() end
@@ -1599,6 +1733,73 @@ function MeshBuffer:recalculateBoundingBox() end
 ---@param x number
 ---@return number
 function Noise:get(x) end
+
+--- Adds an attraction affector to this `ParticleSystem`. This affector influences particle movement to attract to/detract from a point. For `affectAxis`, 0 = false and 1 = true.
+---@param pos Vec3
+---@param spd number
+---@param attract boolean
+---@param affectAxis Vec3
+---@return void
+function ParticleSystem:addAttractionAffector(pos, spd, attract, affectAxis) end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+---@param ms number
+---@return void
+function ParticleSystem:addDestroyAnimator(ms) end
+
+--- Adds a fade out affector to this `ParticleSystem`. This affector influences particle color over `ms` milliseconds.
+---@param color Vec4
+---@param ms number
+---@return void
+function ParticleSystem:addFadeOutAffector(color, ms) end
+
+--- Adds a gravity affector to this `ParticleSystem`. This affector influences particle gravity to fully take over by `ms` milliseconds.
+---@param gravity Vec3
+---@param ms number
+---@return void
+function ParticleSystem:addGravityAffector(gravity, ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+---@param posA Vec3
+---@param posB Vec3
+---@param ms number
+---@param loops boolean?
+---@param pingPong boolean?
+---@return void
+function ParticleSystem:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+---@param rot Vec3
+---@return void
+function ParticleSystem:addRotateAnimator(rot) end
+
+--- Adds a rotation affector to this `ParticleSystem`. This affector influences particle movement to rotate around a local `pos`.
+---@param rotSpd Vec3
+---@param pos Vec3
+---@return void
+function ParticleSystem:addRotationAffector(rotSpd, pos) end
+
+--- Adds a scalar affector to this `ParticleSystem`. This affector influences particle scale.
+---@param scalar number
+---@return void
+function ParticleSystem:addScalarAffector(scalar) end
+
+--- Emit `amount` particles from this `ParticleSystem` once.
+---@param amount number?
+---@return void
+function ParticleSystem:burst(amount) end
+
+--- Clears all active particles from this `ParticleSystem`.
+---@return void
+function ParticleSystem:clear() end
+
+--- Clears all active affectors on this `ParticleSystem`.
+---@return void
+function ParticleSystem:clearAffectors() end
+
+--- Clears all animators attached to this object.
+---@return void
+function ParticleSystem:clearAnimators() end
 
 --- Clears this object's attributes.
 ---@return void
@@ -1634,6 +1835,11 @@ function ParticleSystem:hasParent() end
 ---@return boolean
 function ParticleSystem:isPointInside(pos) end
 
+--- Loads a `Material` to use for new particles.
+---@param material Material
+---@return void
+function ParticleSystem:loadMaterial(material) end
+
 --- Parents this object to another 3D object.
 ---@param parent any
 ---@return boolean
@@ -1644,6 +1850,46 @@ function ParticleSystem:parentTo(parent) end
 ---@param value any
 ---@return void
 function ParticleSystem:setAttribute(key, value) end
+
+--- Sets the emitter type to **box**. This emitter emits particles in a box.
+---@param boxSize Vec3
+---@return void
+function ParticleSystem:setEmitterBox(boxSize) end
+
+--- Sets the emitter type to **cylinder**. This emitter emits particles in a cylinder.
+---@param center Vec3
+---@param radius number
+---@param length number
+---@param outlineOnly boolean?
+---@return void
+function ParticleSystem:setEmitterCylinder(center, radius, length, outlineOnly) end
+
+--- Sets the emitter type to **point**. This emitter emits particles from a point.
+---@return void
+function ParticleSystem:setEmitterPoint() end
+
+--- Sets the emitter type to **ring**. This emitter emits particles in a ring.
+---@param center Vec3
+---@param radius number
+---@param thickness number
+---@return void
+function ParticleSystem:setEmitterRing(center, radius, thickness) end
+
+--- Sets the emitter type to **sphere**. This emitter emits particles in a sphere.
+---@param center Vec3
+---@param radius number
+---@return void
+function ParticleSystem:setEmitterSphere(center, radius) end
+
+--- Sets the maximum color particles are influenced by on creation.
+---@param color Vec4
+---@return void
+function ParticleSystem:setMaxColor(color) end
+
+--- Sets the minimum color particles are influenced by on creation.
+---@param color Vec4
+---@return void
+function ParticleSystem:setMinColor(color) end
 
 --- Applies a continous force to this `RigidBody`, where `pos` is in world space.
 ---@param force number
@@ -1721,6 +1967,29 @@ function Shader:getVSPath() end
 ---@param value number
 ---@return void
 function Shader:setParameter(name, value) end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+---@param ms number
+---@return void
+function Skydome:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+---@param posA Vec3
+---@param posB Vec3
+---@param ms number
+---@param loops boolean?
+---@param pingPong boolean?
+---@return void
+function Skydome:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+---@param rot Vec3
+---@return void
+function Skydome:addRotateAnimator(rot) end
+
+--- Clears all animators attached to this object.
+---@return void
+function Skydome:clearAnimators() end
 
 --- Clears this object's attributes.
 ---@return void
@@ -1889,6 +2158,29 @@ function Text2D:setFont(name) end
 ---@param wrap boolean
 ---@return void
 function Text2D:setWordWrap(wrap) end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+---@param ms number
+---@return void
+function Text3D:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+---@param posA Vec3
+---@param posB Vec3
+---@param ms number
+---@param loops boolean?
+---@param pingPong boolean?
+---@return void
+function Text3D:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+---@param rot Vec3
+---@return void
+function Text3D:addRotateAnimator(rot) end
+
+--- Clears all animators attached to this object.
+---@return void
+function Text3D:clearAnimators() end
 
 --- Clears this object's attributes.
 ---@return void

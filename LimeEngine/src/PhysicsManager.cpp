@@ -101,6 +101,7 @@ bool PhysicsManager::addConstraintToWorld(btTypedConstraint* constraint, bool ig
 bool PhysicsManager::removeConstraintFromWorld(btTypedConstraint* constraint) {
 	if (!guardPhysicsCheck() || !constraint) return false;
 	world->getPointer()->removeConstraint(constraint);
+	return true;
 }
 
 static btVector3 toBtVec3(Vec3 v) {

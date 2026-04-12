@@ -56,11 +56,11 @@ void ParticleSystem::setType(int type) {
 	}
 }
 
-bool ParticleSystem::getLocal() const {
+bool ParticleSystem::getGlobal() const {
 	return pfx ? global : false;
 }
 
-void ParticleSystem::setLocal(bool v) {
+void ParticleSystem::setGlobal(bool v) {
 	if (!pfx) return;
 	pfx->setParticlesAreGlobal(v);
 	global = v;
@@ -126,9 +126,9 @@ void ParticleSystem::loadMaterial(const Material& mat) {
 	pfx->getMaterial(0) = mat.getMaterial();
 }
 
-void ParticleSystem::loadPointEmitter(const Vec3& dir) {
+void ParticleSystem::loadPointEmitter() {
 	if (!pfx) return;
-	irr::core::vector3df direction(dir.getX(), dir.getY(), dir.getZ());
+	irr::core::vector3df direction(0.0f, emitStrength, 0.0f);
 	irr::scene::IParticlePointEmitter* out = pfx->createPointEmitter(direction);
 	pfx->setEmitter(out);
 	out->drop();
@@ -137,9 +137,9 @@ void ParticleSystem::loadPointEmitter(const Vec3& dir) {
 	loadUserParams();
 }
 
-void ParticleSystem::loadBoxEmitter(const Vec3& dir, const Vec3& size) {
+void ParticleSystem::loadBoxEmitter(const Vec3& size) {
 	if (!pfx) return;
-	irr::core::vector3df direction(dir.getX(), dir.getY(), dir.getZ());
+	irr::core::vector3df direction(0.0f, emitStrength, 0.0f);
 	irr::core::vector3df min(-1.0f * size.getX() / 2.0f, -1.0f * size.getY() / 2.0f, -1.0f * size.getY() / 2.0f);
 	irr::core::vector3df max(size.getX() / 2.0f, size.getY() / 2.0f, size.getY() / 2.0f);
 	irr::scene::IParticleBoxEmitter* out = pfx->createBoxEmitter(irr::core::aabbox3df(min, max), direction);
@@ -150,9 +150,9 @@ void ParticleSystem::loadBoxEmitter(const Vec3& dir, const Vec3& size) {
 	loadUserParams();
 }
 
-void ParticleSystem::loadSphereEmitter(const Vec3& dir, const Vec3& center, float radius) {
+void ParticleSystem::loadSphereEmitter(const Vec3& center, float radius) {
 	if (!pfx) return;
-	irr::core::vector3df direction(dir.getX(), dir.getY(), dir.getZ());
+	irr::core::vector3df direction(0.0f, emitStrength, 0.0f);
 	irr::core::vector3df cent(center.getX(), center.getY(), center.getZ());
 	irr::scene::IParticleSphereEmitter* out = pfx->createSphereEmitter(cent, radius, direction);
 	pfx->setEmitter(out);
@@ -162,9 +162,9 @@ void ParticleSystem::loadSphereEmitter(const Vec3& dir, const Vec3& center, floa
 	loadUserParams();
 }
 
-void ParticleSystem::loadRingEmitter(const Vec3& dir, const Vec3& center, float radius, float thickness) {
+void ParticleSystem::loadRingEmitter(const Vec3& center, float radius, float thickness) {
 	if (!pfx) return;
-	irr::core::vector3df direction(dir.getX(), dir.getY(), dir.getZ());
+	irr::core::vector3df direction(0.0f, emitStrength, 0.0f);
 	irr::core::vector3df cent(center.getX(), center.getY(), center.getZ());
 	irr::scene::IParticleRingEmitter* out = pfx->createRingEmitter(cent, radius, thickness, direction);
 	pfx->setEmitter(out);
@@ -174,9 +174,9 @@ void ParticleSystem::loadRingEmitter(const Vec3& dir, const Vec3& center, float 
 	loadUserParams();
 }
 
-void ParticleSystem::loadCylinderEmitter(const Vec3& dir, const Vec3& center, float radius, float len, bool outlineOnly) {
+void ParticleSystem::loadCylinderEmitter(const Vec3& center, float radius, float len, bool outlineOnly) {
 	if (!pfx) return;
-	irr::core::vector3df direction(dir.getX(), dir.getY(), dir.getZ());
+	irr::core::vector3df direction(0.0f, emitStrength, 0.0f);
 	irr::core::vector3df cent(center.getX(), center.getY(), center.getZ());
 	irr::scene::IParticleCylinderEmitter* out = pfx->createCylinderEmitter(cent, radius, irr::core::vector3df(0,1,0), len, outlineOnly, direction);
 	pfx->setEmitter(out);
@@ -201,6 +201,20 @@ void ParticleSystem::loadUserParams() {
 	e->setMaxStartSize(irr::core::dimension2df(maxScale, maxScale));
 	e->setMinStartColor(irr::video::SColor(minColor.a, minColor.r, minColor.g, minColor.b));
 	e->setMaxStartColor(irr::video::SColor(maxColor.a, maxColor.r, maxColor.g, maxColor.b));
+	e->setDirection(irr::core::vector3df(0.0f, emitStrength, 0.0));
+	setRadius(rad);
+}
+
+float ParticleSystem::getSpeed() const {
+	return pfx && pfx->getEmitter() ? emitStrength : 0;
+}
+
+void ParticleSystem::setSpeed(float v) {
+	if (!pfx) return;
+	auto* e = pfx->getEmitter();
+	if (!e) return;
+	e->setDirection(irr::core::vector3df(0.0f, v, 0.0));
+	emitStrength = v;
 }
 
 Vec2 ParticleSystem::getRates() const {
@@ -337,7 +351,8 @@ float ParticleSystem::getRadius() const {
 
 void ParticleSystem::setRadius(float v) {
 	if (!pfx) return;
-	switch (pfx->getType()) {
+
+	switch (pfx->getEmitter()->getType()) {
 	case irr::scene::EPET_SPHERE:
 		static_cast<irr::scene::IParticleSphereEmitter*>(pfx->getEmitter())->setRadius(v);
 		break;
@@ -348,6 +363,8 @@ void ParticleSystem::setRadius(float v) {
 		static_cast<irr::scene::IParticleCylinderEmitter*>(pfx->getEmitter())->setRadius(v);
 		break;
 	}
+
+	rad = v;
 }
 
 float ParticleSystem::getCylinderLength() const {
@@ -407,23 +424,149 @@ irr::scene::ISceneNode* ParticleSystem::getNode() const {
 void Object::ParticleSystemBind::bind(lua_State* ls, RenderHelper* renh) {
 	rh = renh;
 
-	// Object ParticleSystem, A particle emitter.
+	// Object ParticleSystem, An object with various emitter types to emit particles.
 	// Inherits Object3D
 
 	// Constructor
+	// Constructor Lime.Enum.EmitterType type
 
 	sol::state_view view(ls);
 	sol::usertype<ParticleSystem> obj = view.new_usertype<ParticleSystem>(
 		"ParticleSystem",
-		sol::constructors<ParticleSystem()>(),
+		sol::constructors<ParticleSystem(), ParticleSystem(int type)>(),
 
 		sol::base_classes, sol::bases<Object3D>(),
-		sol::meta_function::type, [](const ParticleSystem&) { return "ParticleSystem"; }
+		sol::meta_function::type, [](const ParticleSystem&) { return "ParticleSystem"; },
+
+		// Field Lime.Enum.EmitterType type, The emitter type.
+		"type", sol::property(&ParticleSystem::getType, &ParticleSystem::setType),
+
+		// Field boolean global, Whether or not particles emitted stay parented to this `ParticleSystem`.
+		"global", sol::property(&ParticleSystem::getGlobal, &ParticleSystem::setGlobal),
+
+		// Field boolean active, Whether or not this `ParticleSystem` is actively emitting particles.
+		"active", sol::property(&ParticleSystem::getActive, &ParticleSystem::setActive),
+
+		// Field Vec2 particlesPerSecond, The particles per second emitted.
+		"particlesPerSecond", sol::property(
+			[](ParticleSystem& m) { return Vec2{ [&] { return m.getRates(); }, [&](auto v) { m.setRates(v); } }; },
+			[](ParticleSystem& m, const Vec2& v) { m.setRates(v); }
+		),
+
+		// Field number speed, The particle emit speed in units per second, where 0.001 is one unit per second.
+		"speed", sol::property(&ParticleSystem::getSpeed, &ParticleSystem::setSpeed),
+
+		// Field number maxAngle, The max angle variation for emitting particles. If set to 0 (360... etc.) then it will emit omnidirectionally.
+		"maxAngle", sol::property(&ParticleSystem::getMaxAngle, &ParticleSystem::setMaxAngle),
+
+		// Field Vec2 scaleRange, The minimum and maximum range of scale for particles first being emitted.
+		"scaleRange", sol::property(
+			[](ParticleSystem& m) { return Vec2{ [&] { return m.getMinMaxScale(); }, [&](auto v) { m.setMinMaxScale(v); } }; },
+			[](ParticleSystem& m, const Vec2& v) { m.setMinMaxScale(v); }
+		),
+
+		// Field Vec2 lifeRange, The minimum and maximum range of lifetime for particles first being emitted.
+		"lifeRange", sol::property(
+			[](ParticleSystem& m) { return Vec2{ [&] { return m.getMinMaxLife(); }, [&](auto v) { m.setMinMaxLife(v); } }; },
+			[](ParticleSystem& m, const Vec2& v) { m.setMinMaxLife(v); }
+		),
+
+		// Field Vec3 boxSize, If the emitter type is **box**, this alters the size of the box.
+		"boxSize", sol::property(
+			[](ParticleSystem& m) { return Vec3{ [&] { return m.getBoxSize(); }, [&](auto v) { m.setBoxSize(v); } }; },
+			[](ParticleSystem& m, const Vec3& v) { m.setBoxSize(v); }
+		),
+
+		// Field number radius, If the emitter type is **sphere**, **ring**, or **cylinder**, this alters the radius of the emitter.
+		"radius", sol::property(&ParticleSystem::getRadius, &ParticleSystem::setRadius),
+
+		// Field number ringThickness, If the emitter type is **ring**, this alters the ring thickness.
+		"ringThickness", sol::property(&ParticleSystem::getRingThickness, &ParticleSystem::setRingThickness),
+
+		// Field number cylinderLength, If the emitter type is **cylinder**, this alters the length of the cylinder.
+		"cylinderLength", sol::property(&ParticleSystem::getCylinderLength, &ParticleSystem::setCylinderLength)
 	);
 
 	obj[sol::meta_function::to_string] = [](const ParticleSystem& v) {
 		return "ParticleSystem";
 		};
+
+	// Sets the minimum color particles are influenced by on creation.
+	// Params Vec4 color
+	// Returns void
+	obj.set_function("setMinColor", &ParticleSystem::setMinColor);
+
+	// Sets the maximum color particles are influenced by on creation.
+	// Params Vec4 color
+	// Returns void
+	obj.set_function("setMaxColor", &ParticleSystem::setMaxColor);
+
+	// Clears all active particles from this `ParticleSystem`.
+	// Returns void
+	obj.set_function("clear", &ParticleSystem::clear);
+
+	// Emit `amount` particles from this `ParticleSystem` once.
+	// Params number? amount
+	// Returns void
+	obj.set_function("burst", &ParticleSystem::spark);
+
+	// Loads a `Material` to use for new particles.
+	// Params Material material
+	// Returns void
+	obj.set_function("loadMaterial", &ParticleSystem::loadMaterial);
+
+	// Adds an attraction affector to this `ParticleSystem`. This affector influences particle movement to attract to/detract from a point. For `affectAxis`, 0 = false and 1 = true.
+	// Params Vec3 pos, number spd, boolean attract, Vec3 affectAxis
+	// Returns void
+	obj.set_function("addAttractionAffector", &ParticleSystem::addAttractionAffector);
+
+	// Adds a fade out affector to this `ParticleSystem`. This affector influences particle color over `ms` milliseconds.
+	// Params Vec4 color, number ms
+	// Returns void
+	obj.set_function("addFadeOutAffector", &ParticleSystem::addFadeOutAffector);
+
+	// Adds a gravity affector to this `ParticleSystem`. This affector influences particle gravity to fully take over by `ms` milliseconds.
+	// Params Vec3 gravity, number ms
+	// Returns void
+	obj.set_function("addGravityAffector", &ParticleSystem::addGravityAffector);
+
+	// Adds a rotation affector to this `ParticleSystem`. This affector influences particle movement to rotate around a local `pos`.
+	// Params Vec3 rotSpd, Vec3 pos
+	// Returns void
+	obj.set_function("addRotationAffector", &ParticleSystem::addRotationAffector);
+
+	// Adds a scalar affector to this `ParticleSystem`. This affector influences particle scale.
+	// Params number scalar
+	// Returns void
+	obj.set_function("addScalarAffector", &ParticleSystem::addScalarAffector);
+
+	// Clears all active affectors on this `ParticleSystem`.
+	// Returns void
+	obj.set_function("clearAffectors", &ParticleSystem::clearAffectors);
+
+	// Sets the emitter type to **point**. This emitter emits particles from a point.
+	// Returns void
+	obj.set_function("setEmitterPoint", &ParticleSystem::loadPointEmitter);
+
+	// Sets the emitter type to **box**. This emitter emits particles in a box.
+	// Params Vec3 boxSize
+	// Returns void
+	obj.set_function("setEmitterBox", &ParticleSystem::loadBoxEmitter);
+
+	// Sets the emitter type to **sphere**. This emitter emits particles in a sphere.
+	// Params Vec3 center, number radius
+	// Returns void
+	obj.set_function("setEmitterSphere", &ParticleSystem::loadSphereEmitter);
+
+	// Sets the emitter type to **ring**. This emitter emits particles in a ring.
+	// Params Vec3 center, number radius, number thickness
+	// Returns void
+	obj.set_function("setEmitterRing", &ParticleSystem::loadRingEmitter);
+
+	// Sets the emitter type to **cylinder**. This emitter emits particles in a cylinder.
+	// Params Vec3 center, number radius, number length, boolean? outlineOnly
+	// Returns void
+	obj.set_function("setEmitterCylinder", &ParticleSystem::loadCylinderEmitter);
 
 	// End Object
 }

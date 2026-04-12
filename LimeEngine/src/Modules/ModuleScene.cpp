@@ -81,10 +81,10 @@ void Module::Scene::bind(Application* app) {
 	// Returns Texture
 	module.set_function("getErrorTexture", &Module::Scene::Bind::GetErrorTexture);
 
-	// If set to true, the rendering resolution will be that of the window resolution, updating on any window size changes. If false, the rendering resolution will remain the same size but upscale without anti-aliasing to the window resolution.
-	// Params boolean doRescale
+	// If set to true, the rendering resolution will be that of the window resolution, updating on any window size changes. If false, the rendering resolution will remain the same size but upscale to the window resolution using a letterboxed viewport.
+	// Params boolean dynamic
 	// Returns void
-	module.set_function("setRescaleRenderToWindowSize", &Module::Scene::Bind::SetMatchRenderResToWindow);
+	module.set_function("setDynamicResolution", &Module::Scene::Bind::SetMatchRenderResToWindow);
 
 	// Sets the render size to `size`. If the render size is set to rescale to the window size then this change will not take effect. See `Lime.Scene.setRescaleRenderToWindowSize`.
 	// Params Vec2 size

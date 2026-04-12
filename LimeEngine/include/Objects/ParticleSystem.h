@@ -24,8 +24,8 @@ public:
     int getType() const;
     void setType(int type); // Set the emitter type
 
-    bool getLocal() const;
-    void setLocal(bool v);
+    bool getGlobal() const;
+    void setGlobal(bool v);
 
     void clear();
     void spark(int amount = 1);
@@ -42,15 +42,18 @@ public:
 
     void loadMaterial(const Material& mat);
 
-    void loadPointEmitter(const Vec3& dir);
-    void loadBoxEmitter(const Vec3& dir, const Vec3& scale);
-    void loadSphereEmitter(const Vec3& dir, const Vec3& center, float radius);
-    void loadRingEmitter(const Vec3& dir, const Vec3& center, float radius, float thickness);
-    void loadCylinderEmitter(const Vec3& dir, const Vec3& center, float radius, float len, bool outlineOnly = false);
+    void loadPointEmitter();
+    void loadBoxEmitter(const Vec3& scale);
+    void loadSphereEmitter(const Vec3& center, float radius);
+    void loadRingEmitter(const Vec3& center, float radius, float thickness);
+    void loadCylinderEmitter(const Vec3& center, float radius, float len, bool outlineOnly = false);
     void loadUserParams();
 
     // Affector-specific
     // All
+    float getSpeed() const;
+    void setSpeed(float v);
+
     Vec2 getRates() const;
     void setRates(const Vec2&);
 
@@ -95,17 +98,20 @@ private:
     int curType = 0; // Point, Box, Sphere, Ring, Cylinder
     bool global = false;
 
+    struct Vec3S { float x, y, z; };
     struct Vec4S { int r, g, b, a; };
 
-    int minRate = 10;
-    int maxRate = 25;
-    int minLife = 1000;
-    int maxLife = 5000;
-    int maxAng = 0; // Omnidirectional
+    int minRate = 3;
+    int maxRate = 8;
+    int minLife = 100;
+    int maxLife = 500;
+    int maxAng = 360; // Omnidirectional
     float minScale = 1.0f;
     float maxScale = 1.0f;
     Vec4S minColor{ 255, 255, 255, 255 };
     Vec4S maxColor{ 255, 255, 255, 255 };
+    float emitStrength = 0.005f;
+    float rad = 2.5f;
 };
 
 namespace Object::ParticleSystemBind {

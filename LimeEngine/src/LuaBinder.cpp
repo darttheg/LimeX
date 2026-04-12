@@ -88,5 +88,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::RigidBodyBind::bind(ls, app->GetPhysicsManager(), app->GetRenderer());
 	Object::HingeConstraintBind::bind(ls);
 	Object::ConeTwistConstraintBind::bind(ls);
-	// Object::ParticleSystemBind::bind(ls, app->GetRenderHelper());
+	Object::ParticleSystemBind::bind(ls, app->GetRenderHelper());
 }
