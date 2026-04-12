@@ -381,7 +381,7 @@ Material = Material or {}
 function Material.new() end
 
 ---@class Mesh
----@field vertexColor Vec4 @Sets the color of all vertexes in this `Mesh`.
+---@field vertexColor Vec4 @Sets the color of all vertexes in this `Mesh`. The `Material` of this `Mesh` must have type `VertexAlpha` to take effect.
 ---@field collision boolean @Allows response to raypicks and other simple collision methods. (NOTE: This flag does not affect this `Mesh` when wrapped by a physics object.)
 ---@field frame number @Controls the current frame of animation.
 ---@field position Vec3 @The 3D position of this object in the scene.
@@ -412,6 +412,18 @@ Noise = Noise or {}
 ---@overload fun(seed:number, octaves:number): Noise
 ---@return Noise
 function Noise.new() end
+
+---@class ParticleSystem
+---@field position Vec3 @The 3D position of this object in the scene.
+---@field rotation Vec3 @The 3D rotation of this object in the scene in degrees.
+---@field scale Vec3 @The 3D scale of this object in the scene.
+---@field visible boolean @Determines the visibility of this object and its children.
+---@field id number @The identifier for this object to be used in raycasts and object selection.
+---@field debug boolean @Show debug information about this object in the scene.
+ParticleSystem = ParticleSystem or {}
+--- A particle emitter.
+---@return ParticleSystem
+function ParticleSystem.new() end
 
 ---@class RigidBody
 ---@field position Vec3 @The 3D position of this object in the scene.
@@ -1332,7 +1344,7 @@ function Lime.Scene.setLightManagementType(type) end
 ---@return void
 function Lime.Scene.setPostProcessingShader(shader) end
 
---- Sets the render quality of the scene using `Lime.Enum.Quality`.
+--- Sets the render quality of the scene using `Lime.Enum.Quality`. **WARNING**: This function only takes effect if post processing effects or window-render-matching are active.
 ---@param quality Lime.Enum.Quality
 ---@return void
 function Lime.Scene.setRenderQuality(quality) end
@@ -1359,7 +1371,7 @@ function Lime.Scene.setShadowColor(rgba) end
 function Lime.Scene.setSize(size) end
 
 --- **This function cannot be run until window creation.**  
---- Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality.
+--- Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality. **WARNING**: If post processing effects or window-render-matching are active, using this function will influence the quality of the application output.
 ---@param quality Lime.Enum.TextureCreationQuality
 ---@return void
 function Lime.Scene.setTextureCreationQuality(quality) end
@@ -1587,6 +1599,51 @@ function MeshBuffer:recalculateBoundingBox() end
 ---@param x number
 ---@return number
 function Noise:get(x) end
+
+--- Clears this object's attributes.
+---@return void
+function ParticleSystem:clearAttributes() end
+
+--- Destroys this object.
+---@return nil
+function ParticleSystem:destroy() end
+
+--- Returns the content of attribute `key` from this object's attributes.
+---@param key any
+---@return any
+function ParticleSystem:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+---@return table
+function ParticleSystem:getAttributes() end
+
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+---@return Vec4
+function ParticleSystem:getBoundingBox() end
+
+--- Returns the reference count for this object.
+---@return number
+function ParticleSystem:getReferenceCount() end
+
+--- Returns true if this object is parented to another 3D object.
+---@return boolean
+function ParticleSystem:hasParent() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+---@param pos Vec3
+---@return boolean
+function ParticleSystem:isPointInside(pos) end
+
+--- Parents this object to another 3D object.
+---@param parent any
+---@return boolean
+function ParticleSystem:parentTo(parent) end
+
+--- Sets `key` to `value` within this object's attributes.
+---@param key any
+---@param value any
+---@return void
+function ParticleSystem:setAttribute(key, value) end
 
 --- Applies a continous force to this `RigidBody`, where `pos` is in world space.
 ---@param force number
@@ -1932,10 +1989,10 @@ function Texture:keyColor(keyColor) end
 ---@return nil
 function Texture:purge() end
 
---- Renders the scene to this `Texture`.
----@overload fun(size:Vec2, viewpoint:Camera): void
+--- Renders the scene to this `Texture`. Returns the name of this `Texture`.
+---@overload fun(size:Vec2, viewpoint:Camera): string
 ---@param size Vec2
----@return void
+---@return string
 function Texture:renderToTexture(size) end
 
 --- Replaces the pixel at `pos` with a pixel of color `color`.

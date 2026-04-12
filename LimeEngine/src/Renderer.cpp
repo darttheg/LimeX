@@ -438,6 +438,10 @@ irr::video::ITexture* Renderer::createRenderTargetTexture(const Vec2& size, irr:
 	irr::video::ITexture* out = i_driver->addRenderTargetTexture(irr::core::dimension2du(size.getX(), size.getY()), outName.c_str());
 
 	irr::scene::ICameraSceneNode* prev = i_smgr->getActiveCamera();
+	if (!prev || !c) {
+		d->Warn("Failed to create render target texture: No valid Camera");
+		return nullptr;
+	}
 	irr::f32 prevAR = prev ? prev->getAspectRatio() : 0.0f;
 
 	updateFog();

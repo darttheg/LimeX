@@ -38,25 +38,29 @@ void ParticleSystem::setLocal(bool v) {
 }
 
 void ParticleSystem::clear() {
-
+	if (!pfx) return;
+	pfx->clearParticles();
 }
 
 void ParticleSystem::spark(int amount) {
-
+	if (!pfx) return;
+	pfx->spark(rh->getCurrentTime(), amount);
 }
 
 bool ParticleSystem::getActive() const {
-	return false;
+	return pfx ? pfx->active : false;
 }
 
 void ParticleSystem::setActive(bool v) {
-}
-
-bool ParticleSystem::hasOutgoingParticles() const {
-	return false;
+	if (!pfx) return;
+	pfx->active = v;
 }
 
 void ParticleSystem::addAttractionAffector(const Vec3& pos, float spd, bool attract, const Vec3& affectAxis) {
+	if (!pfx) return;
+	irr::core::vector3df outPos(pos.getX(), pos.getY(), pos.getZ());
+	irr::scene::IParticleAffector* out = pfx->createAttractionAffector(outPos, spd, attract, ceil(affectAxis.getX()) == 1, ceil(affectAxis.getY()) == 1, ceil(affectAxis.getZ()) == 1);
+	pfx->addAffector(out);
 }
 
 void ParticleSystem::addFadeOutAffector(const Vec4& color, int timeMs) {
@@ -132,6 +136,14 @@ float ParticleSystem::getRadius() const {
 }
 
 void ParticleSystem::setRadius(float v) {
+
+}
+
+float ParticleSystem::getHeight() const {
+
+}
+
+void ParticleSystem::setHeight(float v) {
 
 }
 

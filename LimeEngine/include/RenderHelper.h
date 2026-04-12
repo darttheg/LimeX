@@ -100,6 +100,7 @@ public:
 
 	// Misc
 	Vec2 toScreenPos(const Vec3& pos);
+	int getCurrentTime();
 
 	// Camera
 	void updateCameraMatrix(irr::scene::ICameraSceneNode* c);

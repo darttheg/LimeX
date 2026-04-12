@@ -413,6 +413,10 @@ Vec2 RenderHelper::toScreenPos(const Vec3& pos) {
 	return Vec2(screen.X, screen.Y);
 }
 
+int RenderHelper::getCurrentTime() {
+	return i_device ? i_device->getTimer()->getTime() : 0;
+}
+
 irr::scene::ICameraSceneNode* RenderHelper::createCameraNode() {
 	if (!guardRenderingCheck()) return nullptr;
 	irr::scene::ICameraSceneNode* cur = i_smgr->getActiveCamera();

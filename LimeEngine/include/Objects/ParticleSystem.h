@@ -34,8 +34,6 @@ public:
     bool getActive() const;
     void setActive(bool v);
 
-    bool hasOutgoingParticles() const; // Are there active particles in the scene from this emitter?
-
     void addAttractionAffector(const Vec3& pos, float spd, bool attract, const Vec3& affectAxis);
     void addFadeOutAffector(const Vec4& color, int timeMs);
     void addGravityAffector(const Vec3& grav, int timeToTakeOverMs);
