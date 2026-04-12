@@ -417,6 +417,19 @@ int RenderHelper::getCurrentTime() {
 	return i_device ? i_device->getTimer()->getTime() : 0;
 }
 
+irr::scene::ISceneNodeAnimator* RenderHelper::createDestroyAnimator(int ms) {
+	return i_device ? i_smgr->createDeleteAnimator(ms) : nullptr;
+}
+
+irr::scene::ISceneNodeAnimator* RenderHelper::createFlyStraightAnimator(const Vec3& start, const Vec3& end, int ms, bool loops, bool pingPong) {
+	return i_device ? i_smgr->createFlyStraightAnimator(irr::core::vector3df(start.getX(), start.getY(), start.getZ()), irr::core::vector3df(end.getX(), end.getY(), end.getZ()), ms, loops, pingPong) : nullptr;
+}
+
+irr::scene::ISceneNodeAnimator* RenderHelper::createRotationAnimator(const Vec3& rot) {
+	const float mult = 10.0f / 1000.0f;
+	return i_device ? i_smgr->createRotationAnimator(irr::core::vector3df(rot.getX() * mult, rot.getY() * mult, rot.getZ() * mult)) : nullptr;
+}
+
 irr::scene::ICameraSceneNode* RenderHelper::createCameraNode() {
 	if (!guardRenderingCheck()) return nullptr;
 	irr::scene::ICameraSceneNode* cur = i_smgr->getActiveCamera();

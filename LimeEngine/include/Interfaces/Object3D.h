@@ -53,6 +53,11 @@ public:
 	sol::object getAttribute(sol::object key);
 	sol::object getAttributes();
 	void clearAttributes();
+
+	void addDestroyAnimator(int ms);
+	void addFlyAnimator(const Vec3& start, const Vec3& end, int ms, bool loops = false, bool pingPong = false);
+	void addRotatorAnimator(const Vec3& rot);
+	void clearAnimators();
 protected:
 	bool debug = false;
 	irr::scene::IBillboardSceneNode* dVisual = nullptr;

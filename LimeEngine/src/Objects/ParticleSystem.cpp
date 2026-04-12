@@ -64,50 +64,86 @@ void ParticleSystem::addAttractionAffector(const Vec3& pos, float spd, bool attr
 }
 
 void ParticleSystem::addFadeOutAffector(const Vec4& color, int timeMs) {
+	if (!pfx) return;
+	irr::scene::IParticleAffector* out = pfx->createFadeOutParticleAffector(irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()), timeMs);
+	pfx->addAffector(out);
 }
 
 void ParticleSystem::addGravityAffector(const Vec3& grav, int timeToTakeOverMs) {
+	if (!pfx) return;
+	irr::scene::IParticleAffector* out = pfx->createGravityAffector(irr::core::vector3df(grav.getX(), grav.getY(), grav.getZ()), timeToTakeOverMs);
+	pfx->addAffector(out);
 }
 
 void ParticleSystem::addRotationAffector(const Vec3& rotSpd, const Vec3& pos) {
+	if (!pfx) return;
+	irr::scene::IParticleAffector* out = pfx->createRotationAffector(irr::core::vector3df(rotSpd.getX(), rotSpd.getY(), rotSpd.getZ()), irr::core::vector3df(pos.getX(), pos.getY(), pos.getZ()));
+	pfx->addAffector(out);
 }
 
 void ParticleSystem::addScalarAffector(float scalar) {
+	if (!pfx) return;
+	irr::scene::IParticleAffector* out = pfx->createScaleParticleAffector(irr::core::dimension2df(scalar, scalar));
+	pfx->addAffector(out);
 }
 
 void ParticleSystem::clearAffectors() {
+	if (!pfx) return;
+	pfx->removeAllAffectors();
 }
 
 void ParticleSystem::loadMaterial(const Material& mat) {
-
+	if (!pfx) return;
+	pfx->getMaterial(0) = mat.getMaterial();
 }
 
 Vec2 ParticleSystem::getRates() const {
-	return Vec2();
+	if (!pfx) return Vec2();
+	auto* e = pfx->getEmitter();
+	return Vec2(e->getMinParticlesPerSecond(), e->getMaxParticlesPerSecond());
 }
 
-void ParticleSystem::setRates(const Vec2&) {
+void ParticleSystem::setRates(const Vec2& v) {
+	if (!pfx) return;
+	auto* e = pfx->getEmitter();
+	e->setMinLifeTime(v.getX());
+	e->setMaxLifeTime(v.getY());
 }
 
 float ParticleSystem::getSpread() const {
-	return 0.0f;
+	return pfx ? pfx->getEmitter()->getMaxAngleDegrees() : 0;
 }
 
 void ParticleSystem::setSpread(float v) {
+	if (!pfx) return;
+	auto* e = pfx->getEmitter();
+	e->setMaxAngleDegrees(v);
 }
 
 Vec2 ParticleSystem::getMinMaxLife() const {
-	return Vec2();
+	if (!pfx) return Vec2();
+	auto* e = pfx->getEmitter();
+	return Vec2(e->getMinLifeTime(), e->getMaxLifeTime());
 }
 
 void ParticleSystem::setMinMaxLife(const Vec2& v) {
+	if (!pfx) return;
+	auto* e = pfx->getEmitter();
+	e->setMinLifeTime(v.getX());
+	e->setMaxLifeTime(v.getY());
 }
 
 Vec2 ParticleSystem::getMinMaxScale() const {
-	return Vec2();
+	if (!pfx) return Vec2();
+	auto* e = pfx->getEmitter();
+	return Vec2(e->getMinStartSize().Width, e->getMaxStartSize().Width);
 }
 
-void ParticleSystem::setMinMaxScale(const Vec2& scale) {
+void ParticleSystem::setMinMaxScale(const Vec2& v) {
+	if (!pfx) return;
+	auto* e = pfx->getEmitter();
+	e->setMinStartSize(irr::core::dimension2df(v.getX(), v.getX()));
+	e->setMaxStartSize(irr::core::dimension2df(v.getY(), v.getY()));
 }
 
 Vec4 ParticleSystem::getMinColor() const {

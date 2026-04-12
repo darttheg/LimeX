@@ -121,6 +121,29 @@ void Object3D::clearAttributes() {
     rh->clearAttributes(getNode());
 }
 
+void Object3D::addDestroyAnimator(int ms) {
+    if (!getNode()) return;
+    auto* out = rh->createDestroyAnimator(ms);
+    if (out) { getNode()->addAnimator(out); out->drop(); }
+}
+
+void Object3D::addFlyAnimator(const Vec3& start, const Vec3& end, int ms, bool loops, bool pingPong) {
+    if (!getNode()) return;
+    auto* out = rh->createFlyStraightAnimator(start, end, ms, loops, pingPong);
+    if (out) { getNode()->addAnimator(out); out->drop(); }
+}
+
+void Object3D::addRotatorAnimator(const Vec3& rot) {
+    if (!getNode()) return;
+    auto* out = rh->createRotationAnimator(rot);
+    if (out) { getNode()->addAnimator(out); out->drop(); }
+}
+
+void Object3D::clearAnimators() {
+    if (!getNode()) return;
+    getNode()->removeAnimators();
+}
+
 int Object3D::getID() const {
     return getNode() ? getNode()->getID() : 0;
 }
@@ -223,6 +246,25 @@ void Interface::Object3DBind::bind(lua_State* ls, RenderHelper* renh) {
     // Clears this object's attributes.
     // Returns void
     obj.set_function("clearAttributes", &Object3D::clearAttributes);
+
+    // Clears all animators attached to this object.
+    // Returns void
+    obj.set_function("clearAnimators", &Object3D::clearAnimators);
+
+    // After `ms` milliseconds, this object will destroy itself.
+    // Params number ms
+    // Returns void
+    obj.set_function("addDestroyAnimator", &Object3D::addDestroyAnimator);
+
+    // This object will move from `posA` to `posB` over `ms` milliseconds.
+    // Params Vec3 posA, Vec3 posB, number ms, boolean? loops, boolean? pingPong
+    // Returns void
+    obj.set_function("addMoveToAnimator", &Object3D::addFlyAnimator);
+
+    // This object will rotate `rot` degrees per second.
+    // Params Vec3 rot
+    // Returns void
+    obj.set_function("addRotateAnimator", &Object3D::addRotatorAnimator);
 
     // End Interface
 }

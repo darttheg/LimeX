@@ -28,6 +28,7 @@ namespace irr {
 		class ISceneCollisionManager;
 		class ILightSceneNode;
 		class IParticleSystemSceneNode;
+		class ISceneNodeAnimator;
 	}
 	namespace video {
 		class IVideoDriver;
@@ -101,6 +102,11 @@ public:
 	// Misc
 	Vec2 toScreenPos(const Vec3& pos);
 	int getCurrentTime();
+
+	// Animators
+	irr::scene::ISceneNodeAnimator* createDestroyAnimator(int ms);
+	irr::scene::ISceneNodeAnimator* createFlyStraightAnimator(const Vec3& start, const Vec3& end, int ms, bool loops = false, bool pingPong = false);
+	irr::scene::ISceneNodeAnimator* createRotationAnimator(const Vec3& rot);
 
 	// Camera
 	void updateCameraMatrix(irr::scene::ICameraSceneNode* c);
