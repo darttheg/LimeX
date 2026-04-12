@@ -23,7 +23,6 @@ public:
 
     int getType() const;
     void setType(int type); // Set the emitter type
-    void applyPreset(int type); // Configures pfx to each type for you
 
     bool getLocal() const;
     void setLocal(bool v);
@@ -43,13 +42,20 @@ public:
 
     void loadMaterial(const Material& mat);
 
+    void loadPointEmitter(const Vec3& dir);
+    void loadBoxEmitter(const Vec3& dir, const Vec3& scale);
+    void loadSphereEmitter(const Vec3& dir, const Vec3& center, float radius);
+    void loadRingEmitter(const Vec3& dir, const Vec3& center, float radius, float thickness);
+    void loadCylinderEmitter(const Vec3& dir, const Vec3& center, float radius, float len, bool outlineOnly = false);
+    void loadUserParams();
+
     // Affector-specific
     // All
     Vec2 getRates() const;
     void setRates(const Vec2&);
 
-    float getSpread() const;
-    void setSpread(float v);
+    int getMaxAngle() const;
+    void setMaxAngle(int v);
 
     Vec2 getMinMaxLife() const;
     void setMinMaxLife(const Vec2& v);
@@ -72,12 +78,12 @@ public:
     void setRadius(float v);
 
     // Ring
-    float getThickness() const;
-    void setThickness(float v);
+    float getRingThickness() const;
+    void setRingThickness(float v);
 
     // Cylinder
-    float getHeight() const;
-    void setHeight(float v);
+    float getCylinderLength() const;
+    void setCylinderLength(float v);
 
     void destroy() override;
     void setDebug(bool v) override;
@@ -86,7 +92,20 @@ public:
 private:
     irr::scene::IParticleSystemSceneNode* pfx = nullptr;
 
+    int curType = 0; // Point, Box, Sphere, Ring, Cylinder
     bool global = false;
+
+    struct Vec4S { int r, g, b, a; };
+
+    int minRate = 10;
+    int maxRate = 25;
+    int minLife = 1000;
+    int maxLife = 5000;
+    int maxAng = 0; // Omnidirectional
+    float minScale = 1.0f;
+    float maxScale = 1.0f;
+    Vec4S minColor{ 255, 255, 255, 255 };
+    Vec4S maxColor{ 255, 255, 255, 255 };
 };
 
 namespace Object::ParticleSystemBind {
