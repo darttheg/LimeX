@@ -6,6 +6,7 @@ class Vec2;
 class Vec3;
 class Vec4;
 class Renderer;
+class Mesh;
 
 #include "sol/forward.hpp"
 
@@ -27,6 +28,9 @@ namespace irr {
 class MeshBuffer {
 public:
 	MeshBuffer();
+	MeshBuffer(const Mesh& m);
+
+	bool loadMesh(const Mesh& m, int layer = 0);
 
 	void pushFace(const Vec3& v1, const Vec3& v2, const Vec3& v3,
 		const Vec3& n1, const Vec3& n2, const Vec3& n3,

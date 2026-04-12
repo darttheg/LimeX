@@ -4,6 +4,7 @@
 #include "Objects/Vec2.h"
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
+#include "Objects/Mesh.h"
 
 #include "irrlicht.h"
 #include <sol/sol.hpp>
@@ -13,6 +14,18 @@ static Renderer* r;
 
 MeshBuffer::MeshBuffer() {
 	buffer = new irr::scene::SMeshBuffer();
+}
+
+MeshBuffer::MeshBuffer(const Mesh& m) {
+	loadMesh(m, 0);
+}
+
+bool MeshBuffer::loadMesh(const Mesh& m, int layer) {
+	auto* b = static_cast<irr::scene::IAnimatedMeshSceneNode*>(m.getNode());
+	if (!b) return false;
+	auto* out = b->getMesh()->getMeshBuffer(layer);
+	if (out) buffer = out;
+	return out;
 }
 
 void MeshBuffer::pushFace(const Vec3& v1, const Vec3& v2, const Vec3& v3, const Vec3& n1, const Vec3& n2, const Vec3& n3, const Vec2& uvw1, const Vec2& uvw2, const Vec2& uvw3, const Vec4& c1, const Vec4& c2, const Vec4& c3) {
@@ -77,11 +90,12 @@ void Object::MeshBufferBind::bind(lua_State* ls, Renderer* rend) {
 	// Object MeshBuffer, A container for vertices.
 
 	// Constructor
+	// Constructor Mesh
 
 	sol::state_view view(ls);
 	sol::usertype<MeshBuffer> obj = view.new_usertype<MeshBuffer>(
 		"MeshBuffer",
-		sol::constructors<MeshBuffer()>(),
+		sol::constructors<MeshBuffer(), MeshBuffer(const Mesh& m)>(),
 
 		sol::meta_function::type, [](const MeshBuffer&) { return "MeshBuffer"; }
 	);
@@ -114,6 +128,12 @@ void Object::MeshBufferBind::bind(lua_State* ls, Renderer* rend) {
 	// Purges this `MeshBuffer`, effectively removing it from memory. Objects using this `MeshBuffer` will use an engine-defined `MeshBuffer` instead, but it is recommended to remove references to this `MeshBuffer` first.
 	// Returns nil
 	obj.set_function("purge", &MeshBuffer::purge);
+
+	// Loads the `MeshBuffer` stored within the provided `Mesh`.
+	// Params Mesh mesh
+	// Params Mesh mesh, number? layer
+	// Returns boolean
+	obj.set_function("loadMesh", &MeshBuffer::loadMesh);
 
 	// End Object
 }
