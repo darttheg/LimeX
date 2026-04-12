@@ -72,7 +72,7 @@ void Module::Scene::bind(Application* app) {
 	// Returns void
 	module.set_function("setLightManagementType", &Module::Scene::Bind::SetLightManagementType);
 
-	// [+] Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality.
+	// [+] Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality. **WARNING**: If post processing effects or window-render-matching are active, using this function will influence the quality of the application output.
 	// Params Lime.Enum.TextureCreationQuality quality
 	// Returns void
 	module.set_function("setTextureCreationQuality", &Module::Scene::Bind::SetTextureCreationQuality);
@@ -91,7 +91,7 @@ void Module::Scene::bind(Application* app) {
 	// Returns void
 	module.set_function("setSize", &Module::Scene::Bind::SetRenderSize);
 
-	// Sets the render quality of the scene using `Lime.Enum.Quality`.
+	// Sets the render quality of the scene using `Lime.Enum.Quality`. **WARNING**: This function only takes effect if post processing effects or window-render-matching are active.
 	// Params Lime.Enum.Quality quality
 	// Returns void
 	module.set_function("setRenderQuality", &Module::Scene::Bind::SetRenderQuality);

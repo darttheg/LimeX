@@ -4,8 +4,9 @@
 #include <iostream>
 #include <string>
 
-void QuadRenderer::init(irr::video::IVideoDriver* d) {
+void QuadRenderer::init(irr::video::IVideoDriver* d, irr::gui::IGUIEnvironment* g) {
     driver = d;
+    gui = g;
 
     buildQuad();
     recreateRt();
@@ -69,15 +70,12 @@ void QuadRenderer::beginInternal()
 }
 
 void QuadRenderer::beginGUIPass() {
-    qMat.setTexture(0, rtGUI);
-
     driver->setRenderTarget(rtGUI, true, true);
 }
 
 void QuadRenderer::endInternal()
 {
-    if (!driver)
-        return;
+    if (!driver) return;
 
     driver->setRenderTarget(nullptr, false, false);
     timeToRecreate += 1;
@@ -93,7 +91,7 @@ void QuadRenderer::presentToWindow()
     // Scene
     qMat.setTexture(0, rtScene);
     qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, highQuality);
-    qMat.setFlag(irr::video::EMF_ANTI_ALIASING, highQuality ? irr::video::E_ANTI_ALIASING_MODE::EAAM_LINE_SMOOTH : irr::video::E_ANTI_ALIASING_MODE::EAAM_OFF);
+    qMat.setFlag(irr::video::EMF_ANTI_ALIASING, highQuality ? irr::video::E_ANTI_ALIASING_MODE::EAAM_SIMPLE : irr::video::E_ANTI_ALIASING_MODE::EAAM_OFF);
     
     if (ppxType >= 0)
         qMat.MaterialType = static_cast<irr::video::E_MATERIAL_TYPE>(ppxType);

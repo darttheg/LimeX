@@ -90,6 +90,18 @@ bool Window::Create() {
 	else
 		glfwSetWindowAspectRatio(glfwWindow, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
+	glfwSetWindowPosCallback(glfwWindow, [](GLFWwindow* win, int x, int y) {
+		HWND hwnd = a->GetWindow()->GetHandle();
+		auto* d = a->GetDebugConsole();
+		auto* w = a->GetWindow();
+		auto* r = a->GetRenderer();
+
+		if (w->inFullscreenCallback) return;
+
+		w->preFullWinPos.x = x;
+		w->preFullWinPos.y = y;
+	});
+
 	glfwSetWindowMaximizeCallback(glfwWindow, [](GLFWwindow* win, int maximized) {
 		HWND hwnd = a->GetWindow()->GetHandle();
 		auto* d = a->GetDebugConsole();
@@ -158,7 +170,7 @@ bool Window::Create() {
 
 	resizeEvent:;
 		r->setOnResize(width, height);
-		w->WindowResize.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
+		if (r->getMatchRes()) w->WindowResize.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
 	});
 
 	if (glfwRawMouseMotionSupported())

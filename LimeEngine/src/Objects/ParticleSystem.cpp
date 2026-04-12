@@ -10,7 +10,7 @@
 #include "Objects/Vec4.h"
 #include "Objects/Material.h"
 
-static RenderHelper* rh;
+static RenderHelper* rh = nullptr;
 
 ParticleSystem::ParticleSystem() {
 	pfx = rh->createParticleSystem();

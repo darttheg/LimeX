@@ -8,7 +8,7 @@ class ShaderMaterial;
 
 class QuadRenderer {
 public:
-	void init(irr::video::IVideoDriver* driver);
+	void init(irr::video::IVideoDriver* driver, irr::gui::IGUIEnvironment* gui);
 	void setInternalResolution(std::uint32_t w, std::uint32_t h);
 	void setWindowResolution(std::uint32_t w, std::uint32_t h);
 	void setMatchWindowRender(bool m);
@@ -31,8 +31,11 @@ public:
 
 	void setSceneRenderQuality(int q);
 
+	bool ppxActive() { return ppxType != -1; }
+
 private:
 	irr::video::IVideoDriver* driver = nullptr;
+	irr::gui::IGUIEnvironment* gui = nullptr;
 
 	std::uint32_t resW = 640, resH = 480;
 	std::uint32_t winW = 640, winH = 480;
@@ -50,7 +53,7 @@ private:
 
 	int timeToRecreate = 0;
 	bool didRecreate = true;
-	bool highQuality = false;
+	bool highQuality = true;
 
 	void buildQuad();
 	void recreateRt();

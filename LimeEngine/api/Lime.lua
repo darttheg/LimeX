@@ -1344,7 +1344,7 @@ function Lime.Scene.setLightManagementType(type) end
 ---@return void
 function Lime.Scene.setPostProcessingShader(shader) end
 
---- Sets the render quality of the scene using `Lime.Enum.Quality`.
+--- Sets the render quality of the scene using `Lime.Enum.Quality`. **WARNING**: This function only takes effect if post processing effects or window-render-matching are active.
 ---@param quality Lime.Enum.Quality
 ---@return void
 function Lime.Scene.setRenderQuality(quality) end
@@ -1371,7 +1371,7 @@ function Lime.Scene.setShadowColor(rgba) end
 function Lime.Scene.setSize(size) end
 
 --- **This function cannot be run until window creation.**  
---- Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality.
+--- Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality. **WARNING**: If post processing effects or window-render-matching are active, using this function will influence the quality of the application output.
 ---@param quality Lime.Enum.TextureCreationQuality
 ---@return void
 function Lime.Scene.setTextureCreationQuality(quality) end

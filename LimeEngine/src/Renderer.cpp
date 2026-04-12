@@ -196,7 +196,8 @@ bool Renderer::Init() {
 		}
 		});
 
-	qr->init(i_driver);
+	qr->init(i_driver, i_gui);
+	qr->setWindowResolution(w->getSize().getX(), w->getSize().getY());
 	qr->setInternalResolution(renderSize.x, renderSize.y);
 
 	rh->Init(i_device, d);
@@ -212,7 +213,6 @@ bool Renderer::Init() {
 	isCreated = true;
 	setTextureCreationQuality(1); // Medium
 	setLightManagementType(0); // EightNearest
-	setSceneRenderQuality(0); // Low
 
 	return true;
 }
@@ -245,8 +245,7 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		i_smgr->getActiveCamera()->setAspectRatio(w->getWinAR());
 	}
 
-	/*
-	if (doMatchResolution) {
+	if (doMatchResolution && !qr->ppxActive()) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		i_smgr->drawAll();
 		guiManager->Render();
@@ -260,8 +259,8 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		qr->presentToWindow();
 	}
-	*/
 
+	/*
 	qr->beginInternal();
 	i_smgr->drawAll(); // Draw scene objects to rtScene
 	qr->beginGUIPass();
@@ -270,6 +269,7 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 
 	i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 	qr->presentToWindow();
+	*/
 
 	physics->Update(dt);
 
