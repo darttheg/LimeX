@@ -11,6 +11,7 @@
 
 class Application;
 class Event;
+class Packet;
 
 #include <enet/enet.h>
 
@@ -60,9 +61,13 @@ public:
 	void connect(const std::string& ip, int port);
 	void disconnect();
 
+	void sendPacket(const Packet& p, int channel = 0, bool reliable = true, int peerID = -1); // Broadcasts by default (ID = -1)
+
 	bool isHost() const { return server != nullptr; }
 	bool isConnected() const { return client != nullptr; }
 private:
+	bool initialized = false;
+
 	ENetHost* server = nullptr;
 	ENetHost* client = nullptr;
 	ENetPeer* serverPeer = nullptr;

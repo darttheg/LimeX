@@ -3,6 +3,7 @@
 #include "DebugConsole.h"
 
 #include "Objects/Event.h"
+#include "Objects/Packet.h"
 
 static Application* a = nullptr;
 static DebugConsole* d = nullptr;
@@ -23,6 +24,7 @@ bool NetworkManager::Init() {
 		LimeOnReceive = std::make_shared<Event>();
 	}
 
+	initialized = ok;
 	return ok;
 }
 
@@ -49,8 +51,9 @@ void NetworkManager::Update() {
 			}
 			break;
 		case NetEvent::Type::Receive:
-			// Packet logic
-			LimeOnReceive.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }); // Add Packet
+			Packet p(event.data);
+			// Lime.Network.onPacketReceived
+			LimeOnReceive.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, p, event.peerID); // peerID is only used by server
 			break;
 		}
 	}
@@ -62,9 +65,60 @@ void NetworkManager::Shutdown() {
 }
 
 void NetworkManager::host(int port, int maxPlayers) {
+	if (!initialized) {
+		d->PostError("Cannot host as networking is not initialized");
+		return;
+	}
+
+	if (server || client) {
+		d->PostError("Cannot host a server while already connected to one");
+		return;
+	}
+
+	ENetAddress address;
+	address.host = ENET_HOST_ANY;
+	address.port = port;
+	server = enet_host_create(&address, maxPlayers, 2, 0, 0);
+
+	if (!server) {
+		d->PostError("Failed to host server");
+		return;
+	}
+
+	running = true;
+	netThread = std::thread(&NetworkManager::loop, this);
 }
 
 void NetworkManager::connect(const std::string& ip, int port) {
+	if (!initialized) {
+		d->PostError("Cannot connect as networking is not initialized");
+		return;
+	}
+
+	if (server || client) {
+		d->PostError("Cannot connect to another server while connected to an existing one");
+		return;
+	}
+
+	client = enet_host_create(nullptr, 1, 2, 0, 0);
+	if (!client) {
+		d->PostError("Failed to create client");
+		return;
+	}
+
+	ENetAddress address;
+	enet_address_set_host(&address, ip.c_str());
+	address.port = port;
+	serverPeer = enet_host_connect(client, &address, 2, 0);
+	if (!serverPeer) {
+		d->PostError("Failed to create client");
+		enet_host_destroy(client);
+		client = nullptr;
+		return;
+	}
+
+	running = true;
+	netThread = std::thread(&NetworkManager::loop, this);
 }
 
 void NetworkManager::disconnect() {
@@ -85,6 +139,15 @@ void NetworkManager::disconnect() {
 		enet_host_destroy(server);
 		server = nullptr;
 	}
+}
+
+void NetworkManager::sendPacket(const Packet& p, int channel, bool reliable, int peerID) {
+	NetSend out;
+	out.data = p.getData();
+	out.channel = channel;
+	out.reliable = reliable;
+	out.peerID = peerID;
+	outbound.push(std::move(out));
 }
 
 void NetworkManager::loop() {
@@ -132,8 +195,13 @@ void NetworkManager::flushOutbound() {
 		uint32_t flags = s.reliable ? ENET_PACKET_FLAG_RELIABLE : 0;
 		ENetPacket* packet = enet_packet_create(s.data.data(), s.data.size(), flags);
 
-		if (server) enet_host_broadcast(server, s.channel, packet);
-		else if (client && serverPeer)
+		if (server) {
+			if (s.peerID == -1) enet_host_broadcast(server, s.channel, packet);
+			else {
+				ENetPeer* peer = &server->peers[s.peerID];
+				if (peer) enet_peer_send(peer, s.channel, packet);
+			}
+		} else if (client && serverPeer)
 			enet_peer_send(serverPeer, s.channel, packet);
 	}
 }
