@@ -1,6 +1,4 @@
 #pragma once
-#define _WINSOCKAPI_
-#include <windows.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"

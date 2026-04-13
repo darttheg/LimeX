@@ -244,6 +244,9 @@
     <ClInclude Include="include\Objects\Packet.h">
       <Filter>Engine\Runtime\Objects\Common</Filter>
     </ClInclude>
+    <ClInclude Include="include\External\ENetConflict.h">
+      <Filter>Engine\Runtime\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">

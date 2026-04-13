@@ -4,9 +4,6 @@
 #include <vector>
 #include <mutex>
 
-#define _WINSOCKAPI_
-#include <windows.h>
-
 class Application;
 
 enum struct MESSAGE_TYPE : int {

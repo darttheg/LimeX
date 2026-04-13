@@ -327,9 +327,9 @@ void ParticleSystem::setBoxSize(const Vec3& size) {
 	if (!pfx) return;
 	auto* e = static_cast<irr::scene::IParticleBoxEmitter*>(pfx->getEmitter());
 	if (!e) return;
-	irr::core::vector3df min(-1.0f * size.getX() / 2.0f, -1.0f * size.getY() / 2.0f, -1.0f * size.getY() / 2.0f);
-	irr::core::vector3df max(size.getX() / 2.0f, size.getY() / 2.0f, size.getY() / 2.0f);
-	e->setBox(irr::core::aabbox3df(min, max));
+	irr::core::vector3df minSize(-1.0f * size.getX() / 2.0f, -1.0f * size.getY() / 2.0f, -1.0f * size.getY() / 2.0f);
+	irr::core::vector3df maxSize(size.getX() / 2.0f, size.getY() / 2.0f, size.getY() / 2.0f);
+	e->setBox(irr::core::aabbox3df(minSize, maxSize));
 }
 
 float ParticleSystem::getRadius() const {
