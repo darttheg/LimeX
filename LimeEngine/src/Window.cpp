@@ -1,4 +1,7 @@
 #pragma once
+#define _WINSOCKAPI_
+#include <windows.h>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Window.h"
@@ -18,9 +21,6 @@
 static Application* a;
 static DebugConsole* d;
 static Window* w;
-
-#ifdef _WIN32
-#include <windows.h>
 
 static void SetMainWindowIcon(HWND hwnd) {
 	HICON hBig = (HICON)LoadImageW(
@@ -42,7 +42,6 @@ static void SetMainWindowIcon(HWND hwnd) {
 	if (hBig)   SendMessageW(hwnd, WM_SETICON, ICON_BIG, (LPARAM)hBig);
 	if (hSmall) SendMessageW(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hSmall);
 }
-#endif
 
 Window::Window(Application* app) {
 	a = app;

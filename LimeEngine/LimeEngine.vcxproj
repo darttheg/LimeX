@@ -43,6 +43,7 @@
     <ClInclude Include="include\Modules\ModuleScene.h" />
     <ClInclude Include="include\Modules\ModuleSound.h" />
     <ClInclude Include="include\Modules\ModuleWindow.h" />
+    <ClInclude Include="include\NetworkManager.h" />
     <ClInclude Include="include\Objects\Billboard.h" />
     <ClInclude Include="include\Objects\Camera.h" />
     <ClInclude Include="include\Objects\Constraints.h" />
@@ -58,6 +59,7 @@
     <ClInclude Include="include\Objects\Mesh.h" />
     <ClInclude Include="include\Objects\MeshBuffer.h" />
     <ClInclude Include="include\Objects\Noise.h" />
+    <ClInclude Include="include\Objects\Packet.h" />
     <ClInclude Include="include\Objects\ParticleSystem.h" />
     <ClInclude Include="include\Objects\RigidBody.h" />
     <ClInclude Include="include\Objects\ShaderMaterial.h" />
@@ -98,6 +100,7 @@
     <ClCompile Include="src\Modules\ModuleScene.cpp" />
     <ClCompile Include="src\Modules\ModuleSound.cpp" />
     <ClCompile Include="src\Modules\ModuleWindow.cpp" />
+    <ClCompile Include="src\NetworkManager.cpp" />
     <ClCompile Include="src\Objects\Billboard.cpp" />
     <ClCompile Include="src\Objects\Camera.cpp" />
     <ClCompile Include="src\Objects\Constraints.cpp" />
@@ -110,6 +113,7 @@
     <ClCompile Include="src\Objects\Mesh.cpp" />
     <ClCompile Include="src\Objects\MeshBuffer.cpp" />
     <ClCompile Include="src\Objects\Noise.cpp" />
+    <ClCompile Include="src\Objects\Packet.cpp" />
     <ClCompile Include="src\Objects\ParticleSystem.cpp" />
     <ClCompile Include="src\Objects\RigidBody.cpp" />
     <ClCompile Include="src\Objects\ShaderMaterial.cpp" />
@@ -140,9 +144,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="lime.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="changes.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -268,15 +269,15 @@ call "$(SolutionDir)build.bat"</Command>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)thirdparty;$(ProjectDir)api;..\..\glfw-3.4.bin.WIN64\include;..\..\lua-5.4.8\src;..\..\sol2\include;..\..\irrlicht-1.8.5\include;..\..\irrKlang-1.6.0\include;..\..\freetype-master\include;..\..\bullet3-2.83.7\src;..\..\irrBullet</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)thirdparty;$(ProjectDir)api;..\..\glfw-3.4.bin.WIN64\include;..\..\lua-5.4.8\src;..\..\sol2\include;..\..\irrlicht-1.8.5\include;..\..\irrKlang-1.6.0\include;..\..\freetype-master\include;..\..\bullet3-2.83.7\src;..\..\irrBullet;..\..\enet-1.3.18\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>$(CoreLibraryDependencies);winmm.lib;ws2_32.lib;glfw3.lib;Lua54.lib;opengl32.lib;irrlicht.lib;freetype.lib;irrBullet.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\glfw-3.4.bin.WIN64\lib-vc2022;..\..\Lua54\x64\Release;..\..\irrlicht-1.8.5\lib\Win64-visualStudio;..\..\irrKlang-1.6.0\lib\Winx64-visualStudio;..\..\freetype-master\build\Release;..\..\bullet3-2.83.7\build\lib\Release;..\..\irrBullet\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);winmm.lib;ws2_32.lib;glfw3.lib;Lua54.lib;opengl32.lib;irrlicht.lib;freetype.lib;irrBullet.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;enet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\glfw-3.4.bin.WIN64\lib-vc2022;..\..\Lua54\x64\Release;..\..\irrlicht-1.8.5\lib\Win64-visualStudio;..\..\irrKlang-1.6.0\lib\Winx64-visualStudio;..\..\freetype-master\build\Release;..\..\bullet3-2.83.7\build\lib\Release;..\..\irrBullet\x64\Release;..\..\enet-1.3.18\build\Release</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>call "$(ProjectDir)compileRc.bat"

@@ -238,6 +238,12 @@
     <ClInclude Include="include\Objects\ParticleSystem.h">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClInclude>
+    <ClInclude Include="include\NetworkManager.h">
+      <Filter>Engine\Runtime\Core\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Objects\Packet.h">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -387,6 +393,12 @@
     <ClCompile Include="src\Objects\ParticleSystem.cpp">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
+    <ClCompile Include="src\NetworkManager.cpp">
+      <Filter>Engine\Runtime\Core\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Packet.cpp">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="api\Enums.api.inl">
@@ -400,10 +412,5 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="resources.zip" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="changes.txt">
-      <Filter>Engine</Filter>
-    </Text>
   </ItemGroup>
 </Project>

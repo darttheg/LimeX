@@ -22,6 +22,7 @@ class RenderHelper;
 class GUIManager;
 class SoundManager;
 class PhysicsManager;
+class NetworkManager;
 
 struct WindowConfig {
 	int driverType = 0;
@@ -64,6 +65,7 @@ public:
 	bool IsRunning() { return running; }
 	sol::state& GetLuaState() { return *lua; }
 	SoundManager* GetSoundManager() { return soundManager; }
+	NetworkManager* GetNetworkManager() { return network; }
 	PhysicsManager* GetPhysicsManager();
 	
 	std::string GetLuaLocation();
@@ -122,4 +124,7 @@ private:
 
 	// Cmd
 	std::unordered_map<std::string, std::string> cmd;
+
+	// Networking
+	NetworkManager* network = nullptr;
 };

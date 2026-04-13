@@ -14,6 +14,7 @@
 #include "Objects/Vec2.h"
 #include "FrameLimiter.h"
 #include "PhysicsManager.h"
+#include "NetworkManager.h"
 
 std::string readFile(const char* path) {
 	std::ifstream file(path);
@@ -164,6 +165,7 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	window = new Window(this);
 	renderer = new Renderer(this);
 	soundManager = new SoundManager(this);
+	network = new NetworkManager(this);
 	receiver = new Receiver(this, renderer->getGUIManager()); // Kind of odd, hopefully no issues in the future
 	// Context: Without this ^, button events have to go from receiver, up to application, then through renderer to GUIManager...
 	limiter = new FrameLimiter();
@@ -230,6 +232,12 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	if (!soundManager->Init()) {
 		console->PostError("Failed to create sound manager", true);
 		displayMessage("Lime Init Error", "Failed to create sound manager", 1);
+		return false;
+	}
+
+	if (!network->Init()) {
+		console->PostError("Failed to create network manager", true);
+		displayMessage("Lime Init Error", "Failed to create network manager", 1);
 		return false;
 	}
 

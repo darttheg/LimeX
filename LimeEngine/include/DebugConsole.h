@@ -3,7 +3,9 @@
 #include <string>
 #include <vector>
 #include <mutex>
-#include <Windows.h>
+
+#define _WINSOCKAPI_
+#include <windows.h>
 
 class Application;
 
