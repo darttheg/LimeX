@@ -228,8 +228,8 @@ void ParticleSystem::setRates(const Vec2& v) {
 	if (!pfx) return;
 	auto* e = pfx->getEmitter();
 	if (!e) return;
-	e->setMinLifeTime(v.getX());
-	e->setMaxLifeTime(v.getY());
+	e->setMinParticlesPerSecond(v.getX());
+	e->setMaxParticlesPerSecond(v.getY());
 
 	minRate = v.getX();
 	maxRate = v.getY();
