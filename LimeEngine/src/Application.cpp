@@ -231,7 +231,7 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	LimeInit.get()->engineRun([&](const std::string& msg) { console->PostError(msg); });
 
 	if (!didInitCfg)
-		console->Warn("Lime.setInitConfig was not called. Setting one-time parameters--such as driver type--can only be done via this function.");
+		console->Warn("Lime.setInitConfig was not called. Setting one-time parameters--such as driver type--can only be done via this function.", false);
 
 	// Create device/true window using windowCfg
 	if (!CreateWindows())
