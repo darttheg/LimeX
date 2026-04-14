@@ -346,6 +346,7 @@ void RigidBody::applyPreset(int v) {
         bt->setDamping(0.0f, 0.0f);
         bt->setLinearFactor(btVector3());
         bt->setAngularFactor(btVector3());
+        bt->setGravity(btVector3());
         break;
     case 2: // Bouncy
         bt->setFriction(0.3f);
