@@ -96,6 +96,41 @@ OnControllerButtonReleasedEvent = OnControllerButtonReleasedEvent or {}
 ---@param callback OnControllerButtonReleasedCallback
 function OnControllerButtonReleasedEvent:hook(callback) end
 
+---@alias OnConnectCallback fun()
+---@class OnConnectEvent : Event
+--- Event called by Lime as a **peer** when the client connects to a server.
+OnConnectEvent = OnConnectEvent or {}
+---@param callback OnConnectCallback
+function OnConnectEvent:hook(callback) end
+
+---@alias OnDisconnectCallback fun(code: number)
+---@class OnDisconnectEvent : Event
+--- Event called by Lime as a **peer** when the client disconnects from a server.
+OnDisconnectEvent = OnDisconnectEvent or {}
+---@param callback OnDisconnectCallback
+function OnDisconnectEvent:hook(callback) end
+
+---@alias OnPeerConnectCallback fun(peerID: number)
+---@class OnPeerConnectEvent : Event
+--- Event called by Lime as the **host** when a peer joins the server.
+OnPeerConnectEvent = OnPeerConnectEvent or {}
+---@param callback OnPeerConnectCallback
+function OnPeerConnectEvent:hook(callback) end
+
+---@alias OnPeerDisconnectCallback fun(peerID: number)
+---@class OnPeerDisconnectEvent : Event
+--- Event called by Lime as the **host** when a peer disconnects from the server.
+OnPeerDisconnectEvent = OnPeerDisconnectEvent or {}
+---@param callback OnPeerDisconnectCallback
+function OnPeerDisconnectEvent:hook(callback) end
+
+---@alias OnReceiveCallback fun(received: Packet, peerID: number)
+---@class OnReceiveEvent : Event
+--- Event called by Lime when the application receives a `Packet`. If the application is a **peer**, `peerID` will be -1.
+OnReceiveEvent = OnReceiveEvent or {}
+---@param callback OnReceiveCallback
+function OnReceiveEvent:hook(callback) end
+
 ---@alias OnResizeCallback fun()
 ---@class OnResizeEvent : Event
 --- Event called by Lime once the window is resized in any way.
@@ -168,6 +203,11 @@ Lime.GUI = Lime.GUI or {}
 Lime.Input = Lime.Input or {}
 
 ---@class Lime.Network
+---@field onConnect OnConnectEvent @Event called by Lime as a **peer** when the client connects to a server.
+---@field onDisconnect OnDisconnectEvent @Event called by Lime as a **peer** when the client disconnects from a server.
+---@field onPeerConnect OnPeerConnectEvent @Event called by Lime as the **host** when a peer joins the server.
+---@field onPeerDisconnect OnPeerDisconnectEvent @Event called by Lime as the **host** when a peer disconnects from the server.
+---@field onReceive OnReceiveEvent @Event called by Lime when the application receives a `Packet`. If the application is a **peer**, `peerID` will be -1.
 Lime.Network = Lime.Network or {}
 
 ---@class Lime.Physics
@@ -1272,6 +1312,113 @@ function Lime.Input.setMousePosition(pos) end
 ---@param visible boolean
 ---@return void
 function Lime.Input.setMouseVisible(visible) end
+
+--- Bans peers under the provided IP address from connecting to the server. A peer attempting to connect under this IP will be immediately rejected.
+---@param ip number
+---@return void
+function Lime.Network.banIP(ip) end
+
+--- **This function can only be run by a server host.**  
+--- Forcefully disconnects a peer with an optional reason code, as well as appending the peer's IP address to the bans list. Returns the peer's IP address.
+---@param peerID number
+---@param code number?
+---@return number
+function Lime.Network.banPeer(peerID, code) end
+
+--- Unbans all IP addresses.
+---@return void
+function Lime.Network.clearBannedIPs() end
+
+--- Attempts to connect to a server.
+---@param ip string
+---@param port int
+---@return void
+function Lime.Network.connect(ip, port) end
+
+--- Disconnects from a server. If this application is the host, it will close the server.
+---@return void
+function Lime.Network.disconnect() end
+
+--- **This function can only be run by a server host.**  
+--- Forcefully disconnects a peer with an optional reason code.
+---@param peerID number
+---@param code number?
+---@return void
+function Lime.Network.disconnectPeer(peerID, code) end
+
+--- **This function can only be run by a server host.**  
+--- Returns the number of connected peers.
+---@return number
+function Lime.Network.getPeerCount() end
+
+--- **This function can only be run by a server host.**  
+--- Returns the IP address of a peer.
+---@param peerID number
+---@return number
+function Lime.Network.getPeerIP(peerID) end
+
+--- **This function can only be run by a server host.**  
+--- Returns the ping of a peer in milliseconds.
+---@param peerID number
+---@return number
+function Lime.Network.getPeerPing(peerID) end
+
+--- **This function can only be run by a server host.**  
+--- Returns the state of a peer.
+---@param peerID number
+---@return Lime.Enum.PeerState
+function Lime.Network.getPeerState(peerID) end
+
+--- Hosts a server.
+---@param port number
+---@param maxPlayers number?
+---@return void
+function Lime.Network.host(port, maxPlayers) end
+
+--- Returns true if this application is connected to a server.
+---@return boolean
+function Lime.Network.isConnected() end
+
+--- Returns true if this application is hosting a server.
+---@return boolean
+function Lime.Network.isHosting() end
+
+--- **This function can only be run by a server host.**  
+--- Sends a packet to all connected peers.
+---@param packet Packet
+---@param channel number?
+---@param reliable boolean?
+---@return void
+function Lime.Network.sendPacketToAll(packet, channel, reliable) end
+
+--- **This function can only be run by a server host.**  
+--- Sends a packet to a peer.
+---@param packet Packet
+---@param peerID number
+---@param channel number?
+---@param reliable boolean?
+---@return void
+function Lime.Network.sendPacketToPeer(packet, peerID, channel, reliable) end
+
+--- **This function can only be run by a peer of a server.**  
+--- Sends a packet to the server.
+---@param packet Packet
+---@param channel number?
+---@param reliable boolean?
+---@return void
+function Lime.Network.sendPacketToServer(packet, channel, reliable) end
+
+--- **This function can only be run by a server host.**  
+--- Sets the incoming and outgoing bandwidth limits in bytes per second.
+---@param incoming number
+---@param outgoing number
+---@return void
+function Lime.Network.setBandwidthLimits(incoming, outgoing) end
+
+--- Unbans an IP address.
+---@param ip number
+---@return void
+function Lime.Network.unbanIP(ip) end
 
 --- **This function cannot be run until window creation.**  
 --- Returns the direction and magnitude of global gravity.

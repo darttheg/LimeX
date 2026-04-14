@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <atomic>
 #include <functional>
+#include <unordered_set>
 #include <sol/forward.hpp>
 
 class Application;
@@ -40,6 +41,7 @@ struct NetEvent {
 	Type type;
 	uint32_t peerID = 0;
 	std::vector<uint8_t> data;
+	uint8_t reason = 0;
 };
 
 struct NetSend {
@@ -59,12 +61,28 @@ public:
 
 	void host(int port, int maxPlayers = 32);
 	void connect(const std::string& ip, int port);
-	void disconnect();
+	void disconnect(); // Stops hosting as server / disconnects as peer
 
-	void sendPacket(const Packet& p, int channel = 0, bool reliable = true, int peerID = -1); // Broadcasts by default (ID = -1)
+	void sendPacket(const Packet& p, int peerID = -1, int channel = 0, bool reliable = true); // Broadcasts by default (ID = -1)
 
-	bool isHost() const { return server != nullptr; }
+	// Bindables
+	bool isHosting() const { return server != nullptr; }
 	bool isConnected() const { return client != nullptr; }
+	void setBandwidthLimits(int incoming, int outgoing); // bytes per second
+	int getPeerState(int peerID) const; // Lime.Enum.PeerState
+	int getPeerPing(int peerID) const;
+	void disconnectPeer(int peerID, int reason = 0);
+	int banPeer(int peerID, int reason = 0);
+	int getPeerIP(int peerID) const;
+	int getPeerCount() const;
+
+	void sendPacketToPeer(const Packet& p, int peerID, int channel = 0, bool reliable = true); // Server
+	void sendPacketToServer(const Packet& p, int channel = 0, bool reliable = true); // Peer
+	void sendPacketToAll(const Packet& p, int channel = 0, bool reliable = true); // All
+
+	void banIP(int IP);
+	void unbanIP(int IP);
+	void clearBannedIPs() { autoRejectIPs.clear(); }
 
 	// Events
 	std::shared_ptr<Event> LimeOnPeerConnect = nullptr;
@@ -88,4 +106,8 @@ private:
 	void loop();
 	void pollHost(ENetHost* host, bool isServer);
 	void flushOutbound();
+
+	std::unordered_set<uint32_t> autoRejectIPs;
+
+	ENetPeer* getPeer(int id) const;
 };

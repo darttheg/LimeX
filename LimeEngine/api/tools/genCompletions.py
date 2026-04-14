@@ -399,6 +399,8 @@ DOC_TAGS = {
     "+": "**This function cannot be run until window creation.**",
     "-": "**This function can only be run before window creation.**",
     "x": "**DEPRECATED**",
+    "s": "**This function can only be run by a server host.**",
+    "p": "**This function can only be run by a peer of a server.**"
 }
 
 def append_event_defs(out: List[str], owner: str, fields: List[FieldDoc], emitted: set) -> None:

@@ -15,6 +15,19 @@ LIME_ENUM(PopUpIcon,
     LIME_ENUM_VALUE(Information, 3)
 );
 
+LIME_ENUM(PeerState,
+    LIME_ENUM_VALUE(Disconnected, 0)
+    LIME_ENUM_VALUE(Connecting, 1)
+    LIME_ENUM_VALUE(AcknowledgingConnect, 2)
+    LIME_ENUM_VALUE(ConnectionPending, 3)
+    LIME_ENUM_VALUE(ConnectionSucceeded, 4)
+    LIME_ENUM_VALUE(Connected, 5)
+    LIME_ENUM_VALUE(DisconnectLater, 6)
+    LIME_ENUM_VALUE(Disconnecting, 7)
+    LIME_ENUM_VALUE(AcknowledgingDisconnect, 8)
+    LIME_ENUM_VALUE(Zombie, 9)
+);
+
 LIME_ENUM(PhysicalPreset,
     LIME_ENUM_VALUE(Default, 0)
     LIME_ENUM_VALUE(Static, 1)

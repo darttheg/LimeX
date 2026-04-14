@@ -28,6 +28,30 @@ Warning = 1,
 Message = 2,
 Information = 3,
 }
+---@alias Lime.Enum.PeerState integer
+---@class Lime.Enum.PeerStateEnum
+---@field Disconnected Lime.Enum.PeerState
+---@field Connecting Lime.Enum.PeerState
+---@field AcknowledgingConnect Lime.Enum.PeerState
+---@field ConnectionPending Lime.Enum.PeerState
+---@field ConnectionSucceeded Lime.Enum.PeerState
+---@field Connected Lime.Enum.PeerState
+---@field DisconnectLater Lime.Enum.PeerState
+---@field Disconnecting Lime.Enum.PeerState
+---@field AcknowledgingDisconnect Lime.Enum.PeerState
+---@field Zombie Lime.Enum.PeerState
+Lime.Enum.PeerState = {
+Disconnected = 0,
+Connecting = 1,
+AcknowledgingConnect = 2,
+ConnectionPending = 3,
+ConnectionSucceeded = 4,
+Connected = 5,
+DisconnectLater = 6,
+Disconnecting = 7,
+AcknowledgingDisconnect = 8,
+Zombie = 9,
+}
 ---@alias Lime.Enum.PhysicalPreset integer
 ---@class Lime.Enum.PhysicalPresetEnum
 ---@field Default Lime.Enum.PhysicalPreset
