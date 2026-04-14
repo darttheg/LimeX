@@ -1948,7 +1948,7 @@ function Packet:writeFloat(v) end
 function Packet:writeInt(v) end
 
 --- Writes a string to this `Packet`.
----@param v number
+---@param v string
 ---@return void
 function Packet:writeString(v) end
 

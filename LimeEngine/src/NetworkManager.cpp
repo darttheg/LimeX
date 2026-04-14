@@ -45,7 +45,7 @@ void NetworkManager::Update() {
 		case NetEvent::Type::Receive:
 			Packet p(event.data);
 			// Lime.Network.onPacketReceived
-			LimeOnReceive.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, p, event.peerID); // peerID is only used by server
+			LimeOnReceive.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, p, event.peerID, event.channel); // peerID is only used by server
 			break;
 		}
 	}
@@ -335,6 +335,7 @@ void NetworkManager::pollHost(ENetHost* host, bool isServer) {
 				NetEvent ne;
 				ne.type = NetEvent::Type::Receive;
 				ne.peerID = isServer ? event.peer->incomingPeerID : 0;
+				ne.channel = event.channelID;
 				ne.data.assign(event.packet->data, event.packet->data + event.packet->dataLength);
 				enet_packet_destroy(event.packet);
 				inbound.push(std::move(ne));
@@ -363,6 +364,6 @@ void NetworkManager::flushOutbound() {
 
 ENetPeer* NetworkManager::getPeer(int id) const {
 	if (!server) return nullptr;
-	if (id < 0 || id > server->peerCount) return nullptr;
+	if (id < 0 || id >= server->peerCount) return nullptr;
 	return &server->peers[id];
 }

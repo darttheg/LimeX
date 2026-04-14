@@ -124,7 +124,7 @@ OnPeerDisconnectEvent = OnPeerDisconnectEvent or {}
 ---@param callback OnPeerDisconnectCallback
 function OnPeerDisconnectEvent:hook(callback) end
 
----@alias OnReceiveCallback fun(received: Packet, peerID: number)
+---@alias OnReceiveCallback fun(received: Packet, peerID: number, channel: number)
 ---@class OnReceiveEvent : Event
 --- Event called by Lime when the application receives a `Packet`. If the application is a **peer**, `peerID` will be -1.
 OnReceiveEvent = OnReceiveEvent or {}
@@ -1948,7 +1948,7 @@ function Packet:writeFloat(v) end
 function Packet:writeInt(v) end
 
 --- Writes a string to this `Packet`.
----@param v number
+---@param v string
 ---@return void
 function Packet:writeString(v) end
 

@@ -33,7 +33,7 @@ public:
 	int getPos() const { return pos; }
 	void setPos(int p);
 
-	void clear() { data.clear(); }
+	void clear() { data.clear(); pos = 0; }
 	int getSize() const { return (int)data.size(); }
 	const std::vector<uint8_t>& getData() const { return data; }
 

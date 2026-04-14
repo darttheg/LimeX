@@ -43,7 +43,20 @@ sol::object Packet::readInt() { return read<int32_t>(l); }
 
 sol::object Packet::readFloat() { return read<float>(l); }
 
-sol::object Packet::readString() { return read<std::string>(l); }
+sol::object Packet::readString() {
+	if (pos + 2 > (int)data.size()) return sol::nil;
+
+	uint16_t len;
+	std::memcpy(&len, data.data() + pos, 2);
+	pos += 2;
+
+	if (pos + (int)len > (int)data.size()) return sol::nil;
+
+	std::string s(reinterpret_cast<const char*>(data.data() + pos), len);
+	pos += len;
+
+	return sol::make_object(sol::state_view(l), s);
+}
 
 bool Packet::readFile(const std::string outPath) {
 	if (pos + 4 > (int)data.size()) return false;
@@ -117,7 +130,7 @@ void Object::PacketBind::bind(lua_State* ls) {
 	obj.set_function("writeFloat", &Packet::pushFloat);
 
 	// Writes a string to this `Packet`.
-	// Params number v
+	// Params string v
 	// Returns void
 	obj.set_function("writeString", &Packet::pushString);
 
@@ -128,27 +141,27 @@ void Object::PacketBind::bind(lua_State* ls) {
 
 	// Returns an unsigned 8 bit number or nil on fail.
 	// Returns number
-	obj.set_function("readUint8", &Packet::pushUnsigned8);
+	obj.set_function("readUint8", &Packet::readUnsigned8);
 
 	// Returns an unsigned 16 bit number or nil on fail.
 	// Returns number
-	obj.set_function("readUint16", &Packet::pushUnsigned16);
+	obj.set_function("readUint16", &Packet::readUnsigned16);
 
 	// Returns an unsigned integer or nil on fail.
 	// Returns number
-	obj.set_function("readUint32", &Packet::pushUnsignedInt);
+	obj.set_function("readUint32", &Packet::readUnsignedInt);
 
 	// Returns an integer or nil on fail.
 	// Returns number
-	obj.set_function("readInt", &Packet::pushInt);
+	obj.set_function("readInt", &Packet::readInt);
 
 	// Returns a floating point number or nil on fail.
 	// Returns number
-	obj.set_function("readFloat", &Packet::pushFloat);
+	obj.set_function("readFloat", &Packet::readFloat);
 
 	// Returns a string or nil on fail.
 	// Returns string
-	obj.set_function("readString", &Packet::pushString);
+	obj.set_function("readString", &Packet::readString);
 
 	// Saves a file to `path` from this `Packet`. Returns true on success.
 	// Params string path

@@ -36,7 +36,7 @@ void Module::Network::bind(Application* app) {
 	// Params number peerID
 	module["onPeerDisconnect"] = n->LimeOnPeerDisonnect;
 	// Field Event onReceive, Event called by Lime when the application receives a `Packet`. If the application is a **peer**, `peerID` will be -1.
-	// Params Packet received, number peerID
+	// Params Packet received, number peerID, number channel
 	module["onReceive"] = n->LimeOnReceive;
 
 	// Hosts a server.

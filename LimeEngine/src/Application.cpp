@@ -328,6 +328,7 @@ bool Application::Stop() {
 	out += " errors";
 	console->Log(out.c_str());
 
+	network->Shutdown();
 	console->Close(true);
 	renderer->Shutdown();
 	window->Close();

@@ -40,6 +40,7 @@ struct NetEvent {
 	enum class Type { Connect, Disconnect, Receive };
 	Type type;
 	uint32_t peerID = 0;
+	uint32_t channel = 0;
 	std::vector<uint8_t> data;
 	uint8_t reason = 0;
 };
