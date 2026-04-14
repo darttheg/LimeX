@@ -1313,8 +1313,8 @@ function Lime.Input.setMousePosition(pos) end
 ---@return void
 function Lime.Input.setMouseVisible(visible) end
 
---- Bans peers under the provided IP address from connecting to the server. A peer attempting to connect under this IP will be immediately rejected.
----@param ip number
+--- Bans peers under the provided IP address(es) from connecting to the server.
+---@param ip any
 ---@return void
 function Lime.Network.banIP(ip) end
 
@@ -1345,6 +1345,10 @@ function Lime.Network.disconnect() end
 ---@param code number?
 ---@return void
 function Lime.Network.disconnectPeer(peerID, code) end
+
+--- Returns a table of IP addresses that are banned.
+---@return number[]
+function Lime.Network.getBannedIPs() end
 
 --- **This function can only be run by a server host.**  
 --- Returns the number of connected peers.
@@ -1415,8 +1419,8 @@ function Lime.Network.sendPacketToServer(packet, channel, reliable) end
 ---@return void
 function Lime.Network.setBandwidthLimits(incoming, outgoing) end
 
---- Unbans an IP address.
----@param ip number
+--- Unbans the IP address(es).
+---@param ip any
 ---@return void
 function Lime.Network.unbanIP(ip) end
 

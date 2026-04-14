@@ -95,19 +95,23 @@ void Module::Network::bind(Application* app) {
 	// Returns number
 	module.set_function("getPeerCount", &Module::Network::Bind::GetPeerCount);
 
-	// Bans peers under the provided IP address from connecting to the server. A peer attempting to connect under this IP will be immediately rejected.
-	// Params number ip
+	// Bans peers under the provided IP address(es) from connecting to the server.
+	// Params any ip
 	// Returns void
 	module.set_function("banIP", &Module::Network::Bind::BanIP);
 
-	// Unbans an IP address.
-	// Params number ip
+	// Unbans the IP address(es).
+	// Params any ip
 	// Returns void
 	module.set_function("unbanIP", &Module::Network::Bind::UnbanIP);
 
 	// Unbans all IP addresses.
 	// Returns void
 	module.set_function("clearBannedIPs", &Module::Network::Bind::ClearBannedIPs);
+
+	// Returns a table of IP addresses that are banned.
+	// Returns number[]
+	module.set_function("getBannedIPs", &Module::Network::Bind::GetBannedIPs);
 
 	// [s] Sends a packet to a peer.
 	// Params Packet packet, number peerID, number? channel, boolean? reliable

@@ -142,6 +142,14 @@ void NetworkManager::sendPacket(const Packet& p, int peerID, int channel, bool r
 	outbound.push(std::move(out));
 }
 
+bool NetworkManager::isHosting() const {
+	return server != nullptr;
+}
+
+bool NetworkManager::isConnected() const {
+	return connected;
+}
+
 void NetworkManager::setBandwidthLimits(int incoming, int outgoing) {
 	if (!server) {
 		d->Warn("Cannot set bandwidth limits without being the host");
@@ -307,6 +315,7 @@ void NetworkManager::pollHost(ENetHost* host, bool isServer) {
 				break;
 			}
 
+			connected = true;
 			NetEvent ne;
 			ne.type = NetEvent::Type::Connect;
 			ne.peerID = isServer ? event.peer->incomingPeerID : 0;
@@ -314,6 +323,7 @@ void NetworkManager::pollHost(ENetHost* host, bool isServer) {
 			break;
 			}
 		case ENET_EVENT_TYPE_DISCONNECT: {
+			connected = false;
 			NetEvent ne;
 			ne.reason = event.data;
 			ne.type = NetEvent::Type::Disconnect;

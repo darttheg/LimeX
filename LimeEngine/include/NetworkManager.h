@@ -66,8 +66,8 @@ public:
 	void sendPacket(const Packet& p, int peerID = -1, int channel = 0, bool reliable = true); // Broadcasts by default (ID = -1)
 
 	// Bindables
-	bool isHosting() const { return server != nullptr; }
-	bool isConnected() const { return client != nullptr; }
+	bool isHosting() const;
+	bool isConnected() const;
 	void setBandwidthLimits(int incoming, int outgoing); // bytes per second
 	int getPeerState(int peerID) const; // Lime.Enum.PeerState
 	int getPeerPing(int peerID) const;
@@ -100,6 +100,7 @@ private:
 
 	std::thread netThread;
 	std::atomic<bool> running{ false };
+	std::atomic<bool> connected{ false };
 
 	ThreadQueue<NetEvent> inbound;
 	ThreadQueue<NetSend> outbound;

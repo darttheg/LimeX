@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-KNOWN_TYPES = {"string","number","boolean","table","any","nil","void","function","userdata","thread"}
+KNOWN_TYPES = {"string","number","boolean","table","any","nil","void","function","userdata","thread","number[]", "string[]"}
 ARTICLES = {"the","a","an"}
 
 OP_MAP = {
