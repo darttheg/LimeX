@@ -1,5 +1,7 @@
 #include "Objects/Packet.h"
 
+#pragma warning(disable: 4996) // fopen warning
+
 static lua_State* l;
 
 void Packet::pushUnsigned8(uint8_t v) { write(&v, 1); }

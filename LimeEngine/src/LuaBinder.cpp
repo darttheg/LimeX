@@ -17,6 +17,7 @@
 #include "Modules/ModuleSound.h"
 #include "Modules/ModuleFile.h"
 #include "Modules/ModulePhysics.h"
+#include "Modules/ModuleNetwork.h"
 //
 
 // OBJECT INCLUDES
@@ -43,6 +44,7 @@
 #include "Objects/RigidBody.h"
 #include "Objects/Constraints.h"
 #include "Objects/ParticleSystem.h"
+#include "Objects/Packet.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -63,6 +65,7 @@ void LuaBinder::BindAll(Application* app) {
 	Module::Sound::bind(app);
 	Module::File::bind(app);
 	Module::Physics::bind(app);
+	Module::Network::bind(app);
 
 	// Objects
 	Object::EventBind::bind(ls);
@@ -89,4 +92,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::HingeConstraintBind::bind(ls);
 	Object::ConeTwistConstraintBind::bind(ls);
 	Object::ParticleSystemBind::bind(ls, app->GetRenderHelper());
+	Object::PacketBind::bind(ls);
 }

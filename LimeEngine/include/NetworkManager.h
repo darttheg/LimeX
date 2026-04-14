@@ -65,6 +65,13 @@ public:
 
 	bool isHost() const { return server != nullptr; }
 	bool isConnected() const { return client != nullptr; }
+
+	// Events
+	std::shared_ptr<Event> LimeOnPeerConnect = nullptr;
+	std::shared_ptr<Event> LimeOnPeerDisonnect = nullptr;
+	std::shared_ptr<Event> LimeOnConnect = nullptr;
+	std::shared_ptr<Event> LimeOnDisconnect = nullptr;
+	std::shared_ptr<Event> LimeOnReceive = nullptr;
 private:
 	bool initialized = false;
 
@@ -81,10 +88,4 @@ private:
 	void loop();
 	void pollHost(ENetHost* host, bool isServer);
 	void flushOutbound();
-
-	std::shared_ptr<Event> LimeOnPeerConnect = nullptr;
-	std::shared_ptr<Event> LimeOnPeerDisonnect = nullptr;
-	std::shared_ptr<Event> LimeOnConnect = nullptr;
-	std::shared_ptr<Event> LimeOnDisconnect = nullptr;
-	std::shared_ptr<Event> LimeOnReceive = nullptr;
 };

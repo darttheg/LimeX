@@ -247,6 +247,9 @@
     <ClInclude Include="include\External\ENetConflict.h">
       <Filter>Engine\Runtime\Core</Filter>
     </ClInclude>
+    <ClInclude Include="include\Modules\ModuleNetwork.h">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -401,6 +404,9 @@
     </ClCompile>
     <ClCompile Include="src\Objects\Packet.cpp">
       <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\ModuleNetwork.cpp">
+      <Filter>Engine\Runtime\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

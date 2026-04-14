@@ -167,6 +167,9 @@ Lime.GUI = Lime.GUI or {}
 ---@field onControllerButtonReleased OnControllerButtonReleasedEvent @Event called by Lime when a controller button is released.
 Lime.Input = Lime.Input or {}
 
+---@class Lime.Network
+Lime.Network = Lime.Network or {}
+
 ---@class Lime.Physics
 Lime.Physics = Lime.Physics or {}
 
@@ -412,6 +415,13 @@ Noise = Noise or {}
 ---@overload fun(seed:number, octaves:number): Noise
 ---@return Noise
 function Noise.new() end
+
+---@class Packet
+---@field position number @The read position.
+Packet = Packet or {}
+--- An object used to store data to send across a network.
+---@return Packet
+function Packet.new() end
 
 ---@class ParticleSystem
 ---@field type Lime.Enum.EmitterType @The emitter type.
@@ -1733,6 +1743,78 @@ function MeshBuffer:recalculateBoundingBox() end
 ---@param x number
 ---@return number
 function Noise:get(x) end
+
+--- Clears the data of this `Packet`.
+---@return void
+function Packet:clear() end
+
+--- Returns the size of this `Packet` in bytes.
+---@return void
+function Packet:getSize() end
+
+--- Saves a file to `path` from this `Packet`. Returns true on success.
+---@param path string
+---@return boolean
+function Packet:readFile(path) end
+
+--- Returns a floating point number or nil on fail.
+---@return number
+function Packet:readFloat() end
+
+--- Returns an integer or nil on fail.
+---@return number
+function Packet:readInt() end
+
+--- Returns a string or nil on fail.
+---@return string
+function Packet:readString() end
+
+--- Returns an unsigned 16 bit number or nil on fail.
+---@return number
+function Packet:readUint16() end
+
+--- Returns an unsigned integer or nil on fail.
+---@return number
+function Packet:readUint32() end
+
+--- Returns an unsigned 8 bit number or nil on fail.
+---@return number
+function Packet:readUint8() end
+
+--- Writes a file from `path` to this `Packet`. Returns true if the file was found and written successfully.
+---@param path string
+---@return boolean
+function Packet:writeFile(path) end
+
+--- Writes a float point number to this `Packet`.
+---@param v number
+---@return void
+function Packet:writeFloat(v) end
+
+--- Writes an integer to this `Packet`.
+---@param v number
+---@return void
+function Packet:writeInt(v) end
+
+--- Writes a string to this `Packet`.
+---@param v number
+---@return void
+function Packet:writeString(v) end
+
+--- Writes an unsigned 16 bit number to this `Packet`.
+---@param v number
+---@return void
+function Packet:writeUint16(v) end
+
+--- Writes an unsigned integer to this `Packet`.
+---@param v number
+---@return void
+function Packet:writeUint32(v) end
+
+--- Writes an unsigned 8 bit number to this `Packet`.
+---@param v number
+---@return void
+function Packet:writeUint8(v) end
 
 --- Adds an attraction affector to this `ParticleSystem`. This affector influences particle movement to attract to/detract from a point. For `affectAxis`, 0 = false and 1 = true.
 ---@param pos Vec3
