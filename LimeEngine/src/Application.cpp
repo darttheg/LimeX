@@ -202,13 +202,18 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	DoLuaBinding();
 
 	// Load Lua code
-	uint16_t modulesAmount = LoadPackage(data, size);
-	if (modulesAmount == 0) {
+	uint16_t modulesCount = LoadPackage(data, size);
+	if (modulesCount == 0) {
 		console->PostError("Failed to load Lime package from memory", true);
 		displayMessage("Lime Init Error", "Failed to load Lime package from memory", 1);
 		return false;
-	} else
-		console->Log("Lime started with " + std::to_string(modulesAmount) + " modules loaded");
+	}
+	else {
+		std::string out = "Lime started with " + std::to_string(modulesCount) + " module";
+		if (modulesCount != 1) out += "s";
+		out += " loaded";
+		console->Log(out);
+	}
 
 	// Parse commands
 	parseCommandLine(argc, argv);
