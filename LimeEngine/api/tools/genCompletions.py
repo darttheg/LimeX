@@ -419,6 +419,7 @@ def append_event_defs(out: List[str], owner: str, fields: List[FieldDoc], emitte
             out.append(f"--- {fld.comment}")
         out.append(f"{cls} = {cls} or {{}}")
         out.append(f"---@param callback {alias}")
+        out.append(f"---@return Hook")
         out.append(f"function {cls}:hook(callback) end")
         out.append("")
 

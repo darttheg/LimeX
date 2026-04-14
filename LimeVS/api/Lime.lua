@@ -3,6 +3,7 @@
 --- Event called by Lime prior to initializing the window.
 OnInitEvent = OnInitEvent or {}
 ---@param callback OnInitCallback
+---@return Hook
 function OnInitEvent:hook(callback) end
 
 ---@alias OnStartCallback fun()
@@ -10,6 +11,7 @@ function OnInitEvent:hook(callback) end
 --- Event called by Lime following window creation and rendering services are available.
 OnStartEvent = OnStartEvent or {}
 ---@param callback OnStartCallback
+---@return Hook
 function OnStartEvent:hook(callback) end
 
 ---@alias OnUpdateCallback fun(dt: number)
@@ -17,6 +19,7 @@ function OnStartEvent:hook(callback) end
 --- Event called by Lime every rendering frame. This Event is run with a number `dt` argument.
 OnUpdateEvent = OnUpdateEvent or {}
 ---@param callback OnUpdateCallback
+---@return Hook
 function OnUpdateEvent:hook(callback) end
 
 ---@alias OnCloseCallback fun()
@@ -24,6 +27,7 @@ function OnUpdateEvent:hook(callback) end
 --- Event called by Lime once the application closes in any way.
 OnCloseEvent = OnCloseEvent or {}
 ---@param callback OnCloseCallback
+---@return Hook
 function OnCloseEvent:hook(callback) end
 
 ---@alias OnKeyPressedCallback fun(key: Lime.Enum.Key)
@@ -31,6 +35,7 @@ function OnCloseEvent:hook(callback) end
 --- Event called by Lime when a key is pressed.
 OnKeyPressedEvent = OnKeyPressedEvent or {}
 ---@param callback OnKeyPressedCallback
+---@return Hook
 function OnKeyPressedEvent:hook(callback) end
 
 ---@alias OnKeyReleasedCallback fun(key: Lime.Enum.Key)
@@ -38,6 +43,7 @@ function OnKeyPressedEvent:hook(callback) end
 --- Event called by Lime when a key is released.
 OnKeyReleasedEvent = OnKeyReleasedEvent or {}
 ---@param callback OnKeyReleasedCallback
+---@return Hook
 function OnKeyReleasedEvent:hook(callback) end
 
 ---@alias OnMouseButtonPressedCallback fun(button: Lime.Enum.Mouse)
@@ -45,6 +51,7 @@ function OnKeyReleasedEvent:hook(callback) end
 --- Event called by Lime when a mouse button is pressed.
 OnMouseButtonPressedEvent = OnMouseButtonPressedEvent or {}
 ---@param callback OnMouseButtonPressedCallback
+---@return Hook
 function OnMouseButtonPressedEvent:hook(callback) end
 
 ---@alias OnMouseButtonReleasedCallback fun(button: Lime.Enum.Mouse)
@@ -52,6 +59,7 @@ function OnMouseButtonPressedEvent:hook(callback) end
 --- Event called by Lime when a mouse button is released.
 OnMouseButtonReleasedEvent = OnMouseButtonReleasedEvent or {}
 ---@param callback OnMouseButtonReleasedCallback
+---@return Hook
 function OnMouseButtonReleasedEvent:hook(callback) end
 
 ---@alias OnMouseMovedCallback fun(delta: Vec2)
@@ -59,6 +67,7 @@ function OnMouseButtonReleasedEvent:hook(callback) end
 --- Event called by Lime when a mouse is moved.
 OnMouseMovedEvent = OnMouseMovedEvent or {}
 ---@param callback OnMouseMovedCallback
+---@return Hook
 function OnMouseMovedEvent:hook(callback) end
 
 ---@alias OnMouseScrollCallback fun(delta: number)
@@ -66,6 +75,7 @@ function OnMouseMovedEvent:hook(callback) end
 --- Event called by Lime when the mouse scroll wheel is moved.
 OnMouseScrollEvent = OnMouseScrollEvent or {}
 ---@param callback OnMouseScrollCallback
+---@return Hook
 function OnMouseScrollEvent:hook(callback) end
 
 ---@alias OnControllerConnectedCallback fun(id: number)
@@ -73,6 +83,7 @@ function OnMouseScrollEvent:hook(callback) end
 --- Event called by Lime when a controller is connected.
 OnControllerConnectedEvent = OnControllerConnectedEvent or {}
 ---@param callback OnControllerConnectedCallback
+---@return Hook
 function OnControllerConnectedEvent:hook(callback) end
 
 ---@alias OnControllerDisconnectedCallback fun(id: number)
@@ -80,6 +91,7 @@ function OnControllerConnectedEvent:hook(callback) end
 --- Event called by Lime when a controller is disconnected.
 OnControllerDisconnectedEvent = OnControllerDisconnectedEvent or {}
 ---@param callback OnControllerDisconnectedCallback
+---@return Hook
 function OnControllerDisconnectedEvent:hook(callback) end
 
 ---@alias OnControllerButtonPressedCallback fun(id: number, button: Lime.Enum.Controller)
@@ -87,6 +99,7 @@ function OnControllerDisconnectedEvent:hook(callback) end
 --- Event called by Lime when a controller button is pressed.
 OnControllerButtonPressedEvent = OnControllerButtonPressedEvent or {}
 ---@param callback OnControllerButtonPressedCallback
+---@return Hook
 function OnControllerButtonPressedEvent:hook(callback) end
 
 ---@alias OnControllerButtonReleasedCallback fun(id: number, button: Lime.Enum.Controller)
@@ -94,6 +107,7 @@ function OnControllerButtonPressedEvent:hook(callback) end
 --- Event called by Lime when a controller button is released.
 OnControllerButtonReleasedEvent = OnControllerButtonReleasedEvent or {}
 ---@param callback OnControllerButtonReleasedCallback
+---@return Hook
 function OnControllerButtonReleasedEvent:hook(callback) end
 
 ---@alias OnConnectCallback fun()
@@ -101,6 +115,7 @@ function OnControllerButtonReleasedEvent:hook(callback) end
 --- Event called by Lime as a **peer** when the client connects to a server.
 OnConnectEvent = OnConnectEvent or {}
 ---@param callback OnConnectCallback
+---@return Hook
 function OnConnectEvent:hook(callback) end
 
 ---@alias OnDisconnectCallback fun(code: number)
@@ -108,6 +123,7 @@ function OnConnectEvent:hook(callback) end
 --- Event called by Lime as a **peer** when the client disconnects from a server.
 OnDisconnectEvent = OnDisconnectEvent or {}
 ---@param callback OnDisconnectCallback
+---@return Hook
 function OnDisconnectEvent:hook(callback) end
 
 ---@alias OnPeerConnectCallback fun(peerID: number)
@@ -115,6 +131,7 @@ function OnDisconnectEvent:hook(callback) end
 --- Event called by Lime as the **host** when a peer joins the server.
 OnPeerConnectEvent = OnPeerConnectEvent or {}
 ---@param callback OnPeerConnectCallback
+---@return Hook
 function OnPeerConnectEvent:hook(callback) end
 
 ---@alias OnPeerDisconnectCallback fun(peerID: number)
@@ -122,6 +139,7 @@ function OnPeerConnectEvent:hook(callback) end
 --- Event called by Lime as the **host** when a peer disconnects from the server.
 OnPeerDisconnectEvent = OnPeerDisconnectEvent or {}
 ---@param callback OnPeerDisconnectCallback
+---@return Hook
 function OnPeerDisconnectEvent:hook(callback) end
 
 ---@alias OnReceiveCallback fun(received: Packet, peerID: number, channel: number)
@@ -129,13 +147,47 @@ function OnPeerDisconnectEvent:hook(callback) end
 --- Event called by Lime when the application receives a `Packet`. If the application is a **peer**, `peerID` will be -1.
 OnReceiveEvent = OnReceiveEvent or {}
 ---@param callback OnReceiveCallback
+---@return Hook
 function OnReceiveEvent:hook(callback) end
+
+---@alias OnGetCompleteCallback fun(status: number, content: string)
+---@class OnGetCompleteEvent : Event
+--- Event called by Lime when a GET request has successfully completed.
+OnGetCompleteEvent = OnGetCompleteEvent or {}
+---@param callback OnGetCompleteCallback
+---@return Hook
+function OnGetCompleteEvent:hook(callback) end
+
+---@alias OnGetFailCallback fun(status: number)
+---@class OnGetFailEvent : Event
+--- Event called by Lime when a GET request has failed.
+OnGetFailEvent = OnGetFailEvent or {}
+---@param callback OnGetFailCallback
+---@return Hook
+function OnGetFailEvent:hook(callback) end
+
+---@alias OnDownloadCompleteCallback fun(status: number, path: string)
+---@class OnDownloadCompleteEvent : Event
+--- Event called by Lime when a download has successfully completed.
+OnDownloadCompleteEvent = OnDownloadCompleteEvent or {}
+---@param callback OnDownloadCompleteCallback
+---@return Hook
+function OnDownloadCompleteEvent:hook(callback) end
+
+---@alias OnDownloadFailCallback fun(status: number)
+---@class OnDownloadFailEvent : Event
+--- Event called by Lime when a download has failed.
+OnDownloadFailEvent = OnDownloadFailEvent or {}
+---@param callback OnDownloadFailCallback
+---@return Hook
+function OnDownloadFailEvent:hook(callback) end
 
 ---@alias OnResizeCallback fun()
 ---@class OnResizeEvent : Event
 --- Event called by Lime once the window is resized in any way.
 OnResizeEvent = OnResizeEvent or {}
 ---@param callback OnResizeCallback
+---@return Hook
 function OnResizeEvent:hook(callback) end
 
 ---@alias OnHoveredCallback fun()
@@ -143,6 +195,7 @@ function OnResizeEvent:hook(callback) end
 --- Event called by Lime when this object is hovered.
 OnHoveredEvent = OnHoveredEvent or {}
 ---@param callback OnHoveredCallback
+---@return Hook
 function OnHoveredEvent:hook(callback) end
 
 ---@alias OnPressedCallback fun()
@@ -150,6 +203,7 @@ function OnHoveredEvent:hook(callback) end
 --- Event called by Lime when this object is pressed.
 OnPressedEvent = OnPressedEvent or {}
 ---@param callback OnPressedCallback
+---@return Hook
 function OnPressedEvent:hook(callback) end
 
 ---@alias OnEnterCallback fun(result: CollisionResult)
@@ -157,6 +211,7 @@ function OnPressedEvent:hook(callback) end
 --- Event called when another physics object collides with this object for the first time.
 OnEnterEvent = OnEnterEvent or {}
 ---@param callback OnEnterCallback
+---@return Hook
 function OnEnterEvent:hook(callback) end
 
 ---@alias OnInsideCallback fun()
@@ -164,6 +219,7 @@ function OnEnterEvent:hook(callback) end
 --- Event called when another physics object is inside this physics object.
 OnInsideEvent = OnInsideEvent or {}
 ---@param callback OnInsideCallback
+---@return Hook
 function OnInsideEvent:hook(callback) end
 
 ---@alias OnExitCallback fun()
@@ -171,6 +227,7 @@ function OnInsideEvent:hook(callback) end
 --- Event called when another physics object exits this physics object.
 OnExitEvent = OnExitEvent or {}
 ---@param callback OnExitCallback
+---@return Hook
 function OnExitEvent:hook(callback) end
 
 ---@class Lime
@@ -215,6 +272,13 @@ Lime.Physics = Lime.Physics or {}
 
 ---@class Lime.Scene
 Lime.Scene = Lime.Scene or {}
+
+---@class Lime.Web
+---@field onGetComplete OnGetCompleteEvent @Event called by Lime when a GET request has successfully completed.
+---@field onGetFail OnGetFailEvent @Event called by Lime when a GET request has failed.
+---@field onDownloadComplete OnDownloadCompleteEvent @Event called by Lime when a download has successfully completed.
+---@field onDownloadFail OnDownloadFailEvent @Event called by Lime when a download has failed.
+Lime.Web = Lime.Web or {}
 
 ---@class Lime.Window
 ---@field onResize OnResizeEvent @Event called by Lime once the window is resized in any way.
@@ -1647,6 +1711,42 @@ function Lime.Scene.setTextureCreationQuality(quality) end
 ---@param pos Vec3
 ---@return Vec2
 function Lime.Scene.toScreenPosition(pos) end
+
+--- Cancels the ongoing download, if any.
+---@return void
+function Lime.Web.cancelDownload() end
+
+--- Downloads a file from `url` and saves it to `path`. See `Lime.Web.onDownloadComplete` and `Lime.Web.onDownloadFail`.
+---@param url string
+---@param path string
+---@return void
+function Lime.Web.download(url, path) end
+
+--- Sends an HTTP GET request to `url`. See `Lime.Web.onGetComplete` and `Lime.Web.onGetFail`.
+---@param url string
+---@return void
+function Lime.Web.get(url) end
+
+--- Returns the download progress from 0.0 to 1.0.
+---@return number
+function Lime.Web.getDownloadProgress() end
+
+--- Returns the download speed in bytes per second.
+---@return number
+function Lime.Web.getDownloadSpeed() end
+
+--- Returns true if there is an ongoing download.
+---@return boolean
+function Lime.Web.isDownloading() end
+
+--- Returns true if an ongoing download is extracting its content.
+---@return boolean
+function Lime.Web.isExtracting() end
+
+--- Sets the timeout in milliseconds for HTTP requests.
+---@param ms number
+---@return void
+function Lime.Web.setTimeout(ms) end
 
 --- **This function cannot be run until window creation.**  
 --- Returns the size of the monitor the window is running on.

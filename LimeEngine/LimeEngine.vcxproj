@@ -26,6 +26,8 @@
     <ClInclude Include="include\External\ENetConflict.h" />
     <ClInclude Include="include\External\FontLoader.h" />
     <ClInclude Include="include\External\GetCurrentMonitor.h" />
+    <ClInclude Include="include\External\httplib.h" />
+    <ClInclude Include="include\External\miniz.h" />
     <ClInclude Include="include\External\PerlinHeader.h" />
     <ClInclude Include="include\External\PerlinNoise.h" />
     <ClInclude Include="include\FrameLimiter.h" />
@@ -44,6 +46,7 @@
     <ClInclude Include="include\Modules\ModulePhysics.h" />
     <ClInclude Include="include\Modules\ModuleScene.h" />
     <ClInclude Include="include\Modules\ModuleSound.h" />
+    <ClInclude Include="include\Modules\ModuleWeb.h" />
     <ClInclude Include="include\Modules\ModuleWindow.h" />
     <ClInclude Include="include\NetworkManager.h" />
     <ClInclude Include="include\Objects\Billboard.h" />
@@ -81,6 +84,7 @@
     <ClInclude Include="include\GUIManager.h" />
     <ClInclude Include="include\RenderHelper.h" />
     <ClInclude Include="include\SoundManager.h" />
+    <ClInclude Include="include\WebManager.h" />
     <ClInclude Include="include\Window.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
@@ -90,6 +94,7 @@
     </ClCompile>
     <ClCompile Include="src\DebugConsole.cpp" />
     <ClCompile Include="src\External\FontLoader.cpp" />
+    <ClCompile Include="src\External\miniz.c" />
     <ClCompile Include="src\Interfaces\Object2D.cpp" />
     <ClCompile Include="src\Interfaces\Object3D.cpp" />
     <ClCompile Include="src\Interfaces\PhysicsObject.cpp" />
@@ -104,6 +109,7 @@
     <ClCompile Include="src\Modules\ModulePhysics.cpp" />
     <ClCompile Include="src\Modules\ModuleScene.cpp" />
     <ClCompile Include="src\Modules\ModuleSound.cpp" />
+    <ClCompile Include="src\Modules\ModuleWeb.cpp" />
     <ClCompile Include="src\Modules\ModuleWindow.cpp" />
     <ClCompile Include="src\NetworkManager.cpp" />
     <ClCompile Include="src\Objects\Billboard.cpp" />
@@ -138,6 +144,7 @@
     <ClCompile Include="src\GUIManager.cpp" />
     <ClCompile Include="src\RenderHelper.cpp" />
     <ClCompile Include="src\SoundManager.cpp" />
+    <ClCompile Include="src\WebManager.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>

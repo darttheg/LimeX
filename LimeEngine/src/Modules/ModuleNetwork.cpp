@@ -26,15 +26,19 @@ void Module::Network::bind(Application* app) {
 
 	// Field Event onConnect, Event called by Lime as a **peer** when the client connects to a server.
 	module["onConnect"] = n->LimeOnConnect;
+
 	// Field Event onDisconnect, Event called by Lime as a **peer** when the client disconnects from a server.
 	// Params number code
 	module["onDisconnect"] = n->LimeOnDisconnect;
+
 	// Field Event onPeerConnect, Event called by Lime as the **host** when a peer joins the server.
 	// Params number peerID
 	module["onPeerConnect"] = n->LimeOnPeerConnect;
+
 	// Field Event onPeerDisconnect, Event called by Lime as the **host** when a peer disconnects from the server.
 	// Params number peerID
 	module["onPeerDisconnect"] = n->LimeOnPeerDisonnect;
+
 	// Field Event onReceive, Event called by Lime when the application receives a `Packet`. If the application is a **peer**, `peerID` will be -1.
 	// Params Packet received, number peerID, number channel
 	module["onReceive"] = n->LimeOnReceive;

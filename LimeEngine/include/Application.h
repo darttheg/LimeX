@@ -23,6 +23,7 @@ class GUIManager;
 class SoundManager;
 class PhysicsManager;
 class NetworkManager;
+class WebManager;
 
 struct WindowConfig {
 	int driverType = 0;
@@ -67,6 +68,7 @@ public:
 	SoundManager* GetSoundManager() { return soundManager; }
 	NetworkManager* GetNetworkManager() { return network; }
 	PhysicsManager* GetPhysicsManager();
+	WebManager* GetWebManager() { return web; }
 	
 	std::string GetLuaLocation();
 
@@ -127,4 +129,7 @@ private:
 
 	// Networking
 	NetworkManager* network = nullptr;
+
+	// Web
+	WebManager* web = nullptr;
 };

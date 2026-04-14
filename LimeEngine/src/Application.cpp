@@ -15,6 +15,7 @@
 #include "FrameLimiter.h"
 #include "PhysicsManager.h"
 #include "NetworkManager.h"
+#include "WebManager.h"
 
 std::string readFile(const char* path) {
 	std::ifstream file(path);
@@ -169,6 +170,7 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	receiver = new Receiver(this, renderer->getGUIManager()); // Kind of odd, hopefully no issues in the future
 	// Context: Without this ^, button events have to go from receiver, up to application, then through renderer to GUIManager...
 	limiter = new FrameLimiter();
+	web = new WebManager();
 
 	lua = std::make_unique<sol::state>();
 
@@ -217,6 +219,9 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 
 	// Parse commands
 	parseCommandLine(argc, argv);
+
+	// Web
+	web->Init(this);
 
 	// Run main file once
 	if (!RunEntry())
@@ -288,13 +293,13 @@ bool Application::Run() {
 
 		if (window && window->ShouldClose()) { fail = true; }
 
-		// Change to device->run -> update event -> render to fix event receiver
 		if (!renderer->RunDevice()) { fail = true; }
 		receiver->beginFrame();
 		LimeUpdate.get()->engineRun([&](const std::string& msg) { console->PostError(msg); }, dt);
 		window->PollEvents();
 		soundManager->Update(dt);
 		network->Update();
+		web->Update();
 		if (!renderer->Render(dt)) { fail = true; }
 
 		// Clean-up

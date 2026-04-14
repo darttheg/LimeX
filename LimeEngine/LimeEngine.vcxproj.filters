@@ -58,6 +58,9 @@
     <Filter Include="Engine\Runtime\External\Monitor">
       <UniqueIdentifier>{eaf4de9b-a3fe-44ef-bd8a-3d8251b9b020}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Runtime\External\HTTP">
+      <UniqueIdentifier>{56438182-d366-411e-91da-186e4d3e561b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\LimeEngine.h">
@@ -250,6 +253,18 @@
     <ClInclude Include="include\Modules\ModuleNetwork.h">
       <Filter>Engine\Runtime\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="include\External\httplib.h">
+      <Filter>Engine\Runtime\External\HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="include\External\miniz.h">
+      <Filter>Engine\Runtime\External\HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="include\WebManager.h">
+      <Filter>Engine\Runtime\Core\App</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Modules\ModuleWeb.h">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -406,6 +421,15 @@
       <Filter>Engine\Runtime\Objects\Common</Filter>
     </ClCompile>
     <ClCompile Include="src\Modules\ModuleNetwork.cpp">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\External\miniz.c">
+      <Filter>Engine\Runtime\External\HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WebManager.cpp">
+      <Filter>Engine\Runtime\Core\App</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\ModuleWeb.cpp">
       <Filter>Engine\Runtime\Modules</Filter>
     </ClCompile>
   </ItemGroup>
