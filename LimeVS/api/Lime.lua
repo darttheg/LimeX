@@ -124,7 +124,7 @@ OnPeerDisconnectEvent = OnPeerDisconnectEvent or {}
 ---@param callback OnPeerDisconnectCallback
 function OnPeerDisconnectEvent:hook(callback) end
 
----@alias OnReceiveCallback fun(received: Packet, peerID: number)
+---@alias OnReceiveCallback fun(received: Packet, peerID: number, channel: number)
 ---@class OnReceiveEvent : Event
 --- Event called by Lime when the application receives a `Packet`. If the application is a **peer**, `peerID` will be -1.
 OnReceiveEvent = OnReceiveEvent or {}
@@ -1314,9 +1314,9 @@ function Lime.Input.setMousePosition(pos) end
 function Lime.Input.setMouseVisible(visible) end
 
 --- Bans peers under the provided IP address(es) from connecting to the server.
----@param ip any
+---@param ... number
 ---@return void
-function Lime.Network.banIP(ip) end
+function Lime.Network.banIP(...) end
 
 --- **This function can only be run by a server host.**  
 --- Forcefully disconnects a peer with an optional reason code, as well as appending the peer's IP address to the bans list. Returns the peer's IP address.
@@ -1420,9 +1420,9 @@ function Lime.Network.sendPacketToServer(packet, channel, reliable) end
 function Lime.Network.setBandwidthLimits(incoming, outgoing) end
 
 --- Unbans the IP address(es).
----@param ip any
+---@param ... number
 ---@return void
-function Lime.Network.unbanIP(ip) end
+function Lime.Network.unbanIP(...) end
 
 --- **This function cannot be run until window creation.**  
 --- Returns the direction and magnitude of global gravity.

@@ -96,12 +96,12 @@ void Module::Network::bind(Application* app) {
 	module.set_function("getPeerCount", &Module::Network::Bind::GetPeerCount);
 
 	// Bans peers under the provided IP address(es) from connecting to the server.
-	// Params any ip
+	// Params number ...
 	// Returns void
 	module.set_function("banIP", &Module::Network::Bind::BanIP);
 
 	// Unbans the IP address(es).
-	// Params any ip
+	// Params number ...
 	// Returns void
 	module.set_function("unbanIP", &Module::Network::Bind::UnbanIP);
 
