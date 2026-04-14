@@ -289,6 +289,7 @@ bool Application::Run() {
 		LimeUpdate.get()->engineRun([&](const std::string& msg) { console->PostError(msg); }, dt);
 		window->PollEvents();
 		soundManager->Update(dt);
+		network->Update();
 		if (!renderer->Render(dt)) { fail = true; }
 
 		// Clean-up

@@ -80,9 +80,10 @@ public:
 	void sendPacketToServer(const Packet& p, int channel = 0, bool reliable = true); // Peer
 	void sendPacketToAll(const Packet& p, int channel = 0, bool reliable = true); // All
 
-	void banIP(int IP);
-	void unbanIP(int IP);
+	void banIP(sol::variadic_args args);
+	void unbanIP(sol::variadic_args args);
 	void clearBannedIPs() { autoRejectIPs.clear(); }
+	sol::table getBannedIPs();
 
 	// Events
 	std::shared_ptr<Event> LimeOnPeerConnect = nullptr;

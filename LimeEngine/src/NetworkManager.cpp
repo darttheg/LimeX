@@ -58,12 +58,12 @@ void NetworkManager::Shutdown() {
 
 void NetworkManager::host(int port, int maxPlayers) {
 	if (!initialized) {
-		d->PostError("Cannot host as networking is not initialized");
+		d->Warn("Cannot host as networking is not initialized");
 		return;
 	}
 
 	if (server || client) {
-		d->PostError("Cannot host a server while already connected to one");
+		d->Warn("Cannot host a server while already connected to one");
 		return;
 	}
 
@@ -83,12 +83,12 @@ void NetworkManager::host(int port, int maxPlayers) {
 
 void NetworkManager::connect(const std::string& ip, int port) {
 	if (!initialized) {
-		d->PostError("Cannot connect as networking is not initialized");
+		d->Warn("Cannot connect as networking is not initialized");
 		return;
 	}
 
 	if (server || client) {
-		d->PostError("Cannot connect to another server while connected to an existing one");
+		d->Warn("Cannot connect to another server while connected to an existing one");
 		return;
 	}
 
@@ -204,7 +204,7 @@ int NetworkManager::banPeer(int peerID, int reason) {
 	}
 
 	int ip = out->address.host;
-	banIP(ip);
+	autoRejectIPs.insert(ip);
 	disconnectPeer(peerID, reason);
 	return ip;
 }
@@ -266,12 +266,27 @@ void NetworkManager::sendPacketToAll(const Packet& p, int channel, bool reliable
 	sendPacket(p, -1, channel, reliable);
 }
 
-void NetworkManager::banIP(int IP) {
-	autoRejectIPs.insert(IP);
+void NetworkManager::banIP(sol::variadic_args args) {
+	for (auto v : args) {
+		if (v.is<uint32_t>()) autoRejectIPs.insert(v.as<uint32_t>());
+	}
 }
 
-void NetworkManager::unbanIP(int IP) {
-	autoRejectIPs.erase(IP);
+void NetworkManager::unbanIP(sol::variadic_args args) {
+	for (auto v : args) {
+		if (v.is<uint32_t>()) autoRejectIPs.erase(v.as<uint32_t>());
+	}
+}
+
+sol::table NetworkManager::getBannedIPs() {
+	sol::state_view l(a->GetLuaState());
+	sol::table out = l.create_table();
+
+	int i = 1;
+	for (auto ip : autoRejectIPs)
+		out[i++] = ip;
+
+	return out;
 }
 
 void NetworkManager::loop() {

@@ -23,9 +23,10 @@ namespace Module {
 			int BanPeer(int peerID, int reason = 0);
 			int GetPeerIP(int peerID);
 			int GetPeerCount();
-			void BanIP(int IP);
-			void UnbanIP(int IP);
+			void BanIP(sol::variadic_args args);
+			void UnbanIP(sol::variadic_args args);
 			void ClearBannedIPs();
+			sol::table GetBannedIPs();
 
 			void SendPacketToPeer(const Packet& p, int peerID, int channel = 0, bool reliable = true); // Server
 			void SendPacketToServer(const Packet& p, int channel = 0, bool reliable = true); // Peer

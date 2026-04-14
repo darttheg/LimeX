@@ -177,16 +177,20 @@ int Module::Network::Bind::GetPeerCount() {
 	return n->getPeerCount();
 }
 
-void Module::Network::Bind::BanIP(int IP) {
-	n->banIP(IP);
+void Module::Network::Bind::BanIP(sol::variadic_args args) {
+	n->banIP(args);
 }
 
-void Module::Network::Bind::UnbanIP(int IP) {
-	n->unbanIP(IP);
+void Module::Network::Bind::UnbanIP(sol::variadic_args args) {
+	n->unbanIP(args);
 }
 
 void Module::Network::Bind::ClearBannedIPs() {
 	n->clearBannedIPs();
+}
+
+sol::table Module::Network::Bind::GetBannedIPs() {
+	return n->getBannedIPs();
 }
 
 void Module::Network::Bind::SendPacketToPeer(const Packet& p, int peerID, int channel, bool reliable) {
