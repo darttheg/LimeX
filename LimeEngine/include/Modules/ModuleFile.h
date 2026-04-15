@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <string>const std::string& 
 #include <sol/forward.hpp>
 class Application;
 
@@ -9,14 +9,16 @@ namespace Module {
 		void bind(Application* app);
 
 		namespace Bind {
-			bool folderExists(std::string folderPath);
-			sol::table getFilesInDir(std::string directoryPath, std::string extension);
-			bool fileExists(std::string path);
-			std::string readFile(std::string path);
-			bool writeFile(std::string path, std::string data);
-			std::string getFileExtension(std::string path);
-			std::string getFileName(std::string path);
-			bool createDir(std::string path);
+			bool folderExists(const std::string& folderPath);
+			sol::table getFilesInDir(const std::string& directoryPath, const std::string& extension = "");
+			bool fileExists(const std::string& path);
+			std::string readFile(const std::string& path);
+			std::string readFileEncrypted(const std::string& path, const std::string& seed);
+			bool writeFile(const std::string& path, const std::string& data);
+			bool writeFileEncrypted(const std::string& path, const std::string& data, const std::string& seed);
+			std::string getFileExtension(const std::string& path);
+			std::string getFileName(const std::string& path);
+			bool createDir(const std::string& path);
 		}
 	}
 }

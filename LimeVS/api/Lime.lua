@@ -1282,8 +1282,9 @@ function Lime.File.getFileName(path) end
 
 --- Returns a table of file paths from directory `path`.
 ---@param path string
+---@param extension string?
 ---@return table
-function Lime.File.getFilesInDirectory(path) end
+function Lime.File.getFilesInDirectory(path, extension) end
 
 --- Returns true if a directory exists at `path`.
 ---@param path string
@@ -1295,15 +1296,18 @@ function Lime.File.isDirectory(path) end
 ---@return boolean
 function Lime.File.isFile(path) end
 
---- Returns contents of file at `path`.
+--- Returns contents of file at `path`. Optionally, a provided `seed` will attempt to decrypt the data.
+---@overload fun(path:string, seed:string): string
 ---@param path string
 ---@return string
 function Lime.File.readFile(path) end
 
---- Writes content to file at `path`. The file will be created if it does not exist.
+--- Writes content to file at `path`. The file will be created if it does not exist. Optionally, a provided `seed` will encrypt the data.
+---@overload fun(path:string, data:string, seed:string): boolean
 ---@param path string
+---@param data string
 ---@return boolean
-function Lime.File.writeFile(path) end
+function Lime.File.writeFile(path, data) end
 
 --- **This function cannot be run until window creation.**  
 --- Returns true if the font `name` is loaded.
