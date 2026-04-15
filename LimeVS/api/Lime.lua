@@ -235,6 +235,15 @@ function OnExitEvent:hook(callback) end
 ---@field onStart OnStartEvent @Event called by Lime following window creation and rendering services are available.
 ---@field onUpdate OnUpdateEvent @Event called by Lime every rendering frame. This Event is run with a number `dt` argument.
 ---@field onClose OnCloseEvent @Event called by Lime once the application closes in any way.
+---@field Audio Lime.Audio
+---@field File Lime.File
+---@field GUI Lime.GUI
+---@field Input Lime.Input
+---@field Network Lime.Network
+---@field Physics Lime.Physics
+---@field Scene Lime.Scene
+---@field Web Lime.Web
+---@field Window Lime.Window
 Lime = Lime or {}
 
 ---@class Lime.Audio
@@ -283,6 +292,13 @@ Lime.Web = Lime.Web or {}
 ---@class Lime.Window
 ---@field onResize OnResizeEvent @Event called by Lime once the window is resized in any way.
 Lime.Window = Lime.Window or {}
+
+---@class math
+---@field tween math.tween
+math = math or {}
+
+---@class math.tween
+math.tween = math.tween or {}
 
 ---@class Billboard
 ---@field size Vec2 @The width and height of this Billboard.
@@ -2429,10 +2445,10 @@ function Sound:isPlaying() end
 ---@return boolean
 function Sound:load(path, type) end
 
----@overload fun(parent:any): boolean
----@param this Parents
+--- Parents this `Sound` to a 3D object. (NOTE: This `Sound` must be playing in 3D)
+---@param parent any
 ---@return boolean
-function Sound:parentTo(this) end
+function Sound:parentTo(parent) end
 
 --- Play this `Sound`.
 ---@param is3D boolean?
@@ -2742,3 +2758,109 @@ function Vec3:normalizeRng(min, max) end
 --- Returns the HEX code for this object. This is useful for converting RGBA to HEX color.
 ---@return string
 function Vec4:getHEX() end
+
+--- Clamps `v` to `min`, `max`.
+---@overload fun(v:Vec2, min:number, max:number): number
+---@overload fun(v:Vec3, min:number, max:number): number
+---@overload fun(v:Vec4, min:number, max:number): number
+---@param v number
+---@param min number
+---@param max number
+---@return number
+function math.clamp(v, min, max) end
+
+--- Interpolates from `old` toward `target` using exponential smoothing.
+---@overload fun(old:Vec2, target:Vec2, factor:number, dt:number): number
+---@overload fun(old:Vec3, target:Vec3, factor:number, dt:number): number
+---@overload fun(old:Vec4, target:Vec4, factor:number, dt:number): number
+---@param old number
+---@param target number
+---@param factor number
+---@param dt number
+---@return number
+function math.tween.damp(old, target, factor, dt) end
+
+--- Starts by moving slightly backward, then accelerates forward.
+---@param a number
+---@return number
+function math.tween.easeInBack(a) end
+
+--- Starts with a bounce effect.
+---@param a number
+---@return number
+function math.tween.easeInBounce(a) end
+
+--- Starts slow, accelerates. (Cubic curve)
+---@param a number
+---@return number
+function math.tween.easeInCubic(a) end
+
+--- Starts slow with oscillation, like a stretched spring.
+---@param a number
+---@return number
+function math.tween.easeInElastic(a) end
+
+--- Backward start, then overshoots to settle.
+---@param a number
+---@return number
+function math.tween.easeInOutBack(a) end
+
+--- Bounce effect and both the start and end.
+---@param a number
+---@return number
+function math.tween.easeInOutBounce(a) end
+
+--- Smooth start and end. (Cubic curve)
+---@param a number
+---@return number
+function math.tween.easeInOutCubic(a) end
+
+--- Oscillates at both the start and end.
+---@param a number
+---@return number
+function math.tween.easeInOutElastic(a) end
+
+--- Smooth start and end. (Sine curve)
+---@param a number
+---@return number
+function math.tween.easeInOutSine(a) end
+
+--- Starts slow, accelerates. (Sine curve)
+---@param a number
+---@return number
+function math.tween.easeInSine(a) end
+
+--- Overshoots, then settles back.
+---@param a number
+---@return number
+function math.tween.easeOutBack(a) end
+
+--- Ends with a bounce effect.
+---@param a number
+---@return number
+function math.tween.easeOutBounce(a) end
+
+--- Starts fast, decelerates. (Cubic curve)
+---@param a number
+---@return number
+function math.tween.easeOutCubic(a) end
+
+--- Ends with oscillation, like a spring settling.
+---@param a number
+---@return number
+function math.tween.easeOutElastic(a) end
+
+--- Starts fast, decelerates. (Sine curve)
+---@param a number
+---@return number
+function math.tween.easeOutSine(a) end
+
+--- Linearly interpolates from `old` to `target` over `a`, where `a` is between 0.0 and 1.0.
+---@overload fun(old:Vec2, target:Vec2, a:number): number
+---@overload fun(old:Vec3, target:Vec3, a:number): number
+---@overload fun(old:Vec4, target:Vec4, a:number): number
+---@param old number
+---@param target number
+---@param a number
+---@return number
+function math.tween.lerp(old, target, a) end

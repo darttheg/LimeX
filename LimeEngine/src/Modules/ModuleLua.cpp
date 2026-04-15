@@ -3,7 +3,10 @@
 #include "Application.h"
 
 #include <sol/sol.hpp>
-#include <cmath>
+
+#include "Objects/Vec2.h"
+#include "Objects/Vec3.h"
+#include "Objects/Vec4.h"
 
 static Application* a;
 
@@ -15,82 +18,117 @@ void Module::Lua::bind(Application* app) {
 }
 
 void Module::Lua::bindMath(sol::state& l) {
-	sol::table module = l["math"]["tween"].get_or_create<sol::table>();
+	// Module math
+
+	sol::table module = l["math"].get_or_create<sol::table>();
+
+	// Clamps `v` to `min`, `max`.
+	// Params number v, number min, number max
+	// Params Vec2 v, number min, number max
+	// Params Vec3 v, number min, number max
+	// Params Vec4 v, number min, number max
+	// Returns number
+	module.set_function("clamp", sol::overload(
+		static_cast<float(*)(float, float, float)>(&Module::Lua::Math::clamp),
+		static_cast<Vec2(*)(const Vec2&, float, float)>(&Module::Lua::Math::clampVec2),
+		static_cast<Vec3(*)(const Vec3&, float, float)>(&Module::Lua::Math::clampVec3),
+		static_cast<Vec4(*)(const Vec4&, float, float)>(&Module::Lua::Math::clampVec4)
+	));
+
+	// End Module
 
 	// Module math.tween
 
+	module = l["math"]["tween"].get_or_create<sol::table>();
+
 	// Interpolates from `old` toward `target` using exponential smoothing.
 	// Params number old, number target, number factor, number dt
+	// Params Vec2 old, Vec2 target, number factor, number dt
+	// Params Vec3 old, Vec3 target, number factor, number dt
+	// Params Vec4 old, Vec4 target, number factor, number dt
 	// Returns number
-	module.set_function("damp", &Module::Lua::Math::Tween::damp);
+	module.set_function("damp", sol::overload(
+		static_cast<float(*)(const float&, const float&, float, float)>(&Module::Lua::Math::Tween::damp<float>),
+		static_cast<Vec2(*)(const Vec2&, const Vec2&, float, float)>(&Module::Lua::Math::Tween::damp<Vec2>),
+		static_cast<Vec3(*)(const Vec3&, const Vec3&, float, float)>(&Module::Lua::Math::Tween::damp<Vec3>),
+		static_cast<Vec4(*)(const Vec4&, const Vec4&, float, float)>(&Module::Lua::Math::Tween::damp<Vec4>)
+	));
 
-	// Linearly interpolates from `old` to `target` over `time`, where `time` is between 0.0 and 1.0.
-	// Params number old, number target, number time
+	// Linearly interpolates from `old` to `target` over `a`, where `a` is between 0.0 and 1.0.
+	// Params number old, number target, number a
+	// Params Vec2 old, Vec2 target, number a
+	// Params Vec3 old, Vec3 target, number a
+	// Params Vec4 old, Vec4 target, number a
 	// Returns number
-	module.set_function("lerp", &Module::Lua::Math::Tween::lerp);
+	module.set_function("lerp", sol::overload(
+		static_cast<float(*)(const float&, const float&, float)>(&Module::Lua::Math::Tween::lerp<float>),
+		static_cast<Vec2(*)(const Vec2&, const Vec2&, float)>(&Module::Lua::Math::Tween::lerp<Vec2>),
+		static_cast<Vec3(*)(const Vec3&, const Vec3&, float)>(&Module::Lua::Math::Tween::lerp<Vec3>),
+		static_cast<Vec4(*)(const Vec4&, const Vec4&, float)>(&Module::Lua::Math::Tween::lerp<Vec4>)
+	));
 
 	// Starts slow, accelerates. (Sine curve)
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeInSine", &Module::Lua::Math::Tween::easeInSine);
 	// Starts fast, decelerates. (Sine curve)
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeOutSine", &Module::Lua::Math::Tween::easeOutSine);
 	// Smooth start and end. (Sine curve)
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeInOutSine", &Module::Lua::Math::Tween::easeInOutSine);
 
 	// Starts slow, accelerates. (Cubic curve)
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeInCubic", &Module::Lua::Math::Tween::easeInCubic);
 	// Starts fast, decelerates. (Cubic curve)
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeOutCubic", &Module::Lua::Math::Tween::easeOutCubic);
 	// Smooth start and end. (Cubic curve)
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeInOutCubic", &Module::Lua::Math::Tween::easeInOutCubic);
 
 	// Starts by moving slightly backward, then accelerates forward.
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeInBack", &Module::Lua::Math::Tween::easeInBack);
 	// Overshoots, then settles back.
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeOutBack", &Module::Lua::Math::Tween::easeOutBack);
 	// Backward start, then overshoots to settle.
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeInOutBack", &Module::Lua::Math::Tween::easeInOutBack);
 
 	// Starts slow with oscillation, like a stretched spring.
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeInElastic", &Module::Lua::Math::Tween::easeInElastic);
 	// Ends with oscillation, like a spring settling.
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeOutElastic", &Module::Lua::Math::Tween::easeOutElastic);
 	// Oscillates at both the start and end.
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeInOutElastic", &Module::Lua::Math::Tween::easeInOutElastic);
 
 	// Starts with a bounce effect.
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeInBounce", &Module::Lua::Math::Tween::easeInBounce);
 	// Ends with a bounce effect.
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeOutBounce", &Module::Lua::Math::Tween::easeOutBounce);
 	// Bounce effect and both the start and end.
-	// Params number v
+	// Params number a
 	// Returns number
 	module.set_function("easeInOutBounce", &Module::Lua::Math::Tween::easeInOutBounce);
 
@@ -99,12 +137,32 @@ void Module::Lua::bindMath(sol::state& l) {
 
 // Functions
 
-float Module::Lua::Math::Tween::damp(float old, float target, float factor, float dt) {
-	return old + (target - old) * (1.0f - std::exp(-factor * dt));
+float Module::Lua::Math::clamp(float v, float min, float max) {
+	return std::clamp(v, min, max);
 }
 
-float Module::Lua::Math::Tween::lerp(float old, float target, float time) {
-	return old + (target - old) * time;
+Vec2 Module::Lua::Math::clampVec2(const Vec2& v, float min, float max) {
+	return Vec2(
+		std::clamp(v.getX(), min, max),
+		std::clamp(v.getY(), min, max)
+	);
+}
+
+Vec3 Module::Lua::Math::clampVec3(const Vec3& v, float min, float max) {
+	return Vec3(
+		std::clamp(v.getX(), min, max),
+		std::clamp(v.getY(), min, max),
+		std::clamp(v.getZ(), min, max)
+	);
+}
+
+Vec4 Module::Lua::Math::clampVec4(const Vec4& v, float min, float max) {
+	return Vec4(
+		std::clamp(v.getX(), min, max),
+		std::clamp(v.getY(), min, max),
+		std::clamp(v.getZ(), min, max),
+		std::clamp(v.getW(), min, max)
+	);
 }
 
 float Module::Lua::Math::Tween::easeInSine(float v) {

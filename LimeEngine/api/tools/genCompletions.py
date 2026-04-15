@@ -73,10 +73,15 @@ def looks_like_type(t: str) -> bool:
         return True
     return t[0].isupper()
 
+TYPE_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*(?:\[\])?\??$")
+PARAM_NAME_RE = re.compile(r"^(?:\.\.\.|[A-Za-z_][A-Za-z0-9_]*)$")
+
 def looks_like_sig_type(t: str) -> bool:
     if not t:
         return False
-    return t in KNOWN_TYPES or "." in t or "?" in t or t[0].isupper()
+    if t in KNOWN_TYPES:
+        return True
+    return TYPE_NAME_RE.match(t) is not None
 
 def is_param_signature(s: str) -> bool:
     s = s.strip()
@@ -87,10 +92,12 @@ def is_param_signature(s: str) -> bool:
         return False
     for p in parts:
         tokens = p.split()
-        if len(tokens) < 2:
+        if len(tokens) != 2:
             return False
         typ, name = tokens[0], tokens[1]
         if name.lower() in ARTICLES:
+            return False
+        if not PARAM_NAME_RE.match(name):
             return False
         if not looks_like_sig_type(typ):
             return False
@@ -391,6 +398,21 @@ def event_alias_name(owner: str, field_name: str) -> str:
 def event_class_name(owner: str, field_name: str) -> str:
     return f"{pascal_case(field_name)}Event"
 
+def build_module_children(modules: Dict[str, ModuleDoc]) -> Dict[str, List[Tuple[str, str]]]:
+    children: Dict[str, List[Tuple[str, str]]] = {}
+
+    for full_name in modules.keys():
+        if "." not in full_name:
+            continue
+
+        parent, child = full_name.rsplit(".", 1)
+        children.setdefault(parent, []).append((child, full_name))
+
+    for parent in children:
+        children[parent].sort(key=lambda x: x[0])
+
+    return children
+
 def field_line(owner: str, fld: FieldDoc) -> str:
     typ = event_class_name(owner, fld.name) if fld.typ == "Event" else fld.typ
     return f"---@field {fld.name} {typ} @{fld.comment}" if fld.comment else f"---@field {fld.name} {typ}"
@@ -426,6 +448,7 @@ def append_event_defs(out: List[str], owner: str, fields: List[FieldDoc], emitte
 def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc], objects: List[ObjectDoc], functions: List[FunctionDoc]) -> str:
     out: List[str] = []
     emitted_event_defs = set()
+    module_children = build_module_children(modules)
 
     for mname in sorted(modules.keys()):
         append_event_defs(out, mname, modules[mname].fields, emitted_event_defs)
@@ -445,6 +468,8 @@ def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc],
         out.append(f"---@class {mname}")
         for fld in md.fields:
             out.append(field_line(mname, fld))
+        for child_name, child_full_name in module_children.get(mname, []):
+            out.append(f"---@field {child_name} {child_full_name}")
         out.append(f"{mname} = {mname} or {{}}")
         out.append("")
 
