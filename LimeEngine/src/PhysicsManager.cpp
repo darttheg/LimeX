@@ -71,13 +71,17 @@ bool PhysicsManager::Update(float dt) {
 		processCollisions();
 	}
 
+	return true;
+}
+
+void PhysicsManager::RenderDebug() {
+	if (!world) return;
+
 	irr::video::SMaterial m;
 	m.Lighting = false;
 	driver->setMaterial(m);
 	driver->setTransform(video::ETS_WORLD, core::matrix4());
 	world->debugDrawWorld();
-
-	return true;
 }
 
 void PhysicsManager::SetLuaState(lua_State* ls) {

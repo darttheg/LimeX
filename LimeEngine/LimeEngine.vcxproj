@@ -42,6 +42,7 @@
     <ClInclude Include="include\Modules\ModuleGUI.h" />
     <ClInclude Include="include\Modules\ModuleInput.h" />
     <ClInclude Include="include\Modules\ModuleLime.h" />
+    <ClInclude Include="include\Modules\ModuleLua.h" />
     <ClInclude Include="include\Modules\ModuleNetwork.h" />
     <ClInclude Include="include\Modules\ModulePhysics.h" />
     <ClInclude Include="include\Modules\ModuleScene.h" />
@@ -105,6 +106,7 @@
     <ClCompile Include="src\Modules\ModuleGUI.cpp" />
     <ClCompile Include="src\Modules\ModuleInput.cpp" />
     <ClCompile Include="src\Modules\ModuleLime.cpp" />
+    <ClCompile Include="src\Modules\ModuleLua.cpp" />
     <ClCompile Include="src\Modules\ModuleNetwork.cpp" />
     <ClCompile Include="src\Modules\ModulePhysics.cpp" />
     <ClCompile Include="src\Modules\ModuleScene.cpp" />

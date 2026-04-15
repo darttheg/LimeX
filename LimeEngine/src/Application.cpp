@@ -293,8 +293,20 @@ bool Application::Run() {
 
 		if (window && window->ShouldClose()) { fail = true; }
 
+		/*
+		Begin input receiving frame
+		Step physics simulation
+		Call onUpdate
+		Poll window events
+		Update sound
+		Update network
+		Update web
+		Render + physics debug
+		*/
+
 		if (!renderer->RunDevice()) { fail = true; }
 		receiver->beginFrame();
+		renderer->GetPhysicsManager()->Update(dt);
 		LimeUpdate.get()->engineRun([&](const std::string& msg) { console->PostError(msg); }, dt);
 		window->PollEvents();
 		soundManager->Update(dt);

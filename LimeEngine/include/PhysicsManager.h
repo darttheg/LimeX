@@ -49,6 +49,7 @@ public:
 
 	bool Init(irr::IrrlichtDevice* device);
 	bool Update(float dt);
+	void RenderDebug();
 	void SetLuaState(lua_State* ls);
 
 	bool guardPhysicsCheck();

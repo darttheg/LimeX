@@ -284,6 +284,9 @@ Lime.Web = Lime.Web or {}
 ---@field onResize OnResizeEvent @Event called by Lime once the window is resized in any way.
 Lime.Window = Lime.Window or {}
 
+---@class math.tween
+math.tween = math.tween or {}
+
 ---@class Billboard
 ---@field size Vec2 @The width and height of this Billboard.
 ---@field position Vec3 @The 3D position of this object in the scene.
@@ -2742,3 +2745,93 @@ function Vec3:normalizeRng(min, max) end
 --- Returns the HEX code for this object. This is useful for converting RGBA to HEX color.
 ---@return string
 function Vec4:getHEX() end
+
+--- Interpolates from `old` toward `target` using exponential smoothing.
+---@param old number
+---@param target number
+---@param factor number
+---@param dt number
+---@return number
+function math.tween.damp(old, target, factor, dt) end
+
+--- Starts by moving slightly backward, then accelerates forward.
+---@param v number
+---@return number
+function math.tween.easeInBack(v) end
+
+--- Starts with a bounce effect.
+---@param v number
+---@return number
+function math.tween.easeInBounce(v) end
+
+---@overload fun(slow:Starts, (Cubic:accelerates.): number
+---@param v number
+---@return number
+function math.tween.easeInCubic(v) end
+
+--- Starts slow with oscillation, like a stretched spring.
+---@param v number
+---@return number
+function math.tween.easeInElastic(v) end
+
+--- Backward start, then overshoots to settle.
+---@param v number
+---@return number
+function math.tween.easeInOutBack(v) end
+
+--- Bounce effect and both the start and end.
+---@param v number
+---@return number
+function math.tween.easeInOutBounce(v) end
+
+---@overload fun(v:number): number
+---@param start Smooth
+---@return number
+function math.tween.easeInOutCubic(start) end
+
+--- Oscillates at both the start and end.
+---@param v number
+---@return number
+function math.tween.easeInOutElastic(v) end
+
+---@overload fun(v:number): number
+---@param start Smooth
+---@return number
+function math.tween.easeInOutSine(start) end
+
+---@overload fun(slow:Starts, (Sine:accelerates.): number
+---@param v number
+---@return number
+function math.tween.easeInSine(v) end
+
+--- Overshoots, then settles back.
+---@param v number
+---@return number
+function math.tween.easeOutBack(v) end
+
+--- Ends with a bounce effect.
+---@param v number
+---@return number
+function math.tween.easeOutBounce(v) end
+
+---@overload fun(fast:Starts, (Cubic:decelerates.): number
+---@param v number
+---@return number
+function math.tween.easeOutCubic(v) end
+
+--- Ends with oscillation, like a spring settling.
+---@param v number
+---@return number
+function math.tween.easeOutElastic(v) end
+
+---@overload fun(fast:Starts, (Sine:decelerates.): number
+---@param v number
+---@return number
+function math.tween.easeOutSine(v) end
+
+--- Linearly interpolates from `old` to `target` over `time`, where `time` is between 0.0 and 1.0.
+---@param old number
+---@param target number
+---@param time number
+---@return number
+function math.tween.lerp(old, target, time) end

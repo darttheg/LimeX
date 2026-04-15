@@ -265,6 +265,9 @@
     <ClInclude Include="include\Modules\ModuleWeb.h">
       <Filter>Engine\Runtime\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="include\Modules\ModuleLua.h">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -430,6 +433,9 @@
       <Filter>Engine\Runtime\Core\App</Filter>
     </ClCompile>
     <ClCompile Include="src\Modules\ModuleWeb.cpp">
+      <Filter>Engine\Runtime\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\ModuleLua.cpp">
       <Filter>Engine\Runtime\Modules</Filter>
     </ClCompile>
   </ItemGroup>

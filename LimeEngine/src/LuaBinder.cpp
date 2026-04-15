@@ -19,6 +19,7 @@
 #include "Modules/ModulePhysics.h"
 #include "Modules/ModuleNetwork.h"
 #include "Modules/ModuleWeb.h"
+#include "Modules/ModuleLua.h"
 //
 
 // OBJECT INCLUDES
@@ -68,6 +69,7 @@ void LuaBinder::BindAll(Application* app) {
 	Module::Physics::bind(app);
 	Module::Network::bind(app);
 	Module::Web::bind(app);
+	Module::Lua::bind(app);
 
 	// Objects
 	Object::EventBind::bind(ls);

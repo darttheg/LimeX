@@ -271,7 +271,7 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	qr->presentToWindow();
 	*/
 
-	physics->Update(dt);
+	physics->RenderDebug();
 
 	i_driver->endScene();
 
