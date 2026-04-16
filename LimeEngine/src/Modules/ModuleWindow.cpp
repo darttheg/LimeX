@@ -64,6 +64,10 @@ void Module::Window::bind(Application* app) {
 	// Returns boolean
 	module.set_function("isFocused", &Module::Window::Bind::IsFocused);
 
+	// Returns true if the window is created
+	// Returns boolean
+	module.set_function("isCreated", &Module::Window::Bind::IsCreated);
+
 	// [+] Allows the window to be resizable or locked to its intended size. This disables maximizing the application as well.
 	// Params boolean allow
 	// Returns void
@@ -121,4 +125,8 @@ void Module::Window::Bind::SetResizable(bool on) {
 
 void Module::Window::Bind::SetMaintainAR(bool on) {
 	w->keepAspectRatio(on);
+}
+
+bool Module::Window::Bind::IsCreated() {
+	return a->IsRunning();
 }

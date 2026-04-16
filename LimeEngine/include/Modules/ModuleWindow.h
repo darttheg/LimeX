@@ -28,6 +28,7 @@ namespace Module {
 			bool IsFocused();
 			void SetResizable(bool on);
 			void SetMaintainAR(bool on);
+			bool IsCreated();
 		}
 	}
 }

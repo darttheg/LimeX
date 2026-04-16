@@ -1783,6 +1783,10 @@ function Lime.Window.getPosition() end
 ---@return Vec2
 function Lime.Window.getSize() end
 
+--- Returns true if the window is created
+---@return boolean
+function Lime.Window.isCreated() end
+
 --- **This function cannot be run until window creation.**  
 --- Returns true if the window is focused.
 ---@return boolean
