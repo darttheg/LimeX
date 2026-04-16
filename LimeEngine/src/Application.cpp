@@ -38,6 +38,12 @@ uint16_t Application::LoadPackage(const void* data, size_t size) {
 		return true;
 	};
 
+	uint32_t entryLen = 0;
+	if (!readU32(entryLen)) return false;
+	if (ptr + entryLen > end) return false;
+	entryModuleName = std::string(ptr, entryLen);
+	ptr += entryLen;
+
 	uint32_t count = 0;
 	if (!readU32(count)) return false;
 
@@ -58,18 +64,6 @@ uint16_t Application::LoadPackage(const void* data, size_t size) {
 
 		modules[name] = std::move(bytecode);
 	}
-
-	if (modules.count("main"))
-		entryModuleName = "main";
-	else if (!modules.empty())
-		entryModuleName = modules.begin()->first;
-	else return 0;
-
-	/*
-	for (const auto& [name, code] : modules) {
-		console->Log("Packaged module: " + name);
-	}
-	*/
 
 	return count;
 }
@@ -127,8 +121,6 @@ void Application::InstallPackageFinder() {
 
 bool Application::RunEntry() {
 	if (!lua) return false;
-
-	if (entryModuleName.empty()) entryModuleName = "main";
 
 	auto it = modules.find(entryModuleName);
 	if (it == modules.end()) {

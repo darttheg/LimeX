@@ -312,6 +312,10 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 	if (!f.is_open())
 		throw std::runtime_error("Could not write output Lime package.");
 
+	uint32_t entryLen = (uint32_t)mainFull.size();
+	f.write((char*)&entryLen, sizeof(entryLen));
+	f.write(mainFull.data(), entryLen);
+
 	uint32_t count = (uint32_t)modules.size();
 	f.write((char*)&count, sizeof(count));
 
