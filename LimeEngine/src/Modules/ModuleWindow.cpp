@@ -64,7 +64,7 @@ void Module::Window::bind(Application* app) {
 	// Returns boolean
 	module.set_function("isFocused", &Module::Window::Bind::IsFocused);
 
-	// Returns true if the window is created
+	// Returns true if the window is created.
 	// Returns boolean
 	module.set_function("isCreated", &Module::Window::Bind::IsCreated);
 

@@ -86,7 +86,7 @@ void Module::Scene::bind(Application* app) {
 	// Returns void
 	module.set_function("setDynamicResolution", &Module::Scene::Bind::SetMatchRenderResToWindow);
 
-	// Sets the render size to `size`. If the render size is set to rescale to the window size then this change will not take effect. See `Lime.Scene.setRescaleRenderToWindowSize`.
+	// Sets the render size to `size`. If the render size is set to rescale to the window size then this change will not take effect. See `Lime.Scene.setDynamicResolution`.
 	// Params Vec2 size
 	// Returns void
 	module.set_function("setSize", &Module::Scene::Bind::SetRenderSize);
