@@ -62,7 +62,7 @@ namespace FontLoader {
             charMap.insert(c, ga);
 
             penX += (irr::s32)w + 1;
-            if ((irr::s32)h + 1 > rowH) rowH = (irr::s32)h + 1;
+            if ((irr::s32)cellH + 1 > rowH) rowH = (irr::s32)cellH + 1;
         }
 
         irr::u32 finalH = (irr::u32)(penY + rowH);

@@ -1715,7 +1715,7 @@ function Lime.Scene.setRenderingActive(active) end
 ---@return void
 function Lime.Scene.setShadowColor(rgba) end
 
---- Sets the render size to `size`. If the render size is set to rescale to the window size then this change will not take effect. See `Lime.Scene.setRescaleRenderToWindowSize`.
+--- Sets the render size to `size`. If the render size is set to rescale to the window size then this change will not take effect. See `Lime.Scene.setDynamicResolution`.
 ---@param size Vec2
 ---@return void
 function Lime.Scene.setSize(size) end
@@ -1783,7 +1783,7 @@ function Lime.Window.getPosition() end
 ---@return Vec2
 function Lime.Window.getSize() end
 
---- Returns true if the window is created
+--- Returns true if the window is created.
 ---@return boolean
 function Lime.Window.isCreated() end
 
