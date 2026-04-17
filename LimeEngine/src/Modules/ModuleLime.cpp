@@ -111,6 +111,10 @@ void Module::Lime::bind(Application* app) {
 	// Returns boolean
 	module.set_function("getVSync", &Module::Lime::Bind::GetVSync);
 
+	// Returns the driver type.
+	// Returns Lime.Enum.DriverType
+	module.set_function("getDriverType", &Module::Lime::Bind::GetDriverType);
+
 	// [-] Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. If `suppressWarnings" is true, all warnings will not be logged in the debug console to reduce potential clutter while testing. **Warnings should not be suppressed in shipped applications.**
 	// Params boolean enable, boolean? writeOutput, boolean? suppressWarnings
 	// Returns void
@@ -246,6 +250,10 @@ bool Module::Lime::Bind::SetInitConfig(int driverType, const Vec2& windowSize, c
 
 	a->SetConfig(cfg);
 	return true;
+}
+
+int Module::Lime::Bind::GetDriverType() {
+	return a->GetConfig().driverType;
 }
 
 int Module::Lime::Bind::GetElapsedTime() {

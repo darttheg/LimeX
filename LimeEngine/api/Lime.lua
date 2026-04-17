@@ -1146,6 +1146,10 @@ function Lime.executeCommandLine(cmd) end
 ---@return string
 function Lime.getCommandLineArg(arg) end
 
+--- Returns the driver type.
+---@return Lime.Enum.DriverType
+function Lime.getDriverType() end
+
 --- Returns the elapsed time the application has been running in milliseconds.
 ---@return number
 function Lime.getElapsedTime() end
