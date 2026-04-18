@@ -131,6 +131,7 @@ bool Object2D::parentTo(sol::optional<Object2D*> parent) {
 
         root->addChild(getNode());
         if (bgBorder) root->addChild(bgBorder);
+        if (button) root->addChild(button);
         return true;
     }
 
@@ -138,6 +139,7 @@ bool Object2D::parentTo(sol::optional<Object2D*> parent) {
     if (!p->getNode()) return false;
     p->getNode()->addChild(getNode());
     if (bgBorder) p->getNode()->addChild(bgBorder);
+    if (button) p->getNode()->addChild(button);
     return true;
 }
 
@@ -281,9 +283,6 @@ void Interface::Object2DBind::bind(lua_State* ls, Renderer* rend) {
             [](Object2D& c) { return Vec4{ [&] { return c.getBackgroundColor(); }, [&](auto v) { c.setBackgroundColor(v); } }; },
             [](Object2D& c, const Vec4& v) { c.setBackgroundColor(v); }
         ),
-
-        // Field boolean enabled, Determines if this object is hoverable and clickable.
-        "enabled", sol::property(&Object2D::getBorder, &Object2D::setBorder),
 
         // Field Event onHovered, Event called by Lime when this object is hovered.
         "onHovered", &Object2D::onHovered,

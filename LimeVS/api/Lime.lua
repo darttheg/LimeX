@@ -445,7 +445,6 @@ Hook = Hook or {}
 ---@field visible boolean @Determines the visibility of this object and its children.
 ---@field border boolean @Displays a border outlining this object's bounding box on the screen.
 ---@field backgroundColor Vec4 @The RGBA background color of this object.
----@field enabled boolean @Determines if this object is hoverable and clickable.
 ---@field onHovered OnHoveredEvent @Event called by Lime when this object is hovered.
 ---@field onPressed OnPressedEvent @Event called by Lime when this object is pressed.
 Image2D = Image2D or {}
@@ -645,7 +644,6 @@ function Sound.new() end
 ---@field visible boolean @Determines the visibility of this object and its children.
 ---@field border boolean @Displays a border outlining this object's bounding box on the screen.
 ---@field backgroundColor Vec4 @The RGBA background color of this object.
----@field enabled boolean @Determines if this object is hoverable and clickable.
 ---@field onHovered OnHoveredEvent @Event called by Lime when this object is hovered.
 ---@field onPressed OnPressedEvent @Event called by Lime when this object is pressed.
 Text2D = Text2D or {}
