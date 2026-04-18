@@ -37,9 +37,10 @@ void Image2D::destroy() {
 bool Image2D::loadTexture(const Texture& tx) {
 	if (!img || !tx.getTexture()) return false;
 
-	bool match = !img->getImage() || img->getImage()->getName().getPath() == "blank";
+	// bool match = !img->getImage() || img->getImage()->getName().getPath() == "blank";
 	img->setImage(tx.getTexture());
-	if (match) img->setMaxSize(tx.getTexture()->getSize());
+	Object2D::setSize(Vec2(tx.getTexture()->getSize().Width, tx.getTexture()->getSize().Height));
+	// if (match) img->setMaxSize(tx.getTexture()->getSize());
 
 	return true;
 }
