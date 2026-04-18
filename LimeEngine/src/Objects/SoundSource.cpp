@@ -95,12 +95,12 @@ void SoundSource::setMaxDist(float f) {
 
 void SoundSource::setVolume(float f) {
 	if (!src) return;
-	vol = f;
-	if (cur) cur->setVolume(f);
+	vol = f / 100.0f;
+	if (cur) cur->setVolume(vol);
 }
 
 float SoundSource::getVolume() {
-	return cur ? cur->getVolume() : vol;
+	return cur ? cur->getVolume() * 100.0f : vol;
 }
 
 void SoundSource::setPitch(float f) {
