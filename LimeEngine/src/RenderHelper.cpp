@@ -497,7 +497,7 @@ irr::gui::IGUIImage* RenderHelper::createGUIImage() {
 
 irr::gui::IGUIButton* RenderHelper::createButton() {
 	if (!guardRenderingCheck()) return nullptr;
-	irr::gui::IGUIButton* out = i_gui->addButton(irr::core::recti());
+	irr::gui::IGUIButton* out = i_gui->addButton(irr::core::recti(5,5,5,5));
 	out->setDrawBorder(false);
 
 	return out;

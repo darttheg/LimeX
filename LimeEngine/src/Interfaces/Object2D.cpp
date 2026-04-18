@@ -29,6 +29,8 @@ void Object2D::setPosition(const Vec2& pos) {
     if (!getNode()) return;
     getNode()->setRelativePosition(irr::core::position2di(pos.getX(), pos.getY()));
     if (bgBorder) bgBorder->setRelativePosition(irr::core::position2di(pos.getX(), pos.getY()));
+    // if (button) button->setRelativePosition(irr::core::position2di(pos.getX(), pos.getY()));
+    getNode()->updateAbsolutePosition();
 }
 
 bool Object2D::getVisibility() const {
@@ -131,7 +133,6 @@ bool Object2D::parentTo(sol::optional<Object2D*> parent) {
 
         root->addChild(getNode());
         if (bgBorder) root->addChild(bgBorder);
-        if (button) root->addChild(button);
         return true;
     }
 
@@ -139,7 +140,7 @@ bool Object2D::parentTo(sol::optional<Object2D*> parent) {
     if (!p->getNode()) return false;
     p->getNode()->addChild(getNode());
     if (bgBorder) p->getNode()->addChild(bgBorder);
-    if (button) p->getNode()->addChild(button);
+    // if (button) p->getNode()->addChild(button);
     return true;
 }
 
@@ -163,7 +164,8 @@ void Object2D::updateBorderDimensions(const Vec2& sz) {
 
 void Object2D::updateButtonDimensions() {
     if (!getNode() || !button) return;
-    button->setRelativePosition(getNode()->getRelativePosition());
+    irr::core::recti ns = getNode()->getRelativePosition();
+    button->setRelativePosition(irr::core::recti(0, 0, ns.getWidth(), ns.getHeight()));
 }
 
 void Object2D::setBGBorder() {
@@ -196,9 +198,11 @@ void Object2D::setEnabled(bool v) {
 void Object2D::createButton() {
     if (button || !getNode()) return;
     button = rh->createButton();
-    updateButtonDimensions();
+    if (!button) return;
     button->setEnabled(btnEnabled);
-    // button->setVisible(false);
+    button->setVisible(true);
+    getNode()->addChild(button);
+    updateButtonDimensions();
 
     r->addButtonPair(*this);
 
