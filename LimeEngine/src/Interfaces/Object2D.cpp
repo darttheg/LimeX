@@ -219,11 +219,12 @@ void Object2D::createButton() {
 void Object2D::removeButton() {
     if (!button) return;
     r->removeButtonPair(button);
-    button->drop();
     button->remove();
+    button = nullptr;
 }
 
 void Object2D::checkButtonState() {
+    if (!onHovered || !onPressed) return;
     int sz = onHovered->getSize() + onPressed->getSize();
     if (!button && sz > 0)
         createButton();
@@ -253,6 +254,11 @@ int Object2D::getRefCount() const {
 }
 
 sol::object Object2D::i_destroy() {
+    onHovered->setOnLengthChanged(nullptr);
+    onPressed->setOnLengthChanged(nullptr);
+    onHovered->clear();
+    onPressed->clear();
+
     removeButton();
     setBorder(false);
     if (getNode()) getNode()->drop();
