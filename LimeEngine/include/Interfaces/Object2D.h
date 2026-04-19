@@ -66,7 +66,7 @@ public:
 	void setEnabled(bool v);
 protected:
 	irr::gui::IGUIStaticText* bgBorder = nullptr;
-	void updateBorderDimensions(const Vec2& sz);
+	void updateBorderDimensions();
 	void updateButtonDimensions();
 
 	irr::gui::IGUIButton* button = nullptr;

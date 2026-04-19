@@ -19,9 +19,9 @@ struct GUIManager::FCache {
 	std::unordered_map<std::string, irr::gui::IGUIFont*> cache;
 };
 
-struct GUIManager::ButtonPair {
-	std::shared_ptr<Event> onHovered;
-	std::shared_ptr<Event> onPressed;
+struct ButtonPair {
+	std::shared_ptr<Event> onHovered = nullptr;
+	std::shared_ptr<Event> onPressed = nullptr;
 };
 
 GUIManager::GUIManager(Renderer* re, DebugConsole* de) {
@@ -178,18 +178,18 @@ irr::gui::IGUIFont* GUIManager::getGUIFont(const std::string& name) {
 	return nullptr;
 }
 
-void GUIManager::addButtonPair(const Object2D& o) {
-	auto it = buttonCallbacks.find(o.getButton());
+void GUIManager::addButtonPair(irr::gui::IGUIButton* button, ButtonPair events) {
+	auto it = buttonCallbacks.find(button);
 	if (it != buttonCallbacks.end()) return;
 
-	ButtonPair pb{ o.onHovered, o.onPressed };
-	buttonCallbacks.emplace(o.getButton(), pb);
+	ButtonPair pb{ events.onHovered, events.onPressed };
+	buttonCallbacks.emplace(button, pb);
 }
 
-void GUIManager::removeButtonPair(const Object2D& o) {
-	auto it = buttonCallbacks.find(o.getButton());
+void GUIManager::removeButtonPair(irr::gui::IGUIButton* element) {
+	auto it = buttonCallbacks.find(element);
 	if (it != buttonCallbacks.end())
-		buttonCallbacks.erase(o.getButton());
+		buttonCallbacks.erase(element);
 }
 
 void GUIManager::handleGUIEvent(irr::gui::IGUIElement* caller, irr::gui::IGUIElement* element, int eventType) {

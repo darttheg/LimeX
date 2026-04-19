@@ -164,6 +164,8 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	limiter = new FrameLimiter();
 	web = new WebManager();
 
+	renderer->setReceiver(receiver);
+
 	lua = std::make_unique<sol::state>();
 
 	if (!lua) {

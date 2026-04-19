@@ -13,10 +13,13 @@ namespace irr {
 		class IGUIEnvironment;
 		class IGUIFont;
 		class IGUIElement;
+		class IGUIButton;
 	}
 	class IrrlichtDevice;
 }
 using namespace irr;
+
+struct ButtonPair;
 
 // This class lays under the Renderer, as GUI parts are elements of Irrlicht.
 class GUIManager {
@@ -38,13 +41,12 @@ public:
 	void setElementFocused(irr::gui::IGUIElement* e, bool v);
 	void setQuality(int q);
 	irr::gui::IGUIFont* getGUIFont(const std::string& name);
-	void addButtonPair(const Object2D& o);
-	void removeButtonPair(const Object2D& o);
+	void addButtonPair(irr::gui::IGUIButton* button, ButtonPair);
+	void removeButtonPair(irr::gui::IGUIButton* element);
 	void handleGUIEvent(irr::gui::IGUIElement* caller, irr::gui::IGUIElement* element, int eventType);
 private:
 	struct FCache;
 	std::unique_ptr<FCache> fontCache;
 
-	struct ButtonPair;
 	std::unordered_map<irr::gui::IGUIElement*, ButtonPair> buttonCallbacks;
 };

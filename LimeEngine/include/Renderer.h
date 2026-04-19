@@ -56,6 +56,8 @@ class Application;
 class DebugConsole;
 class Window;
 
+struct ButtonPair;
+
 class Renderer {
 public:
 	Renderer(Application* owner);
@@ -63,6 +65,7 @@ public:
 
 	bool Init();
 	bool InitPhysics();
+	void setReceiver(Receiver* re);
 	bool Shutdown();
 	bool Render(float dt, bool clearBackBuffer = false, bool clearZBuffer = true);
 	void EndWholeScene() { hasBegunNewScene = false; }
@@ -130,9 +133,9 @@ public:
 	HWND getHandle() { return hwndIrr; }
 	GUIManager* getGUIManager() { return guiManager; }
 	bool runEventFromGUI(std::shared_ptr<Event> e, std::function<void(const std::string&)> onError);
-	void addButtonPair(const Object2D& o);
-	void removeButtonPair(const Object2D& o);
-	bool isElementHovered(const Object2D& o);
+	void addButtonPair(irr::gui::IGUIButton* button, ButtonPair pair);
+	void removeButtonPair(irr::gui::IGUIButton* button);
+	bool isElementHovered(irr::gui::IGUIElement* element);
 	void setActivelyRendering(bool v) { doRender = v; }
 	bool getIsActivelyRendering() const { return doRender; }
 	irr::video::IVideoDriver* const getVideoDriver() { return i_driver; }

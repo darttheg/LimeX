@@ -14,6 +14,11 @@ static Renderer* r = nullptr;
 static RenderHelper* rh = nullptr;
 static lua_State* l = nullptr;
 
+struct ButtonPair {
+    std::shared_ptr<Event> onHovered = nullptr;
+    std::shared_ptr<Event> onPressed = nullptr;
+};
+
 irr::gui::IGUIElement* Object2D::getButton() const {
     return button;
 }
@@ -28,7 +33,7 @@ Vec2 Object2D::getPosition() const {
 void Object2D::setPosition(const Vec2& pos) {
     if (!getNode()) return;
     getNode()->setRelativePosition(irr::core::position2di(pos.getX(), pos.getY()));
-    if (bgBorder) bgBorder->setRelativePosition(irr::core::position2di(pos.getX(), pos.getY()));
+    // if (bgBorder) bgBorder->setRelativePosition(irr::core::position2di(pos.getX(), pos.getY()));
     // if (button) button->setRelativePosition(irr::core::position2di(pos.getX(), pos.getY()));
     getNode()->updateAbsolutePosition();
 }
@@ -58,7 +63,7 @@ void Object2D::setSize(const Vec2& size) {
     r.LowerRightCorner.Y = r.UpperLeftCorner.Y + size.getY();
     getNode()->setMaxSize(irr::core::dimension2du(size.getX(), size.getY()));
     getNode()->setRelativePosition(r);
-    updateBorderDimensions(size);
+    updateBorderDimensions();
     updateButtonDimensions();
 }
 
@@ -132,14 +137,14 @@ bool Object2D::parentTo(sol::optional<Object2D*> parent) {
         if (!root) return false;
 
         root->addChild(getNode());
-        if (bgBorder) root->addChild(bgBorder);
+        // if (bgBorder) root->addChild(bgBorder);
         return true;
     }
 
     Object2D* p = *parent;
     if (!p->getNode()) return false;
     p->getNode()->addChild(getNode());
-    if (bgBorder) p->getNode()->addChild(bgBorder);
+    // if (bgBorder) p->getNode()->addChild(bgBorder);
     // if (button) p->getNode()->addChild(button);
     return true;
 }
@@ -157,9 +162,10 @@ void Object2D::setPressedEvent(std::shared_ptr<Event> e) {
     onPressed = std::move(e);
 }
 
-void Object2D::updateBorderDimensions(const Vec2& sz) {
+void Object2D::updateBorderDimensions() {
     if (!getNode() || !bgBorder) return;
-    bgBorder->setRelativePosition(getNode()->getRelativePosition());
+    irr::core::recti ns = getNode()->getRelativePosition();
+    bgBorder->setRelativePosition(irr::core::recti(0, 0, ns.getWidth(), ns.getHeight()));
 }
 
 void Object2D::updateButtonDimensions() {
@@ -174,12 +180,13 @@ void Object2D::setBGBorder() {
     if ((hasBorder || hasBackground) && !bgBorder) {
         bgBorder = rh->createStaticText();
         bgBorder->setVisible(getNode()->isVisible());
-        getNode()->getParent()->addChild(bgBorder);
-        getNode()->getParent()->sendToBack(bgBorder);
+        // getNode()->getParent()->addChild(bgBorder);
+        // getNode()->getParent()->sendToBack(bgBorder);
+        getNode()->addChild(bgBorder);
         bgBorder->setDrawBackground(true);
         bgBorder->setBackgroundColor(irr::video::SColor(backgroundColor.w, backgroundColor.x, backgroundColor.y, backgroundColor.z));
-        updateBorderDimensions(getSize());
-        bgBorder->setRelativePosition(irr::core::position2di(getPosition().getX(), getPosition().getY()));
+        updateBorderDimensions();
+        // bgBorder->setRelativePosition(irr::core::position2di(getPosition().getX(), getPosition().getY()));
     } else if (!(hasBorder || hasBackground) && bgBorder) {
         bgBorder->drop();
         bgBorder->remove();
@@ -204,14 +211,14 @@ void Object2D::createButton() {
     getNode()->addChild(button);
     updateButtonDimensions();
 
-    r->addButtonPair(*this);
+    r->addButtonPair(button, ButtonPair{onHovered, onPressed});
 
     // TODO: Make button loose and adjust position with viewport tl coordinates to fix collision.
 }
 
 void Object2D::removeButton() {
     if (!button) return;
-    r->removeButtonPair(*this);
+    r->removeButtonPair(button);
     button->drop();
     button->remove();
 }
@@ -225,7 +232,7 @@ void Object2D::checkButtonState() {
 }
 
 bool Object2D::isHovered() const {
-    return r->isElementHovered(*this);
+    return r->isElementHovered(getNode());
 }
 
 void Object2D::createEvents() {

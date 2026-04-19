@@ -31,15 +31,24 @@ static DebugConsole* d = nullptr;
 static Window* w = nullptr;
 static Receiver* r = nullptr;
 
+#include "Objects/Event.h"
+struct ButtonPair {
+	std::shared_ptr<Event> onHovered = nullptr;
+	std::shared_ptr<Event> onPressed = nullptr;
+};
+
 Renderer::Renderer(Application* owner) {
 	a = owner;
 	d = a->GetDebugConsole();
 	w = a->GetWindow();
-	r = a->GetReceiver();
 	guiManager = new GUIManager(this, d);
 	rh = new RenderHelper();
 	qr = new QuadRenderer();
 	physics = new PhysicsManager(this, d);
+}
+
+void Renderer::setReceiver(Receiver* re) {
+	r = re;
 }
 
 Renderer::~Renderer() {
@@ -809,17 +818,17 @@ bool Renderer::setMousePosition(const Vec2& pos) {
 }
 
 #include "Interfaces/Object2D.h"
-void Renderer::addButtonPair(const Object2D& o) {
-	guiManager->addButtonPair(o);
+void Renderer::addButtonPair(irr::gui::IGUIButton* button, ButtonPair pair) {
+	guiManager->addButtonPair(button, pair);
 }
 
-void Renderer::removeButtonPair(const Object2D& o) {
-	guiManager->removeButtonPair(o);
+void Renderer::removeButtonPair(irr::gui::IGUIButton* button) {
+	guiManager->removeButtonPair(button);
 }
 
-bool Renderer::isElementHovered(const Object2D& o) {
-	if (!o.getNode()) return false;
-	return o.getNode()->isPointInside(irr::core::vector2di(r->getMouseState().pos.x, r->getMouseState().pos.y));
+bool Renderer::isElementHovered(irr::gui::IGUIElement* element) {
+	if (!element) return false;
+	return element->isPointInside(irr::core::vector2di(r->getMouseState().pos.x, r->getMouseState().pos.y));
 }
 
 irr::io::IFileSystem* const Renderer::getFileSystem() {
