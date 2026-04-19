@@ -36,6 +36,8 @@ public:
 	Vec4 getBackgroundColor() const;
 	void setBackgroundColor(const Vec4& c);
 
+	Vec2 getAbsolutePosition() const;
+
 	bool bringToFront() const;
 	bool sendToBack() const;
 	int getZOrder() const;

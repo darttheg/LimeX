@@ -888,6 +888,10 @@ function ConeTwistConstraint:destroy() end
 ---@return nil
 function EditBox:destroy() end
 
+--- Returns the absolute position of this object.
+---@return Vec2
+function EditBox:getAbsolutePosition() end
+
 --- Returns the reference count for this object.
 ---@return number
 function EditBox:getReferenceCount() end
@@ -1022,6 +1026,10 @@ function Hook:unhook() end
 --- Destroys this object.
 ---@return nil
 function Image2D:destroy() end
+
+--- Returns the absolute position of this object.
+---@return Vec2
+function Image2D:getAbsolutePosition() end
 
 --- Returns the reference count for this object.
 ---@return number
@@ -2476,6 +2484,10 @@ function Sound:stop() end
 --- Destroys this object.
 ---@return nil
 function Text2D:destroy() end
+
+--- Returns the absolute position of this object.
+---@return Vec2
+function Text2D:getAbsolutePosition() end
 
 --- Returns the reference count for this object.
 ---@return number

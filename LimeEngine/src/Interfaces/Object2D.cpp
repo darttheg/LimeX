@@ -253,6 +253,12 @@ int Object2D::getRefCount() const {
     return getNode() ? getNode()->getReferenceCount() : -1;
 }
 
+Vec2 Object2D::getAbsolutePosition() const {
+    if (!getNode()) return Vec2();
+    irr::core::recti pos = getNode()->getAbsolutePosition();
+    return Vec2(pos.UpperLeftCorner.X, pos.UpperLeftCorner.Y);
+}
+
 sol::object Object2D::i_destroy() {
     onHovered->setOnLengthChanged(nullptr);
     onPressed->setOnLengthChanged(nullptr);
@@ -331,6 +337,10 @@ void Interface::Object2DBind::bind(lua_State* ls, Renderer* rend) {
     // Returns the reference count for this object.
     // Returns number
     obj.set_function("getReferenceCount", &Object2D::getRefCount);
+
+    // Returns the absolute position of this object.
+    // Returns Vec2
+    obj.set_function("getAbsolutePosition", &Object2D::getAbsolutePosition);
 
     // Destroys this object.
     // Returns nil
