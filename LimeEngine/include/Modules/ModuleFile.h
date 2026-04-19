@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>const std::string& 
+#include <string>
 #include <sol/forward.hpp>
 class Application;
 
