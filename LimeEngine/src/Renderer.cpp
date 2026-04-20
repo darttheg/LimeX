@@ -122,9 +122,13 @@ bool Renderer::Init() {
 	params.Vsync = cfg.vSync;
 	params.Fullscreen = cfg.fullscreen;
 	params.Stencilbuffer = cfg.stencil;
+	// params.WindowId = (void*)glfwGetWin32Window(w->getGLFWWindow());
 
 	i_device = irr::createDeviceEx(params);
-	if (!i_device) return false;
+	if (!i_device || !i_device->getVideoDriver()) {
+		d->Warn("Failed to create device!");
+		return false;
+	}
 
 	i_device->getLogger()->setLogLevel(irr::ELOG_LEVEL::ELL_WARNING);
 
