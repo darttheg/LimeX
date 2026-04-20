@@ -192,6 +192,11 @@ void GUIManager::removeButtonPair(irr::gui::IGUIButton* element) {
 		buttonCallbacks.erase(element);
 }
 
+void GUIManager::clearFocus() {
+	if (!guardRenderingCheck()) return;
+	guienv->setFocus(nullptr);
+}
+
 void GUIManager::handleGUIEvent(irr::gui::IGUIElement* caller, irr::gui::IGUIElement* element, int eventType) {
 	auto it = buttonCallbacks.find(caller);
 	if (it != buttonCallbacks.end()) {

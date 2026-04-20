@@ -15,6 +15,7 @@ namespace Module {
 			void setQuality(int q);
 			std::string embedTTF(const std::string& ttfPath, int size, bool aa = true);
 			std::string embedTTF(const std::string& ttfPath, int size, const std::string& name, bool aa = true);
+			void clearFocus();
 		}
 	}
 }

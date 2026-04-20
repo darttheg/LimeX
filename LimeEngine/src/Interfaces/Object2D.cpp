@@ -267,7 +267,7 @@ sol::object Object2D::i_destroy() {
 
     removeButton();
     setBorder(false);
-    if (getNode()) getNode()->drop();
+    // if (getNode()) getNode()->drop();
     destroy();
     return sol::make_object(l, sol::nil);
 }
@@ -300,6 +300,9 @@ void Interface::Object2DBind::bind(lua_State* ls, Renderer* rend) {
 
         // Field boolean border, Displays a border outlining this object's bounding box on the screen.
         "border", sol::property(&Object2D::getBorder, &Object2D::setBorder),
+
+        // Field boolean enabled, Determines if this object will process hooked input events, if any.
+        "enabled", sol::property(&Object2D::getEnabled, &Object2D::setEnabled),
 
         // Field Vec4 backgroundColor, The RGBA background color of this object.
         "backgroundColor", sol::property(

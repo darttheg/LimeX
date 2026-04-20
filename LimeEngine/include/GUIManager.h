@@ -44,6 +44,7 @@ public:
 	void addButtonPair(irr::gui::IGUIButton* button, ButtonPair);
 	void removeButtonPair(irr::gui::IGUIButton* element);
 	void handleGUIEvent(irr::gui::IGUIElement* caller, irr::gui::IGUIElement* element, int eventType);
+	void clearFocus();
 private:
 	struct FCache;
 	std::unique_ptr<FCache> fontCache;

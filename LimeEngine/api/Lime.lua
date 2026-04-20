@@ -444,6 +444,7 @@ Hook = Hook or {}
 ---@field size Vec2 @The 2D size of this object.
 ---@field visible boolean @Determines the visibility of this object and its children.
 ---@field border boolean @Displays a border outlining this object's bounding box on the screen.
+---@field enabled boolean @Determines if this object will process hooked input events, if any.
 ---@field backgroundColor Vec4 @The RGBA background color of this object.
 ---@field onHovered OnHoveredEvent @Event called by Lime when this object is hovered.
 ---@field onPressed OnPressedEvent @Event called by Lime when this object is pressed.
@@ -643,6 +644,7 @@ function Sound.new() end
 ---@field size Vec2 @The 2D size of this object.
 ---@field visible boolean @Determines the visibility of this object and its children.
 ---@field border boolean @Displays a border outlining this object's bounding box on the screen.
+---@field enabled boolean @Determines if this object will process hooked input events, if any.
 ---@field backgroundColor Vec4 @The RGBA background color of this object.
 ---@field onHovered OnHoveredEvent @Event called by Lime when this object is hovered.
 ---@field onPressed OnPressedEvent @Event called by Lime when this object is pressed.
@@ -1351,6 +1353,11 @@ function Lime.GUI.setDefaultFont(name) end
 ---@param quality Lime.Enum.Quality
 ---@return void
 function Lime.GUI.setQuality(quality) end
+
+--- **This function cannot be run until window creation.**  
+--- Unfocuses any element that is focused.
+---@return void
+function Lime.GUI.unfocus() end
 
 --- Returns controller with id `id`'s `axis` axis value from -1.0 to 1.0. Triggers are ranged 0.0 to 1.0.
 ---@param id number

@@ -45,6 +45,10 @@ void Module::GUI::bind(Application* app) {
 	// Returns void
 	module.set_function("setQuality", &Module::GUI::Bind::setQuality);
 
+	// [+] Unfocuses any element that is focused.
+	// Returns void
+	module.set_function("unfocus", &Module::GUI::Bind::clearFocus);
+
 	// [+] Loads a Truetype font. Provide `name` to set the name manually, otherwise Lime will register the font as fontname_size. Returns the output font name.
 	// Params string path, number fontSize, boolean? aa
 	// Params string path, number fontSize, string name, boolean? aa
@@ -84,4 +88,8 @@ std::string Module::GUI::Bind::embedTTF(const std::string& ttfPath, int size, bo
 
 std::string Module::GUI::Bind::embedTTF(const std::string& ttfPath, int size, const std::string& name, bool aa) {
 	return g->embedTTF(ttfPath, size, name, aa);
+}
+
+void Module::GUI::Bind::clearFocus() {
+	g->clearFocus();
 }
