@@ -197,6 +197,7 @@ int Module::Lime::Bind::GetFrameRate() {
 
 void Module::Lime::Bind::SetFrameRate(int fps) {
 	a->setTargetFrameRate(fps);
+	a->setVSync(false);
 }
 
 bool Module::Lime::Bind::GetVSync() {

@@ -493,7 +493,7 @@ void Application::updateFrameRate() {
 void Application::setVSync(bool on) {
 	if (!limiter) return;
 	window->setSwapInterval(on ? 1 : 0);
-	limiter->setFPS(window->getPrimaryHz());
+	if (on) limiter->setFPS(window->getPrimaryHz());
 	// limiter->setVSync(on);
 	windowCfg.vSync = on;
 }
