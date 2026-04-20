@@ -48,6 +48,9 @@ public:
 	bool getFocused();
 	void setFocused(bool v);
 
+	int getMaxCharCount() const;
+	void setMaxCharCount(int v);
+
 	int getPos();
 	void setPos(int v);
 

@@ -6,6 +6,7 @@
 #include <GLFW/glfw3native.h>
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <functional>
 
 class Vec2;
@@ -154,6 +155,8 @@ private:
 	bool isCreated = false;
 	bool hasBegunNewScene = false;
 	bool doRender = true;
+
+	std::unordered_set<std::string> preloadedPaths;
 
 	float dtTime = 0.0f;
 

@@ -353,6 +353,7 @@ bool Renderer::guardRenderingCheck() {
 }
 
 void Renderer::warnGarbageCollection(const std::string& path) {
+	if (preloadedPaths.count(path)) return;
 	a->warnGarbageCollection(path);
 }
 
@@ -473,12 +474,18 @@ irr::video::ITexture* Renderer::createRenderTargetTexture(const Vec2& size, irr:
 
 bool Renderer::preloadMesh(const std::string path) {
 	if (!guardRenderingCheck()) return false;
-	return i_smgr->getMesh(path.c_str()) != nullptr;
+	bool ok = i_smgr->getMesh(path.c_str()) != nullptr;
+	if (ok)
+		preloadedPaths.insert(i_device->getFileSystem()->getAbsolutePath(path.c_str()).c_str());
+	return ok;
 }
 
 bool Renderer::preloadTexture(const std::string path) {
 	if (!guardRenderingCheck()) return false;
-	return i_driver->getTexture(path.c_str()) != nullptr;
+	bool ok = i_driver->getTexture(path.c_str()) != nullptr;
+	if (ok)
+		preloadedPaths.insert(i_device->getFileSystem()->getAbsolutePath(path.c_str()).c_str());
+	return ok;
 }
 
 bool Renderer::purgeMesh(const std::string path) {
@@ -488,6 +495,7 @@ bool Renderer::purgeMesh(const std::string path) {
 		irr::scene::IAnimatedMesh* m = c->getMeshByName(path.c_str());
 		m->drop();
 		removeMesh(m);
+		preloadedPaths.erase(i_device->getFileSystem()->getAbsolutePath(path.c_str()).c_str());
 		return true;
 	}
 	return false;
@@ -499,6 +507,7 @@ bool Renderer::purgeTexture(const std::string path) {
 		irr::video::ITexture* t = i_driver->findTexture(path.c_str());
 		t->drop();
 		removeTexture(t);
+		preloadedPaths.erase(i_device->getFileSystem()->getAbsolutePath(path.c_str()).c_str());
 		return true;
 	}
 	return false;

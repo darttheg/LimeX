@@ -31,6 +31,7 @@ public:
         auto now = clock::now();
         double dt = std::chrono::duration<double>(now - prev).count();
         prev = now;
+        if (dt <= 0.0 || dt > 0.1) dt = 1.0 / targetFPS;
         return dt;
     }
 

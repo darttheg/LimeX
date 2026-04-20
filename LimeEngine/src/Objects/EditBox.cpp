@@ -125,6 +125,16 @@ void EditBox::setFocused(bool v) {
 	g->setElementFocused(ebox, v);
 }
 
+int EditBox::getMaxCharCount() const {
+	return ebox ? ebox->getMax() : 0;
+}
+
+void EditBox::setMaxCharCount(int v) {
+	if (!ebox) return;
+	if (v < 0) v = 0;
+	ebox->setMax(v);
+}
+
 int EditBox::getPos() {
 	return ebox ? ebox->getCursorPosition() : 0;
 }
@@ -175,6 +185,9 @@ void Object::EditBoxBind::bind(lua_State* ls, RenderHelper* renh, GUIManager* gu
 
 		// Field boolean enabled, Determines if this `EditBox` is enabled.
 		"enabled", sol::property(&EditBox::getEnabled, &EditBox::setEnabled),
+
+		// Field number maxChars, The maximum amount of characters allowed.
+		"maxChars", sol::property(&EditBox::getMaxCharCount, &EditBox::setMaxCharCount),
 
 		// Field number cursorPosition, The position of the cursor in this `EditBox`.
 		"cursorPosition", sol::property(&EditBox::getPos, &EditBox::setPos),
