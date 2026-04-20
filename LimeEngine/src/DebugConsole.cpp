@@ -99,22 +99,23 @@ void DebugConsole::Create() {
 
     CreateDebugConsole();
     SetConsoleTitleW(L"Lime Console");
-    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-    consoleHandle = (void*)h;
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    HANDLE hIn = GetStdHandle(STD_INPUT_HANDLE);
+    consoleHandle = (void*)hOut;
 
     DWORD mode;
-    GetConsoleMode(consoleHandle, &mode);
-    SetConsoleMode(consoleHandle, mode & ~ENABLE_QUICK_EDIT_MODE);
+    GetConsoleMode(hIn, &mode);
+    SetConsoleMode(hIn, mode & ~ENABLE_QUICK_EDIT_MODE);
 
     CONSOLE_SCREEN_BUFFER_INFO info{};
-    if (GetConsoleScreenBufferInfo(h, &info))
+    if (GetConsoleScreenBufferInfo(hOut, &info))
         defaultAttr = info.wAttributes;
     else
         defaultAttr = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
 
     SetWindowPos(GetConsoleWindow(), nullptr, 0, 0, 420, 480, SWP_NOMOVE | SWP_NOZORDER);
 
-    if (h && !consoleLines.empty()) {
+    if (hOut && !consoleLines.empty()) {
         for (const Line& line : consoleLines)
             AddLineToConsole(line);
     }
