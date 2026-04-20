@@ -143,10 +143,13 @@ void DebugConsole::Log(std::string msg, MESSAGE_TYPE type) {
     Log(msg.c_str(), type);
 }
 
-void DebugConsole::PostError(const char* msg, bool close) {
+void DebugConsole::PostError(const char* msg, bool close, bool loc) {
     if (endOnError) close = true;
 
-    Log(std::string("ERROR: " + std::string(msg)).c_str(), MESSAGE_TYPE::RED);
+    std::string full = "ERROR: ";
+    if (loc) full += app->GetLuaLocation() + ": ";
+    full += std::string(msg);
+    Log(full.c_str(), MESSAGE_TYPE::RED);
     errCount++;
 
     if (close) {
@@ -161,8 +164,8 @@ void DebugConsole::PostError(const char* msg, bool close) {
     }
 }
 
-void DebugConsole::PostError(std::string msg, bool close) {
-    PostError(msg.c_str(), close);
+void DebugConsole::PostError(std::string msg, bool close, bool loc) {
+    PostError(msg.c_str(), close, loc);
 }
 
 void DebugConsole::Warn(const char* msg, bool loc) {

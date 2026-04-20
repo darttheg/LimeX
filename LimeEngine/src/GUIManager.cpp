@@ -204,11 +204,11 @@ void GUIManager::handleGUIEvent(irr::gui::IGUIElement* caller, irr::gui::IGUIEle
 
 		switch (type) {
 		case irr::gui::EGUI_EVENT_TYPE::EGET_BUTTON_CLICKED:
-			if (!r->runEventFromGUI(it->second.onPressed, [&](const std::string& msg) { d->PostError(msg); }))
+			if (!r->runEventFromGUI(it->second.onPressed, [&](const std::string& msg) { d->PostError(msg, false, false); }))
 				d->Warn("Could not run onPressed Event: Event is not valid!");
 			break;
 		case irr::gui::EGUI_EVENT_TYPE::EGET_ELEMENT_HOVERED:
-			if (!r->runEventFromGUI(it->second.onHovered, [&](const std::string& msg) { d->PostError(msg); }))
+			if (!r->runEventFromGUI(it->second.onHovered, [&](const std::string& msg) { d->PostError(msg, false, false); }))
 				d->Warn("Could not run onHovered Event: Event is not valid!");
 			break;
 		}

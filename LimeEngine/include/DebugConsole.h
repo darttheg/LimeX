@@ -30,8 +30,8 @@ public:
 
 	void Log(const char* msg, MESSAGE_TYPE type = MESSAGE_TYPE::NORMAL);
 	void Log(std::string msg, MESSAGE_TYPE type = MESSAGE_TYPE::NORMAL);
-	void PostError(const char* msg, bool close = false);
-	void PostError(std::string msg, bool close = false);
+	void PostError(const char* msg, bool close = false, bool loc = true);
+	void PostError(std::string msg, bool close = false, bool loc = true);
 	void Warn(const char* msg, bool loc = true);
 	void Warn(std::string msg, bool loc = true);
 

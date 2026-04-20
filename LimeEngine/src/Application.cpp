@@ -124,7 +124,7 @@ bool Application::RunEntry() {
 
 	auto it = modules.find(entryModuleName);
 	if (it == modules.end()) {
-		console->PostError("Could not find entry module " + entryModuleName, true);
+		console->PostError("Could not find entry module " + entryModuleName, true, false);
 		displayMessage("Lime Init Error", "Could not find entry module " + entryModuleName, 1);
 		return false;
 	}
@@ -134,7 +134,7 @@ bool Application::RunEntry() {
 	sol::load_result chunk = lua->load_buffer(it->second.data(), it->second.size(), entryModuleName);
 	if (!chunk.valid()) {
 		sol::error err = chunk;
-		console->PostError("Lua load error:\n" + std::string(err.what()), true);
+		console->PostError("Lua load error:\n" + std::string(err.what()), true, false);
 		displayMessage("Lime Init Error", "Lua load error:\n" + std::string(err.what()), 1);
 		return false;
 	}
