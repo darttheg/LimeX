@@ -43,9 +43,9 @@ void Module::Network::bind(Application* app) {
 	// Params Packet received, number peerID, number channel
 	module["onReceive"] = n->LimeOnReceive;
 
-	// Hosts a server.
+	// Hosts a server. Returns true on success.
 	// Params number port, number? maxPlayers
-	// Returns void
+	// Returns boolean
 	module.set_function("host", &Module::Network::Bind::Host);
 
 	// Attempts to connect to a server.
@@ -137,8 +137,8 @@ void Module::Network::bind(Application* app) {
 
 // Functions
 
-void Module::Network::Bind::Host(int port, int maxPlayers) {
-	n->host(port, maxPlayers);
+bool Module::Network::Bind::Host(int port, int maxPlayers) {
+	return n->host(port, maxPlayers);
 }
 
 void Module::Network::Bind::Connect(const std::string& ip, int port) {

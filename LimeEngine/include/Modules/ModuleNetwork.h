@@ -11,7 +11,7 @@ namespace Module {
 		void bind(Application* app);
 
 		namespace Bind {
-			void Host(int port, int maxPlayers = 32);
+			bool Host(int port, int maxPlayers = 32);
 			void Connect(const std::string& ip, int port);
 			void Disconnect();
 			bool IsHosting();

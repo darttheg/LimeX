@@ -1475,10 +1475,10 @@ function Lime.Network.getPeerPing(peerID) end
 ---@return Lime.Enum.PeerState
 function Lime.Network.getPeerState(peerID) end
 
---- Hosts a server.
+--- Hosts a server. Returns true on success.
 ---@param port number
 ---@param maxPlayers number?
----@return void
+---@return boolean
 function Lime.Network.host(port, maxPlayers) end
 
 --- Returns true if this application is connected to a server.

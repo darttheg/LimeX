@@ -56,15 +56,15 @@ void NetworkManager::Shutdown() {
 	enet_deinitialize();
 }
 
-void NetworkManager::host(int port, int maxPlayers) {
+bool NetworkManager::host(int port, int maxPlayers) {
 	if (!initialized) {
 		d->Warn("Cannot host as networking is not initialized");
-		return;
+		return false;
 	}
 
 	if (server || client) {
 		d->Warn("Cannot host a server while already connected to one");
-		return;
+		return false;
 	}
 
 	ENetAddress address;
@@ -72,13 +72,12 @@ void NetworkManager::host(int port, int maxPlayers) {
 	address.port = port;
 	server = enet_host_create(&address, maxPlayers, 2, 0, 0);
 
-	if (!server) {
-		d->PostError("Failed to host server");
-		return;
-	}
+	if (!server) return false;
 
 	running = true;
 	netThread = std::thread(&NetworkManager::loop, this);
+
+	return true;
 }
 
 void NetworkManager::connect(const std::string& ip, int port) {

@@ -60,7 +60,7 @@ public:
 	void Update();
 	void Shutdown();
 
-	void host(int port, int maxPlayers = 32);
+	bool host(int port, int maxPlayers = 32);
 	void connect(const std::string& ip, int port);
 	void disconnect(); // Stops hosting as server / disconnects as peer
 
