@@ -28,16 +28,9 @@ async function injectLuaLibrary(context: vscode.ExtensionContext, workspaceFolde
 }
 
 function launchApp(workspaceFolder: string): void {
-  const proc = spawn("cmd.exe", ["/c", "start", "", "app.exe"], {
+  spawn("cmd.exe", ["/c", "start", "", "app.exe"], {
     cwd: workspaceFolder,
-    detached: true,
-    stdio: "ignore",
-  });
-
-  proc.on("close", (code) => {
-    if (code !== 0) {
-      vscode.window.showErrorMessage(`Lime: Application exited with error (code ${code}).`);
-    }
+    windowsVerbatimArguments: true,
   });
 }
 

@@ -220,6 +220,8 @@ void Window::EndFrame() {
 
 void Window::Focus() {
 	if (!glfwWindow) return;
+	glfwRestoreWindow(glfwWindow);
+	glfwShowWindow(glfwWindow);
 	glfwFocusWindow(glfwWindow);
 }
 

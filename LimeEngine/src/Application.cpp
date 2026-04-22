@@ -529,8 +529,8 @@ bool Application::CreateWindows() {
 		return false;
 	}
 
-	ShowWindow(glfwHWND, SW_SHOWNORMAL);
-	SetForegroundWindow(glfwHWND);
+	// ShowWindow(glfwHWND, SW_SHOWNORMAL);
+	// SetForegroundWindow(glfwHWND);
 
 	return true;
 }
