@@ -47,6 +47,8 @@ void GUIManager::SetGUIEnv(irr::gui::IGUIEnvironment* g, irr::IrrlichtDevice* do
 
 bool GUIManager::Render() {
 	if (!guardRenderingCheck()) return false;
+
+	device->getVideoDriver()->clearZBuffer();
 	guienv->drawAll();
 
 	return true;

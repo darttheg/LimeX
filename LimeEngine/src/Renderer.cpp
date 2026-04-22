@@ -261,10 +261,12 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	if (doMatchResolution && !qr->ppxActive()) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		i_smgr->drawAll();
+		physics->RenderDebug();
 		guiManager->Render();
 	} else {
 		qr->beginInternal();
 		i_smgr->drawAll(); // Draw scene objects to rtScene
+		physics->RenderDebug();
 		qr->beginGUIPass();
 		guiManager->Render(); // Draw GUI objects to rtGUI
 		qr->endInternal();
@@ -283,8 +285,6 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 	qr->presentToWindow();
 	*/
-
-	physics->RenderDebug();
 
 	i_driver->endScene();
 

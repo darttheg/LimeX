@@ -483,13 +483,13 @@ irr::gui::CGUIColoredText* RenderHelper::createColoredText2D() {
 irr::gui::IGUIStaticText* RenderHelper::createStaticText() {
 	if (!guardRenderingCheck()) return nullptr;
 
-	return i_gui->addStaticText(L"", irr::core::recti(0, 0, 64, 64));
+	return i_gui->addStaticText(L"", irr::core::recti(0, 0, 64, 64), false, true, i_gui->getRootGUIElement());
 }
 
 irr::gui::IGUIImage* RenderHelper::createGUIImage() {
 	if (!guardRenderingCheck()) return nullptr;
 
-	irr::gui::IGUIImage* img = i_gui->addImage(irr::core::recti(0, 0, 64, 64));
+	irr::gui::IGUIImage* img = i_gui->addImage(irr::core::recti(0, 0, 64, 64), i_gui->getRootGUIElement());
 	img->setImage(i_driver->getTexture("blank"));
 
 	return img;
@@ -510,7 +510,7 @@ irr::gui::IGUIElement* RenderHelper::getGUIRoot() {
 irr::gui::IGUIEditBox* RenderHelper::createEditBox() {
 	if (!guardRenderingCheck()) return nullptr;
 
-	return i_gui->addEditBox(L"", irr::core::recti(0, 0, 100, 36));
+	return i_gui->addEditBox(L"", irr::core::recti(0, 0, 100, 36), true, i_gui->getRootGUIElement());
 }
 
 sol::object RenderHelper::getAttribute(irr::scene::ISceneNode* node, sol::object key) {

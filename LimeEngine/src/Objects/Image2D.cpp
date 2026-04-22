@@ -39,6 +39,8 @@ bool Image2D::loadTexture(const Texture& tx) {
 
 	// bool match = !img->getImage() || img->getImage()->getName().getPath() == "blank";
 	img->setImage(tx.getTexture());
+	img->setName(tx.getPath().c_str());
+
 	Object2D::setSize(Vec2(tx.getTexture()->getSize().Width, tx.getTexture()->getSize().Height));
 	// if (match) img->setMaxSize(tx.getTexture()->getSize());
 

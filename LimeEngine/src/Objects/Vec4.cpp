@@ -40,9 +40,11 @@ static Vec4 fromHex(std::string_view hex) {
 	while (!hex.empty() && std::isspace(static_cast<unsigned char>(hex.front()))) hex.remove_prefix(1);
 	while (!hex.empty() && std::isspace(static_cast<unsigned char>(hex.back())))  hex.remove_suffix(1);
 
+	if (!hex.empty() && hex.front() == '<') hex.remove_prefix(1);
+	if (!hex.empty() && hex.back() == '>') hex.remove_suffix(1);
 	if (!hex.empty() && hex.front() == '#') hex.remove_prefix(1);
-	if (hex.size() != 6 && hex.size() != 8)
-		return Vec4(0, 0, 0, 255);
+
+	if (hex.size() != 6 && hex.size() != 8) return Vec4(0, 0, 0, 255);
 
 	int r = 0, g = 0, b = 0, a = 255;
 

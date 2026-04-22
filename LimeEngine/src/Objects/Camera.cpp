@@ -38,6 +38,7 @@ Camera::Camera(const Vec3& pos, const Vec3& rot) {
 }
 
 void Camera::destroy() {
+	if (camera && rh->getActiveCamera() == camera) rh->setActiveCamera(nullptr, nullptr, nullptr);
 	if (camera) camera->remove();
 	camera = nullptr;
 }
