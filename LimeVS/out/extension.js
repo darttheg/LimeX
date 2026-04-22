@@ -98,7 +98,11 @@ function loadIgnoreList(workspaceFolder) {
         ".emmyrc.json",
         ".vscode",
         ".ignore",
-        "bin"
+        "bin",
+        ".git",
+        ".gitignore",
+        ".gitmodules",
+        ".gitattributes"
     ]);
     const ignorePath = path.join(workspaceFolder, ".ignore");
     if (!fs.existsSync(ignorePath))

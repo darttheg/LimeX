@@ -72,7 +72,11 @@ function loadIgnoreList(workspaceFolder: string): Set<string> {
     ".emmyrc.json",
     ".vscode",
     ".ignore",
-    "bin"
+    "bin",
+    ".git",
+    ".gitignore",
+    ".gitmodules",
+    ".gitattributes"
   ]);
 
   const ignorePath = path.join(workspaceFolder, ".ignore");
