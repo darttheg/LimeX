@@ -4,8 +4,8 @@
 IDR_RES_PAK RCDATA "resources.zip"
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,0,0,24
- PRODUCTVERSION 0,0,0,24
+ FILEVERSION 0,0,0,25
+ PRODUCTVERSION 0,0,0,25
  FILEFLAGSMASK 0x3fL
  FILEFLAGS 0x0L
  FILEOS 0x40004L
@@ -19,7 +19,7 @@ BEGIN
             VALUE "FileDescription", "Lime Engine"
             VALUE "FileVersion", "1.0.0.0"
             VALUE "ProductName", "Lime Engine"
-            VALUE "ProductVersion", "beta-0.24"
+            VALUE "ProductVersion", "beta-0.25"
         END
     END
     BLOCK "VarFileInfo"
