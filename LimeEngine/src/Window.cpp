@@ -108,40 +108,13 @@ bool Window::Create() {
 		w->inFullscreenCallback = true;
 
 		if (w->didCallback) return;
-
 		w->didCallback = true;
 
 		if (maximized) {
-			w->preFullWinSize.x = w->windowSize.x;
-			w->preFullWinSize.y = w->windowSize.y;
-			w->isFullscreened = true;
-
-			GLFWmonitor* m = w->getCurrentMonitor();
-			const GLFWvidmode* mode = glfwGetVideoMode(m);
-
-			if (false) { // Black screen persists for dual monitor setups
-				int mx, my;
-				glfwGetMonitorPos(m, &mx, &my);
-				glfwSetWindowAttrib(win, GLFW_DECORATED, GLFW_FALSE);
-
-				glfwSetWindowPos(win, mx, my);
-				glfwSetWindowSize(win, mode->width, mode->height);
-			}
-
-			glfwSetWindowAttrib(win, GLFW_MAXIMIZED, GLFW_TRUE);
-		}
-		else {
-			w->isFullscreened = false;
-			glfwSetWindowAttrib(win, GLFW_DECORATED, GLFW_TRUE);
 			glfwRestoreWindow(win);
-			int width = w->preFullWinSize.x;
-			int height = w->preFullWinSize.y;
-			w->setSizeSimple(width, height);
-			r->updateWindowSize(width, height);
-			glfwSetWindowSize(win, width, height);
-
-			glfwSetWindowPos(win, w->preFullWinPos.x, w->preFullWinPos.y);
-			glfwSetWindowAttrib(win, GLFW_MAXIMIZED, GLFW_FALSE);
+			w->doFullscreen(true);
+		} else {
+			w->doFullscreen(false);
 		}
 	});
 
@@ -251,12 +224,34 @@ void Window::setTitle(std::string path) {
 
 void Window::doFullscreen(bool v) {
 	if (!guardEditCheck()) return;
+	
 	if (v == isFullscreened) return;
 	isFullscreened = v;
+	inFullscreenCallback = true;
+
 	if (v) {
-		glfwMaximizeWindow(glfwWindow);
+		preFullWinSize.x = windowSize.x;
+		preFullWinSize.y = windowSize.y;
+
+		GLFWmonitor* m = getCurrentMonitor();
+		const GLFWvidmode* mode = glfwGetVideoMode(m);
+		int mx, my;
+		glfwGetMonitorPos(m, &mx, &my);
+
+		glfwSetWindowAttrib(glfwWindow, GLFW_DECORATED, GLFW_FALSE);
+		glfwSetWindowPos(glfwWindow, mx, my);
+		glfwSetWindowSize(glfwWindow, mode->width, mode->height);
 	} else {
+		glfwSetWindowAttrib(glfwWindow, GLFW_DECORATED, GLFW_TRUE);
 		glfwRestoreWindow(glfwWindow);
+		int width = preFullWinSize.x;
+		int height = preFullWinSize.y;
+		setSizeSimple(width, height);
+		a->GetRenderer()->updateWindowSize(width, height);
+		glfwSetWindowSize(glfwWindow, width, height);
+
+		glfwSetWindowPos(glfwWindow, preFullWinPos.x, preFullWinPos.y);
+		glfwSetWindowAttrib(glfwWindow, GLFW_MAXIMIZED, GLFW_FALSE);
 	}
 }
 
