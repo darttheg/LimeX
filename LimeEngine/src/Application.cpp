@@ -272,7 +272,11 @@ int getMemUsed() {
 }
 
 #include <iostream>
+#include <timeapi.h>
+#pragma comment (lib, "winmm.lib")
 bool Application::Run() {
+	timeBeginPeriod(1);
+
 	// Run application loop
 	running = true;
 
@@ -349,6 +353,8 @@ bool Application::Stop() {
 	console->Close(true);
 	renderer->Shutdown();
 	window->Close();
+
+	timeEndPeriod(1);
 	return false;
 }
 
