@@ -24,10 +24,16 @@ void Event::updateLen() {
 }
 
 bool Event::removeRef(int ref) {
-	auto it = std::find(funcs.begin(), funcs.end(), ref);
-	if (it == funcs.end())
-		return false;
+	if (running) {
+		auto it = std::find(funcs.begin(), funcs.end(), ref);
+		if (it == funcs.end()) return false;
+		*it = LUA_NOREF;
+		pendingRemove.push_back(ref);
+		return true;
+	}
 
+	auto it = std::find(funcs.begin(), funcs.end(), ref);
+	if (it == funcs.end()) return false;
 	luaL_unref(ls, LUA_REGISTRYINDEX, ref);
 	funcs.erase(it);
 	updateLen();
@@ -51,7 +57,10 @@ void Event::run() {
 	int argc = lua_gettop(ls);
 	int passc = (argc >= 1) ? (argc - 1) : 0;
 
+	running = true;
 	for (int ref : funcs) {
+		if (ref == LUA_NOREF) continue;
+
 		lua_rawgeti(ls, LUA_REGISTRYINDEX, ref); // Push callback function from registry onto stack
 
 		// Starts at index 2 to exclude self
@@ -61,6 +70,17 @@ void Event::run() {
 		// Call Lua function with pushed arguments
 		if (lua_pcall(ls, passc, 0, 0) != LUA_OK)
 			lua_pop(ls, 1);
+	}
+	running = false;
+
+	for (int ref : pendingRemove) {
+		luaL_unref(ls, LUA_REGISTRYINDEX, ref);
+		funcs.erase(std::find(funcs.begin(), funcs.end(), LUA_NOREF));
+	}
+
+	if (!pendingRemove.empty()) {
+		pendingRemove.clear();
+		updateLen();
 	}
 
 	if (passc > 0)

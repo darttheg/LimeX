@@ -14,6 +14,8 @@ namespace Object::EventBind {
 class Event : public std::enable_shared_from_this<Event> {
 private:
 	std::vector<int> funcs;
+	std::vector<int> pendingRemove;
+	bool running = false;
 
 	friend class Hook;
 	bool removeRef(int ref);
@@ -41,7 +43,10 @@ public:
 
 template<class... Args>
 inline void Event::engineRun(std::function<void(const std::string&)> onError, Args&&... args) {
+	running = true;
 	for (int ref : funcs) {
+		if (ref == LUA_NOREF) continue;
+
 		lua_rawgeti(ls, LUA_REGISTRYINDEX, ref);
 		(sol::stack::push(ls, std::forward<Args>(args)), ...);
 		if (lua_pcall(ls, sizeof...(Args), 0, 0) != LUA_OK) {
@@ -51,6 +56,17 @@ inline void Event::engineRun(std::function<void(const std::string&)> onError, Ar
 			lua_pop(ls, 1);
 			if (onError) onError(msg);
 		}
+	}
+	running = false;
+
+	for (int ref : pendingRemove) {
+		luaL_unref(ls, LUA_REGISTRYINDEX, ref);
+		funcs.erase(std::find(funcs.begin(), funcs.end(), LUA_NOREF));
+	}
+
+	if (!pendingRemove.empty()) {
+		pendingRemove.clear();
+		updateLen();
 	}
 }
 
