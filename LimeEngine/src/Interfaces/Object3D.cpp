@@ -12,6 +12,10 @@ using namespace scene;
 static lua_State* l = nullptr;
 static RenderHelper* rh = nullptr;
 
+Object3D::Object3D() {
+    rh->guardRenderingCheck("Cannot create 3D object prior to window creation.");
+}
+
 Vec3 Object3D::getPosition() const {
     if (!getNode()) return Vec3();
     return Vec3(getNode()->getPosition().X, getNode()->getPosition().Y, getNode()->getPosition().Z);

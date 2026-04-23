@@ -88,9 +88,11 @@ void PhysicsManager::SetLuaState(lua_State* ls) {
 	l = ls;
 }
 
-bool PhysicsManager::guardPhysicsCheck() {
+bool PhysicsManager::guardPhysicsCheck(const std::string& msg) {
 	if (!world) {
-		d->Warn("Physics cannot be modified until the Lime window has been created!");
+		std::string out = "Interaction with physics components is forbidden until the Lime window has been created.";
+		if (!msg.empty()) out = msg;
+		d->PostError(out, true, true);
 		return false;
 	}
 	return true;

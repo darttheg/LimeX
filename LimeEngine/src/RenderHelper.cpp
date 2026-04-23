@@ -19,10 +19,8 @@
 static DebugConsole* d = nullptr;
 static sol::state* luaState = nullptr;
 
-void RenderHelper::Init(irr::IrrlichtDevice* device, DebugConsole* debug) {
+void RenderHelper::Init(irr::IrrlichtDevice* device) {
 	i_device = device;
-
-	d = debug;
 
 	i_smgr = i_device->getSceneManager();
 	i_driver = i_device->getVideoDriver();
@@ -34,12 +32,15 @@ void RenderHelper::SetLuaState(sol::state* s) {
 	luaState = s;
 }
 
+RenderHelper::RenderHelper(DebugConsole* debug) {
+	d = debug;
+}
+
 bool RenderHelper::guardRenderingCheck(std::string msg) {
 	if (!i_device || !i_smgr) {
-		if (msg.empty())
-			d->Warn("Rendered objects cannot be created until the Lime window has been created!");
-		else
-			d->Warn(msg);
+		std::string out = "Interaction with renderable components is forbidden until the Lime window has been created.";
+		if (!msg.empty()) out = msg;
+		d->PostError(out, true, true);
 		return false;
 	}
 	return true;

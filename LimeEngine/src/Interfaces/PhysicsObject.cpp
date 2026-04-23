@@ -22,6 +22,10 @@ void PhysicsObject::removeFromCallbacks() {
 	p->removeFromCollisionDetection(getCollisionObject());
 }
 
+PhysicsObject::PhysicsObject() {
+	if (!p->guardPhysicsCheck("Cannot create physics object prior to window creation.")) return;
+}
+
 sol::object PhysicsObject::i_destroy() {
 	removeFromCallbacks();
 	destroy();

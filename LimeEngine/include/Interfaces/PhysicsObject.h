@@ -18,6 +18,7 @@ struct ContactInfo;
 // Interface for RigidBody3D and SoftBody3D
 class PhysicsObject {
 public:
+    PhysicsObject();
     virtual btCollisionObject* getCollisionObject() const = 0;
     virtual irr::scene::ISceneNode* getNode() const = 0;
     virtual void destroy() = 0;

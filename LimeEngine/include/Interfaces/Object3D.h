@@ -18,6 +18,7 @@ namespace irr {
 
 class Object3D {
 public:
+	Object3D();
     virtual ~Object3D() = default;
 	virtual irr::scene::ISceneNode* getNode() const = 0;
 	virtual void destroy() = 0;

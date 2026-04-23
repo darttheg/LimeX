@@ -36,7 +36,7 @@ GUIManager::~GUIManager() {
 
 void GUIManager::SetGUIEnv(irr::gui::IGUIEnvironment* g, irr::IrrlichtDevice* downer) {
 	if (!g) {
-		d->Warn("GUI environment could not be created!");
+		d->Warn("GUI environment could not be created.");
 		return;
 	}
 
@@ -56,7 +56,8 @@ bool GUIManager::Render() {
 
 bool GUIManager::guardRenderingCheck() {
 	if (!guienv) {
-		d->Warn("The GUI environment cannot be modified until the Lime window has been created!");
+		std::string out = "Interaction with GUI components is forbidden until the Lime window has been created.";
+		d->PostError(out, true, true);
 		return false;
 	}
 	return true;

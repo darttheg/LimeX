@@ -19,6 +19,7 @@ static DebugConsole* d;
 static RenderHelper* rh;
 
 Mesh::Mesh() {
+
 }
 
 Mesh::Mesh(const std::string& path) : Mesh() {

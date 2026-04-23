@@ -61,11 +61,11 @@ enum DEBUG3D_TYPE {
 
 class RenderHelper {
 public:
-	RenderHelper() = default;
+	RenderHelper(DebugConsole* debug);
 	~RenderHelper() = default;
 	bool guardRenderingCheck(std::string msg = "");
 
-	void Init(irr::IrrlichtDevice* device, DebugConsole* debug);
+	void Init(irr::IrrlichtDevice* device);
 	void SetLuaState(sol::state* s);
 
 	irr::scene::IBillboardSceneNode* createDebugNode(DEBUG3D_TYPE t);

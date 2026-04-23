@@ -120,6 +120,7 @@ private:
 	WindowConfig windowCfg;
 	bool didInitCfg = false;
 	bool running = false;
+	bool initSuccess = true;
 
 	// Input
 	Receiver* receiver = nullptr;

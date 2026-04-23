@@ -22,10 +22,9 @@ SoundManager::SoundManager(Application* owner) {
 
 bool SoundManager::guardSoundCheck(std::string msg) {
 	if (!i_sound) {
-		if (msg.empty())
-			d->Warn("Sound system cannot be modified until the Lime window has been created!");
-		else
-			d->Warn(msg);
+		std::string out = "Interaction with sound components is forbidden until the Lime window has been created.";
+		if (!msg.empty()) out = msg;
+		d->PostError(out, true, true);
 		return false;
 	}
 	return true;

@@ -221,8 +221,12 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	if (!RunEntry())
 		return false;
 
+	if (!initSuccess) { Stop(); return false; }
+
 	// Run Init Event
 	LimeInit.get()->engineRun([&](const std::string& msg) { console->PostError(msg); });
+
+	if (!initSuccess) { Stop(); return false; }
 
 	if (!didInitCfg)
 		console->Warn("Lime.setInitConfig was not called. Setting one-time parameters--such as driver type--can only be done via this function.", false);
@@ -332,6 +336,8 @@ void Application::EndApp() {
 }
 
 bool Application::Stop() {
+	running = false;
+	initSuccess = false;
 	std::string out = "Lime ended with ";
 	out += std::to_string(console->GetWarningCount());
 	out += " warnings, ";

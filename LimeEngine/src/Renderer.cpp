@@ -42,7 +42,7 @@ Renderer::Renderer(Application* owner) {
 	d = a->GetDebugConsole();
 	w = a->GetWindow();
 	guiManager = new GUIManager(this, d);
-	rh = new RenderHelper();
+	rh = new RenderHelper(d);
 	qr = new QuadRenderer();
 	physics = new PhysicsManager(this, d);
 }
@@ -213,7 +213,7 @@ bool Renderer::Init() {
 	qr->setWindowResolution(w->getSize().getX(), w->getSize().getY());
 	qr->setInternalResolution(renderSize.x, renderSize.y);
 
-	rh->Init(i_device, d);
+	rh->Init(i_device);
 	rh->SetLuaState(&a->GetLuaState());
 
 	if (!mountResources(i_device))
@@ -235,8 +235,9 @@ bool Renderer::InitPhysics() {
 }
 
 bool Renderer::Shutdown() {
+	if (!isCreated) return true;
+
 	isCreated = false;
-	
 	i_device->closeDevice();
 
 	return true;
@@ -346,7 +347,8 @@ int Renderer::getElapsedTime() {
 
 bool Renderer::guardRenderingCheck() {
 	if (!isCreated) {
-		d->Warn("Rendered objects cannot be created until the Lime window has been created!");
+		std::string out = "Interaction with renderable components is forbidden until the Lime window has been created.";
+		d->PostError(out, true, true);
 		return false;
 	}
 	return true;

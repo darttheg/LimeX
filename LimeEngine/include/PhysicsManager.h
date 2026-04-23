@@ -52,7 +52,7 @@ public:
 	void RenderDebug();
 	void SetLuaState(lua_State* ls);
 
-	bool guardPhysicsCheck();
+	bool guardPhysicsCheck(const std::string& msg = "");
 
 	// Create
 	bool addConstraintToWorld(btTypedConstraint* constraint, bool ignoreCollision = false);

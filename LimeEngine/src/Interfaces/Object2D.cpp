@@ -19,6 +19,10 @@ struct ButtonPair {
     std::shared_ptr<Event> onPressed = nullptr;
 };
 
+Object2D::Object2D() {
+    if (!rh->guardRenderingCheck("Cannot create 2D object prior to window creation.")) return;
+}
+
 irr::gui::IGUIElement* Object2D::getButton() const {
     return button;
 }

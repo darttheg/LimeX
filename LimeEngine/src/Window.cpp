@@ -227,7 +227,8 @@ void Window::Focus() {
 
 bool Window::guardEditCheck() {
 	if (!glfwWindow) {
-		d->Warn("The window cannot be modified until it has been created!");
+		std::string out = "The window cannot be modified until it has been created.";
+		d->PostError(out, true, true);
 		return false;
 	}
 	return true;
