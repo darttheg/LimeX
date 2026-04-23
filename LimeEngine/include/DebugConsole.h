@@ -23,6 +23,8 @@ public:
 	void Close(bool endApp = false); // Close console
 	void Update(int memMB);
 
+	bool IsEnabled() { return created; }
+
 	int GetMemUsed() { return memUsed; }
 	void SetEnable(bool v); // Enable/disable console
 	void ClearConsole(); // Only the lines in the console visually

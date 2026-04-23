@@ -283,7 +283,7 @@ bool Application::Run() {
 	while (running) {
 		dt = limiter->beginFrame();
 
-		console->Update(getMemUsed());
+		if (console->IsEnabled()) console->Update(getMemUsed());
 
 		if (window && window->ShouldClose()) { fail = true; }
 
