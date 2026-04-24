@@ -264,6 +264,10 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		i_smgr->drawAll();
 		physics->RenderDebug();
+
+		if (qr->getUserTexture())
+			i_driver->draw2DImage(qr->getUserTexture(), irr::core::position2di());
+
 		guiManager->Render();
 	} else {
 		qr->beginInternal();
@@ -475,6 +479,17 @@ irr::video::ITexture* Renderer::createRenderTargetTexture(const Vec2& size, irr:
 	return out;
 }
 
+void Renderer::setUserTexture(const Texture& tex) {
+	if (!guardRenderingCheck()) return;
+	if (!tex.getTexture()) return;
+	qr->setUserTexture(tex.getTexture());
+}
+
+void Renderer::clearUserTexture() {
+	if (!guardRenderingCheck()) return;
+	qr->clearUserTexture();
+}
+
 bool Renderer::preloadMesh(const std::string path) {
 	if (!guardRenderingCheck()) return false;
 	bool ok = i_smgr->getMesh(path.c_str()) != nullptr;
@@ -528,6 +543,8 @@ bool Renderer::removeTexture(irr::video::ITexture* tex) {
 		d->Warn("UNSAFE TEXTURE REMOVAL: This Texture is used by Lime's renderer! It cannot be removed.");
 		return false;
 	}
+
+	qr->clearUsedTextures(tex);
 
 	bool safe = tex->getReferenceCount() == 1; // Texture obj still owns it so ref == 1
 

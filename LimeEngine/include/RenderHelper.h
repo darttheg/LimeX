@@ -76,6 +76,7 @@ public:
 	irr::video::ITexture* appendTexture(irr::video::ITexture* tex, irr::video::ITexture* toAppend, const Vec2& pos);
 	Vec4 getColor(irr::video::ITexture* tex, const Vec2& pos);
 	bool setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color);
+	bool setColorRect(irr::video::ITexture* tex, const Vec2& tl, const Vec2& br, const Vec4& color);
 	bool keyColor(irr::video::ITexture* tex, const Vec4& color);
 	bool setVertexColor(irr::scene::IAnimatedMeshSceneNode* m, const Vec4& color);
 
@@ -139,4 +140,6 @@ private:
 	irr::scene::ISceneNode* cforward = nullptr;
 
 	std::unordered_map<irr::scene::ISceneNode*, sol::table> attributes;
+
+	int customTexCount = 0;
 };

@@ -20,7 +20,8 @@ namespace irr {
 class Texture {
 public:
 	Texture();
-	Texture(int w, int h, const std::string& name = "");
+	Texture(const Vec2& wh);
+	Texture(const Vec2& wh, const std::string& name);
 	Texture(const std::string& path);
 	Texture(irr::video::ITexture* tex);
 	sol::object purge();
@@ -31,6 +32,7 @@ public:
 	bool append(const Texture& other, const Vec2& pos);
 	Vec4 getColor(const Vec2& pos);
 	bool setColor(const Vec2& pos, const Vec4& color);
+	bool setColor(const Vec2& tl, const Vec2& br, const Vec4& color);
 	bool key(const Vec4& color);
 	std::string getPath() const;
 	int getRefCount();

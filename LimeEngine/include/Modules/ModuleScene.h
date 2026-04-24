@@ -53,6 +53,9 @@ namespace Module {
 			bool PurgeMesh(const std::string path);
 			bool PreloadTexture(const std::string path);
 			bool PurgeTexture(const std::string path);
+
+			void SetUserTexture(const Texture& tex);
+			void ClearUserTexture();
 		}
 	}
 }

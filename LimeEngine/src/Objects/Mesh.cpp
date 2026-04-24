@@ -325,7 +325,7 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 	// Returns void
 	obj.set_function("setStorageHint", &Mesh::setHardwareHint);
 
-	// Writes this `Mesh` to `path`.
+	// Writes this `Mesh` to `path` in .OBJ format.
 	// Params string path
 	// Returns boolean
 	obj.set_function("write", &Mesh::write);

@@ -109,7 +109,8 @@ irr::video::ITexture* RenderHelper::createTexture(int w, int h, const std::strin
 
 	std::string outName = name;
 	if (name.empty()) {
-		outName = "tex_" + std::to_string((int)(rand() / (double)RAND_MAX * 9999));
+		outName = "tex_" + std::to_string(customTexCount);
+		customTexCount++;
 	}
 
 	irr::video::ITexture* tex = i_driver->addTexture(irr::core::dimension2du(w, h), outName.c_str());
@@ -173,22 +174,65 @@ Vec4 RenderHelper::getColor(irr::video::ITexture* tex, const Vec2& pos) {
 
 bool RenderHelper::setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color) {
 	if (!guardRenderingCheck()) return false;
+	if (!tex) return false;
 
-	irr::video::IImage* img = texToImg(i_driver, tex);
-	img->getPixel(pos.getX(), pos.getY());
+	void* pixels = tex->lock(irr::video::ETLM_WRITE_ONLY);
+	if (!pixels) return false;
 
-	irr::video::ITexture* out = i_driver->addTexture(tex->getName().getPath().c_str(), img);
-	i_driver->removeTexture(tex);
-	img->drop();
+	u32 w = tex->getSize().Width;
+	u32* buf = (u32*)pixels;
+	u32 x = (u32)pos.getX();
+	u32 y = (u32)pos.getY();
 
-	return out;
+	buf[y * w + x] = irr::video::SColor(
+		(u32)color.getW(),
+		(u32)color.getX(),
+		(u32)color.getY(),
+		(u32)color.getZ()
+	).color;
+
+	tex->unlock();
+
+	return true;
+}
+
+bool RenderHelper::setColorRect(irr::video::ITexture* tex, const Vec2& tl, const Vec2& br, const Vec4& color) {
+	if (!guardRenderingCheck()) return false;
+	if (!tex) return false;
+
+	u32 w = tex->getSize().Width;
+	u32 h = tex->getSize().Height;
+
+	u32 x0 = (u32)std::clamp((int)tl.getX(), 0, (int)w - 1);
+	u32 y0 = (u32)std::clamp((int)tl.getY(), 0, (int)h - 1);
+	u32 x1 = (u32)std::clamp((int)br.getX(), 0, (int)w - 1);
+	u32 y1 = (u32)std::clamp((int)br.getY(), 0, (int)h - 1);
+
+	void* pixels = tex->lock(irr::video::ETLM_WRITE_ONLY);
+	if (!pixels) return false;
+
+	u32* buf = (u32*)pixels;
+	u32 c = irr::video::SColor(
+		(u32)color.getW(),
+		(u32)color.getX(),
+		(u32)color.getY(),
+		(u32)color.getZ()
+	).color;
+
+	for (u32 y = y0; y <= y1; y++) {
+		for (u32 x = x0; x <= x1; x++) {
+			buf[y * w + x] = c;
+		}
+	}
+
+	tex->unlock();
 }
 
 bool RenderHelper::keyColor(irr::video::ITexture* tex, const Vec4& color) {
 	if (!guardRenderingCheck()) return false;
 
 	i_driver->makeColorKeyTexture(tex, irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()));
-	return tex;
+	return true;
 }
 
 bool RenderHelper::setVertexColor(irr::scene::IAnimatedMeshSceneNode* m, const Vec4& color) {

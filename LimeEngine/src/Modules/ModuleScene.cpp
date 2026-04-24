@@ -166,6 +166,15 @@ void Module::Scene::bind(Application* app) {
 	// Returns boolean
 	module.set_function("purgeTexture", &Module::Scene::Bind::PurgeTexture);
 
+	// [+] Sets a `Texture` to be drawn over the screen, under the GUI layer. This `Texture` will inherit post processing shaders, if post processing is enabled.
+	// Params Texture texture
+	// Returns void
+	module.set_function("setOverlayTexture", &Module::Scene::Bind::SetUserTexture);
+
+	// [+] Clears the user-defined `Texture` drawn over the screen, if any.
+	// Returns void
+	module.set_function("clearOverlayTexture", &Module::Scene::Bind::ClearUserTexture);
+
 	// [+] Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
 	// Params Vec3 startPos, Vec3 endPos, number? rayLifeMs
 	// Returns HitResult
@@ -340,4 +349,12 @@ bool Module::Scene::Bind::PreloadTexture(const std::string path) {
 
 bool Module::Scene::Bind::PurgeTexture(const std::string path) {
 	return r->purgeTexture(path);
+}
+
+void Module::Scene::Bind::SetUserTexture(const Texture& tex) {
+	r->setUserTexture(tex.getTexture());
+}
+
+void Module::Scene::Bind::ClearUserTexture() {
+	r->clearUserTexture();
 }

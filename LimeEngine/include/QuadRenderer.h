@@ -33,6 +33,10 @@ public:
 
 	bool ppxActive() { return ppxType != -1; }
 
+	irr::video::ITexture* getUserTexture() { return rtUser; }
+	void setUserTexture(irr::video::ITexture* tex) { rtUser = tex; }
+	void clearUserTexture() { rtUser = nullptr; }
+	void clearUsedTextures(irr::video::ITexture* tex); // If texture is purged, check that it isn't used here.
 private:
 	irr::video::IVideoDriver* driver = nullptr;
 	irr::gui::IGUIEnvironment* gui = nullptr;
@@ -42,6 +46,7 @@ private:
 	irr::video::SColor clear = { 255, 0, 0, 0 };
 	irr::video::ITexture* rtScene = nullptr;
 	irr::video::ITexture* rtGUI = nullptr;
+	irr::video::ITexture* rtUser = nullptr;
 
 	irr::video::S3DVertex qVerts[4];
 	irr::u16 qIndices[6];

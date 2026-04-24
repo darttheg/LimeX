@@ -676,7 +676,7 @@ function Text3D.new() end
 ---@class Texture
 Texture = Texture or {}
 --- A texture that is the foundation for all images for 2D and 3D objects.
----@overload fun(w:number, h:number, name:string?): Texture
+---@overload fun(size:Vec2, name:string?): Texture
 ---@overload fun(path:string): Texture
 ---@return Texture
 function Texture.new() end
@@ -1582,6 +1582,11 @@ function Lime.Physics.setPaused(paused) end
 function Lime.Physics.setStepFactor(factor) end
 
 --- **This function cannot be run until window creation.**  
+--- Clears the user-defined `Texture` drawn over the screen, if any.
+---@return void
+function Lime.Scene.clearOverlayTexture() end
+
+--- **This function cannot be run until window creation.**  
 --- Clears the `Shader` applied to the screen, if any.
 ---@return void
 function Lime.Scene.clearPostProcessingShader() end
@@ -1710,6 +1715,12 @@ function Lime.Scene.setFogPlanes(planes) end
 ---@param type Lime.Enum.LightManagementType
 ---@return void
 function Lime.Scene.setLightManagementType(type) end
+
+--- **This function cannot be run until window creation.**  
+--- Sets a `Texture` to be drawn over the screen, under the GUI layer. This `Texture` will inherit post processing shaders, if post processing is enabled.
+---@param texture Texture
+---@return void
+function Lime.Scene.setOverlayTexture(texture) end
 
 --- **This function cannot be run until window creation.**  
 --- Passes a `Shader` to the renderer be used for special effects on the scene output.
@@ -1988,7 +1999,7 @@ function Mesh:setAttribute(key, value) end
 ---@return void
 function Mesh:setStorageHint(hint) end
 
---- Writes this `Mesh` to `path`.
+--- Writes this `Mesh` to `path` in .OBJ format.
 ---@param path string
 ---@return boolean
 function Mesh:write(path) end
@@ -2652,7 +2663,7 @@ function Texture:getPath() end
 ---@return number
 function Texture:getReferenceCount() end
 
---- Returns the dimensions of this `Texture`.
+--- Returns the size of this `Texture`.
 ---@return Vec2
 function Texture:getSize() end
 
@@ -2671,7 +2682,8 @@ function Texture:purge() end
 ---@return string
 function Texture:renderToTexture(size) end
 
---- Replaces the pixel at `pos` with a pixel of color `color`.
+--- Sets pixel `color`.
+---@overload fun(topLeft:Vec2, bottomRight:Vec2, fillColor:Vec4): boolean
 ---@param pos Vec2
 ---@param color Vec4
 ---@return boolean

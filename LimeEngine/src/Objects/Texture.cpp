@@ -15,22 +15,24 @@ static Renderer* r;
 static RenderHelper* rh;
 
 Texture::Texture() {
+	if (!rh->guardRenderingCheck()) return;
 	// texture = rh->createTexture(1, 1, "blank");
 	texture = nullptr;
 }
 
-Texture::Texture(const std::string& path) {
+Texture::Texture(const std::string& path) : Texture() {
 	texture = rh->createTexture(path);
 }
 
-Texture::Texture(irr::video::ITexture* tex) {
+Texture::Texture(irr::video::ITexture* tex) : Texture() {
 	texture = tex;
 }
 
-Texture::Texture(int w, int h, const std::string& name) {
-	if (!rh->guardRenderingCheck()) return;
+Texture::Texture(const Vec2& wh) : Texture(wh, "") {
+}
 
-	texture = rh->createTexture(w, h, name);
+Texture::Texture(const Vec2& wh, const std::string& name) : Texture() {
+	texture = rh->createTexture(wh.getX(), wh.getY(), name);
 }
 
 sol::object Texture::purge() {
@@ -80,6 +82,11 @@ bool Texture::setColor(const Vec2& pos, const Vec4& color) {
 	return rh->setColor(texture, pos, color);
 }
 
+bool Texture::setColor(const Vec2& tl, const Vec2& br, const Vec4& color) {
+	if (!texture) return false;
+	return rh->setColorRect(texture, tl, br, color);
+}
+
 bool Texture::key(const Vec4& color) {
 	if (!texture) return false;
 	return rh->keyColor(texture, color);
@@ -119,7 +126,7 @@ void Object::TextureBind::bind(lua_State* ls, Renderer* rend) {
 	sol::state_view view(ls);
 	sol::usertype<Texture> obj = view.new_usertype<Texture>(
 		"Texture",
-		sol::constructors<Texture(), Texture(const std::string&), Texture(int, int, const std::string&)>(),
+		sol::constructors<Texture(), Texture(const std::string&), Texture(const Vec2&), Texture(const Vec2&, const std::string&)>(),
 		sol::meta_function::type, [](const Texture&) { return "Texture"; },
 		sol::meta_function::garbage_collect, [](Texture& t) { t.collected(); }
 	);
@@ -131,14 +138,14 @@ void Object::TextureBind::bind(lua_State* ls, Renderer* rend) {
 	// Object Texture, A texture that is the foundation for all images for 2D and 3D objects.
 
 	// Constructor
-	// Constructor number w, number h, string? name
+	// Constructor Vec2 size, string? name
 	// Constructor string path
 
 	// Returns the path of this `Texture`.
 	// Returns string
 	obj.set_function("getPath", &Texture::getPath);
 
-	// Returns the dimensions of this `Texture`.
+	// Returns the size of this `Texture`.
 	// Returns Vec2
 	obj.set_function("getSize", &Texture::getSize);
 
@@ -162,10 +169,15 @@ void Object::TextureBind::bind(lua_State* ls, Renderer* rend) {
 	// Returns Vec4
 	obj.set_function("getColor", &Texture::getColor);
 
-	// Replaces the pixel at `pos` with a pixel of color `color`.
+	// Sets pixel `color`.
 	// Params Vec2 pos, Vec4 color
+	// Params Vec2 topLeft, Vec2 bottomRight, Vec4 fillColor
 	// Returns boolean
-	obj.set_function("setColor", &Texture::setColor);
+	obj.set_function("setColor",
+		sol::overload(
+			sol::resolve<bool(const Vec2&, const Vec4&)>(&Texture::setColor),
+			sol::resolve<bool(const Vec2&, const Vec2&, const Vec4&)>(&Texture::setColor)
+		));
 
 	// Removes the color `keyColor` from anywhere in this `Texture`.
 	// Params Vec4 keyColor

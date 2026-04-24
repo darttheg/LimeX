@@ -108,6 +108,19 @@ void QuadRenderer::presentToWindow()
         irr::video::EIT_16BIT
     );
 
+    // User Texture
+    if (rtUser) {
+        qBlendMat.setTexture(0, rtUser);
+        driver->setMaterial(qBlendMat);
+        driver->drawVertexPrimitiveList(
+            qVerts, 4,
+            qIndices, 2,
+            irr::video::EVT_STANDARD,
+            irr::scene::EPT_TRIANGLES,
+            irr::video::EIT_16BIT
+        );
+    }
+
     // GUI
     qBlendMat.setTexture(0, rtGUI);
     driver->setMaterial(qBlendMat);
@@ -128,6 +141,12 @@ void QuadRenderer::prepareToRecreateRt() {
 
 void QuadRenderer::setSceneRenderQuality(int q) {
     if (q == 0) highQuality = false; else highQuality = true;
+}
+
+void QuadRenderer::clearUsedTextures(irr::video::ITexture* tex) {
+    // if (tex == rtScene) rtScene = nullptr;
+    // if (tex == rtGUI) rtGUI = nullptr;
+    if (tex == rtUser) rtUser = nullptr;
 }
 
 void QuadRenderer::buildQuad()

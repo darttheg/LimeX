@@ -152,6 +152,10 @@ public:
 	void addToDtTime(float dt) { dtTime += dt; }
 	float getDtTime() const { return dtTime; }
 
+	// Custom user texture
+	void setUserTexture(const Texture& tex);
+	void clearUserTexture();
+
 private:
 	struct Vec4S { float x, y, z, w; };
 	struct Vec2S { float x, y; };
