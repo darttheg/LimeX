@@ -110,8 +110,8 @@ void QuadRenderer::presentToWindow()
 
     // User Texture
     if (rtUser) {
-        qBlendMat.setTexture(0, rtUser);
-        driver->setMaterial(qBlendMat);
+        qMat.setTexture(0, rtUser);
+        driver->setMaterial(qMat);
         driver->drawVertexPrimitiveList(
             qVerts, 4,
             qIndices, 2,
@@ -240,8 +240,8 @@ void QuadRenderer::setVp() {
         const int dstW = (int)std::lround(resW * s);
         const int dstH = (int)std::lround(resH * s);
 
-        const int x0 = (winW - dstW) / 2;
-        const int y0 = (winH - dstH) / 2;
+        const int x0 = std::max(((int)winW - dstW) / 2, 0);
+        const int y0 = std::max(((int)winH - dstH) / 2, 0);
 
         vp = { x0, y0, x0 + dstW, y0 + dstH };
         driver->setViewPort(vp);

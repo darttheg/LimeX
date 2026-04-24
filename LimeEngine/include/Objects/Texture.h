@@ -33,6 +33,8 @@ public:
 	Vec4 getColor(const Vec2& pos);
 	bool setColor(const Vec2& pos, const Vec4& color);
 	bool setColor(const Vec2& tl, const Vec2& br, const Vec4& color);
+	void clear();
+	void clear(const Vec4& color);
 	bool key(const Vec4& color);
 	std::string getPath() const;
 	int getRefCount();

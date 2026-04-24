@@ -285,7 +285,7 @@ bool Application::Run() {
 	// Run Start Event
 	LimeStart.get()->engineRun([&](const std::string& msg) { console->PostError(msg); });
 
-	renderer->RenderBGPreUpdate();
+	renderer->PrepareRenderingPostInit();
 	bool fail = false;
 	double dt = 0.0f;
 	while (running) {

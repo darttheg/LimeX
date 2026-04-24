@@ -78,6 +78,7 @@ public:
 	bool setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color);
 	bool setColorRect(irr::video::ITexture* tex, const Vec2& tl, const Vec2& br, const Vec4& color);
 	bool keyColor(irr::video::ITexture* tex, const Vec4& color);
+	void clearTextureWithColor(irr::video::ITexture* tex, const Vec4& color);
 	bool setVertexColor(irr::scene::IAnimatedMeshSceneNode* m, const Vec4& color);
 
 	// Create nodes

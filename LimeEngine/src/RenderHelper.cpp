@@ -235,6 +235,29 @@ bool RenderHelper::keyColor(irr::video::ITexture* tex, const Vec4& color) {
 	return true;
 }
 
+void RenderHelper::clearTextureWithColor(irr::video::ITexture* tex, const Vec4& color) {
+	if (!guardRenderingCheck()) return;
+	if (!tex) return;
+
+	void* pixels = tex->lock(irr::video::ETLM_WRITE_ONLY);
+	if (!pixels) return;
+
+	u32 w = tex->getSize().Width;
+	u32 h = tex->getSize().Height;
+	u32* buf = (u32*)pixels;
+
+	u32 c = irr::video::SColor(
+		(u32)color.getW(),
+		(u32)color.getX(),
+		(u32)color.getY(),
+		(u32)color.getZ()
+	).color;
+
+	std::fill(buf, buf + (w * h), c);
+
+	tex->unlock();
+}
+
 bool RenderHelper::setVertexColor(irr::scene::IAnimatedMeshSceneNode* m, const Vec4& color) {
 	if (!guardRenderingCheck()) return false;
 

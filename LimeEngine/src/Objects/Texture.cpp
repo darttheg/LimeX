@@ -87,6 +87,15 @@ bool Texture::setColor(const Vec2& tl, const Vec2& br, const Vec4& color) {
 	return rh->setColorRect(texture, tl, br, color);
 }
 
+void Texture::clear() {
+	clear(Vec4(0, 0, 0, 255));
+}
+
+void Texture::clear(const Vec4& color) {
+	if (!texture) return;
+	rh->clearTextureWithColor(texture, color);
+}
+
 bool Texture::key(const Vec4& color) {
 	if (!texture) return false;
 	return rh->keyColor(texture, color);
@@ -169,7 +178,7 @@ void Object::TextureBind::bind(lua_State* ls, Renderer* rend) {
 	// Returns Vec4
 	obj.set_function("getColor", &Texture::getColor);
 
-	// Sets pixel `color`.
+	// Sets a pixel's `color`, or fill an area of pixels with `color`.
 	// Params Vec2 pos, Vec4 color
 	// Params Vec2 topLeft, Vec2 bottomRight, Vec4 fillColor
 	// Returns boolean
@@ -177,6 +186,16 @@ void Object::TextureBind::bind(lua_State* ls, Renderer* rend) {
 		sol::overload(
 			sol::resolve<bool(const Vec2&, const Vec4&)>(&Texture::setColor),
 			sol::resolve<bool(const Vec2&, const Vec2&, const Vec4&)>(&Texture::setColor)
+		));
+
+	// Clears this `Texture`.
+	// Params
+	// Params Vec4 color
+	// Returns void
+	obj.set_function("clear",
+		sol::overload(
+			sol::resolve<void()>(&Texture::clear),
+			sol::resolve<void(const Vec4&)>(&Texture::clear)
 		));
 
 	// Removes the color `keyColor` from anywhere in this `Texture`.

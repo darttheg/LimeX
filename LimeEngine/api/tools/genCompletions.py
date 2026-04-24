@@ -39,6 +39,7 @@ class FunctionDoc:
 @dataclass
 class ModuleDoc:
     name: str
+    alias: Optional[str] = None
     fields: List[FieldDoc] = field(default_factory=list)
 
 @dataclass
@@ -127,6 +128,17 @@ def parse_returns_line(s: str) -> Tuple[Optional[str], Optional[str]]:
         return tokens[0], None
     return None, rest
 
+def parse_module_header(s: str) -> Tuple[str, Optional[str]]:
+    rest = s[len("Module "):].strip()
+    if not rest:
+        return "", None
+    if "," in rest:
+        name, alias = rest.split(",", 1)
+        name = name.strip()
+        alias = alias.strip() or None
+        return name, alias
+    return rest.strip(), None
+
 def parse_object_header(s: str) -> Tuple[str, Optional[str]]:
     rest = s[len("Object "):].strip()
     if not rest:
@@ -195,12 +207,15 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, Interfac
                 s = m.group(1).strip()
 
                 if s.startswith("Module "):
-                    name = s[len("Module "):].strip()
+                    name, alias = parse_module_header(s)
                     if name:
                         current_module = name
                         current_object = None
                         current_interface = None
-                        modules.setdefault(name, ModuleDoc(name=name))
+                        md = modules.get(name) or ModuleDoc(name=name)
+                        if alias:
+                            md.alias = alias
+                        modules[name] = md
                     reset_pending()
                     continue
 
@@ -398,6 +413,9 @@ def event_alias_name(owner: str, field_name: str) -> str:
 def event_class_name(owner: str, field_name: str) -> str:
     return f"{pascal_case(field_name)}Event"
 
+def module_class_name(md: ModuleDoc) -> str:
+    return md.alias or md.name
+
 def build_module_children(modules: Dict[str, ModuleDoc]) -> Dict[str, List[Tuple[str, str]]]:
     children: Dict[str, List[Tuple[str, str]]] = {}
 
@@ -465,11 +483,13 @@ def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc],
 
     for mname in sorted(modules.keys()):
         md = modules[mname]
-        out.append(f"---@class {mname}")
+        out.append(f"---@class {module_class_name(md)}")
         for fld in md.fields:
             out.append(field_line(mname, fld))
         for child_name, child_full_name in module_children.get(mname, []):
-            out.append(f"---@field {child_name} {child_full_name}")
+            child_md = modules.get(child_full_name)
+            child_type = module_class_name(child_md) if child_md else child_full_name
+            out.append(f"---@field {child_name} {child_type}")
         out.append(f"{mname} = {mname} or {{}}")
         out.append("")
 

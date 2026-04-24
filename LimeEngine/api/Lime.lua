@@ -293,7 +293,7 @@ Lime.Web = Lime.Web or {}
 ---@field onResize OnResizeEvent @Event called by Lime once the window is resized in any way.
 Lime.Window = Lime.Window or {}
 
----@class math
+---@class mathLime
 ---@field tween math.tween
 math = math or {}
 
@@ -2644,6 +2644,11 @@ function Text3D:setWordWrap(wrap) end
 ---@return boolean
 function Texture:append(toAppend, pos) end
 
+--- Clears this `Texture`.
+---@overload fun(color:Vec4): void
+---@return void
+function Texture:clear() end
+
 --- Crops the `Texture` to the dimensions provided. Be mindful as cropping creates a new `Texture` in the renderer.
 ---@param topLeft Vec2
 ---@param bottomRight Vec2
@@ -2682,7 +2687,7 @@ function Texture:purge() end
 ---@return string
 function Texture:renderToTexture(size) end
 
---- Sets pixel `color`.
+--- Sets a pixel's `color`, or fill an area of pixels with `color`.
 ---@overload fun(topLeft:Vec2, bottomRight:Vec2, fillColor:Vec4): boolean
 ---@param pos Vec2
 ---@param color Vec4

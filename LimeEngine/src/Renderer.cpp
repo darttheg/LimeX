@@ -310,9 +310,11 @@ bool Renderer::RunDevice() {
 	return true;
 }
 
-void Renderer::RenderBGPreUpdate() {
+void Renderer::PrepareRenderingPostInit() {
 	i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 	i_driver->endScene();
+
+	qr->prepareToRecreateRt();
 }
 
 // ---
