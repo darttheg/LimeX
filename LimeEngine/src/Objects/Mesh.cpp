@@ -334,7 +334,7 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 	// Returns void
 	obj.set_function("clear", &Mesh::clear);
 
-	// Purges this `Mesh`, effectively removing its mesh buffer from memory. Objects using this `Mesh`'s `MeshBuffer` will use an engine-defined `Mesh` instead, but it is recommended to remove references to this `Mesh` first.
+	// Purges this `Mesh`, effectively removing its mesh buffer from memory. Objects using the `MeshBuffer` of this `Mesh` will use an engine-defined `Mesh` instead, but it is recommended to remove references to this `Mesh` first.
 	// Returns nil
 	obj.set_function("purge", &Mesh::purge);
 

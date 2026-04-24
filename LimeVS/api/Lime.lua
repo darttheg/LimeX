@@ -1969,7 +1969,7 @@ function Mesh:loadMesh(path) end
 ---@return boolean
 function Mesh:parentTo(parent) end
 
---- Purges this `Mesh`, effectively removing its mesh buffer from memory. Objects using this `Mesh`'s `MeshBuffer` will use an engine-defined `Mesh` instead, but it is recommended to remove references to this `Mesh` first.
+--- Purges this `Mesh`, effectively removing its mesh buffer from memory. Objects using the `MeshBuffer` of this `Mesh` will use an engine-defined `Mesh` instead, but it is recommended to remove references to this `Mesh` first.
 ---@return nil
 function Mesh:purge() end
 
