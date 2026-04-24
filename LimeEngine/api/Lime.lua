@@ -293,9 +293,8 @@ Lime.Web = Lime.Web or {}
 ---@field onResize OnResizeEvent @Event called by Lime once the window is resized in any way.
 Lime.Window = Lime.Window or {}
 
----@class mathLime
+---@class math
 ---@field tween math.tween
-math = math or {}
 
 ---@class math.tween
 math.tween = math.tween or {}

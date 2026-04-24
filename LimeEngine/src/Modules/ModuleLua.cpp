@@ -18,7 +18,7 @@ void Module::Lua::bind(Application* app) {
 }
 
 void Module::Lua::bindMath(sol::state& l) {
-	// Module math, mathLime
+	// Module math, append
 
 	sol::table module = l["math"].get_or_create<sol::table>();
 
