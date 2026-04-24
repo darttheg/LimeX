@@ -1988,6 +1988,11 @@ function Mesh:setAttribute(key, value) end
 ---@return void
 function Mesh:setStorageHint(hint) end
 
+--- Writes this `Mesh` to `path`.
+---@param path string
+---@return boolean
+function Mesh:write(path) end
+
 --- Clears this `MeshBuffer`. This will not remove itself from memory.
 ---@return void
 function MeshBuffer:clear() end
@@ -2672,7 +2677,7 @@ function Texture:renderToTexture(size) end
 ---@return boolean
 function Texture:setColor(pos, color) end
 
---- Writes the `Texture` to path `path`.
+--- Writes this `Texture` to `path`.
 ---@param path string
 ---@return boolean
 function Texture:write(path) end

@@ -68,12 +68,14 @@ public:
 
     void clear();
     void purge();
+
+    bool write(const std::string& outPath);
+
+    irr::scene::IMesh* getMesh() const;
 private:
     bool col = false;
     irr::scene::IAnimatedMeshSceneNode* src = nullptr;
     irr::scene::IShadowVolumeSceneNode* sh = nullptr;
-
-    irr::scene::IMesh* getMesh() const;
 };
 
 namespace Object::MeshBind {

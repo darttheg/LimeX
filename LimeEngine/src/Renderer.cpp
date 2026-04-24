@@ -18,6 +18,7 @@
 #include "Objects/Vec3.h"
 #include "Objects/Vec4.h"
 #include "Objects/Texture.h"
+#include "Objects/Mesh.h"
 
 #include "External/CGUIColoredText.h"
 #include "External/CTextAnchorSceneNode.h"
@@ -866,4 +867,90 @@ bool Renderer::runEventFromGUI(std::shared_ptr<Event> e, std::function<void(cons
 		return false;
 	e.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
 	return true;
+}
+
+struct TextureWriteJob {
+	u32 width = 0;
+	u32 height = 0;
+	std::vector<u8> rgba;
+	std::string path;
+};
+
+bool CopyTextureRGBA(irr::video::IVideoDriver* driver, irr::video::ITexture* tex, TextureWriteJob& out, const std::string& path) {
+	if (!driver || !tex) return false;
+
+	irr::video::IImage* image = driver->createImage(tex, irr::core::vector2di(), tex->getSize());
+	if (!image) return false;
+
+	const auto size = image->getDimension();
+
+	out.width = size.Width;
+	out.height = size.Height;
+	out.path = path;
+	out.rgba.resize(out.width * out.height * 4);
+
+	for (u32 y = 0; y < out.height; ++y) {
+		for (u32 x = 0; x < out.width; ++x) {
+			const irr::video::SColor c = image->getPixel(x, y);
+			const size_t i = (y * out.width + x) * 4;
+
+			out.rgba[i + 0] = c.getRed();
+			out.rgba[i + 1] = c.getGreen();
+			out.rgba[i + 2] = c.getBlue();
+			out.rgba[i + 3] = c.getAlpha();
+		}
+	}
+
+	image->drop();
+	return true;
+}
+
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+#pragma warning(pop)
+
+void WriteTextureJob(TextureWriteJob job) {
+	stbi_write_png(job.path.c_str(), job.width, job.height, 4, job.rgba.data(), job.width * 4);
+}
+
+bool SaveTextureAsync(irr::video::IVideoDriver* driver, irr::video::ITexture* tex, const std::string& path) {
+	TextureWriteJob job;
+
+	if (!CopyTextureRGBA(driver, tex, job, path)) return false;
+
+	std::thread([job = std::move(job)]() mutable {
+		WriteTextureJob(std::move(job));
+	}).detach();
+
+	return true;
+}
+
+bool Renderer::writeTextureToPath(irr::video::ITexture* t, const std::string& path) {
+	if (!guardRenderingCheck()) return false;
+	if (!t) return false;
+
+	return SaveTextureAsync(i_driver, t, path);
+}
+
+bool Renderer::writeMeshToPath(irr::scene::IMesh* m, const std::string& path) {
+	if (!guardRenderingCheck()) return false;
+	if (!m) return false;
+
+	auto* writer = i_smgr->createMeshWriter(irr::scene::EMESH_WRITER_TYPE::EMWT_OBJ);
+	if (!writer) return false;
+
+	auto* file = i_device->getFileSystem()->createAndWriteFile(path.c_str());
+	if (!file) {
+		writer->drop();
+		return false;
+	}
+
+	bool ok = writer->writeMesh(file, m);
+
+	file->drop();
+	writer->drop();
+
+	return ok;
 }

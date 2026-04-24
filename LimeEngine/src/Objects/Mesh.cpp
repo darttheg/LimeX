@@ -234,6 +234,10 @@ void Mesh::purge() {
 	}
 }
 
+bool Mesh::write(const std::string& outPath) {
+	return r->writeMeshToPath(getMesh(), outPath);
+}
+
 irr::scene::IMesh* Mesh::getMesh() const {
 	if (src) return src->getMesh();
 	return nullptr;
@@ -320,6 +324,11 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 	// Params Lime.Enum.StorageHint hint
 	// Returns void
 	obj.set_function("setStorageHint", &Mesh::setHardwareHint);
+
+	// Writes this `Mesh` to `path`.
+	// Params string path
+	// Returns boolean
+	obj.set_function("write", &Mesh::write);
 
 	// Clears the `MeshBuffer` from within this `Mesh`. This will not remove its `MeshBuffer` from memory.
 	// Returns void

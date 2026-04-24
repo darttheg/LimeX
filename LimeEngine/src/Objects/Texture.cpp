@@ -45,8 +45,7 @@ Vec2 Texture::getSize() {
 }
 
 bool Texture::write(const std::string& outPath) {
-	return false;
-	// d->Warn("INCOMPLETE FUNCTION! Needs write texture thread.");
+	return r->writeTextureToPath(texture, outPath);
 }
 
 bool Texture::crop(const Vec2& tl, const Vec2& br) {
@@ -143,7 +142,7 @@ void Object::TextureBind::bind(lua_State* ls, Renderer* rend) {
 	// Returns Vec2
 	obj.set_function("getSize", &Texture::getSize);
 
-	// Writes the `Texture` to path `path`.
+	// Writes this `Texture` to `path`.
 	// Params string path
 	// Returns boolean
 	obj.set_function("write", &Texture::write);

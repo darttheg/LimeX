@@ -13,6 +13,7 @@ class Vec2;
 class Vec3;
 class Vec4;
 class Texture;
+class Mesh;
 class Receiver;
 class GUIManager;
 class Event;
@@ -33,6 +34,7 @@ namespace irr {
 		class IAnimatedMesh;
 		class IMeshBuffer;
 		class ILightManager;
+		class IMesh;
 	}
 	namespace video {
 		class IVideoDriver;
@@ -110,6 +112,8 @@ public:
 	bool preloadMesh(const std::string path);
 	bool preloadTexture(const std::string path);
 	std::string getMeshName(irr::scene::IAnimatedMesh* msh);
+	bool writeTextureToPath(irr::video::ITexture* t, const std::string& path);
+	bool writeMeshToPath(irr::scene::IMesh* m, const std::string& path);
 
 	// Preloading - Add to queue and load one mesh+texture per frame
 	// bool preloadMesh(sol::variadic_args va);
