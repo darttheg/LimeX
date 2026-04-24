@@ -230,7 +230,7 @@ void QuadRenderer::recreateRt()
 #undef min
 #undef max
 void QuadRenderer::setVp() {
-    if (!driver || !rtScene)
+    if (!driver)
         return;
 
     if (!matchWR) {

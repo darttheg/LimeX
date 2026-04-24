@@ -180,9 +180,10 @@ bool RenderHelper::setColor(irr::video::ITexture* tex, const Vec2& pos, const Ve
 	if (!pixels) return false;
 
 	u32 w = tex->getSize().Width;
+	u32 h = tex->getSize().Height;
 	u32* buf = (u32*)pixels;
-	u32 x = (u32)pos.getX();
-	u32 y = (u32)pos.getY();
+	u32 x = (u32)std::clamp((int)pos.getX(), 0, (int)w - 1);
+	u32 y = (u32)std::clamp((int)pos.getY(), 0, (int)h - 1);
 
 	buf[y * w + x] = irr::video::SColor(
 		(u32)color.getW(),

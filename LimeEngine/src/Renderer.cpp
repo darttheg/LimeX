@@ -118,7 +118,11 @@ bool Renderer::Init() {
 
 	SIrrlichtCreationParameters params;
 	params.DriverType = (irr::video::E_DRIVER_TYPE)cfg.driverType;
-	params.WindowSize = irr::core::dimension2d<u32>(cfg.renderSize[0], cfg.renderSize[1]);
+	if (doMatchResolution)
+		params.WindowSize = irr::core::dimension2d<u32>(cfg.windowSize[0], cfg.windowSize[1]);
+	else
+		params.WindowSize = irr::core::dimension2d<u32>(cfg.renderSize[0], cfg.renderSize[1]);
+
 	params.Bits = 16;
 	params.Vsync = cfg.vSync;
 	params.Fullscreen = cfg.fullscreen;
@@ -133,8 +137,8 @@ bool Renderer::Init() {
 
 	i_device->getLogger()->setLogLevel(irr::ELOG_LEVEL::ELL_WARNING);
 
-	renderSize.x = cfg.renderSize[0];
-	renderSize.y = cfg.renderSize[1];
+	renderSize.x = doMatchResolution ? cfg.windowSize[0] : cfg.renderSize[0];
+	renderSize.y = doMatchResolution ? cfg.windowSize[1] : cfg.renderSize[1];
 
 	i_smgr = i_device->getSceneManager();
 	i_driver = i_device->getVideoDriver();
@@ -303,7 +307,7 @@ bool Renderer::RunDevice() {
 	if (!guardRenderingCheck()) return false;
 
 	if (!i_device->run()) {
-		d->Warn("Render device could not be ran!");
+		d->Warn("Render device could not be ran.");
 		return false;
 	}
 
@@ -313,8 +317,6 @@ bool Renderer::RunDevice() {
 void Renderer::PrepareRenderingPostInit() {
 	i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 	i_driver->endScene();
-
-	qr->prepareToRecreateRt();
 }
 
 // ---
@@ -339,6 +341,7 @@ void Renderer::setRenderSize(const Vec2& size) {
 
 	if (doMatchResolution) {
 		d->Warn("Changing the render size while the render size is set to match the window size will not show any effect! See `Lime.Scene.setRescaleRenderToWindowSize`.");
+		return;
 	}
 
 	renderSize.x = size.getX();
