@@ -315,6 +315,8 @@ bool Renderer::RunDevice() {
 }
 
 void Renderer::PrepareRenderingPostInit() {
+	updateWindowSize(w->getRawWinSize().getX(), w->getRawWinSize().getY());
+
 	i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 	i_driver->endScene();
 }

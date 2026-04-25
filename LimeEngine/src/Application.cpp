@@ -288,6 +288,7 @@ bool Application::Run() {
 	renderer->PrepareRenderingPostInit();
 	bool fail = false;
 	double dt = 0.0f;
+
 	while (running) {
 		dt = limiter->beginFrame();
 
