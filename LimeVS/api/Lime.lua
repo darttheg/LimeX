@@ -293,9 +293,8 @@ Lime.Web = Lime.Web or {}
 ---@field onResize OnResizeEvent @Event called by Lime once the window is resized in any way.
 Lime.Window = Lime.Window or {}
 
----@class mathLime
+---@class math
 ---@field tween math.tween
-math = math or {}
 
 ---@class math.tween
 math.tween = math.tween or {}
@@ -1832,6 +1831,12 @@ function Lime.Window.setFullscreen(fullscreen) end
 ---@param locked boolean
 ---@return void
 function Lime.Window.setLockAspectRatio(locked) end
+
+--- **This function cannot be run until window creation.**  
+--- Sets the minimum window size. The window size cannot be smaller than the render resolution.
+---@param size Vec2
+---@return void
+function Lime.Window.setMinimumSize(size) end
 
 --- **This function cannot be run until window creation.**  
 --- Sets the window's position to `pos`.

@@ -78,6 +78,11 @@ void Module::Window::bind(Application* app) {
 	// Returns void
 	module.set_function("setLockAspectRatio", &Module::Window::Bind::SetMaintainAR);
 
+	// [+] Sets the minimum window size. The window size cannot be smaller than the render resolution.
+	// Params Vec2 size
+	// Returns void
+	module.set_function("setMinimumSize", &Module::Window::Bind::SetMinimumSize);
+
 	// Field Event onResize, Event called by Lime once the window is resized in any way.
 	w->WindowResize = std::make_shared<Event>();
 	module["onResize"] = w->WindowResize;
@@ -129,4 +134,8 @@ void Module::Window::Bind::SetMaintainAR(bool on) {
 
 bool Module::Window::Bind::IsCreated() {
 	return a->IsRunning();
+}
+
+void Module::Window::Bind::SetMinimumSize(const Vec2& size) {
+	w->setMinimumSize(size);
 }

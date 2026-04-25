@@ -45,6 +45,7 @@ public:
 	void setSizeLimit(int w, int h);
 	void setMouseLocked(bool v);
 	void syncMouse(double* mx, double* my);
+	void setMinimumSize(const Vec2& size);
 
 	// To get the raw window size
 	Vec2 getRawWinSize() const;

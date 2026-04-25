@@ -1833,6 +1833,12 @@ function Lime.Window.setFullscreen(fullscreen) end
 function Lime.Window.setLockAspectRatio(locked) end
 
 --- **This function cannot be run until window creation.**  
+--- Sets the minimum window size. The window size cannot be smaller than the render resolution.
+---@param size Vec2
+---@return void
+function Lime.Window.setMinimumSize(size) end
+
+--- **This function cannot be run until window creation.**  
 --- Sets the window's position to `pos`.
 ---@param pos Vec2
 ---@return void

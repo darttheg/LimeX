@@ -208,13 +208,24 @@ bool Window::guardEditCheck() {
 }
 
 void Window::setMouseLocked(bool v) {
-	if (!glfwWindow) return;
+	if (!guardEditCheck()) return;
 	if (v) glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_CAPTURED); else glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void Window::syncMouse(double* mx, double* my) {
 	if (!glfwWindow) return;
 	glfwGetCursorPos(glfwWindow, mx, my);
+}
+
+#undef min
+#undef max
+void Window::setMinimumSize(const Vec2& size) {
+	if (!guardEditCheck()) return;
+
+	int x = std::max((int)size.getX(), (int)a->GetRenderer()->getRenderSize().getX());
+	int y = std::max((int)size.getY(), (int)a->GetRenderer()->getRenderSize().getY());
+
+	setSizeLimit(x, y);
 }
 
 void Window::setTitle(std::string path) {

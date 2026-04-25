@@ -29,6 +29,7 @@ namespace Module {
 			void SetResizable(bool on);
 			void SetMaintainAR(bool on);
 			bool IsCreated();
+			void SetMinimumSize(const Vec2& size);
 		}
 	}
 }
