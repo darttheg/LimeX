@@ -182,8 +182,13 @@ bool RenderHelper::setColor(irr::video::ITexture* tex, const Vec2& pos, const Ve
 	u32 w = tex->getSize().Width;
 	u32 h = tex->getSize().Height;
 	u32* buf = (u32*)pixels;
-	u32 x = (u32)std::clamp((int)pos.getX(), 0, (int)w - 1);
-	u32 y = (u32)std::clamp((int)pos.getY(), 0, (int)h - 1);
+	u32 x = (u32)pos.getX();
+	u32 y = (u32)pos.getY();
+
+	if (x < 0 || y < 0 || x >= w || y >= h) {
+		tex->unlock();
+		return false;
+	}
 
 	buf[y * w + x] = irr::video::SColor(
 		(u32)color.getW(),
@@ -201,16 +206,21 @@ bool RenderHelper::setColorRect(irr::video::ITexture* tex, const Vec2& tl, const
 	if (!guardRenderingCheck()) return false;
 	if (!tex) return false;
 
+	void* pixels = tex->lock(irr::video::ETLM_WRITE_ONLY);
+	if (!pixels) return false;
+
 	u32 w = tex->getSize().Width;
 	u32 h = tex->getSize().Height;
+
+	if (tl.getX() >= w || tl.getY() >= h || br.getX() < 0 || br.getY() < 0) {
+		tex->unlock();
+		return false;
+	}
 
 	u32 x0 = (u32)std::clamp((int)tl.getX(), 0, (int)w - 1);
 	u32 y0 = (u32)std::clamp((int)tl.getY(), 0, (int)h - 1);
 	u32 x1 = (u32)std::clamp((int)br.getX(), 0, (int)w - 1);
 	u32 y1 = (u32)std::clamp((int)br.getY(), 0, (int)h - 1);
-
-	void* pixels = tex->lock(irr::video::ETLM_WRITE_ONLY);
-	if (!pixels) return false;
 
 	u32* buf = (u32*)pixels;
 	u32 c = irr::video::SColor(
