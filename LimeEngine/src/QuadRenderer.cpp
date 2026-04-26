@@ -191,6 +191,9 @@ void QuadRenderer::buildQuad()
         irr::video::EAS_TEXTURE
     );
 
+    qBlendMat.TextureLayer[0].TextureWrapU = irr::video::ETC_CLAMP_TO_EDGE;
+    qBlendMat.TextureLayer[0].TextureWrapV = irr::video::ETC_CLAMP_TO_EDGE;
+
     qMat.TextureLayer[0].TextureWrapU = irr::video::ETC_CLAMP_TO_EDGE;
     qMat.TextureLayer[0].TextureWrapV = irr::video::ETC_CLAMP_TO_EDGE;
 }
@@ -223,15 +226,13 @@ void QuadRenderer::recreateRt()
         qMat.setTexture(0, rtScene);
     }
 
-    if (rtGUI)
-        rtGUI->grab();
+    if (rtGUI) rtGUI->grab();
 }
 
 #undef min
 #undef max
 void QuadRenderer::setVp() {
-    if (!driver)
-        return;
+    if (!driver) return;
 
     if (!matchWR) {
         const float sx = winW / (float)resW;
@@ -251,8 +252,18 @@ void QuadRenderer::setVp() {
         driver->setViewPort(vp);
     }
 
-    irr::core::matrix4 I; I.makeIdentity();
+    irr::core::matrix4 proj;
+    proj.makeIdentity();
+
+    if (driver->getDriverType() == irr::video::EDT_DIRECT3D9) {
+        float xOff = -1.0f / winW;
+        float yOff = 1.0f / winH;
+        proj.setTranslation(irr::core::vector3df(xOff, yOff, 0.0f));
+    }
+
+    irr::core::matrix4 I;
+    I.makeIdentity();
     driver->setTransform(irr::video::ETS_WORLD, I);
     driver->setTransform(irr::video::ETS_VIEW, I);
-    driver->setTransform(irr::video::ETS_PROJECTION, I);
+    driver->setTransform(irr::video::ETS_PROJECTION, proj);
 }
