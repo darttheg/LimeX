@@ -257,6 +257,16 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	//if (!i_smgr->getActiveCamera()) // Is it appropriate to prematurely not render even a background?
 	//	return false;
 
+	if (rh->getActiveCamera() && rh->getActiveCamera()->getParent()) {
+		rh->getActiveCamera()->getParent()->updateAbsolutePosition();
+
+		rh->getActiveCamera()->updateAbsolutePosition();
+		rh->getActiveCameraForward()->updateAbsolutePosition();
+		rh->getActiveCameraLeft()->updateAbsolutePosition();
+
+		rh->getActiveCamera()->setTarget(rh->getActiveCameraForward()->getAbsolutePosition());
+	}
+
 	// Step physics
 	updateFog(); // Update fog params pre-render
 

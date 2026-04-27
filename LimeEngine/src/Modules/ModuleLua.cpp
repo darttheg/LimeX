@@ -186,7 +186,7 @@ float Module::Lua::Math::Tween::easeOutCubic(float v) {
 }
 
 float Module::Lua::Math::Tween::easeInOutCubic(float v) {
-	return v < 0.5f ? 4.0f * v * v * v : 1.0f - pow(-2.0f * v * 2.0f, 3.0f) / 2.0f;
+	return v < 0.5f ? 4.0f * v * v * v : 1.0f - pow(-2.0f * v + 2.0f, 3.0f) / 2.0f;
 }
 
 float Module::Lua::Math::Tween::easeInBack(float v) {
