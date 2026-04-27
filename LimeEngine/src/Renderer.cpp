@@ -254,13 +254,18 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 
 	if (!doRender) return true;
 
+	//if (!i_smgr->getActiveCamera()) // Is it appropriate to prematurely not render even a background?
+	//	return false;
+
+	bool hasParents = false;
 	irr::scene::ISceneNode* curParent = rh->getActiveCamera()->getParent();
-	while (curParent)
+	while (curParent) {
+		hasParents = true;
+		curParent->updateAbsolutePosition();
 		curParent = curParent->getParent();
+	}
 
-	if (rh->getActiveCamera() && curParent) {
-		curParent->updateAbsolutePosition(); // Otherwise, targeting will break
-
+	if (rh->getActiveCamera() && hasParents) {
 		rh->getActiveCamera()->updateAbsolutePosition();
 		rh->getActiveCameraForward()->updateAbsolutePosition();
 		rh->getActiveCameraLeft()->updateAbsolutePosition();
