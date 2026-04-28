@@ -26,6 +26,11 @@ void Object3D::setPosition(const Vec3& pos) {
     getNode()->setPosition(irr::core::vector3df(pos.getX(), pos.getY(), pos.getZ()));
 }
 
+Vec3 Object3D::getAbsolutePosition() const {
+    if (!getNode()) return Vec3();
+    return Vec3(getNode()->getAbsolutePosition().X, getNode()->getAbsolutePosition().Y, getNode()->getAbsolutePosition().Z);
+}
+
 Vec3 Object3D::getRotation() const {
     if (!getNode()) return Vec3();
     return Vec3(getNode()->getRotation().X, getNode()->getRotation().Y, getNode()->getRotation().Z);
@@ -211,6 +216,10 @@ void Interface::Object3DBind::bind(lua_State* ls, RenderHelper* renh) {
     // Params any parent
     // Returns boolean
     obj.set_function("parentTo", &Object3D::parentTo);
+
+    // Returns the absolute position of this 3D object.
+    // Returns Vec3
+    obj.set_function("getAbsolutePosition", &Object3D::getAbsolutePosition);
 
     // Returns true if this object is parented to another 3D object.
     // Returns boolean

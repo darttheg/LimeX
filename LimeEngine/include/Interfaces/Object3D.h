@@ -59,6 +59,8 @@ public:
 	void addFlyAnimator(const Vec3& start, const Vec3& end, int ms, bool loops = false, bool pingPong = false);
 	void addRotatorAnimator(const Vec3& rot);
 	void clearAnimators();
+
+	Vec3 getAbsolutePosition() const;
 protected:
 	bool debug = false;
 	irr::scene::IBillboardSceneNode* dVisual = nullptr;
