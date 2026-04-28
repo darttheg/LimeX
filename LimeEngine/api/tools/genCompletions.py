@@ -34,7 +34,7 @@ class FunctionDoc:
     is_method: bool
     doc_lines: List[str] = field(default_factory=list)
     overloads: List[List[Param]] = field(default_factory=list)
-    returns: Optional[str] = None
+    returns: List[str] = field(default_factory=list)
 
 @dataclass
 class ModuleDoc:
@@ -171,7 +171,7 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, Interfac
 
     pending_doc: List[str] = []
     pending_overloads: List[List[Param]] = []
-    pending_returns: Optional[str] = None
+    pending_returns: List[str] = []
     pending_event_field: Optional[FieldDoc] = None
 
     comment_re = re.compile(r'^\s*//\s?(.*)$')
@@ -182,7 +182,7 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, Interfac
         nonlocal pending_doc, pending_overloads, pending_returns, pending_event_field
         pending_doc = []
         pending_overloads = []
-        pending_returns = None
+        pending_returns = []
         pending_event_field = None
 
     def add_field_to_current(decl: FieldDoc):
@@ -305,7 +305,7 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, Interfac
                 if s.startswith("Returns "):
                     rtype, rdoc = parse_returns_line(s)
                     if rtype:
-                        pending_returns = rtype
+                        pending_returns.append(rtype)
                     elif rdoc:
                         pending_doc.append("Returns " + rdoc)
                     continue
@@ -339,7 +339,7 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, Interfac
                             is_method=True,
                             doc_lines=list(pending_doc),
                             overloads=list(pending_overloads),
-                            returns=pending_returns
+                            returns=list(pending_returns)
                         ))
                     reset_pending()
                 continue
@@ -357,7 +357,7 @@ def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, Interfac
                             is_method=is_method,
                             doc_lines=list(pending_doc),
                             overloads=list(pending_overloads),
-                            returns=pending_returns
+                            returns=list(pending_returns)
                         ))
                     reset_pending()
                     continue
@@ -555,7 +555,7 @@ def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc],
                     is_method=True,
                     doc_lines=list(m.doc_lines),
                     overloads=list(m.overloads),
-                    returns=m.returns
+                    returns=list(m.returns)
                 ))
 
     direct_methods = set((f.owner, f.name) for f in functions if f.is_method)
@@ -589,22 +589,33 @@ def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc],
                 out.append(f"--- {line}")
 
         overloads = fn.overloads or [[]]
-        uniq: List[List[Param]] = []
+        uniq: List[Tuple[int, List[Param]]] = []
         seenk = set()
-        for ov in overloads:
+        for i, ov in enumerate(overloads):
             k = sig_key(ov)
             if k in seenk:
                 continue
             seenk.add(k)
-            uniq.append(ov)
+            uniq.append((i, ov))
 
-        base = min(uniq, key=lambda o: len(o))
-        for ov in uniq:
-            if sig_key(ov) == sig_key(base):
+        def return_for(overload_index: int) -> Optional[str]:
+            if not fn.returns:
+                return None
+            if len(fn.returns) == 1:
+                return fn.returns[0]
+            if overload_index < len(fn.returns):
+                return fn.returns[overload_index]
+            return fn.returns[-1]
+
+        base_i, base = min(uniq, key=lambda x: len(x[1]))
+        base_key = sig_key(base)
+        for ov_i, ov in uniq:
+            if sig_key(ov) == base_key:
                 continue
             sig = fn_sig(ov)
-            if fn.returns:
-                out.append(f"---@overload fun({sig}): {fn.returns}" if sig else f"---@overload fun(): {fn.returns}")
+            rtype = return_for(ov_i)
+            if rtype:
+                out.append(f"---@overload fun({sig}): {rtype}" if sig else f"---@overload fun(): {rtype}")
             else:
                 out.append(f"---@overload fun({sig})" if sig else f"---@overload fun()")
 
@@ -617,8 +628,9 @@ def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc],
                 out.append(f"---@param {p.name} {p.typ}")
                 args.append(p.name)
 
-        if fn.returns:
-            out.append(f"---@return {fn.returns}")
+        base_return = return_for(base_i)
+        if base_return:
+            out.append(f"---@return {base_return}")
 
         sep = ":" if fn.is_method else "."
         out.append(f"function {fn.owner}{sep}{fn.name}({', '.join(args)}) end")
