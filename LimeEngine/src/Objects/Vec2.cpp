@@ -103,6 +103,10 @@ void Object::Vec2Bind::bind(lua_State* ls) {
 	// Operation Vec2 number /
 	// Operation boolean Vec2 ==
 
+	// Returns a copy of this vector.
+	// Returns Vec2
+	obj.set_function("copy", &Vec2::copy);
+
 	// Returns the length of the vector.
 	// Returns number
 	obj.set_function("length", &Vec2::getLength);

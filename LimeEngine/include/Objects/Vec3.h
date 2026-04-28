@@ -16,6 +16,7 @@ public:
     Vec3 operator*(float scalar) const;
     Vec3 operator/(float scalar) const;
     bool operator==(const Vec3& other) const;
+    Vec3 copy() const { return Vec3(getX(), getY(), getZ()); }
 
     float getLength() const;
     float getLengthSquared() const;

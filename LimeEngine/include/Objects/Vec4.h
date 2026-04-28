@@ -17,6 +17,7 @@ public:
     Vec4 operator*(float scalar) const;
     Vec4 operator/(float scalar) const;
     bool operator==(const Vec4& other) const;
+    Vec4 copy() const { return Vec4(getX(), getY(), getZ(), getW()); }
 
     using Getter = std::function<Vec4()>;
     using Setter = std::function<void(const Vec4&)>;

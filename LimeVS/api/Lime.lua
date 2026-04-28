@@ -2751,6 +2751,10 @@ function Vec2:angle(other) end
 ---@return Vec2
 function Vec2:clamp(min, max) end
 
+--- Returns a copy of this vector.
+---@return Vec2
+function Vec2:copy() end
+
 --- Measures signed scalar area, indicating clockwise versus counter-clockwise orientation.
 ---@param other Vec2
 ---@return number
@@ -2805,6 +2809,10 @@ function Vec3:angle(other) end
 ---@return Vec3
 function Vec3:clamp(min, max) end
 
+--- Returns a copy of this vector.
+---@return Vec3
+function Vec3:copy() end
+
 --- Measures signed scalar area, indicating clockwise versus counter-clockwise orientation.
 ---@param other Vec3
 ---@return Vec3
@@ -2847,6 +2855,10 @@ function Vec3:normalize() end
 ---@param max number
 ---@return Vec3
 function Vec3:normalizeRng(min, max) end
+
+--- Returns a copy of this vector.
+---@return Vec4
+function Vec4:copy() end
 
 --- Returns the HEX code for this object. This is useful for converting RGBA to HEX color.
 ---@return string

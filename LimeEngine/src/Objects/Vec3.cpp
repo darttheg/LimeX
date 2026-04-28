@@ -128,6 +128,10 @@ void Object::Vec3Bind::bind(lua_State* ls) {
 	// Operation Vec3 number /
 	// Operation boolean Vec3 ==
 
+	// Returns a copy of this vector.
+	// Returns Vec3
+	obj.set_function("copy", &Vec3::copy);
+
 	// Returns the length of the vector.
 	// Returns number
 	obj.set_function("length", &Vec3::getLength);

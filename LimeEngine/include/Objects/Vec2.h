@@ -16,6 +16,7 @@ public:
     Vec2 operator*(float scalar) const;
     Vec2 operator/(float scalar) const;
     bool operator==(const Vec2& other) const;
+    Vec2 copy() const { return Vec2(getX(), getY()); }
 
     float getLength() const;
     float getLengthSquared() const;
