@@ -1546,6 +1546,10 @@ function Lime.Network.unbanIP(...) end
 ---@return Vec3
 function Lime.Physics.getGravity() end
 
+--- Returns the number of physics objects.
+---@return number
+function Lime.Physics.getObjectCount() end
+
 --- **This function cannot be run until window creation.**  
 --- Returns the physics simulation step factor.
 ---@return number
