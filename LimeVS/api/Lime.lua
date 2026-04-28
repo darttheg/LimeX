@@ -760,6 +760,10 @@ function Billboard:clearAttributes() end
 ---@return nil
 function Billboard:destroy() end
 
+--- Returns the absolute position of this 3D object.
+---@return Vec3
+function Billboard:getAbsolutePosition() end
+
 --- Returns the content of attribute `key` from this object's attributes.
 ---@param key any
 ---@return any
@@ -832,6 +836,10 @@ function Camera:clearAttributes() end
 --- Destroys this object.
 ---@return nil
 function Camera:destroy() end
+
+--- Returns the absolute position of this 3D object.
+---@return Vec3
+function Camera:getAbsolutePosition() end
 
 --- Returns the content of attribute `key` from this object's attributes.
 ---@param key any
@@ -960,6 +968,10 @@ function Empty:clearAttributes() end
 --- Destroys this object.
 ---@return nil
 function Empty:destroy() end
+
+--- Returns the absolute position of this 3D object.
+---@return Vec3
+function Empty:getAbsolutePosition() end
 
 --- Returns the content of attribute `key` from this object's attributes.
 ---@param key any
@@ -1093,6 +1105,10 @@ function Light:clearAttributes() end
 --- Destroys this object.
 ---@return nil
 function Light:destroy() end
+
+--- Returns the absolute position of this 3D object.
+---@return Vec3
+function Light:getAbsolutePosition() end
 
 --- Returns the content of attribute `key` from this object's attributes.
 ---@param key any
@@ -1930,6 +1946,10 @@ function Mesh:clearAttributes() end
 ---@return nil
 function Mesh:destroy() end
 
+--- Returns the absolute position of this 3D object.
+---@return Vec3
+function Mesh:getAbsolutePosition() end
+
 --- Returns the content of attribute `key` from this object's attributes.
 ---@param key any
 ---@return any
@@ -2205,6 +2225,10 @@ function ParticleSystem:clearAttributes() end
 ---@return nil
 function ParticleSystem:destroy() end
 
+--- Returns the absolute position of this 3D object.
+---@return Vec3
+function ParticleSystem:getAbsolutePosition() end
+
 --- Returns the content of attribute `key` from this object's attributes.
 ---@param key any
 ---@return any
@@ -2394,6 +2418,10 @@ function Skydome:clearAttributes() end
 --- Destroys this object.
 ---@return nil
 function Skydome:destroy() end
+
+--- Returns the absolute position of this 3D object.
+---@return Vec3
+function Skydome:getAbsolutePosition() end
 
 --- Returns the content of attribute `key` from this object's attributes.
 ---@param key any
@@ -2589,6 +2617,10 @@ function Text3D:clearAttributes() end
 --- Destroys this object.
 ---@return nil
 function Text3D:destroy() end
+
+--- Returns the absolute position of this 3D object.
+---@return Vec3
+function Text3D:getAbsolutePosition() end
 
 --- Returns the content of attribute `key` from this object's attributes.
 ---@param key any
@@ -2817,9 +2849,9 @@ function Vec3:normalizeRng(min, max) end
 function Vec4:getHEX() end
 
 --- Clamps `v` to `min`, `max`.
----@overload fun(v:Vec2, min:number, max:number): number
----@overload fun(v:Vec3, min:number, max:number): number
----@overload fun(v:Vec4, min:number, max:number): number
+---@overload fun(v:Vec2, min:number, max:number): Vec2
+---@overload fun(v:Vec3, min:number, max:number): Vec3
+---@overload fun(v:Vec4, min:number, max:number): Vec4
 ---@param v number
 ---@param min number
 ---@param max number
@@ -2827,9 +2859,9 @@ function Vec4:getHEX() end
 function math.clamp(v, min, max) end
 
 --- Interpolates from `old` toward `target` using exponential smoothing.
----@overload fun(old:Vec2, target:Vec2, factor:number, dt:number): number
----@overload fun(old:Vec3, target:Vec3, factor:number, dt:number): number
----@overload fun(old:Vec4, target:Vec4, factor:number, dt:number): number
+---@overload fun(old:Vec2, target:Vec2, factor:number, dt:number): Vec2
+---@overload fun(old:Vec3, target:Vec3, factor:number, dt:number): Vec3
+---@overload fun(old:Vec4, target:Vec4, factor:number, dt:number): Vec4
 ---@param old number
 ---@param target number
 ---@param factor number
@@ -2913,9 +2945,9 @@ function math.tween.easeOutElastic(a) end
 function math.tween.easeOutSine(a) end
 
 --- Linearly interpolates from `old` to `target` over `a`, where `a` is between 0.0 and 1.0.
----@overload fun(old:Vec2, target:Vec2, a:number): number
----@overload fun(old:Vec3, target:Vec3, a:number): number
----@overload fun(old:Vec4, target:Vec4, a:number): number
+---@overload fun(old:Vec2, target:Vec2, a:number): Vec2
+---@overload fun(old:Vec3, target:Vec3, a:number): Vec3
+---@overload fun(old:Vec4, target:Vec4, a:number): Vec4
 ---@param old number
 ---@param target number
 ---@param a number

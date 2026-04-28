@@ -28,6 +28,9 @@ void Module::Lua::bindMath(sol::state& l) {
 	// Params Vec3 v, number min, number max
 	// Params Vec4 v, number min, number max
 	// Returns number
+	// Returns Vec2
+	// Returns Vec3
+	// Returns Vec4
 	module.set_function("clamp", sol::overload(
 		static_cast<float(*)(float, float, float)>(&Module::Lua::Math::clamp),
 		static_cast<Vec2(*)(const Vec2&, float, float)>(&Module::Lua::Math::clampVec2),
@@ -47,6 +50,9 @@ void Module::Lua::bindMath(sol::state& l) {
 	// Params Vec3 old, Vec3 target, number factor, number dt
 	// Params Vec4 old, Vec4 target, number factor, number dt
 	// Returns number
+	// Returns Vec2
+	// Returns Vec3
+	// Returns Vec4
 	module.set_function("damp", sol::overload(
 		static_cast<float(*)(const float&, const float&, float, float)>(&Module::Lua::Math::Tween::damp<float>),
 		static_cast<Vec2(*)(const Vec2&, const Vec2&, float, float)>(&Module::Lua::Math::Tween::damp<Vec2>),
@@ -60,6 +66,9 @@ void Module::Lua::bindMath(sol::state& l) {
 	// Params Vec3 old, Vec3 target, number a
 	// Params Vec4 old, Vec4 target, number a
 	// Returns number
+	// Returns Vec2
+	// Returns Vec3
+	// Returns Vec4
 	module.set_function("lerp", sol::overload(
 		static_cast<float(*)(const float&, const float&, float)>(&Module::Lua::Math::Tween::lerp<float>),
 		static_cast<Vec2(*)(const Vec2&, const Vec2&, float)>(&Module::Lua::Math::Tween::lerp<Vec2>),

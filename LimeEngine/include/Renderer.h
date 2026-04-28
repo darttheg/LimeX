@@ -70,6 +70,7 @@ public:
 	bool InitPhysics();
 	void setReceiver(Receiver* re);
 	bool Shutdown();
+	bool UpdatePhysics(float dt);
 	bool Render(float dt, bool clearBackBuffer = false, bool clearZBuffer = true);
 	void EndWholeScene() { hasBegunNewScene = false; }
 	bool RunDevice();

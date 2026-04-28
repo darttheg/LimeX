@@ -80,6 +80,7 @@ public:
 	// Push to collision detection
 	void appendToCollisionDetection(btCollisionObject* col, const PhysicsObject& phys);
 	void removeFromCollisionDetection(btCollisionObject* col);
+	int getNumPhysicsObjects() const;
 
 	void setFixedStep(float fs);
 	void setMaxSubSteps(int sub);

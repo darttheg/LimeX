@@ -163,12 +163,13 @@ bool Window::Create() {
 
 	glfwFocusWindow(glfwWindow);
 
+	glfwMakeContextCurrent(glfwWindow);
+
 	return true;
 }
 
 void Window::PollEvents() {
 	didCallback = false;
-	glfwMakeContextCurrent(glfwWindow);
 	glfwPollEvents();
 }
 
@@ -180,12 +181,12 @@ void Window::PreUpdateBG() {
 	if (!a->GetRenderer()) return;
 	auto* r = a->GetRenderer();
 
-	glClearColor(0.f, 0.f, 0.f, 1.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// glClearColor(0.f, 0.f, 0.f, 1.f);
+	// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Window::EndFrame() {
-	glfwSwapBuffers(glfwWindow);
+	// glfwSwapBuffers(glfwWindow);
 	inFullscreenCallback = false;
 }
 

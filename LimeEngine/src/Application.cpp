@@ -309,7 +309,7 @@ bool Application::Run() {
 
 		if (!renderer->RunDevice()) { fail = true; }
 		receiver->beginFrame();
-		renderer->GetPhysicsManager()->Update(dt);
+		renderer->UpdatePhysics(dt);
 		LimeUpdate.get()->engineRun([&](const std::string& msg) { console->PostError(msg); }, dt);
 		window->PollEvents();
 		soundManager->Update(dt);

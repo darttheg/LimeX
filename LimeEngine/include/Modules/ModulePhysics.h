@@ -20,6 +20,7 @@ namespace Module {
 			void SetIgnoreSameID(bool v);
 			void SetFixedSteps(float f);
 			void SetMaxSubSteps(int sub);
+			int GetObjectCount();
 		}
 	}
 }

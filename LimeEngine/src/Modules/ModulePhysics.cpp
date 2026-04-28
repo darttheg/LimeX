@@ -69,6 +69,10 @@ void Module::Physics::bind(Application* app) {
 	// Returns void
 	module.set_function("setMaxSubSteps", &Module::Physics::Bind::SetMaxSubSteps);
 
+	// Returns the number of physics objects.
+	// Returns number
+	module.set_function("getObjectCount", &Module::Physics::Bind::GetObjectCount);
+
 	// End Module
 
 	// Object CollisionResult, An object that stores collision data between two physics objects.
@@ -100,6 +104,10 @@ void Module::Physics::Bind::SetGravity(const Vec3& v) {
 
 bool Module::Physics::Bind::IsPaused() {
 	return p->isPaused();
+}
+
+int Module::Physics::Bind::GetObjectCount() {
+	return p->getNumPhysicsObjects();
 }
 
 void Module::Physics::Bind::SetPaused(bool v) {

@@ -63,13 +63,10 @@ bool PhysicsManager::Init(irr::IrrlichtDevice* device) {
 bool PhysicsManager::Update(float dt) {
 	if (!world) return false;
 
+	if (world->getNumCollisionObjects() == 0) return true;
 	int out = world->stepSimulation(dt * stepFactor, maxSubSteps, fixedStep);
-	btDispatcher* dispatcher = world->getPointer()->getDispatcher();
-	bool ok = dispatcher && dispatcher->getNumManifolds() > 0;
-	if (ok) {
-		handleCollisions();
-		processCollisions();
-	}
+	handleCollisions();
+	processCollisions();
 
 	return true;
 }
@@ -226,6 +223,10 @@ void PhysicsManager::removeFromCollisionDetection(btCollisionObject* col) {
 	colliderPair.erase(col);
 }
 
+int PhysicsManager::getNumPhysicsObjects() const {
+	return world ? world->getNumCollisionObjects() : 0;
+}
+
 void PhysicsManager::setFixedStep(float fs) {
 	if (fs < 0.0) fs = 0.0;
 	fixedStep = fs;
@@ -265,7 +266,7 @@ void PhysicsManager::handleCollisions() {
 		const ColliderInfo& infoA = mapA->second;
 		const ColliderInfo& infoB = mapB->second;
 
-		if (!skipNoEvents(infoA) && !skipNoEvents(infoB)) continue;
+		if (skipNoEvents(infoA) && skipNoEvents(infoB)) continue;
 
 		if (collisionsIgnoreSameID) {
 			auto* nodeA = infoA.node;

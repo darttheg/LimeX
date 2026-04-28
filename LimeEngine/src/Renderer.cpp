@@ -248,6 +248,11 @@ bool Renderer::Shutdown() {
 	return true;
 }
 
+bool Renderer::UpdatePhysics(float dt) {
+	if (!isCreated) return false;
+	return physics->Update(dt);
+}
+
 bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	if (!guardRenderingCheck()) return false;
 	if (!isCreated || !w->getGLFWWindow()) return false;
