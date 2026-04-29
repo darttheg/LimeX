@@ -2922,6 +2922,11 @@ function math.tween.easeInCubic(a) end
 ---@return number
 function math.tween.easeInElastic(a) end
 
+--- Starts slow and heavily speeds up at the end.
+---@param a number
+---@return number
+function math.tween.easeInExpo(a) end
+
 --- Backward start, then overshoots to settle.
 ---@param a number
 ---@return number
@@ -2941,6 +2946,11 @@ function math.tween.easeInOutCubic(a) end
 ---@param a number
 ---@return number
 function math.tween.easeInOutElastic(a) end
+
+--- Slow at the start and end, but fast in the middle.
+---@param a number
+---@return number
+function math.tween.easeInOutExpo(a) end
 
 --- Smooth start and end. (Sine curve)
 ---@param a number
@@ -2971,6 +2981,11 @@ function math.tween.easeOutCubic(a) end
 ---@param a number
 ---@return number
 function math.tween.easeOutElastic(a) end
+
+--- Starts fast, then plateaus.
+---@param a number
+---@return number
+function math.tween.easeOutExpo(a) end
 
 --- Starts fast, decelerates. (Sine curve)
 ---@param a number

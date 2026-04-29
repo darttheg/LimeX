@@ -141,6 +141,19 @@ void Module::Lua::bindMath(sol::state& l) {
 	// Returns number
 	module.set_function("easeInOutBounce", &Module::Lua::Math::Tween::easeInOutBounce);
 
+	// Starts slow and heavily speeds up at the end.
+	// Params number a
+	// Returns number
+	module.set_function("easeInExpo", &Module::Lua::Math::Tween::easeInExpo);
+	// Starts fast, then plateaus.
+	// Params number a
+	// Returns number
+	module.set_function("easeOutExpo", &Module::Lua::Math::Tween::easeOutExpo);
+	// Slow at the start and end, but fast in the middle.
+	// Params number a
+	// Returns number
+	module.set_function("easeInOutExpo", &Module::Lua::Math::Tween::easeInOutExpo);
+
 	// End Module
 }
 
@@ -263,4 +276,18 @@ float Module::Lua::Math::Tween::easeInOutBounce(float v) {
 	return v < 0.5f
 		? (1.0f - easeOutBounce(1.0f - 2.0f * v)) / 2.0f
 		: (1.0f + easeOutBounce(2.0f * v - 1.0f)) / 2.0f;
+}
+
+float Module::Lua::Math::Tween::easeInExpo(float v) {
+	return v == 0.0f ? 0.0f : pow(2.0f, 10.0f * v - 10.0f);
+}
+
+float Module::Lua::Math::Tween::easeOutExpo(float v) {
+	return v == 1.0f ? 1.0f : 1.0f - pow(2.0f, -10.0f * v);
+}
+
+float Module::Lua::Math::Tween::easeInOutExpo(float v) {
+	return v == 0.0f ? 0.0f : v == 1.0f ? 1.0f 
+		: v < 0.5 ? pow(2.0f, 20.0f * v - 10.0f) / 2.0f 
+		: (2.0f - pow(2.0f, -20.0f * v + 10)) / 2.0f;
 }

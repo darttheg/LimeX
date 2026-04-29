@@ -264,19 +264,21 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	//	return false;
 
 	bool hasParents = false;
-	irr::scene::ISceneNode* curParent = rh->getActiveCamera()->getParent();
-	while (curParent) {
-		hasParents = true;
-		curParent->updateAbsolutePosition();
-		curParent = curParent->getParent();
-	}
+	if (rh->getActiveCamera()) {
+		irr::scene::ISceneNode* curParent = rh->getActiveCamera()->getParent();
+		while (curParent) {
+			hasParents = true;
+			curParent->updateAbsolutePosition();
+			curParent = curParent->getParent();
+		}
 
-	if (rh->getActiveCamera() && hasParents) {
-		rh->getActiveCamera()->updateAbsolutePosition();
-		rh->getActiveCameraForward()->updateAbsolutePosition();
-		rh->getActiveCameraLeft()->updateAbsolutePosition();
+		if (hasParents) {
+			rh->getActiveCamera()->updateAbsolutePosition();
+			rh->getActiveCameraForward()->updateAbsolutePosition();
+			rh->getActiveCameraLeft()->updateAbsolutePosition();
 
-		rh->getActiveCamera()->setTarget(rh->getActiveCameraForward()->getAbsolutePosition());
+			rh->getActiveCamera()->setTarget(rh->getActiveCameraForward()->getAbsolutePosition());
+		}
 	}
 
 	// Step physics

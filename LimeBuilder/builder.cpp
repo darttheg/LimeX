@@ -11,9 +11,9 @@
 #include "builder.h"
 
 extern "C" {
-	#include "lua.h"
-	#include "lualib.h"
-	#include "lauxlib.h"
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
 }
 
 #ifdef _WIN32
@@ -91,7 +91,7 @@ static void ApplyIcoToExe(const std::filesystem::path& exePath, const std::files
 		DWORD e = GetLastError();
 		EndUpdateResourceW(h, TRUE);
 		throw std::runtime_error(std::string(msg) + " (GetLastError=" + std::to_string((unsigned)e) + ")");
-	};
+		};
 
 	for (uint16_t i = 0; i < dir->idCount; i++) {
 		const auto& e = entries[i];
@@ -155,6 +155,126 @@ static std::string toModuleName(const fs::path& src, const fs::path& file) {
 	return out;
 }
 
+static bool startsLongBracket(const std::string& code, size_t i, size_t* closeStart) {
+	if (i >= code.size() || code[i] != '[')
+		return false;
+
+	size_t j = i + 1;
+	while (j < code.size() && code[j] == '=')
+		j++;
+
+	if (j >= code.size() || code[j] != '[')
+		return false;
+
+	if (closeStart)
+		*closeStart = j;
+
+	return true;
+}
+
+static bool endsLongBracket(const std::string& code, size_t i, size_t closeStart) {
+	if (i >= code.size() || code[i] != ']')
+		return false;
+
+	size_t eqCount = closeStart - 1;
+	size_t j = i + 1;
+	while (eqCount-- > 0) {
+		if (j >= code.size() || code[j] != '=')
+			return false;
+		j++;
+	}
+
+	return j < code.size() && code[j] == ']';
+}
+
+static std::string stripLuaComments(const std::string& code) {
+	std::string out;
+	out.reserve(code.size());
+
+	bool inString = false;
+	char stringChar = '\0';
+	bool inLongString = false;
+	size_t longStringCloseStart = 0;
+
+	for (size_t i = 0; i < code.size(); ++i) {
+		char c = code[i];
+		char next = (i + 1 < code.size()) ? code[i + 1] : '\0';
+
+		if (inString) {
+			out += c;
+
+			if (c == '\\' && next != '\0') {
+				out += next;
+				i++;
+				continue;
+			}
+
+			if (c == stringChar) inString = false;
+
+			continue;
+		}
+
+		if (inLongString) {
+			out += c;
+
+			if (endsLongBracket(code, i, longStringCloseStart)) {
+				while (i + 1 < code.size() && code[i + 1] != ']') out += code[++i];
+				if (i + 1 < code.size()) out += code[++i];
+
+				inLongString = false;
+			}
+
+			continue;
+		}
+
+		if (c == '"' || c == '\'') {
+			inString = true;
+			stringChar = c;
+			out += c;
+			continue;
+		}
+
+		size_t closeStart = 0;
+		if (startsLongBracket(code, i, &closeStart)) {
+			inLongString = true;
+			longStringCloseStart = closeStart - i;
+			while (i <= closeStart) out += code[i++];
+			i--;
+			continue;
+		}
+
+		if (c == '-' && next == '-') {
+			size_t commentCloseStart = 0;
+			if (startsLongBracket(code, i + 2, &commentCloseStart)) {
+				size_t closeOffset = commentCloseStart - (i + 2);
+				i = commentCloseStart;
+
+				while (i < code.size()) {
+					if (endsLongBracket(code, i, closeOffset)) {
+						while (i + 1 < code.size() && code[i + 1] != ']') i++;
+						if (i + 1 < code.size()) i++;
+						break;
+					}
+
+					if (code[i] == '\n') out += '\n';
+					i++;
+				}
+			}
+			else {
+				i += 2;
+				while (i < code.size() && code[i] != '\n') i++;
+				if (i < code.size() && code[i] == '\n') out += '\n';
+			}
+
+			continue;
+		}
+
+		out += c;
+	}
+
+	return out;
+}
+
 static int writer(lua_State* L, const void* p, size_t size, void* ud) {
 	std::string* out = static_cast<std::string*>(ud);
 	out->append(static_cast<const char*>(p), size);
@@ -178,7 +298,8 @@ static void resolveRequires() {
 	std::regex pattern(R"(require\s*\(\s*["']([^"']+)["']\s*\))");
 
 	for (auto& m : modules) {
-		auto begin = std::sregex_iterator(m.code.begin(), m.code.end(), pattern);
+		std::string scanCode = stripLuaComments(m.code);
+		auto begin = std::sregex_iterator(scanCode.begin(), scanCode.end(), pattern);
 		auto end = std::sregex_iterator();
 
 		for (auto it = begin; it != end; ++it) {
@@ -293,8 +414,10 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 	for (auto& m : modules) {
 		try {
 			std::cout << "   + " << m.name << "\n";
-			m.bytecode = compileLuaToBC(L, m.code, m.name);
-		} catch (const std::exception& e) {
+			std::string strippedCode = stripLuaComments(m.code);
+			m.bytecode = compileLuaToBC(L, strippedCode, m.name);
+		}
+		catch (const std::exception& e) {
 			throw std::runtime_error("Failed to compile module '" + m.name + "': " + e.what());
 		}
 	}
@@ -344,17 +467,18 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 	exe.write(templateExe.data(), templateExe.size());
 	exe.close();
 
-	#ifdef _WIN32
+#ifdef _WIN32
 	try {
 		fs::path ico = fs::path(pDir) / "icon.ico";
 		if (fs::exists(ico)) {
 			// std::cout << "Applying icon: " << ico.string() << "\n";
 			ApplyIcoToExe(finalPath, ico);
 		}
-	} catch (const std::exception& e) {
+	}
+	catch (const std::exception& e) {
 		std::cout << "WARNING: Failed to apply icon: " << e.what() << "\n";
 	}
-	#endif
+#endif
 
 	EmbedPackage(finalExe, outPkg.string());
 

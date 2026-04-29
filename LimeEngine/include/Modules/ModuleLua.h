@@ -46,6 +46,9 @@ namespace Module {
 				float easeInBounce(float v);
 				float easeOutBounce(float v);
 				float easeInOutBounce(float v);
+				float easeInExpo(float v);
+				float easeOutExpo(float v);
+				float easeInOutExpo(float v);
 			}
 		}
 	}
