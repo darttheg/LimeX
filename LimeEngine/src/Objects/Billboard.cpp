@@ -73,7 +73,7 @@ void Object::BillboardBind::bind(lua_State* ls, RenderHelper* renh) {
 
 		// Field Vec2 size, The width and height of this Billboard.
 		"size", sol::property(
-			[](Billboard& c) { return Vec2{ [&] { return c.getSize(); }, [&](auto v) { c.setSize(v); } }; },
+			[](Billboard& c) { return Vec2( [&] { return c.getSize(); }, [&](const Vec2& v) { c.setSize(v); } ); },
 			[](Billboard& c, const Vec2& v) { c.setSize(v); }
 		)
 	);

@@ -322,6 +322,8 @@ bool Application::Run() {
 		renderer->EndWholeScene();
 		receiver->endFrame();
 
+		lua_gc(GetLuaState(), LUA_GCSTEP, 10);
+
 		if (!windowCfg.vSync) limiter->endFrame();
 		window->EndFrame(); // Swap buffers
 		if (windowCfg.vSync) limiter->endFrame();

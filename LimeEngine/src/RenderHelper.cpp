@@ -237,6 +237,8 @@ bool RenderHelper::setColorRect(irr::video::ITexture* tex, const Vec2& tl, const
 	}
 
 	tex->unlock();
+
+	return true;
 }
 
 bool RenderHelper::keyColor(irr::video::ITexture* tex, const Vec4& color) {

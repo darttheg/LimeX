@@ -156,7 +156,7 @@ void Object::HingeConstraintBind::bind(lua_State* ls) {
 
 		// Field Vec2 limits, The angular limits of the hinge, where `x` is lower limit and `y` is upper limit.
 		"limits", sol::property(
-			[](HingeConstraint& c) { return Vec2{ [&] { return c.getLimit(); }, [&](auto v) { c.setLimit(v); } }; },
+			[](HingeConstraint& c) { return Vec2( [&c]{ return c.getLimit(); }, [&c](const Vec2& v){ c.setLimit(v); } ); },
 			[](HingeConstraint& c, const Vec2& v) { c.setLimit(v); }
 		),
 
@@ -281,7 +281,7 @@ void Object::ConeTwistConstraintBind::bind(lua_State* ls) {
 	
 		// Field Vec2 swingLimits, The angular swing limits of this `Constraint`, where `x` is sideways and `y` is forward and backward.
 		"swingLimits", sol::property(
-			[](ConeTwistConstraint& c) { return Vec2{ [&] { return c.getSwingLimit(); }, [&](auto v) { c.setSwingLimit(v); } }; },
+			[](ConeTwistConstraint& c) { return Vec2( [&c]{ return c.getSwingLimit(); }, [&c](const Vec2& v){ c.setSwingLimit(v); } ); },
 			[](ConeTwistConstraint& c, const Vec2& v) { c.setSwingLimit(v); }
 		),
 

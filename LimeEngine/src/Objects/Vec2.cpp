@@ -6,12 +6,23 @@
 Vec2::Vec2() : x(0), y(0) {}
 Vec2::Vec2(float x, float y) : x(x), y(y) {}
 Vec2::Vec2(float x) : x(x), y(x) {}
+Vec2::Vec2(Vec2&& v) noexcept : x(v.x), y(v.y), get(std::move(v.get)), set(std::move(v.set)) {}
+
+Vec2::Vec2(const Vec2& v) {
+	x = v.x;
+	y = v.y;
+}
 
 Vec2 Vec2::operator+(const Vec2& other) const { return Vec2(getX() + other.getX(), getY() + other.getY()); }
 Vec2 Vec2::operator-(const Vec2& other) const { return Vec2(getX() - other.getX(), getY() - other.getY()); }
 Vec2 Vec2::operator*(float scalar) const { return Vec2(getX() * scalar, getY() * scalar); }
 Vec2 Vec2::operator/(float scalar) const { return Vec2(getX() / scalar, getY() / scalar); }
 bool Vec2::operator==(const Vec2& other) const { return getX() == other.getX() && getY() == other.getY(); }
+Vec2& Vec2::operator=(const Vec2& other) {
+	x = other.getX();
+	y = other.getY();
+	return *this;
+}
 
 float Vec2::getLength() const {
 	return std::sqrt(getX() * getX() + getY() * getY());
@@ -67,11 +78,21 @@ Vec2 Vec2::clamp(const Vec2& min, const Vec2& max) const {
 	return Vec2(std::clamp(getX(), min.getX(), max.getX()), std::clamp(getY(), min.getY(), max.getY()));
 }
 
+void Vec2::setTo(const Vec2& other) {
+	x = other.getX();
+	y = other.getY();
+}
+
+void Vec2::setTo(float tx, float ty) {
+	x = tx;
+	y = ty;
+}
+
 void Object::Vec2Bind::bind(lua_State* ls) {
 	sol::state_view view(ls);
 	sol::usertype<Vec2> obj = view.new_usertype<Vec2>(
 		"Vec2",
-		sol::constructors<Vec2(), Vec2(float), Vec2(float, float)>(),
+		sol::constructors<Vec2(), Vec2(const Vec2&), Vec2(float), Vec2(float, float)>(),
 		sol::meta_function::type, [](const Vec2&) { return "Vec2"; },
 
 		sol::meta_function::addition, &Vec2::operator+,
@@ -96,6 +117,7 @@ void Object::Vec2Bind::bind(lua_State* ls) {
 	// Constructor
 	// Constructor number x, number y
 	// Constructor number all
+	// Constructor Vec2 other
 
 	// Operation Vec2 Vec2 +
 	// Operation Vec2 Vec2 -
@@ -103,9 +125,15 @@ void Object::Vec2Bind::bind(lua_State* ls) {
 	// Operation Vec2 number /
 	// Operation boolean Vec2 ==
 
-	// Returns a copy of this vector.
-	// Returns Vec2
-	obj.set_function("copy", &Vec2::copy);
+	// Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
+	// Params Vec3 other
+	// Params number x, number y
+	// Returns void
+	obj.set_function("set",
+		sol::overload(
+			sol::resolve<void(const Vec2&)>(&Vec2::setTo),
+			sol::resolve<void(float, float)>(&Vec2::setTo)
+		));
 
 	// Returns the length of the vector.
 	// Returns number

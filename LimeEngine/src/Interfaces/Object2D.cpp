@@ -289,13 +289,13 @@ void Interface::Object2DBind::bind(lua_State* ls, Renderer* rend) {
 
         // Field Vec2 position, The 2D position of this object on the screen.
         "position", sol::property(
-            [](Object2D& c) { return Vec2{ [&] { return c.getPosition(); }, [&](auto v) { c.setPosition(v); } }; },
+            [](Object2D& c) { return Vec2( [&c] { return c.getPosition(); }, [&c](const Vec2& v) { c.setPosition(v); } ); },
             [](Object2D& c, const Vec2& v) { c.setPosition(v); }
         ),
 
         // Field Vec2 size, The 2D size of this object.
         "size", sol::property(
-            [](Object2D& c) { return Vec2{ [&] { return c.getSize(); }, [&](auto v) { c.setSize(v); } }; },
+            [](Object2D& c) { return Vec2( [&] { return c.getSize(); }, [&](const Vec2& v) { c.setSize(v); } ); },
             [](Object2D& c, const Vec2& v) { c.setSize(v); }
         ),
 
@@ -310,7 +310,7 @@ void Interface::Object2DBind::bind(lua_State* ls, Renderer* rend) {
 
         // Field Vec4 backgroundColor, The RGBA background color of this object.
         "backgroundColor", sol::property(
-            [](Object2D& c) { return Vec4{ [&] { return c.getBackgroundColor(); }, [&](auto v) { c.setBackgroundColor(v); } }; },
+            [](Object2D& c) { return Vec4( [&] { return c.getBackgroundColor(); }, [&](const Vec4& v) { c.setBackgroundColor(v); } ); },
             [](Object2D& c, const Vec4& v) { c.setBackgroundColor(v); }
         ),
 

@@ -69,18 +69,46 @@ Vec4::Vec4(const std::string& hex) {
 	setZ(out.getZ());
 	setW(out.getW());
 }
+Vec4::Vec4(Vec4&& v) noexcept : x(v.x), y(v.y), z(v.z), w(v.w), get(std::move(v.get)), set(std::move(v.set)) {}
+Vec4::Vec4(const Vec4& v) {
+	x = v.x;
+	y = v.y;
+	z = v.z;
+	w = v.w;
+}
+
+void Vec4::setTo(const Vec4& other) {
+	x = other.getX();
+	y = other.getY();
+	z = other.getZ();
+	w = other.getW();
+}
+
+void Vec4::setTo(float tx, float ty, float tz, float tw) {
+	x = tx;
+	y = ty;
+	z = tz;
+	w = tw;
+}
 
 Vec4 Vec4::operator+(const Vec4& other) const { return Vec4(getX() + other.getX(), getY() + other.getY(), getZ() + other.getZ(), getW() + other.getW()); }
 Vec4 Vec4::operator-(const Vec4& other) const { return Vec4(getX() - other.getX(), getY() - other.getY(), getZ() - other.getZ(), getW() - other.getW()); }
 Vec4 Vec4::operator*(float scalar) const { return Vec4(getX() * scalar, getY() * scalar, getZ() * scalar, getW() * scalar); }
 Vec4 Vec4::operator/(float scalar) const { return Vec4(getX() / scalar, getY() / scalar, getZ() / scalar, getW() / scalar); }
 bool Vec4::operator==(const Vec4& other) const { return getX() == other.getX() && getY() == other.getY() && getZ() == other.getZ() && getW() == other.getW(); }
+Vec4& Vec4::operator=(const Vec4& other) {
+	x = other.getX();
+	y = other.getY();
+	z = other.getZ();
+	w = other.getW();
+	return *this;
+}
 
 void Object::Vec4Bind::bind(lua_State* ls) {
 	sol::state_view view(ls);
 	sol::usertype<Vec4> obj = view.new_usertype<Vec4>(
 		"Vec4",
-		sol::constructors<Vec4(), Vec4(float), Vec4(float, float, float, float), Vec4(const std::string&)>(),
+		sol::constructors<Vec4(), Vec4(const Vec4&), Vec4(float), Vec4(float, float, float, float), Vec4(const std::string&)>(),
 		sol::meta_function::type, [](const Vec4&) { return "Vec4"; },
 
 		sol::meta_function::addition, &Vec4::operator+,
@@ -110,6 +138,7 @@ void Object::Vec4Bind::bind(lua_State* ls) {
 	// Constructor number x, number y, number z, number w
 	// Constructor number all
 	// Constructor string HEX
+	// Constructor Vec4 other
 
 	// Operation Vec4 Vec4 +
 	// Operation Vec4 Vec4 -
@@ -117,9 +146,15 @@ void Object::Vec4Bind::bind(lua_State* ls) {
 	// Operation Vec4 number /
 	// Operation boolean Vec4 ==
 
-	// Returns a copy of this vector.
-	// Returns Vec4
-	obj.set_function("copy", &Vec4::copy);
+	// Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
+	// Params Vec3 other
+	// Params number x, number y, number z, number w
+	// Returns void
+	obj.set_function("set",
+		sol::overload(
+			sol::resolve<void(const Vec4&)>(&Vec4::setTo),
+			sol::resolve<void(float, float, float, float)>(&Vec4::setTo)
+		));
 
 	// Returns the HEX code for this object. This is useful for converting RGBA to HEX color.
 	// Returns string

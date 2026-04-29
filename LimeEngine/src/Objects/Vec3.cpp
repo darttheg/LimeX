@@ -4,14 +4,27 @@
 
 #define PI 3.14159265358979323846
 
-Vec3::Vec3() : x(0), y(0), z() {}
+Vec3::Vec3() : x(0), y(0), z(0) {}
 Vec3::Vec3(float x) : x(x), y(x), z(x) {}
 Vec3::Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
+Vec3::Vec3(Vec3&& v) noexcept : x(v.x), y(v.y), z(v.z), get(std::move(v.get)), set(std::move(v.set)) {}
+
+Vec3::Vec3(const Vec3& v) {
+	x = v.x;
+	y = v.y;
+	z = v.z;
+}
 
 Vec3 Vec3::operator+(const Vec3& other) const { return Vec3(getX() + other.getX(), getY() + other.getY(), getZ() + other.getZ()); }
 Vec3 Vec3::operator-(const Vec3& other) const { return Vec3(getX() - other.getX(), getY() - other.getY(), getZ() - other.getZ()); }
 Vec3 Vec3::operator*(float scalar) const { return Vec3(getX() * scalar, getY() * scalar, getZ() * scalar); }
 Vec3 Vec3::operator/(float scalar) const { return Vec3(getX() / scalar, getY() / scalar, getZ() / scalar); }
+Vec3& Vec3::operator=(const Vec3& other) {
+	x = other.getX();
+	y = other.getY();
+	z = other.getZ();
+	return *this;
+}
 bool Vec3::operator==(const Vec3& other) const { return getX() == other.getX() && getY() == other.getY() && getZ() == other.getZ(); }
 
 float Vec3::getLength() const {
@@ -90,11 +103,23 @@ Vec3 Vec3::reflect(const Vec3& dir) const {
 	return *this - dir * (2.0f * this->dot(dir));
 }
 
+void Vec3::setTo(const Vec3& other) {
+	x = other.getX();
+	y = other.getY();
+	z = other.getZ();
+}
+
+void Vec3::setTo(float tx, float ty, float tz) {
+	x = tx;
+	y = ty;
+	z = tz;
+}
+
 void Object::Vec3Bind::bind(lua_State* ls) {
 	sol::state_view view(ls);
 	sol::usertype<Vec3> obj = view.new_usertype<Vec3>(
 		"Vec3",
-		sol::constructors<Vec3(), Vec3(float), Vec3(float, float, float)>(),
+		sol::constructors<Vec3(), Vec3(const Vec3&), Vec3(float), Vec3(float, float, float)>(),
 		sol::meta_function::type, [](const Vec3&) { return "Vec3"; },
 
 		sol::meta_function::addition, &Vec3::operator+,
@@ -121,6 +146,7 @@ void Object::Vec3Bind::bind(lua_State* ls) {
 	// Constructor
 	// Constructor number x, number y, number z
 	// Constructor number all
+	// Constructor Vec3 other
 
 	// Operation Vec3 Vec3 +
 	// Operation Vec3 Vec3 -
@@ -128,9 +154,15 @@ void Object::Vec3Bind::bind(lua_State* ls) {
 	// Operation Vec3 number /
 	// Operation boolean Vec3 ==
 
-	// Returns a copy of this vector.
-	// Returns Vec3
-	obj.set_function("copy", &Vec3::copy);
+	// Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
+	// Params Vec3 other
+	// Params number x, number y, number z
+	// Returns void
+	obj.set_function("set",
+		sol::overload(
+			sol::resolve<void(const Vec3&)>(&Vec3::setTo),
+			sol::resolve<void(float, float, float)>(&Vec3::setTo)
+		));
 
 	// Returns the length of the vector.
 	// Returns number

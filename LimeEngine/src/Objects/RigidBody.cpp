@@ -415,24 +415,24 @@ void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps, Renderer* re
 
         // Field Vec3 position, The 3D position of this object in the scene.
         "position", sol::property(
-            [](RigidBody& c) { return Vec3{ [&] { return c.getPosition(); }, [&](auto v) { c.setPosition(v); } }; },
+            [](RigidBody& c) { return Vec3( [&c]{ return c.getPosition(); }, [&c](const Vec3& v){ c.setPosition(v); } ); },
             [](RigidBody& c, const Vec3& v) { c.setPosition(v); }
         ),
         // Field Vec3 gravity, The force of gravity applied to this object per physics step.
         "gravity", sol::property(
-            [](RigidBody& c) { return Vec3{ [&] { return c.getGravity(); }, [&](auto v) { c.setGravity(v); } }; },
+            [](RigidBody& c) { return Vec3( [&c]{ return c.getGravity(); }, [&c](const Vec3& v){ c.setGravity(v); } ); },
             [](RigidBody& c, const Vec3& v) { c.setGravity(v); }
         ),
         // Field Vec3 rotation, The 3D rotation of this object in the scene in degrees.
         "rotation", sol::property(
-            [](RigidBody& c) { return Vec3{ [&] { return c.getRotation(); }, [&](auto v) { c.setRotation(v); } }; },
+            [](RigidBody& c) { return Vec3( [&c]{ return c.getRotation(); }, [&c](const Vec3& v){ c.setRotation(v); } ); },
             [](RigidBody& c, const Vec3& v) { c.setRotation(v); }
         ),
         // Field number friction, Sets the friction coefficient.
         "friction", sol::property(&RigidBody::getFriction, &RigidBody::setFriction),
         // Field Vec3 anisotropicFriction, Sets per-axis friction scaling.
         "anisotropicFriction", sol::property(
-            [](RigidBody& c) { return Vec3{ [&] { return c.getAnisotropicFriction(); }, [&](auto v) { c.setAnisotropicFriction(v); } }; },
+            [](RigidBody& c) { return Vec3( [&c]{ return c.getAnisotropicFriction(); }, [&c](const Vec3& v){ c.setAnisotropicFriction(v); } ); },
             [](RigidBody& c, const Vec3& v) { c.setAnisotropicFriction(v); }
         ),
         // Field number mass, Sets the mass and recalculates inertia.
@@ -451,22 +451,22 @@ void Object::RigidBodyBind::bind(lua_State* ls, PhysicsManager* ps, Renderer* re
         "sleepThreshold", sol::property(&RigidBody::getSleepingThreshold, &RigidBody::setSleepingThreshold),
         // Field Vec3 linearVelocity, Sets the linear velocity.
         "linearVelocity", sol::property(
-            [](RigidBody& c) { return Vec3{ [&] { return c.getLinearVelocity(); }, [&](auto v) { c.setLinearVelocity(v); } }; },
+            [](RigidBody& c) { return Vec3( [&c]{ return c.getLinearVelocity(); }, [&c](const Vec3& v){ c.setLinearVelocity(v); } ); },
             [](RigidBody& c, const Vec3& v) { c.setLinearVelocity(v); }
         ),
         // Field Vec3 angularVelocity, Sets the angular velocity.
         "angularVelocity", sol::property(
-            [](RigidBody& c) { return Vec3{ [&] { return c.getAngularVelocity(); }, [&](auto v) { c.setAngularVelocity(v); } }; },
+            [](RigidBody& c) { return Vec3( [&c]{ return c.getAngularVelocity(); }, [&c](const Vec3& v){ c.setAngularVelocity(v); } ); },
             [](RigidBody& c, const Vec3& v) { c.setAngularVelocity(v); }
         ),
         // Field Vec3 linearFactor, Sets the linear factor, controlling which axes linear motion is allowed on. (0 locks, 1 allows)
         "linearFactor", sol::property(
-            [](RigidBody& c) { return Vec3{ [&] { return c.getLinearFactor(); }, [&](auto v) { c.setLinearFactor(v); } }; },
+            [](RigidBody& c) { return Vec3( [&c]{ return c.getLinearFactor(); }, [&c](const Vec3& v){ c.setLinearFactor(v); } ); },
             [](RigidBody& c, const Vec3& v) { c.setLinearFactor(v); }
         ),
         // Field Vec3 angularFactor, Sets the angular factor, controlling which axes rotation is allowed on. (0 locks, 1 allows)
         "angularFactor", sol::property(
-            [](RigidBody& c) { return Vec3{ [&] { return c.getAngularFactor(); }, [&](auto v) { c.setAngularFactor(v); } }; },
+            [](RigidBody& c) { return Vec3( [&c]{ return c.getAngularFactor(); }, [&c](const Vec3& v){ c.setAngularFactor(v); } ); },
             [](RigidBody& c, const Vec3& v) { c.setAngularFactor(v); }
         )
 	);

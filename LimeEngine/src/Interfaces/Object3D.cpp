@@ -188,17 +188,17 @@ void Interface::Object3DBind::bind(lua_State* ls, RenderHelper* renh) {
 
         // Field Vec3 position, The 3D position of this object in the scene.
         "position", sol::property(
-            [](Object3D& c) { return Vec3{ [&] { return c.getPosition(); }, [&](auto v) { c.setPosition(v); } }; },
+            [](Object3D& c) { return Vec3( [&c] { return c.getPosition(); }, [&c](const Vec3& v) { c.setPosition(v); } ); },
             [](Object3D& c, const Vec3& v) { c.setPosition(v); }
             ),
         // Field Vec3 rotation, The 3D rotation of this object in the scene in degrees.
         "rotation", sol::property(
-            [](Object3D& c) { return Vec3{ [&] { return c.getRotation(); }, [&](auto v) { c.setRotation(v); } }; },
+            [](Object3D& c) { return Vec3( [&c] { return c.getRotation(); }, [&c](const Vec3& v) { c.setRotation(v); } ); },
             [](Object3D& c, const Vec3& v) { c.setRotation(v); }
             ),
         // Field Vec3 scale, The 3D scale of this object in the scene.
         "scale", sol::property(
-            [](Object3D& c) { return Vec3{ [&] { return c.getScale(); }, [&](auto v) { c.setScale(v); } }; },
+            [](Object3D& c) { return Vec3( [&] { return c.getScale(); }, [&](const Vec3& v) { c.setScale(v); } ); },
             [](Object3D& c, const Vec3& v) { c.setScale(v); }
             ),
 

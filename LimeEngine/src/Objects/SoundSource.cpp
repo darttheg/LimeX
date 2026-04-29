@@ -331,13 +331,13 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou, RenderHelpe
 
 		// Field Vec3 velocity, The velocity of this `Sound`. Only applicable if this object is played in 3D.
 		"velocity", sol::property(
-			[](SoundSource& c) { return Vec3{ [&] { return c.getVelocity(); }, [&](auto v) { c.setVelocity(v); } }; },
+			[](SoundSource& c) { return Vec3( [&c]{ return c.getVelocity(); }, [&c](const Vec3& v){ c.setVelocity(v); } ); },
 			[](SoundSource& c, const Vec3& v) { c.setVelocity(v); }
 		),
 
 		// Field Vec3 position, The position of this `Sound` in the scene. Only applicable if this `Sound` is played in 3D.
 		"position", sol::property(
-			[](SoundSource& c) { return Vec3{ [&] { return c.getPosition(); }, [&](auto v) { c.setPosition(v); } }; },
+			[](SoundSource& c) { return Vec3( [&c]{ return c.getPosition(); }, [&c](const Vec3& v){ c.setPosition(v); } ); },
 			[](SoundSource& c, const Vec3& v) { c.setPosition(v); }
 		),
 

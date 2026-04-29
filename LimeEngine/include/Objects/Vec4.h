@@ -11,13 +11,18 @@ public:
     Vec4(float x);
     Vec4(float x, float y, float z, float w);
     Vec4(const std::string& hex);
+    Vec4(Vec4&& v) noexcept;
+    Vec4(const Vec4& v);
 
     Vec4 operator+(const Vec4& other) const;
     Vec4 operator-(const Vec4& other) const;
     Vec4 operator*(float scalar) const;
     Vec4 operator/(float scalar) const;
     bool operator==(const Vec4& other) const;
-    Vec4 copy() const { return Vec4(getX(), getY(), getZ(), getW()); }
+    Vec4& operator=(const Vec4& other);
+
+    void setTo(const Vec4& other);
+    void setTo(float x, float y, float z, float w);
 
     using Getter = std::function<Vec4()>;
     using Setter = std::function<void(const Vec4&)>;

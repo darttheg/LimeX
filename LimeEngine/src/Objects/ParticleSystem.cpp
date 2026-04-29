@@ -449,8 +449,8 @@ void Object::ParticleSystemBind::bind(lua_State* ls, RenderHelper* renh) {
 
 		// Field Vec2 particlesPerSecond, The particles per second emitted.
 		"particlesPerSecond", sol::property(
-			[](ParticleSystem& m) { return Vec2{ [&] { return m.getRates(); }, [&](auto v) { m.setRates(v); } }; },
-			[](ParticleSystem& m, const Vec2& v) { m.setRates(v); }
+			[](ParticleSystem& c) { return Vec2( [&c]{ return c.getRates(); }, [&c](const Vec2& v){ c.setRates(v); } ); },
+			[](ParticleSystem& c, const Vec2& v) { c.setRates(v); }
 		),
 
 		// Field number speed, The particle emit speed in units per second, where 0.001 is one unit per second.
@@ -461,20 +461,20 @@ void Object::ParticleSystemBind::bind(lua_State* ls, RenderHelper* renh) {
 
 		// Field Vec2 scaleRange, The minimum and maximum range of scale for particles first being emitted.
 		"scaleRange", sol::property(
-			[](ParticleSystem& m) { return Vec2{ [&] { return m.getMinMaxScale(); }, [&](auto v) { m.setMinMaxScale(v); } }; },
-			[](ParticleSystem& m, const Vec2& v) { m.setMinMaxScale(v); }
+			[](ParticleSystem& c) { return Vec2( [&c]{ return c.getMinMaxScale(); }, [&c](const Vec2& v){ c.setMinMaxScale(v); } ); },
+			[](ParticleSystem& c, const Vec2& v) { c.setMinMaxScale(v); }
 		),
 
 		// Field Vec2 lifeRange, The minimum and maximum range of lifetime for particles first being emitted.
 		"lifeRange", sol::property(
-			[](ParticleSystem& m) { return Vec2{ [&] { return m.getMinMaxLife(); }, [&](auto v) { m.setMinMaxLife(v); } }; },
-			[](ParticleSystem& m, const Vec2& v) { m.setMinMaxLife(v); }
+			[](ParticleSystem& c) { return Vec2( [&c]{ return c.getMinMaxLife(); }, [&c](const Vec2& v){ c.setMinMaxLife(v); } ); },
+			[](ParticleSystem& c, const Vec2& v) { c.setMinMaxLife(v); }
 		),
 
 		// Field Vec3 boxSize, If the emitter type is **box**, this alters the size of the box.
 		"boxSize", sol::property(
-			[](ParticleSystem& m) { return Vec3{ [&] { return m.getBoxSize(); }, [&](auto v) { m.setBoxSize(v); } }; },
-			[](ParticleSystem& m, const Vec3& v) { m.setBoxSize(v); }
+			[](ParticleSystem& c) { return Vec3( [&c]{ return c.getBoxSize(); }, [&c](const Vec3& v){ c.setBoxSize(v); } ); },
+			[](ParticleSystem& c, const Vec3& v) { c.setBoxSize(v); }
 		),
 
 		// Field number radius, If the emitter type is **sphere**, **ring**, or **cylinder**, this alters the radius of the emitter.

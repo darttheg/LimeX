@@ -10,13 +10,15 @@ public:
     Vec2();
     Vec2(float x, float y);
     Vec2(float x);
+    Vec2(Vec2&& v) noexcept;
+    Vec2(const Vec2& v);
 
     Vec2 operator+(const Vec2& other) const;
     Vec2 operator-(const Vec2& other) const;
     Vec2 operator*(float scalar) const;
     Vec2 operator/(float scalar) const;
+    Vec2& operator=(const Vec2& other);
     bool operator==(const Vec2& other) const;
-    Vec2 copy() const { return Vec2(getX(), getY()); }
 
     float getLength() const;
     float getLengthSquared() const;
@@ -29,6 +31,8 @@ public:
     Vec2 normalize() const;
     Vec2 normalizeRange(float min, float max) const;
     Vec2 clamp(const Vec2& min, const Vec2& max) const;
+    void setTo(const Vec2& other);
+    void setTo(float x, float y);
 
     using Getter = std::function<Vec2()>;
     using Setter = std::function<void(const Vec2&)>;

@@ -265,8 +265,8 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 
 		// Field Vec4 vertexColor, Sets the color of all vertexes in this `Mesh`. The `Material` of this `Mesh` must have type `VertexAlpha` to take effect.
 		"vertexColor", sol::property(
-			[](Mesh& m) { return Vec4{ [&] { return m.getColor(); }, [&](auto v) { m.setColor(v); } }; },
-			[](Mesh& m, const Vec4& v) { m.setColor(v); }
+			[](Mesh& c) { return Vec4( [&c]{ return c.getColor(); }, [&c](const Vec4& v){ c.setColor(v); } ); },
+			[](Mesh& c, const Vec4& v) { c.setColor(v); }
 		),
 
 		// Field boolean collision, Allows response to raypicks and other simple collision methods. (NOTE: This flag does not affect this `Mesh` when wrapped by a physics object.)

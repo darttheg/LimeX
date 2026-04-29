@@ -150,7 +150,7 @@ void Object::Text3DBind::bind(lua_State* ls, RenderHelper* renh, GUIManager* gu)
 
 		// Field Vec2 size, The size of the 2D text box.
         "size", sol::property(
-            [](Text3D& c) { return Vec2{ [&] { return c.getSize(); }, [&](auto v) { c.setSize(v); } }; },
+            [](Text3D& c) { return Vec2( [&c]{ return c.getSize(); }, [&c](const Vec2& v){ c.setSize(v); } ); },
             [](Text3D& c, const Vec2& v) { c.setSize(v); }
         )
 	);

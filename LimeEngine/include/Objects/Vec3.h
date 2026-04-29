@@ -10,13 +10,15 @@ public:
     Vec3();
     Vec3(float x);
     Vec3(float x, float y, float z);
+    Vec3(Vec3&& v) noexcept;
+    Vec3(const Vec3& v);
 
     Vec3 operator+(const Vec3& other) const;
     Vec3 operator-(const Vec3& other) const;
     Vec3 operator*(float scalar) const;
     Vec3 operator/(float scalar) const;
+    Vec3& operator=(const Vec3& other);
     bool operator==(const Vec3& other) const;
-    Vec3 copy() const { return Vec3(getX(), getY(), getZ()); }
 
     float getLength() const;
     float getLengthSquared() const;
@@ -30,6 +32,8 @@ public:
     Vec3 normalizeRange(float min, float max) const;
     Vec3 clamp(const Vec3& min, const Vec3& max) const;
     Vec3 reflect(const Vec3& dir) const;
+    void setTo(const Vec3& other);
+    void setTo(float x, float y, float z);
 
     using Getter = std::function<Vec3()>;
     using Setter = std::function<void(const Vec3&)>;

@@ -692,6 +692,7 @@ Vec2 = Vec2 or {}
 --- A two-dimensional vector object.
 ---@overload fun(x:number, y:number): Vec2
 ---@overload fun(all:number): Vec2
+---@overload fun(other:Vec2): Vec2
 ---@return Vec2
 function Vec2.new() end
 
@@ -708,6 +709,7 @@ Vec3 = Vec3 or {}
 --- A three-dimensional vector object.
 ---@overload fun(x:number, y:number, z:number): Vec3
 ---@overload fun(all:number): Vec3
+---@overload fun(other:Vec3): Vec3
 ---@return Vec3
 function Vec3.new() end
 
@@ -726,6 +728,7 @@ Vec4 = Vec4 or {}
 ---@overload fun(x:number, y:number, z:number, w:number): Vec4
 ---@overload fun(all:number): Vec4
 ---@overload fun(HEX:string): Vec4
+---@overload fun(other:Vec4): Vec4
 ---@return Vec4
 function Vec4.new() end
 
@@ -2751,10 +2754,6 @@ function Vec2:angle(other) end
 ---@return Vec2
 function Vec2:clamp(min, max) end
 
---- Returns a copy of this vector.
----@return Vec2
-function Vec2:copy() end
-
 --- Measures signed scalar area, indicating clockwise versus counter-clockwise orientation.
 ---@param other Vec2
 ---@return number
@@ -2798,6 +2797,12 @@ function Vec2:normalize() end
 ---@return Vec2
 function Vec2:normalizeRng(min, max) end
 
+--- Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
+---@overload fun(x:number, y:number): void
+---@param other Vec3
+---@return void
+function Vec2:set(other) end
+
 --- Measures the angle between vectors in degrees
 ---@param other Vec3
 ---@return number
@@ -2808,10 +2813,6 @@ function Vec3:angle(other) end
 ---@param max Vec3
 ---@return Vec3
 function Vec3:clamp(min, max) end
-
---- Returns a copy of this vector.
----@return Vec3
-function Vec3:copy() end
 
 --- Measures signed scalar area, indicating clockwise versus counter-clockwise orientation.
 ---@param other Vec3
@@ -2856,13 +2857,21 @@ function Vec3:normalize() end
 ---@return Vec3
 function Vec3:normalizeRng(min, max) end
 
---- Returns a copy of this vector.
----@return Vec4
-function Vec4:copy() end
+--- Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
+---@overload fun(x:number, y:number, z:number): void
+---@param other Vec3
+---@return void
+function Vec3:set(other) end
 
 --- Returns the HEX code for this object. This is useful for converting RGBA to HEX color.
 ---@return string
 function Vec4:getHEX() end
+
+--- Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
+---@overload fun(x:number, y:number, z:number, w:number): void
+---@param other Vec3
+---@return void
+function Vec4:set(other) end
 
 --- Clamps `v` to `min`, `max`.
 ---@overload fun(v:Vec2, min:number, max:number): Vec2
