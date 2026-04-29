@@ -127,6 +127,7 @@ bool Renderer::Init() {
 	params.Vsync = cfg.vSync;
 	params.Fullscreen = cfg.fullscreen;
 	params.Stencilbuffer = cfg.stencil;
+	params.UsePerformanceTimer = false;
 	// params.WindowId = (void*)glfwGetWin32Window(w->getGLFWWindow());
 
 	i_device = irr::createDeviceEx(params);
