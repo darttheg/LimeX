@@ -296,7 +296,7 @@ bool Application::Run() {
 
 		if (console->IsEnabled()) console->Update(getMemUsed());
 
-		if (window && window->ShouldClose()) { fail = true; }
+		if (window && window->ShouldClose()) { fail = true; running = false; continue; }
 
 		/*
 		Begin input receiving frame
@@ -309,7 +309,7 @@ bool Application::Run() {
 		Render + physics debug
 		*/
 
-		if (!renderer->RunDevice()) { fail = true; }
+		if (!renderer->RunDevice()) { fail = true; running = false; continue; }
 		receiver->beginFrame();
 		renderer->UpdatePhysics(dt);
 		LimeUpdate.get()->engineRun([&](const std::string& msg) { console->PostError(msg); }, dt);
