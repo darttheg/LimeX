@@ -28,6 +28,16 @@ Warning = 1,
 Message = 2,
 Information = 3,
 }
+---@alias Lime.Enum.MouseType integer
+---@class Lime.Enum.MouseTypeEnum
+---@field Normal Lime.Enum.MouseType
+---@field Confined Lime.Enum.MouseType
+---@field Raw Lime.Enum.MouseType
+Lime.Enum.MouseType = {
+Normal = 0,
+Confined = 1,
+Raw = 2,
+}
 ---@alias Lime.Enum.PeerState integer
 ---@class Lime.Enum.PeerStateEnum
 ---@field Disconnected Lime.Enum.PeerState

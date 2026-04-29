@@ -30,6 +30,9 @@ public:
 	void Focus();
 	bool guardEditCheck();
 
+	void setMouseType(int i);
+	int getMouseType();
+
 	void setTitle(std::string path);
 	void doFullscreen(bool v);
 	Vec2 getPosition();
@@ -43,7 +46,7 @@ public:
 	void setResizable(bool on);
 	void keepAspectRatio(bool on);
 	void setSizeLimit(int w, int h);
-	void setMouseLocked(bool v);
+	// void setMouseLocked(bool v);
 	void syncMouse(double* mx, double* my);
 	void setMinimumSize(const Vec2& size);
 
@@ -67,6 +70,8 @@ private:
 	bool resizable = true;
 	bool inFullscreenCallback = false;
 	bool didCallback = false; // Used when the maximize/restore callback was called, resets before polling events
+
+	int mouseType = 0;
 
 	GLFWmonitor* getCurrentMonitor();
 };

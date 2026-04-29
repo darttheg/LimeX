@@ -145,7 +145,7 @@ bool Window::Create() {
 	});
 
 	if (glfwRawMouseMotionSupported()) {
-		glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		// glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glfwSetInputMode(glfwWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 	}
 
@@ -210,10 +210,30 @@ bool Window::guardEditCheck() {
 	return true;
 }
 
+void Window::setMouseType(int i) {
+	if (!guardEditCheck()) return;
+	if (i == 0) // Normal
+		glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	if (i == 1) // Confined
+		glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_CAPTURED);
+	if (i == 2) { // For raw input
+		glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
+
+	mouseType = i;
+}
+
+int Window::getMouseType() {
+	if (!guardEditCheck()) return 0;
+	return mouseType;
+}
+
+/*
 void Window::setMouseLocked(bool v) {
 	if (!guardEditCheck()) return;
 	if (v) glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_CAPTURED); else glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
+*/
 
 void Window::syncMouse(double* mx, double* my) {
 	if (!glfwWindow) return;

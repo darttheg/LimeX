@@ -18,10 +18,12 @@ namespace Module {
 			Vec2 getMousePosition();
 			void setMousePosition(const Vec2& pos);
 			void setMouseVisible(bool vis);
+			bool getMouseVisible();
 			bool isButtonDown(int id, int btn);
 			float getControllerAxis(int id, int axis);
 			bool isControllerConnected(int id);
-			void setMouseLocked(bool v);
+			void setMouseType(int v);
+			int getMouseType();
 			std::string getControllerName(int id);
 		}
 	}

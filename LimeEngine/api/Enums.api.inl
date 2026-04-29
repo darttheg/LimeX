@@ -15,6 +15,12 @@ LIME_ENUM(PopUpIcon,
     LIME_ENUM_VALUE(Information, 3)
 );
 
+LIME_ENUM(MouseType,
+    LIME_ENUM_VALUE(Normal, 0)
+    LIME_ENUM_VALUE(Confined, 1)
+    LIME_ENUM_VALUE(Raw, 2)
+);
+
 LIME_ENUM(PeerState,
     LIME_ENUM_VALUE(Disconnected, 0)
     LIME_ENUM_VALUE(Connecting, 1)

@@ -134,6 +134,7 @@ public:
 	Vec2 getMousePosCorrected(float x, float y);
 
 	// Misc
+	bool getMouseVisible();
 	bool setMouseVisible(bool vis);
 	bool setMousePosition(const Vec2& pos);
 	HWND getHandle() { return hwndIrr; }

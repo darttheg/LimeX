@@ -862,14 +862,19 @@ void Renderer::setMatchRes(bool v) {
 	doMatchResolution = v;
 }
 
+bool Renderer::getMouseVisible() {
+	if (!guardRenderingCheck()) return false;
+	return i_device->getCursorControl()->isVisible();
+}
+
 bool Renderer::setMouseVisible(bool vis) {
-	if (!i_device) return false;
+	if (!guardRenderingCheck()) return false;
 	i_device->getCursorControl()->setVisible(vis);
 	return true;
 }
 
 bool Renderer::setMousePosition(const Vec2& pos) {
-	if (!i_device) return false;
+	if (!guardRenderingCheck()) return false;
 	i_device->getCursorControl()->setPosition(irr::core::vector2di(pos.getX(), pos.getY()));
 	a->GetReceiver()->setMousePosition(pos.getX() - 1, pos.getY() - 1);
 	return true;

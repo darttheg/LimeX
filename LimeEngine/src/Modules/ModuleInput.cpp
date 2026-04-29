@@ -87,6 +87,10 @@ void Module::Input::bind(Application* app) {
 	// Returns void
 	module.set_function("setMouseVisible", &Module::Input::Bind::setMouseVisible);
 
+	// Returns the visibility of the mouse cursor.
+	// Returns boolean
+	module.set_function("isMouseVisible", &Module::Input::Bind::getMouseVisible);
+
 	receiver->InputJoystickConnect = std::make_shared<Event>();
 	receiver->InputJoystickDisconnect = std::make_shared<Event>();
 	receiver->InputJoystickButtonPressed = std::make_shared<Event>();
@@ -128,10 +132,14 @@ void Module::Input::bind(Application* app) {
 	// Returns string
 	module.set_function("getControllerName", &Module::Input::Bind::getControllerName);
 
-	// Determines if the mouse is confined to the window or not.
-	// Params boolean confined
+	// Sets the mouse behavior type.
+	// Params Lime.Enum.MouseType type
 	// Returns void
-	module.set_function("setMouseConfined", &Module::Input::Bind::setMouseLocked);
+	module.set_function("setMouseType", &Module::Input::Bind::setMouseType);
+
+	// Returns the mouse behavior type.
+	// Returns Lime.Enum.MouseType
+	module.set_function("getMouseType", &Module::Input::Bind::getMouseType);
 
 	// End Module
 }
@@ -170,9 +178,11 @@ void Module::Input::Bind::setMousePosition(const Vec2& pos) {
 }
 
 void Module::Input::Bind::setMouseVisible(bool vis) {
-	if (!renderer->setMouseVisible(vis)) {
-		d->Warn("The window must be created to edit mouse attributes.");
-	}
+	renderer->setMouseVisible(vis);
+}
+
+bool Module::Input::Bind::getMouseVisible() {
+	return renderer->getMouseVisible();
 }
 
 bool Module::Input::Bind::isButtonDown(int id, int btn) {
@@ -187,8 +197,17 @@ bool Module::Input::Bind::isControllerConnected(int id) {
 	return receiver->isControllerConnected(id);
 }
 
-void Module::Input::Bind::setMouseLocked(bool v) {
-	w->setMouseLocked(v);
+void Module::Input::Bind::setMouseType(int v) {
+	int cur = w->getMouseType();
+
+	if (cur != v)
+		setMouseVisible(v != 2);
+
+	w->setMouseType(v);
+}
+
+int Module::Input::Bind::getMouseType() {
+	return w->getMouseType();
 }
 
 std::string Module::Input::Bind::getControllerName(int id) {
