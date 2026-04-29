@@ -144,8 +144,10 @@ bool Window::Create() {
 		if (r->getMatchRes()) w->WindowResize.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
 	});
 
-	if (glfwRawMouseMotionSupported())
+	if (glfwRawMouseMotionSupported()) {
+		glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glfwSetInputMode(glfwWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+	}
 
 	glfwSetTime(0.0);
 
