@@ -290,6 +290,8 @@ bool Application::Run() {
 	double dt = 0.0f;
 
 	while (running) {
+		window->PollEvents();
+
 		dt = limiter->beginFrame();
 
 		if (console->IsEnabled()) console->Update(getMemUsed());
@@ -311,7 +313,6 @@ bool Application::Run() {
 		receiver->beginFrame();
 		renderer->UpdatePhysics(dt);
 		LimeUpdate.get()->engineRun([&](const std::string& msg) { console->PostError(msg); }, dt);
-		window->PollEvents();
 		soundManager->Update(dt);
 		network->Update();
 		web->Update();

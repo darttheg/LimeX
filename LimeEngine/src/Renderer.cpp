@@ -325,14 +325,12 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 }
 
 bool Renderer::RunDevice() {
-	if (!guardRenderingCheck()) return false;
+	double t0 = glfwGetTime();
 
-	if (!i_device->run()) {
-		d->Warn("Render device could not be ran.");
-		return false;
-	}
+	// int ms = (int)getDtTime() * 1000.0;
+	bool ok = i_device && i_device->run();
 
-	return true;
+	return ok;
 }
 
 void Renderer::PrepareRenderingPostInit() {
