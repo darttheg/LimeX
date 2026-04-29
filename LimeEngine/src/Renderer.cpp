@@ -325,12 +325,10 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 }
 
 bool Renderer::RunDevice() {
-	double t0 = glfwGetTime();
+	if (!i_device) return false;
+	i_device->getTimer()->tick();
 
-	// int ms = (int)getDtTime() * 1000.0;
-	bool ok = i_device && i_device->run();
-
-	return ok;
+	return true;
 }
 
 void Renderer::PrepareRenderingPostInit() {
