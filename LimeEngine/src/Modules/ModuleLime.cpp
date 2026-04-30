@@ -249,6 +249,11 @@ bool Module::Lime::Bind::SetInitConfig(int driverType, const Vec2& windowSize, c
 	cfg.renderSize = std::vector<int>{ (int)renderSize.getX(), (int)renderSize.getY() };
 	cfg.stencil = false; // Temporarily
 
+	if (cfg.renderSize[0] > cfg.windowSize[0] || cfg.renderSize[1] > cfg.windowSize[1]) {
+		d->Warn("Render size should not be larger than the window size.");
+		cfg.renderSize = cfg.windowSize;
+	}
+
 	a->SetConfig(cfg);
 	return true;
 }

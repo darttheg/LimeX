@@ -27,7 +27,7 @@ void QuadRenderer::setInternalResolution(std::uint32_t w, std::uint32_t h) {
 void QuadRenderer::setWindowResolution(std::uint32_t w, std::uint32_t h) {
     winW = w;
     winH = h;
-    driver->OnResize(irr::core::dimension2du((irr::u32)w, (irr::u32)h));
+    if (driver) driver->OnResize(irr::core::dimension2du((irr::u32)w, (irr::u32)h));
 }
 
 void QuadRenderer::setMatchWindowRender(bool m) {
@@ -198,8 +198,7 @@ void QuadRenderer::buildQuad()
     qMat.TextureLayer[0].TextureWrapV = irr::video::ETC_CLAMP_TO_EDGE;
 }
 
-void QuadRenderer::recreateRt()
-{
+void QuadRenderer::recreateRt() {
     if (!driver) return;
 
     if (rtScene) {
