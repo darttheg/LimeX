@@ -8,7 +8,7 @@ class Application;
 class Renderer;
 class Vec2;
 
-#define LIME_VERSION "beta-0.27"
+#define LIME_VERSION "beta-0.28"
 
 namespace Module {
 	namespace Lime {
