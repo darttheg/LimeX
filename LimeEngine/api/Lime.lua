@@ -809,6 +809,10 @@ function Billboard:parentTo(parent) end
 ---@return void
 function Billboard:setAttribute(key, value) end
 
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+---@return void
+function Billboard:updateAbsolutePosition() end
+
 --- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
 ---@param ms number
 ---@return void
@@ -892,6 +896,10 @@ function Camera:setActive() end
 ---@param value any
 ---@return void
 function Camera:setAttribute(key, value) end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+---@return void
+function Camera:updateAbsolutePosition() end
 
 --- Destroys this `Constraint`.
 ---@return nil
@@ -1012,6 +1020,10 @@ function Empty:parentTo(parent) end
 ---@param value any
 ---@return void
 function Empty:setAttribute(key, value) end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+---@return void
+function Empty:updateAbsolutePosition() end
 
 --- Clears all functions hooked to this Event.
 function Event:clear() end
@@ -1149,6 +1161,10 @@ function Light:parentTo(parent) end
 ---@param value any
 ---@return void
 function Light:setAttribute(key, value) end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+---@return void
+function Light:updateAbsolutePosition() end
 
 --- Clears the debug console's lines, only visually.
 function Lime.clearDebugConsole() end
@@ -2039,6 +2055,10 @@ function Mesh:setAttribute(key, value) end
 ---@return void
 function Mesh:setStorageHint(hint) end
 
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+---@return void
+function Mesh:updateAbsolutePosition() end
+
 --- Writes this `Mesh` to `path` in .OBJ format.
 ---@param path string
 ---@return boolean
@@ -2326,6 +2346,10 @@ function ParticleSystem:setMaxColor(color) end
 ---@return void
 function ParticleSystem:setMinColor(color) end
 
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+---@return void
+function ParticleSystem:updateAbsolutePosition() end
+
 --- Applies a continous force to this `RigidBody`, where `pos` is in world space.
 ---@param force number
 ---@param pos Vec3
@@ -2479,6 +2503,10 @@ function Skydome:parentTo(parent) end
 ---@param value any
 ---@return void
 function Skydome:setAttribute(key, value) end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+---@return void
+function Skydome:updateAbsolutePosition() end
 
 --- Enables compression on this `Sound`. Only applicable if this `Sound` is playing. This effect reduces the dynamic range of the sound's waveform.
 --- Returns bool
@@ -2689,6 +2717,10 @@ function Text3D:setFont(name) end
 ---@param wrap boolean
 ---@return void
 function Text3D:setWordWrap(wrap) end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+---@return void
+function Text3D:updateAbsolutePosition() end
 
 --- Appends another `Texture` onto this `Texture`.
 ---@param toAppend Texture

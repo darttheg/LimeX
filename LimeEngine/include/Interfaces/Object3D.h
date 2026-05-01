@@ -61,6 +61,7 @@ public:
 	void clearAnimators();
 
 	Vec3 getAbsolutePosition() const;
+	void updateAbsolutePosition();
 protected:
 	bool debug = false;
 	irr::scene::IBillboardSceneNode* dVisual = nullptr;

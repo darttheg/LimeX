@@ -176,6 +176,11 @@ bool Object3D::isPointInside(const Vec3& pos) const {
     return b.isPointInside(irr::core::vector3df(pos.getX(), pos.getY(), pos.getZ()));
 }
 
+void Object3D::updateAbsolutePosition() {
+    if (!getNode()) return;
+    getNode()->updateAbsolutePosition();
+}
+
 void Interface::Object3DBind::bind(lua_State* ls, RenderHelper* renh) {
     rh = renh;
     l = ls;
@@ -220,6 +225,10 @@ void Interface::Object3DBind::bind(lua_State* ls, RenderHelper* renh) {
     // Returns the absolute position of this 3D object.
     // Returns Vec3
     obj.set_function("getAbsolutePosition", &Object3D::getAbsolutePosition);
+
+    // Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+    // Returns void
+    obj.set_function("updateAbsolutePosition", &Object3D::updateAbsolutePosition);
 
     // Returns true if this object is parented to another 3D object.
     // Returns boolean
