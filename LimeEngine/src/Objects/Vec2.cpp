@@ -17,6 +17,8 @@ Vec2 Vec2::operator+(const Vec2& other) const { return Vec2(getX() + other.getX(
 Vec2 Vec2::operator-(const Vec2& other) const { return Vec2(getX() - other.getX(), getY() - other.getY()); }
 Vec2 Vec2::operator*(float scalar) const { return Vec2(getX() * scalar, getY() * scalar); }
 Vec2 Vec2::operator/(float scalar) const { return Vec2(getX() / scalar, getY() / scalar); }
+Vec2 Vec2::operator*(const Vec2& scalar) const { return Vec2(getX() * scalar.getX(), getY() * scalar.getY()); }
+Vec2 Vec2::operator/(const Vec2& scalar) const { return Vec2(getX() / scalar.getX(), getY() / scalar.getY()); }
 bool Vec2::operator==(const Vec2& other) const { return getX() == other.getX() && getY() == other.getY(); }
 Vec2& Vec2::operator=(const Vec2& other) {
 	x = other.getX();
@@ -97,8 +99,14 @@ void Object::Vec2Bind::bind(lua_State* ls) {
 
 		sol::meta_function::addition, &Vec2::operator+,
 		sol::meta_function::subtraction, &Vec2::operator-,
-		sol::meta_function::multiplication, &Vec2::operator*,
-		sol::meta_function::division, &Vec2::operator/,
+		sol::meta_function::multiplication, sol::overload(
+			static_cast<Vec2(Vec2::*)(float) const>(&Vec2::operator*),
+			static_cast<Vec2(Vec2::*)(const Vec2&) const>(&Vec2::operator*)
+		),
+		sol::meta_function::division, sol::overload(
+			static_cast<Vec2(Vec2::*)(float) const>(&Vec2::operator/),
+			static_cast<Vec2(Vec2::*)(const Vec2&) const>(&Vec2::operator/)
+		),
 		sol::meta_function::equal_to, &Vec2::operator==,
 
 		"x", sol::property(&Vec2::getX, &Vec2::setX),
@@ -123,6 +131,8 @@ void Object::Vec2Bind::bind(lua_State* ls) {
 	// Operation Vec2 Vec2 -
 	// Operation Vec2 number *
 	// Operation Vec2 number /
+	// Operation Vec2 Vec2 *
+	// Operation Vec2 Vec2 /
 	// Operation boolean Vec2 ==
 
 	// Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.

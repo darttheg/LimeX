@@ -423,7 +423,8 @@ HitResult RenderHelper::fireRaycast(const Vec3& start, const Vec3& end, float li
 		out.attr = getAttributes(pickedNode);
 		out.objID = pickedNode->getID();
 		out.endPos = Vec3(hitPosition.X, hitPosition.Y, hitPosition.Z);
-		out.normal = Vec3(hitTriangle.getNormal().X, hitTriangle.getNormal().Y, hitTriangle.getNormal().Z);
+		irr::core::vector3df n = hitTriangle.getNormal().normalize();
+		out.normal = Vec3(n.X, n.Y, n.Z);
 		if (pickedNode->getMaterialCount() <= 1)
 			out.matID = pickedNode->getMaterial(0).ID;
 		else {

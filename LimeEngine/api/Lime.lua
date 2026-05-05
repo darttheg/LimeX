@@ -687,6 +687,8 @@ function Texture.new() end
 ---@operator sub(Vec2): Vec2
 ---@operator mul(number): Vec2
 ---@operator div(number): Vec2
+---@operator mul(Vec2): Vec2
+---@operator div(Vec2): Vec2
 ---@operator eq(Vec2): boolean
 Vec2 = Vec2 or {}
 --- A two-dimensional vector object.
@@ -704,6 +706,8 @@ function Vec2.new() end
 ---@operator sub(Vec3): Vec3
 ---@operator mul(number): Vec3
 ---@operator div(number): Vec3
+---@operator mul(Vec3): Vec3
+---@operator div(Vec3): Vec3
 ---@operator eq(Vec3): boolean
 Vec3 = Vec3 or {}
 --- A three-dimensional vector object.
@@ -722,6 +726,8 @@ function Vec3.new() end
 ---@operator sub(Vec4): Vec4
 ---@operator mul(number): Vec4
 ---@operator div(number): Vec4
+---@operator mul(Vec4): Vec4
+---@operator div(Vec4): Vec4
 ---@operator eq(Vec4): boolean
 Vec4 = Vec4 or {}
 --- A four-dimensional vector object.
@@ -2909,7 +2915,7 @@ function Vec4:getHEX() end
 
 --- Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
 ---@overload fun(x:number, y:number, z:number, w:number): void
----@param other Vec3
+---@param other Vec4
 ---@return void
 function Vec4:set(other) end
 

@@ -18,6 +18,8 @@ public:
     Vec4 operator-(const Vec4& other) const;
     Vec4 operator*(float scalar) const;
     Vec4 operator/(float scalar) const;
+    Vec4 operator*(const Vec4& scalar) const;
+    Vec4 operator/(const Vec4& scalar) const;
     bool operator==(const Vec4& other) const;
     Vec4& operator=(const Vec4& other);
 

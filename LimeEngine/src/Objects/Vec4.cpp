@@ -94,7 +94,9 @@ void Vec4::setTo(float tx, float ty, float tz, float tw) {
 Vec4 Vec4::operator+(const Vec4& other) const { return Vec4(getX() + other.getX(), getY() + other.getY(), getZ() + other.getZ(), getW() + other.getW()); }
 Vec4 Vec4::operator-(const Vec4& other) const { return Vec4(getX() - other.getX(), getY() - other.getY(), getZ() - other.getZ(), getW() - other.getW()); }
 Vec4 Vec4::operator*(float scalar) const { return Vec4(getX() * scalar, getY() * scalar, getZ() * scalar, getW() * scalar); }
+Vec4 Vec4::operator*(const Vec4& scalar) const { return Vec4(getX() * scalar.getX(), getY() * scalar.getY(), getZ() * scalar.getZ(), getW() * scalar.getW()); }
 Vec4 Vec4::operator/(float scalar) const { return Vec4(getX() / scalar, getY() / scalar, getZ() / scalar, getW() / scalar); }
+Vec4 Vec4::operator/(const Vec4& scalar) const { return Vec4(getX() / scalar.getX(), getY() / scalar.getY(), getZ() / scalar.getZ(), getW() / scalar.getW()); }
 bool Vec4::operator==(const Vec4& other) const { return getX() == other.getX() && getY() == other.getY() && getZ() == other.getZ() && getW() == other.getW(); }
 Vec4& Vec4::operator=(const Vec4& other) {
 	x = other.getX();
@@ -113,8 +115,14 @@ void Object::Vec4Bind::bind(lua_State* ls) {
 
 		sol::meta_function::addition, &Vec4::operator+,
 		sol::meta_function::subtraction, &Vec4::operator-,
-		sol::meta_function::multiplication, &Vec4::operator*,
-		sol::meta_function::division, &Vec4::operator/,
+		sol::meta_function::multiplication, sol::overload(
+			static_cast<Vec4(Vec4::*)(float) const>(&Vec4::operator*),
+			static_cast<Vec4(Vec4::*)(const Vec4&) const>(&Vec4::operator*)
+		),
+		sol::meta_function::division, sol::overload(
+			static_cast<Vec4(Vec4::*)(float) const>(&Vec4::operator/),
+			static_cast<Vec4(Vec4::*)(const Vec4&) const>(&Vec4::operator/)
+		),
 		sol::meta_function::equal_to, &Vec4::operator==,
 
 		"x", sol::property(&Vec4::getX, &Vec4::setX),
@@ -144,10 +152,12 @@ void Object::Vec4Bind::bind(lua_State* ls) {
 	// Operation Vec4 Vec4 -
 	// Operation Vec4 number *
 	// Operation Vec4 number /
+	// Operation Vec4 Vec4 *
+	// Operation Vec4 Vec4 /
 	// Operation boolean Vec4 ==
 
 	// Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
-	// Params Vec3 other
+	// Params Vec4 other
 	// Params number x, number y, number z, number w
 	// Returns void
 	obj.set_function("set",

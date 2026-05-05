@@ -18,7 +18,9 @@ Vec3::Vec3(const Vec3& v) {
 Vec3 Vec3::operator+(const Vec3& other) const { return Vec3(getX() + other.getX(), getY() + other.getY(), getZ() + other.getZ()); }
 Vec3 Vec3::operator-(const Vec3& other) const { return Vec3(getX() - other.getX(), getY() - other.getY(), getZ() - other.getZ()); }
 Vec3 Vec3::operator*(float scalar) const { return Vec3(getX() * scalar, getY() * scalar, getZ() * scalar); }
+Vec3 Vec3::operator*(const Vec3& scalar) const { return Vec3(getX() * scalar.getX(), getY() * scalar.getY(), getZ() * scalar.getZ()); }
 Vec3 Vec3::operator/(float scalar) const { return Vec3(getX() / scalar, getY() / scalar, getZ() / scalar); }
+Vec3 Vec3::operator/(const Vec3& scalar) const { return Vec3(getX() / scalar.getX(), getY() / scalar.getY(), getZ() / scalar.getZ()); }
 Vec3& Vec3::operator=(const Vec3& other) {
 	x = other.getX();
 	y = other.getY();
@@ -124,8 +126,14 @@ void Object::Vec3Bind::bind(lua_State* ls) {
 
 		sol::meta_function::addition, &Vec3::operator+,
 		sol::meta_function::subtraction, &Vec3::operator-,
-		sol::meta_function::multiplication, &Vec3::operator*,
-		sol::meta_function::division, &Vec3::operator/,
+		sol::meta_function::multiplication, sol::overload(
+			static_cast<Vec3(Vec3::*)(float) const>(&Vec3::operator*),
+			static_cast<Vec3(Vec3::*)(const Vec3&) const>(&Vec3::operator*)
+		),
+		sol::meta_function::division, sol::overload(
+			static_cast<Vec3(Vec3::*)(float) const>(&Vec3::operator/),
+			static_cast<Vec3(Vec3::*)(const Vec3&) const>(&Vec3::operator/)
+		),
 		sol::meta_function::equal_to, &Vec3::operator==,
 
 		"x", sol::property(&Vec3::getX, &Vec3::setX),
@@ -152,6 +160,8 @@ void Object::Vec3Bind::bind(lua_State* ls) {
 	// Operation Vec3 Vec3 -
 	// Operation Vec3 number *
 	// Operation Vec3 number /
+	// Operation Vec3 Vec3 *
+	// Operation Vec3 Vec3 /
 	// Operation boolean Vec3 ==
 
 	// Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
