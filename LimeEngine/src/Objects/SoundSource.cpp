@@ -300,7 +300,12 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou, RenderHelpe
 	sol::state_view view(ls);
 	sol::usertype<SoundSource> obj = view.new_usertype<SoundSource>(
 		"Sound",
-		sol::constructors<SoundSource(), SoundSource(const SoundSource& s), SoundSource(const std::string&), SoundSource(const std::string&, int)>(),
+		"new", sol::factories(
+			[]() { return std::make_shared<SoundSource>(); },
+			[](const SoundSource& s) { return std::make_shared<SoundSource>(s); },
+			[](const std::string& p) { return std::make_shared<SoundSource>(p); },
+			[](const std::string& p, int t) { return std::make_shared<SoundSource>(p, t); }
+		),
 
 		sol::meta_function::type, [](const SoundSource&) { return "Sound"; },
 		sol::meta_function::garbage_collect, [](SoundSource& ss) { ss.collected(); },

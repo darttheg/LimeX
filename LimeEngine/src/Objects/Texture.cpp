@@ -135,7 +135,12 @@ void Object::TextureBind::bind(lua_State* ls, Renderer* rend) {
 	sol::state_view view(ls);
 	sol::usertype<Texture> obj = view.new_usertype<Texture>(
 		"Texture",
-		sol::constructors<Texture(), Texture(const std::string&), Texture(const Vec2&), Texture(const Vec2&, const std::string&)>(),
+		"new", sol::factories(
+			[]() { return std::make_shared<Texture>(); },
+			[](const std::string& p) { return std::make_shared<Texture>(p); },
+			[](const Vec2& wh) { return std::make_shared<Texture>(wh); },
+			[](const Vec2& wh, const std::string& n) { return std::make_shared<Texture>(wh, n); }
+		),
 		sol::meta_function::type, [](const Texture&) { return "Texture"; },
 		sol::meta_function::garbage_collect, [](Texture& t) { t.collected(); }
 	);
