@@ -25,7 +25,7 @@ namespace Module {
 			int GetMeshCount();
 			void SetBackgroundColor(const Vec4& color);
 			void SetFogColor(const Vec4& color);
-			void SetFogPlanes(const Vec2& planes);
+			void SetFogPlanes(int n, int f);
 			void SetAmbientColor(const Vec4& color);
 			void SetShadowColor(const Vec4& color);
 			void SetLightManagementType(int type);

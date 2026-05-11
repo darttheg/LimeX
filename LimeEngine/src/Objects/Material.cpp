@@ -42,7 +42,7 @@ void Material::setID(int v) {
 Vec2 Material::getTextureScroll(int layer) const {
 	if (layer < 0) layer = 0;
 	auto& m = material->getTextureMatrix(layer);
-	return Vec2(m.getTranslation().X, m.getTranslation().Y);
+	return Vec2(m[8], m[9]);
 }
 
 void Material::setTextureScroll(const Vec2& coords, int layer) {
@@ -386,7 +386,7 @@ void Object::MaterialBind::bind(lua_State* ls) {
 			sol::resolve<void(int, int)>(&Material::setTextureUVWrapBehavior)
 		));
 
-	// Sets the scale of the mapping of an `Texture`.
+	// Sets the scale of the mapping of a `Texture`.
 	// Params Vec2 scale, number layer
 	// Params Vec2 scale
 	// Returns void
@@ -395,6 +395,21 @@ void Object::MaterialBind::bind(lua_State* ls) {
 			sol::resolve<void(const Vec2&, int)>(&Material::setTextureScale),
 			sol::resolve<void(const Vec2&)>(&Material::setTextureScale)
 		));
+
+	// Sets the coordinate offset of a `Texture`.
+	// Params Vec2 scroll, number layer
+	// Params Vec2 scroll
+	// Returns void
+	obj.set_function("setTextureOffset",
+		sol::overload(
+			sol::resolve<void(const Vec2&, int)>(&Material::setTextureScroll),
+			sol::resolve<void(const Vec2&)>(&Material::setTextureScroll)
+		));
+
+	// Returns the coordinate offset of a `Texture`.
+	// Params number? layer
+	// Returns Vec2
+	obj.set_function("getTextureOffset", &Material::getTextureScroll);
 
 	// End Object
 }

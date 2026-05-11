@@ -1758,9 +1758,10 @@ function Lime.Scene.setFogColor(rgba) end
 
 --- **This function cannot be run until window creation.**  
 --- Sets where the scene's fog starts and ends.
----@param planes Vec2
+---@param near number
+---@param far number
 ---@return void
-function Lime.Scene.setFogPlanes(planes) end
+function Lime.Scene.setFogRange(near, far) end
 
 --- **This function cannot be run until window creation.**  
 --- Sets the light management behavior using `Lime.Enum.LightManagementType`.
@@ -1924,6 +1925,11 @@ function Material:clearShader() end
 ---@return void
 function Material:clearTexture(layer) end
 
+--- Returns the coordinate offset of a `Texture`.
+---@param layer number?
+---@return Vec2
+function Material:getTextureOffset(layer) end
+
 --- Loads a `Shader` into this `Material`.
 ---@param shader Shader
 ---@return void
@@ -1935,7 +1941,13 @@ function Material:loadShader(shader) end
 ---@return void
 function Material:loadTexture(texture) end
 
---- Sets the scale of the mapping of an `Texture`.
+--- Sets the coordinate offset of a `Texture`.
+---@overload fun(scroll:Vec2, layer:number): void
+---@param scroll Vec2
+---@return void
+function Material:setTextureOffset(scroll) end
+
+--- Sets the scale of the mapping of a `Texture`.
 ---@overload fun(scale:Vec2, layer:number): void
 ---@param scale Vec2
 ---@return void

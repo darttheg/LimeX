@@ -846,11 +846,11 @@ void Renderer::setFogColor(const Vec4& color) {
 	fogColor.w = color.getW();
 }
 
-void Renderer::setFogPlanes(const Vec2& planes) {
+void Renderer::setFogPlanes(float n, float f) {
 	if (!guardRenderingCheck()) return;
 
-	fogPlanes.x = planes.getX();
-	fogPlanes.y = planes.getY();
+	fogPlanes.x = n;
+	fogPlanes.y = f;
 }
 
 Texture Renderer::getErrorTexture() {

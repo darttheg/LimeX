@@ -58,9 +58,9 @@ void Module::Scene::bind(Application* app) {
 	module.set_function("setFogColor", &Module::Scene::Bind::SetFogColor);
 
 	// [+] Sets where the scene's fog starts and ends.
-	// Params Vec2 planes
+	// Params number near, number far
 	// Returns void
-	module.set_function("setFogPlanes", &Module::Scene::Bind::SetFogPlanes);
+	module.set_function("setFogRange", &Module::Scene::Bind::SetFogPlanes);
 
 	// [+] Sets the color of shadows in the scene to `rgba`.
 	// Params Vec4 rgba
@@ -220,8 +220,8 @@ void Module::Scene::Bind::SetFogColor(const Vec4& color) {
 	r->setFogColor(color);
 }
 
-void Module::Scene::Bind::SetFogPlanes(const Vec2& planes) {
-	r->setFogPlanes(planes);
+void Module::Scene::Bind::SetFogPlanes(int n, int f) {
+	r->setFogPlanes(n, f);
 }
 
 void Module::Scene::Bind::SetAmbientColor(const Vec4& color) {

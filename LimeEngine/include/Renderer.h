@@ -99,7 +99,7 @@ public:
 	void setAmbientColor(const Vec4& color);
 	void setShadowColor(const Vec4& color);
 	void setFogColor(const Vec4& color);
-	void setFogPlanes(const Vec2& planes);
+	void setFogPlanes(float n, float f);
 	void setLightManagementType(int type);
 	void setTextureCreationQuality(int quality);
 	Texture getErrorTexture();
