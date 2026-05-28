@@ -477,6 +477,11 @@ def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc],
             if idef:
                 append_event_defs(out, obj.name, idef.fields, emitted_event_defs)
 
+    module_functions: Dict[str, List[FunctionDoc]] = {}
+    for fn in functions:
+        if not fn.is_method:
+            module_functions.setdefault(fn.owner, []).append(fn)
+
     for mname in sorted(modules.keys()):
         md = modules[mname]
         out.append(f"---@class {mname}")
@@ -484,6 +489,40 @@ def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc],
             out.append(field_line(mname, fld))
         for child_name, child_full_name in module_children.get(mname, []):
             out.append(f"---@field {child_name} {child_full_name}")
+        if "." in mname:
+            for fn in module_functions.get(mname, []):
+                overloads = fn.overloads or [[]]
+                base = min(overloads, key=lambda o: len(o))
+                base_return = fn.returns[0] if fn.returns else None
+                sig = fn_sig(base)
+                field_sig = f"fun({sig}): {base_return}" if base_return and base_return != "void" else f"fun({sig})"
+
+                inline_parts: List[str] = []
+                emitted_tags: set = set()
+                remaining_doc = ""
+                for line in fn.doc_lines:
+                    tmp = line
+                    while tmp.startswith("["):
+                        end = tmp.find("]")
+                        if end == -1:
+                            break
+                        tag = tmp[1:end].strip()
+                        tmp = tmp[end + 1:].lstrip()
+                        msg = DOC_TAGS.get(tag)
+                        if msg and tag not in emitted_tags:
+                            inline_parts.append(msg)
+                            emitted_tags.add(tag)
+                    if tmp:
+                        remaining_doc = tmp
+                        break
+                if remaining_doc:
+                    inline_parts.append(remaining_doc)
+                inline = " ".join(inline_parts)
+
+                if inline:
+                    out.append(f"---@field {fn.name} {field_sig} @{inline}")
+                else:
+                    out.append(f"---@field {fn.name} {field_sig}")
         if not md.append:
             out.append(f"{mname} = {mname} or {{}}")
         out.append("")
@@ -571,22 +610,23 @@ def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc],
     for fn in merged:
         emitted_tags = set()
 
+        parts: List[str] = []
         for line in fn.doc_lines:
             while line.startswith("["):
                 end = line.find("]")
                 if end == -1:
                     break
-
                 tag = line[1:end].strip()
                 line = line[end + 1:].lstrip()
-
                 msg = DOC_TAGS.get(tag)
                 if msg and tag not in emitted_tags:
-                    out.append(f"--- {msg}  ")
+                    parts.append(msg)
                     emitted_tags.add(tag)
-
             if line:
-                out.append(f"--- {line}")
+                parts.append(line)
+
+        if parts:
+            out.append(f"--- {' '.join(parts)}")
 
         overloads = fn.overloads or [[]]
         uniq: List[Tuple[int, List[Param]]] = []
