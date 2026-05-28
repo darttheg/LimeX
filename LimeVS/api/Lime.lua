@@ -244,25 +244,6 @@ function OnExitEvent:hook(callback) end
 ---@field Scene Lime.Scene
 ---@field Web Lime.Web
 ---@field Window Lime.Window
----@field clearDebugConsole fun() @Clears the debug console's lines, only visually.
----@field close fun() @Closes the Lime application.
----@field displayMessage fun(title:string, message:string, icon:Lime.Enum.PopUpIcon?) @Displays a pop-up message.
----@field executeCommandLine fun(cmd:string): number @Executes `cmd` in the system's command line.
----@field getCommandLineArg fun(arg:string): string @Returns the value of `arg` from the commmand line, if any. Returns `nil` if no such argument exists.
----@field getDriverType fun(): Lime.Enum.DriverType @Returns the driver type.
----@field getElapsedTime fun(): number @Returns the elapsed time the application has been running in milliseconds.
----@field getElapsedTimeSeconds fun(): number @Returns the elapsed time the application has been running in seconds.
----@field getFrameRate fun(): number @Returns the frame rate in frames per second.
----@field getMemoryUsage fun(): number @Returns the application's memory usage in megabytes.
----@field getVSync fun(): boolean @Returns true if vertical syncronization is on.
----@field getVersion fun(): string @Returns the Lime version running.
----@field loadArchive fun(path:string): boolean @Loads an archive of assets to the application. Content is accessed as if it were at the application's root. For example: If the archive contains folder/image.png, the path ./folder/image.png is valid for loading `Texture` objects.
----@field log fun(msg:any, color:Lime.Enum.PrintColor?) @Prints a message to console.
----@field setDebugConfig fun(enable:boolean, writeOutput:boolean?, suppressWarnings:boolean?) @**This function can only be run before window creation.** Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. If `suppressWarnings" is true, all warnings will not be logged in the debug console to reduce potential clutter while testing. **Warnings should not be suppressed in shipped applications.**
----@field setEndOnError fun(doEnd:boolean) @If set to true, Lime will close on any error. A pop-up will be disclosed prior with error details.
----@field setFrameRate fun(target:number) @Sets the target frame rate in frames per second.
----@field setInitConfig fun(driver:Lime.Enum.DriverType): boolean @**This function can only be run before window creation.** This function sets initial parameters for the Lime application.
----@field setVSync fun(vSyncOn:boolean) @Sets vertical syncronization, matching the frame rate to the current monitor's refresh rate.
 Lime = Lime or {}
 
 ---@class Lime.Audio
@@ -432,7 +413,6 @@ Lime.Window = Lime.Window or {}
 
 ---@class math
 ---@field tween math.tween
----@field clamp fun(v:number, min:number, max:number): number @Clamps `v` to `min`, `max`.
 
 ---@class math.tween
 ---@field damp fun(old:number, target:number, factor:number, dt:number): number @Interpolates from `old` toward `target` using exponential smoothing.
@@ -1392,8 +1372,7 @@ function Lime.loadArchive(path) end
 ---@return void
 function Lime.log(msg, color) end
 
---- **This function can only be run before window creation.**  
---- Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. If `suppressWarnings" is true, all warnings will not be logged in the debug console to reduce potential clutter while testing. **Warnings should not be suppressed in shipped applications.**
+--- **This function can only be run before window creation.** Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. If `suppressWarnings" is true, all warnings will not be logged in the debug console to reduce potential clutter while testing. **Warnings should not be suppressed in shipped applications.**
 ---@param enable boolean
 ---@param writeOutput boolean?
 ---@param suppressWarnings boolean?
@@ -1409,8 +1388,7 @@ function Lime.setEndOnError(doEnd) end
 ---@return void
 function Lime.setFrameRate(target) end
 
---- **This function can only be run before window creation.**  
---- This function sets initial parameters for the Lime application.
+--- **This function can only be run before window creation.** This function sets initial parameters for the Lime application.
 ---@overload fun(driver:Lime.Enum.DriverType, windowSize:Vec2): boolean
 ---@overload fun(driver:Lime.Enum.DriverType, windowSize:Vec2, renderSize:Vec2): boolean
 ---@param driver Lime.Enum.DriverType
@@ -1422,13 +1400,11 @@ function Lime.setInitConfig(driver) end
 ---@return void
 function Lime.setVSync(vSyncOn) end
 
---- **This function cannot be run until window creation.**  
---- Returns the application's main volume.
+--- **This function cannot be run until window creation.** Returns the application's main volume.
 ---@return number
 function Lime.Audio.getMainVolume() end
 
---- **This function cannot be run until window creation.**  
---- Returns the amount of sounds loaded in the scene.
+--- **This function cannot be run until window creation.** Returns the amount of sounds loaded in the scene.
 ---@return number
 function Lime.Audio.getSoundCount() end
 
@@ -1436,32 +1412,27 @@ function Lime.Audio.getSoundCount() end
 ---@return number
 function Lime.Audio.getVelocityFactor() end
 
---- **This function cannot be run until window creation.**  
---- Preloads a sound by `path` for later use. Returns true on success or if the sound at `path` has already been preloaded.
+--- **This function cannot be run until window creation.** Preloads a sound by `path` for later use. Returns true on success or if the sound at `path` has already been preloaded.
 ---@param path string
 ---@return boolean
 function Lime.Audio.preloadSound(path) end
 
---- **This function cannot be run until window creation.**  
---- Sets all `Sound` objects to paused or unpaused.
+--- **This function cannot be run until window creation.** Sets all `Sound` objects to paused or unpaused.
 ---@param paused boolean
 ---@return void
 function Lime.Audio.setAllSoundsPaused(paused) end
 
---- **This function cannot be run until window creation.**  
---- Sets the default maximum listening distance for new sounds.
+--- **This function cannot be run until window creation.** Sets the default maximum listening distance for new sounds.
 ---@param distance number
 ---@return void
 function Lime.Audio.setDefaultMaximumDistance(distance) end
 
---- **This function cannot be run until window creation.**  
---- Sets the default minimum listening distance for new sounds.
+--- **This function cannot be run until window creation.** Sets the default minimum listening distance for new sounds.
 ---@param distance number
 ---@return void
 function Lime.Audio.setDefaultMinimumDistance(distance) end
 
---- **This function cannot be run until window creation.**  
---- Sets the application's main volume.
+--- **This function cannot be run until window creation.** Sets the application's main volume.
 ---@param volume number
 ---@return void
 function Lime.Audio.setMainVolume(volume) end
@@ -1520,14 +1491,12 @@ function Lime.File.readFile(path) end
 ---@return boolean
 function Lime.File.writeFile(path, data) end
 
---- **This function cannot be run until window creation.**  
---- Returns true if the font `name` is loaded.
+--- **This function cannot be run until window creation.** Returns true if the font `name` is loaded.
 ---@param name string
 ---@return boolean
 function Lime.GUI.isFontLoaded(name) end
 
---- **This function cannot be run until window creation.**  
---- Loads a Truetype font. Provide `name` to set the name manually, otherwise Lime will register the font as fontname_size. Returns the output font name.
+--- **This function cannot be run until window creation.** Loads a Truetype font. Provide `name` to set the name manually, otherwise Lime will register the font as fontname_size. Returns the output font name.
 ---@overload fun(path:string, fontSize:number, name:string, aa:boolean?): string
 ---@param path string
 ---@param fontSize number
@@ -1535,26 +1504,22 @@ function Lime.GUI.isFontLoaded(name) end
 ---@return string
 function Lime.GUI.loadTTF(path, fontSize, aa) end
 
---- **This function cannot be run until window creation.**  
---- Loads a bitmap font. Returns the name of this font, cut from `path`. (NOTE: `path` must be the path to a .xml file. The .xml files must be paired by an image file.)
+--- **This function cannot be run until window creation.** Loads a bitmap font. Returns the name of this font, cut from `path`. (NOTE: `path` must be the path to a .xml file. The .xml files must be paired by an image file.)
 ---@param path string
 ---@return string
 function Lime.GUI.loadXML(path) end
 
---- **This function cannot be run until window creation.**  
---- Sets the default font for new GUI elements to font `name`.
+--- **This function cannot be run until window creation.** Sets the default font for new GUI elements to font `name`.
 ---@param name string
 ---@return void
 function Lime.GUI.setDefaultFont(name) end
 
---- **This function cannot be run until window creation.**  
---- Sets the quality of all GUI elements using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
+--- **This function cannot be run until window creation.** Sets the quality of all GUI elements using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
 ---@param quality Lime.Enum.Quality
 ---@return void
 function Lime.GUI.setQuality(quality) end
 
---- **This function cannot be run until window creation.**  
---- Unfocuses any element that is focused.
+--- **This function cannot be run until window creation.** Unfocuses any element that is focused.
 ---@return void
 function Lime.GUI.unfocus() end
 
@@ -1626,8 +1591,7 @@ function Lime.Input.setMouseVisible(visible) end
 ---@return void
 function Lime.Network.banIP(...) end
 
---- **This function can only be run by a server host.**  
---- Forcefully disconnects a peer with an optional reason code, as well as appending the peer's IP address to the bans list. Returns the peer's IP address.
+--- **This function can only be run by a server host.** Forcefully disconnects a peer with an optional reason code, as well as appending the peer's IP address to the bans list. Returns the peer's IP address.
 ---@param peerID number
 ---@param code number?
 ---@return number
@@ -1647,8 +1611,7 @@ function Lime.Network.connect(ip, port) end
 ---@return void
 function Lime.Network.disconnect() end
 
---- **This function can only be run by a server host.**  
---- Forcefully disconnects a peer with an optional reason code.
+--- **This function can only be run by a server host.** Forcefully disconnects a peer with an optional reason code.
 ---@param peerID number
 ---@param code number?
 ---@return void
@@ -1658,25 +1621,21 @@ function Lime.Network.disconnectPeer(peerID, code) end
 ---@return number[]
 function Lime.Network.getBannedIPs() end
 
---- **This function can only be run by a server host.**  
---- Returns the number of connected peers.
+--- **This function can only be run by a server host.** Returns the number of connected peers.
 ---@return number
 function Lime.Network.getPeerCount() end
 
---- **This function can only be run by a server host.**  
---- Returns the IP address of a peer.
+--- **This function can only be run by a server host.** Returns the IP address of a peer.
 ---@param peerID number
 ---@return number
 function Lime.Network.getPeerIP(peerID) end
 
---- **This function can only be run by a server host.**  
---- Returns the ping of a peer in milliseconds.
+--- **This function can only be run by a server host.** Returns the ping of a peer in milliseconds.
 ---@param peerID number
 ---@return number
 function Lime.Network.getPeerPing(peerID) end
 
---- **This function can only be run by a server host.**  
---- Returns the state of a peer.
+--- **This function can only be run by a server host.** Returns the state of a peer.
 ---@param peerID number
 ---@return Lime.Enum.PeerState
 function Lime.Network.getPeerState(peerID) end
@@ -1695,16 +1654,14 @@ function Lime.Network.isConnected() end
 ---@return boolean
 function Lime.Network.isHosting() end
 
---- **This function can only be run by a server host.**  
---- Sends a packet to all connected peers.
+--- **This function can only be run by a server host.** Sends a packet to all connected peers.
 ---@param packet Packet
 ---@param channel number?
 ---@param reliable boolean?
 ---@return void
 function Lime.Network.sendPacketToAll(packet, channel, reliable) end
 
---- **This function can only be run by a server host.**  
---- Sends a packet to a peer.
+--- **This function can only be run by a server host.** Sends a packet to a peer.
 ---@param packet Packet
 ---@param peerID number
 ---@param channel number?
@@ -1712,16 +1669,14 @@ function Lime.Network.sendPacketToAll(packet, channel, reliable) end
 ---@return void
 function Lime.Network.sendPacketToPeer(packet, peerID, channel, reliable) end
 
---- **This function can only be run by a peer of a server.**  
---- Sends a packet to the server.
+--- **This function can only be run by a peer of a server.** Sends a packet to the server.
 ---@param packet Packet
 ---@param channel number?
 ---@param reliable boolean?
 ---@return void
 function Lime.Network.sendPacketToServer(packet, channel, reliable) end
 
---- **This function can only be run by a server host.**  
---- Sets the incoming and outgoing bandwidth limits in bytes per second.
+--- **This function can only be run by a server host.** Sets the incoming and outgoing bandwidth limits in bytes per second.
 ---@param incoming number
 ---@param outgoing number
 ---@return void
@@ -1732,8 +1687,7 @@ function Lime.Network.setBandwidthLimits(incoming, outgoing) end
 ---@return void
 function Lime.Network.unbanIP(...) end
 
---- **This function cannot be run until window creation.**  
---- Returns the direction and magnitude of global gravity.
+--- **This function cannot be run until window creation.** Returns the direction and magnitude of global gravity.
 ---@return Vec3
 function Lime.Physics.getGravity() end
 
@@ -1741,18 +1695,15 @@ function Lime.Physics.getGravity() end
 ---@return number
 function Lime.Physics.getObjectCount() end
 
---- **This function cannot be run until window creation.**  
---- Returns the physics simulation step factor.
+--- **This function cannot be run until window creation.** Returns the physics simulation step factor.
 ---@return number
 function Lime.Physics.getStepFactor() end
 
---- **This function cannot be run until window creation.**  
---- Returns whether or not the scene's physics simulation is paused.
+--- **This function cannot be run until window creation.** Returns whether or not the scene's physics simulation is paused.
 ---@return boolean
 function Lime.Physics.isPaused() end
 
---- **This function cannot be run until window creation.**  
---- Sets the physics simulation debug mode.
+--- **This function cannot be run until window creation.** Sets the physics simulation debug mode.
 ---@param type Lime.Enum.PhysicsDebugType
 ---@return void
 function Lime.Physics.setDebug(type) end
@@ -1762,14 +1713,12 @@ function Lime.Physics.setDebug(type) end
 ---@return void
 function Lime.Physics.setFixedTimeStep(fixedStep) end
 
---- **This function cannot be run until window creation.**  
---- Sets the direction and magnitude of global gravity.
+--- **This function cannot be run until window creation.** Sets the direction and magnitude of global gravity.
 ---@param gravity Vec3
 ---@return void
 function Lime.Physics.setGravity(gravity) end
 
---- **This function cannot be run until window creation.**  
---- Sets whether or not collisions with objects sharing the same ID should call a collision `Event`.
+--- **This function cannot be run until window creation.** Sets whether or not collisions with objects sharing the same ID should call a collision `Event`.
 ---@param ignore boolean
 ---@return void
 function Lime.Physics.setIgnoreEqualID(ignore) end
@@ -1779,75 +1728,64 @@ function Lime.Physics.setIgnoreEqualID(ignore) end
 ---@return void
 function Lime.Physics.setMaxSubSteps(maxSteps) end
 
---- **This function cannot be run until window creation.**  
---- Sets whether or not the scene's physics simulation is paused.
+--- **This function cannot be run until window creation.** Sets whether or not the scene's physics simulation is paused.
 ---@param paused boolean
 ---@return void
 function Lime.Physics.setPaused(paused) end
 
---- **This function cannot be run until window creation.**  
---- Sets the physics simulation step factor.
+--- **This function cannot be run until window creation.** Sets the physics simulation step factor.
 ---@param factor number
 ---@return void
 function Lime.Physics.setStepFactor(factor) end
 
---- **This function cannot be run until window creation.**  
---- Clears the user-defined `Texture` drawn over the screen, if any.
+--- **This function cannot be run until window creation.** Clears the user-defined `Texture` drawn over the screen, if any.
 ---@return void
 function Lime.Scene.clearOverlayTexture() end
 
---- **This function cannot be run until window creation.**  
---- Clears the `Shader` applied to the screen, if any.
+--- **This function cannot be run until window creation.** Clears the `Shader` applied to the screen, if any.
 ---@return void
 function Lime.Scene.clearPostProcessingShader() end
 
---- **This function cannot be run until window creation.**  
---- Returns a `Mesh` containing a cube.
+--- **This function cannot be run until window creation.** Returns a `Mesh` containing a cube.
 ---@param size Vec3
 ---@return Mesh
 function Lime.Scene.createCubeMesh(size) end
 
---- **This function cannot be run until window creation.**  
---- Returns a `Mesh` containing a cylinder.
+--- **This function cannot be run until window creation.** Returns a `Mesh` containing a cylinder.
 ---@overload fun(radius:number, length:number, polyCount:number, closed:boolean): Mesh
 ---@param radius number
 ---@param length number
 ---@return Mesh
 function Lime.Scene.createCylinderMesh(radius, length) end
 
---- **This function cannot be run until window creation.**  
---- Returns a `Mesh` containing a plane. Parameter `repeatCount` controls how much an applied `Texture` will repeat within one tile.
+--- **This function cannot be run until window creation.** Returns a `Mesh` containing a plane. Parameter `repeatCount` controls how much an applied `Texture` will repeat within one tile.
 ---@overload fun(tileSize:Vec2, tileCount:Vec2, repeatCount:Vec2): Mesh
 ---@param tileSize Vec2
 ---@param tileCount Vec2
 ---@return Mesh
 function Lime.Scene.createPlaneMesh(tileSize, tileCount) end
 
---- **This function cannot be run until window creation.**  
---- Returns a `Mesh` containing a sphere.
+--- **This function cannot be run until window creation.** Returns a `Mesh` containing a sphere.
 ---@overload fun(radius:number, polyCount:number): Mesh
 ---@param radius number
 ---@return Mesh
 function Lime.Scene.createSphereMesh(radius) end
 
---- **This function cannot be run until window creation.**  
---- Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
+--- **This function cannot be run until window creation.** Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
 ---@param startPos Vec3
 ---@param endPos Vec3
 ---@param rayLifeMs number?
 ---@return HitResult
 function Lime.Scene.fireRaycast(startPos, endPos, rayLifeMs) end
 
---- **This function cannot be run until window creation.**  
---- Fires a raycast out from a screenspace position `Vec2` of length `length`. Only objects with collision enabled will be tested.
+--- **This function cannot be run until window creation.** Fires a raycast out from a screenspace position `Vec2` of length `length`. Only objects with collision enabled will be tested.
 ---@param startPos Vec2
 ---@param length number
 ---@param rayLifeMs number?
 ---@return HitResult
 function Lime.Scene.fireScreenspaceRaycast(startPos, length, rayLifeMs) end
 
---- **This function cannot be run until window creation.**  
---- Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
+--- **This function cannot be run until window creation.** Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
 ---@return Texture
 function Lime.Scene.getErrorTexture() end
 
@@ -1867,38 +1805,32 @@ function Lime.Scene.getTextureCount() end
 ---@return boolean
 function Lime.Scene.isRenderingActive() end
 
---- **This function cannot be run until window creation.**  
---- Preloads a mesh by `path` into the scene for later use. Returns true on success or if the mesh at `path` has already been preloaded.
+--- **This function cannot be run until window creation.** Preloads a mesh by `path` into the scene for later use. Returns true on success or if the mesh at `path` has already been preloaded.
 ---@param path string
 ---@return boolean
 function Lime.Scene.preloadMesh(path) end
 
---- **This function cannot be run until window creation.**  
---- Preloads a texture by `path` into the scene for later use. Returns true on success or if the texture at `path` has already been preloaded.
+--- **This function cannot be run until window creation.** Preloads a texture by `path` into the scene for later use. Returns true on success or if the texture at `path` has already been preloaded.
 ---@param path string
 ---@return boolean
 function Lime.Scene.preloadTexture(path) end
 
---- **This function cannot be run until window creation.**  
---- Purges a mesh by `path` from the scene. Returns true on success or if the mesh at `path` has already been purged. `Mesh` objects referencing this mesh will use an engine-defined `Mesh` instead.
+--- **This function cannot be run until window creation.** Purges a mesh by `path` from the scene. Returns true on success or if the mesh at `path` has already been purged. `Mesh` objects referencing this mesh will use an engine-defined `Mesh` instead.
 ---@param path string
 ---@return boolean
 function Lime.Scene.purgeMesh(path) end
 
---- **This function cannot be run until window creation.**  
---- Purges a texture by `path` from the scene. Returns true on success or if the texture at `path` has already been purged. `Texture` objects referencing this texture will use an engine-defined `Texture` instead.
+--- **This function cannot be run until window creation.** Purges a texture by `path` from the scene. Returns true on success or if the texture at `path` has already been purged. `Texture` objects referencing this texture will use an engine-defined `Texture` instead.
 ---@param path string
 ---@return boolean
 function Lime.Scene.purgeTexture(path) end
 
---- **This function cannot be run until window creation.**  
---- Sets the ambient color of the scene to `rgba`.
+--- **This function cannot be run until window creation.** Sets the ambient color of the scene to `rgba`.
 ---@param rgba Vec4
 ---@return void
 function Lime.Scene.setAmbientColor(rgba) end
 
---- **This function cannot be run until window creation.**  
---- Sets the background color of the scene to `rgba`. This color is generally only visible when there is no `Skydome`.
+--- **This function cannot be run until window creation.** Sets the background color of the scene to `rgba`. This color is generally only visible when there is no `Skydome`.
 ---@param rgba Vec4
 ---@return void
 function Lime.Scene.setBackgroundColor(rgba) end
@@ -1908,33 +1840,28 @@ function Lime.Scene.setBackgroundColor(rgba) end
 ---@return void
 function Lime.Scene.setDynamicResolution(dynamic) end
 
---- **This function cannot be run until window creation.**  
---- Sets the color of the scene's fog to `rgba`.
+--- **This function cannot be run until window creation.** Sets the color of the scene's fog to `rgba`.
 ---@param rgba Vec4
 ---@return void
 function Lime.Scene.setFogColor(rgba) end
 
---- **This function cannot be run until window creation.**  
---- Sets where the scene's fog starts and ends.
+--- **This function cannot be run until window creation.** Sets where the scene's fog starts and ends.
 ---@param near number
 ---@param far number
 ---@return void
 function Lime.Scene.setFogRange(near, far) end
 
---- **This function cannot be run until window creation.**  
---- Sets the light management behavior using `Lime.Enum.LightManagementType`.
+--- **This function cannot be run until window creation.** Sets the light management behavior using `Lime.Enum.LightManagementType`.
 ---@param type Lime.Enum.LightManagementType
 ---@return void
 function Lime.Scene.setLightManagementType(type) end
 
---- **This function cannot be run until window creation.**  
---- Sets a `Texture` to be drawn over the screen, under the GUI layer. This `Texture` will inherit post processing shaders, if post processing is enabled.
+--- **This function cannot be run until window creation.** Sets a `Texture` to be drawn over the screen, under the GUI layer. This `Texture` will inherit post processing shaders, if post processing is enabled.
 ---@param texture Texture
 ---@return void
 function Lime.Scene.setOverlayTexture(texture) end
 
---- **This function cannot be run until window creation.**  
---- Passes a `Shader` to the renderer be used for special effects on the scene output.
+--- **This function cannot be run until window creation.** Passes a `Shader` to the renderer be used for special effects on the scene output.
 ---@param shader Shader
 ---@return void
 function Lime.Scene.setPostProcessingShader(shader) end
@@ -1949,8 +1876,7 @@ function Lime.Scene.setRenderQuality(quality) end
 ---@return void
 function Lime.Scene.setRenderingActive(active) end
 
---- **This function cannot be run until window creation.**  
---- Sets the color of shadows in the scene to `rgba`.
+--- **This function cannot be run until window creation.** Sets the color of shadows in the scene to `rgba`.
 ---@param rgba Vec4
 ---@return void
 function Lime.Scene.setShadowColor(rgba) end
@@ -1960,14 +1886,12 @@ function Lime.Scene.setShadowColor(rgba) end
 ---@return void
 function Lime.Scene.setSize(size) end
 
---- **This function cannot be run until window creation.**  
---- Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality. **WARNING**: If post processing effects or window-render-matching are active, using this function will influence the quality of the application output.
+--- **This function cannot be run until window creation.** Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality. **WARNING**: If post processing effects or window-render-matching are active, using this function will influence the quality of the application output.
 ---@param quality Lime.Enum.TextureCreationQuality
 ---@return void
 function Lime.Scene.setTextureCreationQuality(quality) end
 
---- **This function cannot be run until window creation.**  
---- Converts a 3D position to `Vec2` on the screen.
+--- **This function cannot be run until window creation.** Converts a 3D position to `Vec2` on the screen.
 ---@param pos Vec3
 ---@return Vec2
 function Lime.Scene.toScreenPosition(pos) end
@@ -2008,18 +1932,15 @@ function Lime.Web.isExtracting() end
 ---@return void
 function Lime.Web.setTimeout(ms) end
 
---- **This function cannot be run until window creation.**  
---- Returns the size of the monitor the window is running on.
+--- **This function cannot be run until window creation.** Returns the size of the monitor the window is running on.
 ---@return Vec2
 function Lime.Window.getMonitorSize() end
 
---- **This function cannot be run until window creation.**  
---- Returns the window's position.
+--- **This function cannot be run until window creation.** Returns the window's position.
 ---@return Vec2
 function Lime.Window.getPosition() end
 
---- **This function cannot be run until window creation.**  
---- Returns the size of the window.
+--- **This function cannot be run until window creation.** Returns the size of the window.
 ---@return Vec2
 function Lime.Window.getSize() end
 
@@ -2027,49 +1948,41 @@ function Lime.Window.getSize() end
 ---@return boolean
 function Lime.Window.isCreated() end
 
---- **This function cannot be run until window creation.**  
---- Returns true if the window is focused.
+--- **This function cannot be run until window creation.** Returns true if the window is focused.
 ---@return boolean
 function Lime.Window.isFocused() end
 
---- **This function cannot be run until window creation.**  
---- Toggles fullscreen mode.
+--- **This function cannot be run until window creation.** Toggles fullscreen mode.
 ---@param fullscreen boolean
 ---@return void
 function Lime.Window.setFullscreen(fullscreen) end
 
---- **This function cannot be run until window creation.**  
---- Locks the aspect ratio of the raw window size. It will not make the window immune to all resizing. Maximizing the window will not preserve the rendering aspect ratio.
+--- **This function cannot be run until window creation.** Locks the aspect ratio of the raw window size. It will not make the window immune to all resizing. Maximizing the window will not preserve the rendering aspect ratio.
 ---@param locked boolean
 ---@return void
 function Lime.Window.setLockAspectRatio(locked) end
 
---- **This function cannot be run until window creation.**  
---- Sets the minimum window size. The window size cannot be smaller than the render resolution.
+--- **This function cannot be run until window creation.** Sets the minimum window size. The window size cannot be smaller than the render resolution.
 ---@param size Vec2
 ---@return void
 function Lime.Window.setMinimumSize(size) end
 
---- **This function cannot be run until window creation.**  
---- Sets the window's position to `pos`.
+--- **This function cannot be run until window creation.** Sets the window's position to `pos`.
 ---@param pos Vec2
 ---@return void
 function Lime.Window.setPosition(pos) end
 
---- **This function cannot be run until window creation.**  
---- Allows the window to be resizable or locked to its intended size. This disables maximizing the application as well.
+--- **This function cannot be run until window creation.** Allows the window to be resizable or locked to its intended size. This disables maximizing the application as well.
 ---@param allow boolean
 ---@return void
 function Lime.Window.setResizable(allow) end
 
---- **This function cannot be run until window creation.**  
---- Sets the window's size to `size`.
+--- **This function cannot be run until window creation.** Sets the window's size to `size`.
 ---@param size Vec2
 ---@return void
 function Lime.Window.setSize(size) end
 
---- **This function cannot be run until window creation.**  
---- Sets the window's title to `title`.
+--- **This function cannot be run until window creation.** Sets the window's title to `title`.
 ---@param title string
 ---@return void
 function Lime.Window.setTitle(title) end
@@ -2684,28 +2597,23 @@ function Skydome:setAttribute(key, value) end
 ---@return void
 function Skydome:updateAbsolutePosition() end
 
---- Enables compression on this `Sound`. Only applicable if this `Sound` is playing. This effect reduces the dynamic range of the sound's waveform.
---- Returns bool
+--- Enables compression on this `Sound`. Only applicable if this `Sound` is playing. This effect reduces the dynamic range of the sound's waveform. Returns bool
 ---@overload fun(threshold:number, ratio:number)
 function Sound:addCompressionEffect() end
 
---- Enables distortion on this `Sound`. Only applicable if this `Sound` is playing. This effect messes with the sound's frequency and other attributes to produce an odd result.
---- Returns bool
+--- Enables distortion on this `Sound`. Only applicable if this `Sound` is playing. This effect messes with the sound's frequency and other attributes to produce an odd result. Returns bool
 ---@overload fun(gain:number, edge:number)
 function Sound:addDistortionEffect() end
 
---- Enables echoing on this `Sound`. Only applicable if this `Sound` is playing. This effect repeats the sound with decay over time.
---- Returns bool
+--- Enables echoing on this `Sound`. Only applicable if this `Sound` is playing. This effect repeats the sound with decay over time. Returns bool
 ---@overload fun(wetDry:number, feedback:number, delayMs:number)
 function Sound:addEchoEffect() end
 
---- Enables parametric equilization on this `Sound`. Only applicable if this `Sound` is playing. This effect amplifies or attenuates signals at a given frequency.
---- Returns bool
+--- Enables parametric equilization on this `Sound`. Only applicable if this `Sound` is playing. This effect amplifies or attenuates signals at a given frequency. Returns bool
 ---@overload fun(threshold:number, ratio:number)
 function Sound:addParamEqEffect() end
 
---- Enables reverb on this `Sound`. Only applicable if this `Sound` is playing. This effect mixes the sound to bounce off surfaces in a room or a cave.
---- Returns bool
+--- Enables reverb on this `Sound`. Only applicable if this `Sound` is playing. This effect mixes the sound to bounce off surfaces in a room or a cave. Returns bool
 ---@overload fun(inputGain:number, mix:number, timeMs:number, freqRatio:number)
 function Sound:addReverbEffect() end
 
