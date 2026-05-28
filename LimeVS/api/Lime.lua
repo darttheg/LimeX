@@ -244,15 +244,58 @@ function OnExitEvent:hook(callback) end
 ---@field Scene Lime.Scene
 ---@field Web Lime.Web
 ---@field Window Lime.Window
+---@field clearDebugConsole fun() @Clears the debug console's lines, only visually.
+---@field close fun() @Closes the Lime application.
+---@field displayMessage fun(title:string, message:string, icon:Lime.Enum.PopUpIcon?) @Displays a pop-up message.
+---@field executeCommandLine fun(cmd:string): number @Executes `cmd` in the system's command line.
+---@field getCommandLineArg fun(arg:string): string @Returns the value of `arg` from the commmand line, if any. Returns `nil` if no such argument exists.
+---@field getDriverType fun(): Lime.Enum.DriverType @Returns the driver type.
+---@field getElapsedTime fun(): number @Returns the elapsed time the application has been running in milliseconds.
+---@field getElapsedTimeSeconds fun(): number @Returns the elapsed time the application has been running in seconds.
+---@field getFrameRate fun(): number @Returns the frame rate in frames per second.
+---@field getMemoryUsage fun(): number @Returns the application's memory usage in megabytes.
+---@field getVSync fun(): boolean @Returns true if vertical syncronization is on.
+---@field getVersion fun(): string @Returns the Lime version running.
+---@field loadArchive fun(path:string): boolean @Loads an archive of assets to the application. Content is accessed as if it were at the application's root. For example: If the archive contains folder/image.png, the path ./folder/image.png is valid for loading `Texture` objects.
+---@field log fun(msg:any, color:Lime.Enum.PrintColor?) @Prints a message to console.
+---@field setDebugConfig fun(enable:boolean, writeOutput:boolean?, suppressWarnings:boolean?) @**This function can only be run before window creation.** Sets debug console configuration. If `enable` is true, the debug console will appear alongside the application. If `writeOutput` is true, the console's output will be written to a output.log file in the application directory. If `suppressWarnings" is true, all warnings will not be logged in the debug console to reduce potential clutter while testing. **Warnings should not be suppressed in shipped applications.**
+---@field setEndOnError fun(doEnd:boolean) @If set to true, Lime will close on any error. A pop-up will be disclosed prior with error details.
+---@field setFrameRate fun(target:number) @Sets the target frame rate in frames per second.
+---@field setInitConfig fun(driver:Lime.Enum.DriverType): boolean @**This function can only be run before window creation.** This function sets initial parameters for the Lime application.
+---@field setVSync fun(vSyncOn:boolean) @Sets vertical syncronization, matching the frame rate to the current monitor's refresh rate.
 Lime = Lime or {}
 
 ---@class Lime.Audio
+---@field getMainVolume fun(): number @**This function cannot be run until window creation.** Returns the application's main volume.
+---@field getSoundCount fun(): number @**This function cannot be run until window creation.** Returns the amount of sounds loaded in the scene.
+---@field getVelocityFactor fun(): number @Returns the listener velocity factor.
+---@field preloadSound fun(path:string): boolean @**This function cannot be run until window creation.** Preloads a sound by `path` for later use. Returns true on success or if the sound at `path` has already been preloaded.
+---@field setAllSoundsPaused fun(paused:boolean) @**This function cannot be run until window creation.** Sets all `Sound` objects to paused or unpaused.
+---@field setDefaultMaximumDistance fun(distance:number) @**This function cannot be run until window creation.** Sets the default maximum listening distance for new sounds.
+---@field setDefaultMinimumDistance fun(distance:number) @**This function cannot be run until window creation.** Sets the default minimum listening distance for new sounds.
+---@field setMainVolume fun(volume:number) @**This function cannot be run until window creation.** Sets the application's main volume.
+---@field setMuteWhileUnfocused fun(mute:boolean) @Determines unfocused window behavior in regards to application volume.
+---@field setVelocityFactor fun(factor:number) @Sets the factor to scale listener velocity by. Listener velocity is calculated with the last and current active `Camera` positions. In the event that the active `Camera` is swapped, listener velocity will be 0 on the first frame automatically.
 Lime.Audio = Lime.Audio or {}
 
 ---@class Lime.File
+---@field createDirectory fun(path:string): boolean @Creates a directory.
+---@field getExtension fun(path:string): string @Returns the extension of the file at `path`.
+---@field getFileName fun(path:string): string @Returns the name of the file at `path`.
+---@field getFilesInDirectory fun(path:string, extension:string?): table @Returns a table of file paths from directory `path`.
+---@field isDirectory fun(path:string): boolean @Returns true if a directory exists at `path`.
+---@field isFile fun(path:string): boolean @Returns true if `path` leads to a file.
+---@field readFile fun(path:string): string @Returns contents of file at `path`. Optionally, a provided `seed` will attempt to decrypt the data.
+---@field writeFile fun(path:string, data:string): boolean @Writes content to file at `path`. The file will be created if it does not exist. Optionally, a provided `seed` will encrypt the data.
 Lime.File = Lime.File or {}
 
 ---@class Lime.GUI
+---@field isFontLoaded fun(name:string): boolean @**This function cannot be run until window creation.** Returns true if the font `name` is loaded.
+---@field loadTTF fun(path:string, fontSize:number, aa:boolean?): string @**This function cannot be run until window creation.** Loads a Truetype font. Provide `name` to set the name manually, otherwise Lime will register the font as fontname_size. Returns the output font name.
+---@field loadXML fun(path:string): string @**This function cannot be run until window creation.** Loads a bitmap font. Returns the name of this font, cut from `path`. (NOTE: `path` must be the path to a .xml file. The .xml files must be paired by an image file.)
+---@field setDefaultFont fun(name:string) @**This function cannot be run until window creation.** Sets the default font for new GUI elements to font `name`.
+---@field setQuality fun(quality:Lime.Enum.Quality) @**This function cannot be run until window creation.** Sets the quality of all GUI elements using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
+---@field unfocus fun() @**This function cannot be run until window creation.** Unfocuses any element that is focused.
 Lime.GUI = Lime.GUI or {}
 
 ---@class Lime.Input
@@ -266,6 +309,19 @@ Lime.GUI = Lime.GUI or {}
 ---@field onControllerDisconnected OnControllerDisconnectedEvent @Event called by Lime when a controller is disconnected.
 ---@field onControllerButtonPressed OnControllerButtonPressedEvent @Event called by Lime when a controller button is pressed.
 ---@field onControllerButtonReleased OnControllerButtonReleasedEvent @Event called by Lime when a controller button is released.
+---@field getControllerAxis fun(id:number, axis:Lime.Enum.ControllerAxis): number @Returns controller with id `id`'s `axis` axis value from -1.0 to 1.0. Triggers are ranged 0.0 to 1.0.
+---@field getControllerName fun(id:number): string @Returns the name of the controller with id `id`.
+---@field getMouseDelta fun(): Vec2 @Returns the change in mouse position within the last frame.
+---@field getMousePosition fun(): Vec2 @Returns the mouse's position.
+---@field getMouseType fun(): Lime.Enum.MouseType @Returns the mouse behavior type.
+---@field isButtonDown fun(id:number, button:Lime.Enum.Controller): boolean @Returns true if controller with id `id` has button `button` pressed down.
+---@field isControllerConnected fun(id:number): boolean @Returns true if controller with id `id` is connected.
+---@field isKeyDown fun(key:Lime.Enum.Key): boolean @Returns true if `key` is currently pressed.
+---@field isMouseButtonDown fun(button:Lime.Enum.Mouse): boolean @Returns true if `button` is currently pressed.
+---@field isMouseVisible fun(): boolean @Returns the visibility of the mouse cursor.
+---@field setMousePosition fun(pos:Vec2) @Sets the mouse's position.
+---@field setMouseType fun(type:Lime.Enum.MouseType) @Sets the mouse behavior type.
+---@field setMouseVisible fun(visible:boolean) @Set the visibility of the mouse cursor.
 Lime.Input = Lime.Input or {}
 
 ---@class Lime.Network
@@ -274,12 +330,73 @@ Lime.Input = Lime.Input or {}
 ---@field onPeerConnect OnPeerConnectEvent @Event called by Lime as the **host** when a peer joins the server.
 ---@field onPeerDisconnect OnPeerDisconnectEvent @Event called by Lime as the **host** when a peer disconnects from the server.
 ---@field onReceive OnReceiveEvent @Event called by Lime when the application receives a `Packet`. If the application is a **peer**, `peerID` will be -1.
+---@field banIP fun(...:number) @Bans peers under the provided IP address(es) from connecting to the server.
+---@field banPeer fun(peerID:number, code:number?): number @**This function can only be run by a server host.** Forcefully disconnects a peer with an optional reason code, as well as appending the peer's IP address to the bans list. Returns the peer's IP address.
+---@field clearBannedIPs fun() @Unbans all IP addresses.
+---@field connect fun(ip:string, port:int) @Attempts to connect to a server.
+---@field disconnect fun() @Disconnects from a server. If this application is the host, it will close the server.
+---@field disconnectPeer fun(peerID:number, code:number?) @**This function can only be run by a server host.** Forcefully disconnects a peer with an optional reason code.
+---@field getBannedIPs fun(): number[] @Returns a table of IP addresses that are banned.
+---@field getPeerCount fun(): number @**This function can only be run by a server host.** Returns the number of connected peers.
+---@field getPeerIP fun(peerID:number): number @**This function can only be run by a server host.** Returns the IP address of a peer.
+---@field getPeerPing fun(peerID:number): number @**This function can only be run by a server host.** Returns the ping of a peer in milliseconds.
+---@field getPeerState fun(peerID:number): Lime.Enum.PeerState @**This function can only be run by a server host.** Returns the state of a peer.
+---@field host fun(port:number, maxPlayers:number?): boolean @Hosts a server. Returns true on success.
+---@field isConnected fun(): boolean @Returns true if this application is connected to a server.
+---@field isHosting fun(): boolean @Returns true if this application is hosting a server.
+---@field sendPacketToAll fun(packet:Packet, channel:number?, reliable:boolean?) @**This function can only be run by a server host.** Sends a packet to all connected peers.
+---@field sendPacketToPeer fun(packet:Packet, peerID:number, channel:number?, reliable:boolean?) @**This function can only be run by a server host.** Sends a packet to a peer.
+---@field sendPacketToServer fun(packet:Packet, channel:number?, reliable:boolean?) @**This function can only be run by a peer of a server.** Sends a packet to the server.
+---@field setBandwidthLimits fun(incoming:number, outgoing:number) @**This function can only be run by a server host.** Sets the incoming and outgoing bandwidth limits in bytes per second.
+---@field unbanIP fun(...:number) @Unbans the IP address(es).
 Lime.Network = Lime.Network or {}
 
 ---@class Lime.Physics
+---@field getGravity fun(): Vec3 @**This function cannot be run until window creation.** Returns the direction and magnitude of global gravity.
+---@field getObjectCount fun(): number @Returns the number of physics objects.
+---@field getStepFactor fun(): number @**This function cannot be run until window creation.** Returns the physics simulation step factor.
+---@field isPaused fun(): boolean @**This function cannot be run until window creation.** Returns whether or not the scene's physics simulation is paused.
+---@field setDebug fun(type:Lime.Enum.PhysicsDebugType) @**This function cannot be run until window creation.** Sets the physics simulation debug mode.
+---@field setFixedTimeStep fun(fixedStep:number) @Sets the fixed internal simulation timestep size. Smaller timesteps are more accurate at the cost of more computation per frame. Default is 1/30.
+---@field setGravity fun(gravity:Vec3) @**This function cannot be run until window creation.** Sets the direction and magnitude of global gravity.
+---@field setIgnoreEqualID fun(ignore:boolean) @**This function cannot be run until window creation.** Sets whether or not collisions with objects sharing the same ID should call a collision `Event`.
+---@field setMaxSubSteps fun(maxSteps:number) @Sets the maximum number of sub-steps allowed to run per frame. This restricts the physics simulation from taking too many sub-steps to catch up if a frame takes longer than usual to compute. Default is 8.
+---@field setPaused fun(paused:boolean) @**This function cannot be run until window creation.** Sets whether or not the scene's physics simulation is paused.
+---@field setStepFactor fun(factor:number) @**This function cannot be run until window creation.** Sets the physics simulation step factor.
 Lime.Physics = Lime.Physics or {}
 
 ---@class Lime.Scene
+---@field clearOverlayTexture fun() @**This function cannot be run until window creation.** Clears the user-defined `Texture` drawn over the screen, if any.
+---@field clearPostProcessingShader fun() @**This function cannot be run until window creation.** Clears the `Shader` applied to the screen, if any.
+---@field createCubeMesh fun(size:Vec3): Mesh @**This function cannot be run until window creation.** Returns a `Mesh` containing a cube.
+---@field createCylinderMesh fun(radius:number, length:number): Mesh @**This function cannot be run until window creation.** Returns a `Mesh` containing a cylinder.
+---@field createPlaneMesh fun(tileSize:Vec2, tileCount:Vec2): Mesh @**This function cannot be run until window creation.** Returns a `Mesh` containing a plane. Parameter `repeatCount` controls how much an applied `Texture` will repeat within one tile.
+---@field createSphereMesh fun(radius:number): Mesh @**This function cannot be run until window creation.** Returns a `Mesh` containing a sphere.
+---@field fireRaycast fun(startPos:Vec3, endPos:Vec3, rayLifeMs:number?): HitResult @**This function cannot be run until window creation.** Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
+---@field fireScreenspaceRaycast fun(startPos:Vec2, length:number, rayLifeMs:number?): HitResult @**This function cannot be run until window creation.** Fires a raycast out from a screenspace position `Vec2` of length `length`. Only objects with collision enabled will be tested.
+---@field getErrorTexture fun(): Texture @**This function cannot be run until window creation.** Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
+---@field getMeshCount fun(): number @Returns the amount of cached meshes in the scene.
+---@field getObjectCount fun(): number @Returns the amount of 3D objects in the scene.
+---@field getTextureCount fun(): number @Returns the amount of textures in the scene.
+---@field isRenderingActive fun(): boolean @Returns whether or not the application is actively rendering new output from the scene.
+---@field preloadMesh fun(path:string): boolean @**This function cannot be run until window creation.** Preloads a mesh by `path` into the scene for later use. Returns true on success or if the mesh at `path` has already been preloaded.
+---@field preloadTexture fun(path:string): boolean @**This function cannot be run until window creation.** Preloads a texture by `path` into the scene for later use. Returns true on success or if the texture at `path` has already been preloaded.
+---@field purgeMesh fun(path:string): boolean @**This function cannot be run until window creation.** Purges a mesh by `path` from the scene. Returns true on success or if the mesh at `path` has already been purged. `Mesh` objects referencing this mesh will use an engine-defined `Mesh` instead.
+---@field purgeTexture fun(path:string): boolean @**This function cannot be run until window creation.** Purges a texture by `path` from the scene. Returns true on success or if the texture at `path` has already been purged. `Texture` objects referencing this texture will use an engine-defined `Texture` instead.
+---@field setAmbientColor fun(rgba:Vec4) @**This function cannot be run until window creation.** Sets the ambient color of the scene to `rgba`.
+---@field setBackgroundColor fun(rgba:Vec4) @**This function cannot be run until window creation.** Sets the background color of the scene to `rgba`. This color is generally only visible when there is no `Skydome`.
+---@field setDynamicResolution fun(dynamic:boolean) @If set to true, the rendering resolution will be that of the window resolution, updating on any window size changes. If false, the rendering resolution will remain the same size but upscale to the window resolution using a letterboxed viewport.
+---@field setFogColor fun(rgba:Vec4) @**This function cannot be run until window creation.** Sets the color of the scene's fog to `rgba`.
+---@field setFogRange fun(near:number, far:number) @**This function cannot be run until window creation.** Sets where the scene's fog starts and ends.
+---@field setLightManagementType fun(type:Lime.Enum.LightManagementType) @**This function cannot be run until window creation.** Sets the light management behavior using `Lime.Enum.LightManagementType`.
+---@field setOverlayTexture fun(texture:Texture) @**This function cannot be run until window creation.** Sets a `Texture` to be drawn over the screen, under the GUI layer. This `Texture` will inherit post processing shaders, if post processing is enabled.
+---@field setPostProcessingShader fun(shader:Shader) @**This function cannot be run until window creation.** Passes a `Shader` to the renderer be used for special effects on the scene output.
+---@field setRenderQuality fun(quality:Lime.Enum.Quality) @Sets the render quality of the scene using `Lime.Enum.Quality`. **WARNING**: This function only takes effect if post processing effects or window-render-matching are active.
+---@field setRenderingActive fun(active:boolean) @If set to false, the application will not update the scene output. A use case is a pseudo-pause your game to save on resources while loading assets.
+---@field setShadowColor fun(rgba:Vec4) @**This function cannot be run until window creation.** Sets the color of shadows in the scene to `rgba`.
+---@field setSize fun(size:Vec2) @Sets the render size to `size`. If the render size is set to rescale to the window size then this change will not take effect. See `Lime.Scene.setDynamicResolution`.
+---@field setTextureCreationQuality fun(quality:Lime.Enum.TextureCreationQuality) @**This function cannot be run until window creation.** Sets the default `Texture` creation quality using `Lime.Enum.TextureCreationQuality`, where Low is optimized for speed and High is optimized for quality. **WARNING**: If post processing effects or window-render-matching are active, using this function will influence the quality of the application output.
+---@field toScreenPosition fun(pos:Vec3): Vec2 @**This function cannot be run until window creation.** Converts a 3D position to `Vec2` on the screen.
 Lime.Scene = Lime.Scene or {}
 
 ---@class Lime.Web
@@ -287,16 +404,57 @@ Lime.Scene = Lime.Scene or {}
 ---@field onGetFail OnGetFailEvent @Event called by Lime when a GET request has failed.
 ---@field onDownloadComplete OnDownloadCompleteEvent @Event called by Lime when a download has successfully completed.
 ---@field onDownloadFail OnDownloadFailEvent @Event called by Lime when a download has failed.
+---@field cancelDownload fun() @Cancels the ongoing download, if any.
+---@field download fun(url:string, path:string) @Downloads a file from `url` and saves it to `path`. See `Lime.Web.onDownloadComplete` and `Lime.Web.onDownloadFail`.
+---@field get fun(url:string) @Sends an HTTP GET request to `url`. See `Lime.Web.onGetComplete` and `Lime.Web.onGetFail`.
+---@field getDownloadProgress fun(): number @Returns the download progress from 0.0 to 1.0.
+---@field getDownloadSpeed fun(): number @Returns the download speed in bytes per second.
+---@field isDownloading fun(): boolean @Returns true if there is an ongoing download.
+---@field isExtracting fun(): boolean @Returns true if an ongoing download is extracting its content.
+---@field setTimeout fun(ms:number) @Sets the timeout in milliseconds for HTTP requests.
 Lime.Web = Lime.Web or {}
 
 ---@class Lime.Window
 ---@field onResize OnResizeEvent @Event called by Lime once the window is resized in any way.
+---@field getMonitorSize fun(): Vec2 @**This function cannot be run until window creation.** Returns the size of the monitor the window is running on.
+---@field getPosition fun(): Vec2 @**This function cannot be run until window creation.** Returns the window's position.
+---@field getSize fun(): Vec2 @**This function cannot be run until window creation.** Returns the size of the window.
+---@field isCreated fun(): boolean @Returns true if the window is created.
+---@field isFocused fun(): boolean @**This function cannot be run until window creation.** Returns true if the window is focused.
+---@field setFullscreen fun(fullscreen:boolean) @**This function cannot be run until window creation.** Toggles fullscreen mode.
+---@field setLockAspectRatio fun(locked:boolean) @**This function cannot be run until window creation.** Locks the aspect ratio of the raw window size. It will not make the window immune to all resizing. Maximizing the window will not preserve the rendering aspect ratio.
+---@field setMinimumSize fun(size:Vec2) @**This function cannot be run until window creation.** Sets the minimum window size. The window size cannot be smaller than the render resolution.
+---@field setPosition fun(pos:Vec2) @**This function cannot be run until window creation.** Sets the window's position to `pos`.
+---@field setResizable fun(allow:boolean) @**This function cannot be run until window creation.** Allows the window to be resizable or locked to its intended size. This disables maximizing the application as well.
+---@field setSize fun(size:Vec2) @**This function cannot be run until window creation.** Sets the window's size to `size`.
+---@field setTitle fun(title:string) @**This function cannot be run until window creation.** Sets the window's title to `title`.
 Lime.Window = Lime.Window or {}
 
 ---@class math
 ---@field tween math.tween
+---@field clamp fun(v:number, min:number, max:number): number @Clamps `v` to `min`, `max`.
 
 ---@class math.tween
+---@field damp fun(old:number, target:number, factor:number, dt:number): number @Interpolates from `old` toward `target` using exponential smoothing.
+---@field easeInBack fun(a:number): number @Starts by moving slightly backward, then accelerates forward.
+---@field easeInBounce fun(a:number): number @Starts with a bounce effect.
+---@field easeInCubic fun(a:number): number @Starts slow, accelerates. (Cubic curve)
+---@field easeInElastic fun(a:number): number @Starts slow with oscillation, like a stretched spring.
+---@field easeInExpo fun(a:number): number @Starts slow and heavily speeds up at the end.
+---@field easeInOutBack fun(a:number): number @Backward start, then overshoots to settle.
+---@field easeInOutBounce fun(a:number): number @Bounce effect and both the start and end.
+---@field easeInOutCubic fun(a:number): number @Smooth start and end. (Cubic curve)
+---@field easeInOutElastic fun(a:number): number @Oscillates at both the start and end.
+---@field easeInOutExpo fun(a:number): number @Slow at the start and end, but fast in the middle.
+---@field easeInOutSine fun(a:number): number @Smooth start and end. (Sine curve)
+---@field easeInSine fun(a:number): number @Starts slow, accelerates. (Sine curve)
+---@field easeOutBack fun(a:number): number @Overshoots, then settles back.
+---@field easeOutBounce fun(a:number): number @Ends with a bounce effect.
+---@field easeOutCubic fun(a:number): number @Starts fast, decelerates. (Cubic curve)
+---@field easeOutElastic fun(a:number): number @Ends with oscillation, like a spring settling.
+---@field easeOutExpo fun(a:number): number @Starts fast, then plateaus.
+---@field easeOutSine fun(a:number): number @Starts fast, decelerates. (Sine curve)
+---@field lerp fun(old:number, target:number, a:number): number @Linearly interpolates from `old` to `target` over `a`, where `a` is between 0.0 and 1.0.
 math.tween = math.tween or {}
 
 ---@class Billboard
