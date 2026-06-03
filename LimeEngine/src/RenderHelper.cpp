@@ -275,7 +275,13 @@ bool RenderHelper::setVertexColor(irr::scene::IAnimatedMeshSceneNode* m, const V
 	if (!guardRenderingCheck()) return false;
 
 	irr::scene::IMeshManipulator* meshManipulator = i_smgr->getMeshManipulator();
-	meshManipulator->setVertexColors(m->getMesh(), irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()));
+	irr::scene::IAnimatedMesh* animMesh = m->getMesh();
+	irr::video::SColor col(color.getW(), color.getX(), color.getY(), color.getZ());
+	
+	for (u32 i = 0; i < animMesh->getFrameCount(); i++) {
+		meshManipulator->setVertexColors(animMesh->getMesh(i), col);
+	}
+
 	return m;
 }
 
