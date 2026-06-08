@@ -13,6 +13,7 @@ class Renderer;
 class ShaderMaterial {
 public:
 	ShaderMaterial(const std::string& vsPath, const std::string& psPath, int type = 0);
+	ShaderMaterial(const std::string& hlsl, int type = 0);
 
 	void setUniformFloat(const std::string& name, float v);
 	void setUniformInt(const std::string& name, int v);
@@ -22,6 +23,7 @@ public:
 
 	int getMaterialType() const;
 	bool isValid() const { return shadermat.get(); }
+	IrrShaderMaterial* getInternalMat() const { return shadermat.get(); }
 
 	std::string getVsPath() const;
 	std::string getPsPath() const;

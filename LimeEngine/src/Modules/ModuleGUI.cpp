@@ -7,6 +7,7 @@
 
 #include "Objects/Event.h"
 #include "Objects/Texture.h"
+#include "Objects/ShaderMaterial.h"
 
 #include <sol/sol.hpp>
 
@@ -49,6 +50,15 @@ void Module::GUI::bind(Application* app) {
 	// Returns void
 	module.set_function("unfocus", &Module::GUI::Bind::clearFocus);
 
+	// [+] Passes a `Shader` to the renderer to be used on GUI elements. It is recommended for the `Shader` to use a non-solid material type.
+	// Params Shader shader
+	// Returns void
+	module.set_function("setPostProcessingShader", &Module::GUI::Bind::SetPostProcessingShader);
+
+	// [+] Clears the `Shader` applied to the GUI, if any.
+	// Returns void
+	module.set_function("clearPostProcessingShader", &Module::GUI::Bind::ClearPostProcessingShader);
+
 	// [+] Loads a Truetype font. Provide `name` to set the name manually, otherwise Lime will register the font as fontname_size. Returns the output font name.
 	// Params string path, number fontSize, boolean? aa
 	// Params string path, number fontSize, string name, boolean? aa
@@ -72,6 +82,14 @@ std::string Module::GUI::Bind::embedFont(const std::string& path) {
 
 void Module::GUI::Bind::setDefaultFont(const std::string& name) {
 	g->setDefaultFont(name);
+}
+
+void Module::GUI::Bind::SetPostProcessingShader(const ShaderMaterial& sm) {
+	r->setPostProcessingShaderGUI(sm);
+}
+
+void Module::GUI::Bind::ClearPostProcessingShader() {
+	r->clearPostProcessingShaderGUI();
 }
 
 bool Module::GUI::Bind::isFontEmbedded(const std::string& name) {

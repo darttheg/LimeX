@@ -2,6 +2,7 @@
 
 #include <string>
 class Application;
+class ShaderMaterial;
 
 namespace Module {
 	namespace GUI {
@@ -16,6 +17,9 @@ namespace Module {
 			std::string embedTTF(const std::string& ttfPath, int size, bool aa = true);
 			std::string embedTTF(const std::string& ttfPath, int size, const std::string& name, bool aa = true);
 			void clearFocus();
+
+			void SetPostProcessingShader(const ShaderMaterial& sm);
+			void ClearPostProcessingShader();
 		}
 	}
 }

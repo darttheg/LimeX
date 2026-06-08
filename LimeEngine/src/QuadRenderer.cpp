@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 
+#include "Objects/IrrShaderMat.h"
+
 void QuadRenderer::init(irr::video::IVideoDriver* d, irr::gui::IGUIEnvironment* g) {
     driver = d;
     gui = g;
@@ -41,16 +43,29 @@ void QuadRenderer::setClearColor(std::uint32_t br, std::uint32_t bg, std::uint32
     clear.set(ba, br, bg, bb);
 }
 
-void QuadRenderer::setPostProcessingShader(int shaderID) {
+void QuadRenderer::setPostProcessingShader(int shaderID, IrrShaderMaterial* cb) {
     ppxType = shaderID;
+    ppxCB = cb;
+    ppxCB->grab();
+}
+
+void QuadRenderer::setPostProcessingShaderGUI(int shaderID, IrrShaderMaterial* cb) {
+    gppxType = shaderID;
+    gppxCB = cb;
+    gppxCB->grab();
 }
 
 void QuadRenderer::clearPostProcessingShader() {
     ppxType = -1;
+    if (ppxCB) ppxCB->drop();
 }
 
-void QuadRenderer::beginInternal()
-{
+void QuadRenderer::clearPostProcessingShaderGUI() {
+    gppxType = -1;
+    if (gppxCB) gppxCB->drop();
+}
+
+void QuadRenderer::beginInternal() {
     if (!driver) return;
 
     if (rtScene && timeToRecreate >= 0 && !didRecreate) {
@@ -93,10 +108,21 @@ void QuadRenderer::presentToWindow()
     qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, highQuality);
     qMat.setFlag(irr::video::EMF_ANTI_ALIASING, highQuality ? irr::video::E_ANTI_ALIASING_MODE::EAAM_SIMPLE : irr::video::E_ANTI_ALIASING_MODE::EAAM_OFF);
     
-    if (ppxType >= 0)
+    if (ppxType >= 0) {
         qMat.MaterialType = static_cast<irr::video::E_MATERIAL_TYPE>(ppxType);
-    else
+        if (ppxCB) ppxCB->callSetConstants();
+    }
+    else {
         qMat.MaterialType = irr::video::EMT_SOLID;
+    }
+
+    if (gppxType >= 0) {
+        qBlendMat.MaterialType = static_cast<irr::video::E_MATERIAL_TYPE>(gppxType);
+        if (gppxCB) gppxCB->callSetConstants();
+    }
+    else {
+        qBlendMat.MaterialType = irr::video::EMT_SOLID;
+    }
 
     driver->setMaterial(qMat);
 

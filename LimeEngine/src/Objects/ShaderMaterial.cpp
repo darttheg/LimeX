@@ -2,7 +2,6 @@
 
 #include "Renderer.h"
 
-static DebugConsole* d;
 static Renderer* r;
 
 #include "Objects/IrrShaderMat.h"
@@ -10,13 +9,16 @@ static Renderer* r;
 #include <sol/sol.hpp>
 
 ShaderMaterial::ShaderMaterial(const std::string& vs, const std::string& ps, int type) {
-	shadermat = std::make_shared<IrrShaderMaterial>(r->getVideoDriver(), vs, ps, type);
-	shadermat->setRenderer(r);
 	auto* fs = r->getFileSystem();
 	if (!fs) return;
 	vsPath = fs->getAbsolutePath(vs.c_str()).c_str();
 	psPath = fs->getAbsolutePath(ps.c_str()).c_str();
+
+	shadermat = std::make_shared<IrrShaderMaterial>(r->getVideoDriver(), vsPath, psPath, type);
+	shadermat->setRenderer(r);
 }
+
+ShaderMaterial::ShaderMaterial(const std::string& hlsl, int type) : ShaderMaterial(hlsl, hlsl, type) {}
 
 void ShaderMaterial::setUniformFloat(const std::string& name, float v) {
 	if (!shadermat) return;
@@ -61,14 +63,20 @@ std::string ShaderMaterial::getPsPath() const {
 void Object::ShaderMaterialBind::bind(lua_State* ls, Renderer* rend) {
 	r = rend;
 
-	// Object Shader, A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldTransformed` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
+	// Object Shader, A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldViewProj` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
 
 	// Constructor string vertexShaderPath, string pixelShaderPath, Lime.Enum.MaterialType? type
+	// Constructor string hlslShaderPath, Lime.Enum.MaterialType? type
 
 	sol::state_view view(ls);
 	sol::usertype<ShaderMaterial> obj = view.new_usertype<ShaderMaterial>(
 		"Shader",
-		sol::constructors<ShaderMaterial(const std::string& vsPath, const std::string& psPath), ShaderMaterial(const std::string &vsPath, const std::string &psPath, int type)>(),
+		sol::constructors<
+			ShaderMaterial(const std::string& vsPath, const std::string& psPath),
+			ShaderMaterial(const std::string &vsPath, const std::string &psPath, int type),
+			ShaderMaterial(const std::string& hlslPath),
+			ShaderMaterial(const std::string& hlslPath, int type)
+			>(),
 		sol::meta_function::type, [](const ShaderMaterial&) { return "Shader"; }
 	);
 
@@ -98,6 +106,10 @@ void Object::ShaderMaterialBind::bind(lua_State* ls, Renderer* rend) {
 	// Returns the path to the pixel shader file loaded in this `Shader`.
 	// Returns string
 	obj.set_function("getPSPath", &ShaderMaterial::getPsPath);
+
+	// Returns the material type. On `Shader` creation, it indexes itself in the renderer as a new material type. Newly indexed `Shader` materials will not be found in Lime.Enum.
+	// Returns number
+	obj.set_function("getType", &ShaderMaterial::getMaterialType);
 
 	// End Object
 }

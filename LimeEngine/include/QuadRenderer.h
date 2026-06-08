@@ -4,7 +4,7 @@
 #include <irrlicht.h>
 
 class DebugConsole;
-class ShaderMaterial;
+class IrrShaderMaterial;
 
 class QuadRenderer {
 public:
@@ -14,8 +14,10 @@ public:
 	void setMatchWindowRender(bool m);
 	void setClearColor(std::uint32_t r, std::uint32_t g, std::uint32_t b, std::uint32_t a);
 
-	void setPostProcessingShader(int shaderID);
+	void setPostProcessingShader(int shaderID, IrrShaderMaterial* cb);
+	void setPostProcessingShaderGUI(int shaderID, IrrShaderMaterial* cb);
 	void clearPostProcessingShader();
+	void clearPostProcessingShaderGUI();
 
 	void beginInternal();
 	void beginGUIPass();
@@ -31,7 +33,10 @@ public:
 
 	void setSceneRenderQuality(int q);
 
-	bool ppxActive() { return ppxType != -1; }
+	bool ppxActive() { return ppxType != -1 || gppxType != -1; }
+	
+	int getPpxType() { return ppxType; }
+	irr::video::E_MATERIAL_TYPE getMatType() { return qMat.MaterialType; }
 
 	irr::video::ITexture* getUserTexture() { return rtUser; }
 	void setUserTexture(irr::video::ITexture* tex) { rtUser = tex; }
@@ -53,6 +58,8 @@ private:
 	irr::video::SMaterial qMat;
 	irr::video::SMaterial qBlendMat;
 	bool matchWR = true;
+	IrrShaderMaterial* ppxCB = nullptr;
+	IrrShaderMaterial* gppxCB = nullptr;
 
 	irr::core::recti vp;
 
@@ -65,4 +72,5 @@ private:
 	void setVp();
 
 	int ppxType = -1;
+	int gppxType = -1;
 };

@@ -271,10 +271,12 @@ Lime.Audio = Lime.Audio or {}
 Lime.File = Lime.File or {}
 
 ---@class Lime.GUI
+---@field clearPostProcessingShader fun() @**This function cannot be run until window creation.** Clears the `Shader` applied to the GUI, if any.
 ---@field isFontLoaded fun(name:string): boolean @**This function cannot be run until window creation.** Returns true if the font `name` is loaded.
 ---@field loadTTF fun(path:string, fontSize:number, aa:boolean?): string @**This function cannot be run until window creation.** Loads a Truetype font. Provide `name` to set the name manually, otherwise Lime will register the font as fontname_size. Returns the output font name.
 ---@field loadXML fun(path:string): string @**This function cannot be run until window creation.** Loads a bitmap font. Returns the name of this font, cut from `path`. (NOTE: `path` must be the path to a .xml file. The .xml files must be paired by an image file.)
 ---@field setDefaultFont fun(name:string) @**This function cannot be run until window creation.** Sets the default font for new GUI elements to font `name`.
+---@field setPostProcessingShader fun(shader:Shader) @**This function cannot be run until window creation.** Passes a `Shader` to the renderer to be used on GUI elements. It is recommended for the `Shader` to use a non-solid material type.
 ---@field setQuality fun(quality:Lime.Enum.Quality) @**This function cannot be run until window creation.** Sets the quality of all GUI elements using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
 ---@field unfocus fun() @**This function cannot be run until window creation.** Unfocuses any element that is focused.
 Lime.GUI = Lime.GUI or {}
@@ -735,12 +737,12 @@ function RigidBody.new(base) end
 
 ---@class Shader
 Shader = Shader or {}
---- A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldTransformed` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
----@param vertexShaderPath string
----@param pixelShaderPath string
+--- A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldViewProj` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
+---@overload fun(vertexShaderPath:string, pixelShaderPath:string, type:Lime.Enum.MaterialType?): Shader
+---@param hlslShaderPath string
 ---@param type Lime.Enum.MaterialType?
 ---@return Shader
-function Shader.new(vertexShaderPath, pixelShaderPath, type) end
+function Shader.new(hlslShaderPath, type) end
 
 ---@class Skydome
 ---@field position Vec3 @The 3D position of this object in the scene.
@@ -1491,6 +1493,10 @@ function Lime.File.readFile(path) end
 ---@return boolean
 function Lime.File.writeFile(path, data) end
 
+--- **This function cannot be run until window creation.** Clears the `Shader` applied to the GUI, if any.
+---@return void
+function Lime.GUI.clearPostProcessingShader() end
+
 --- **This function cannot be run until window creation.** Returns true if the font `name` is loaded.
 ---@param name string
 ---@return boolean
@@ -1513,6 +1519,11 @@ function Lime.GUI.loadXML(path) end
 ---@param name string
 ---@return void
 function Lime.GUI.setDefaultFont(name) end
+
+--- **This function cannot be run until window creation.** Passes a `Shader` to the renderer to be used on GUI elements. It is recommended for the `Shader` to use a non-solid material type.
+---@param shader Shader
+---@return void
+function Lime.GUI.setPostProcessingShader(shader) end
 
 --- **This function cannot be run until window creation.** Sets the quality of all GUI elements using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
 ---@param quality Lime.Enum.Quality
@@ -2502,6 +2513,10 @@ function RigidBody:lookAt(pos) end
 --- Returns the path to the pixel shader file loaded in this `Shader`.
 ---@return string
 function Shader:getPSPath() end
+
+--- Returns the material type. On `Shader` creation, it indexes itself in the renderer as a new material type. Newly indexed `Shader` materials will not be found in Lime.Enum.
+---@return number
+function Shader:getType() end
 
 --- Returns the path to the vertex shader file loaded in this `Shader`.
 ---@return string

@@ -467,12 +467,22 @@ void Renderer::setSceneRenderQuality(int q) {
 
 void Renderer::setPostProcessingShader(const ShaderMaterial& sm) {
 	if (!guardRenderingCheck()) return;
-	qr->setPostProcessingShader(sm.isValid() ? sm.getMaterialType() : -1);
+	qr->setPostProcessingShader(sm.isValid() ? sm.getMaterialType() : -1, sm.isValid() ? sm.getInternalMat() : nullptr);
 }
 
 void Renderer::clearPostProcessingShader() {
 	if (!guardRenderingCheck()) return;
 	qr->clearPostProcessingShader();
+}
+
+void Renderer::setPostProcessingShaderGUI(const ShaderMaterial& sm) {
+	if (!guardRenderingCheck()) return;
+	qr->setPostProcessingShaderGUI(sm.isValid() ? sm.getMaterialType() : -1, sm.isValid() ? sm.getInternalMat() : nullptr);
+}
+
+void Renderer::clearPostProcessingShaderGUI() {
+	if (!guardRenderingCheck()) return;
+	qr->clearPostProcessingShaderGUI();
 }
 
 irr::scene::ICameraSceneNode* Renderer::getActiveCameraNode() {

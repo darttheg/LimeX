@@ -108,6 +108,8 @@ public:
 	void setSceneRenderQuality(int q);
 	void setPostProcessingShader(const ShaderMaterial& sm);
 	void clearPostProcessingShader();
+	void setPostProcessingShaderGUI(const ShaderMaterial& sm);
+	void clearPostProcessingShaderGUI();
 	irr::scene::ICameraSceneNode* getActiveCameraNode();
 	irr::video::ITexture* createRenderTargetTexture(const Vec2& size, irr::scene::ICameraSceneNode* c);
 	bool preloadMesh(const std::string path);

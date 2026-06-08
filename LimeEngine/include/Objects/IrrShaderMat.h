@@ -26,9 +26,12 @@ public:
 	void setUniformVec4(const std::string& name, const Vec4& v);
 
 	irr::s32 getMaterialType() const { return type; }
+	void callSetConstants() { if (cachedServices) OnSetConstants(cachedServices, 0); }
 private:
 	irr::s32 type = -1;
 	std::unordered_map<std::string, UniformValue> uniforms;
 	irr::core::matrix4 wvp;
 	irr::core::matrix4 world;
+
+	irr::video::IMaterialRendererServices* cachedServices = nullptr;
 };
