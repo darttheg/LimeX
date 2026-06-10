@@ -14,6 +14,7 @@ class ShaderMaterial {
 public:
 	ShaderMaterial(const std::string& vsPath, const std::string& psPath, int type = 0);
 	ShaderMaterial(const std::string& hlsl, int type = 0);
+	~ShaderMaterial();
 
 	void setUniformFloat(const std::string& name, float v);
 	void setUniformInt(const std::string& name, int v);
@@ -22,13 +23,13 @@ public:
 	void setUniformVec4(const std::string& name, const Vec4& v);
 
 	int getMaterialType() const;
-	bool isValid() const { return shadermat.get(); }
-	IrrShaderMaterial* getInternalMat() const { return shadermat.get(); }
+	bool isValid() const { return shadermat; }
+	IrrShaderMaterial* getInternalMat() const { return shadermat; }
 
 	std::string getVsPath() const;
 	std::string getPsPath() const;
 private:
-	std::shared_ptr<IrrShaderMaterial> shadermat;
+	IrrShaderMaterial* shadermat;
 	std::string vsPath;
 	std::string psPath;
 };

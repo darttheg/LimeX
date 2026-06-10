@@ -737,7 +737,7 @@ function RigidBody.new(base) end
 
 ---@class Shader
 Shader = Shader or {}
---- A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldTransformed` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
+--- A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldViewProj` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
 ---@overload fun(vertexShaderPath:string, pixelShaderPath:string, type:Lime.Enum.MaterialType?): Shader
 ---@param hlslShaderPath string
 ---@param type Lime.Enum.MaterialType?
@@ -2513,6 +2513,10 @@ function RigidBody:lookAt(pos) end
 --- Returns the path to the pixel shader file loaded in this `Shader`.
 ---@return string
 function Shader:getPSPath() end
+
+--- Returns the material type. On `Shader` creation, it indexes itself in the renderer as a new material type. Newly indexed `Shader` materials will not be found in Lime.Enum.
+---@return number
+function Shader:getType() end
 
 --- Returns the path to the vertex shader file loaded in this `Shader`.
 ---@return string

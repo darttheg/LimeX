@@ -14,11 +14,16 @@ ShaderMaterial::ShaderMaterial(const std::string& vs, const std::string& ps, int
 	vsPath = fs->getAbsolutePath(vs.c_str()).c_str();
 	psPath = fs->getAbsolutePath(ps.c_str()).c_str();
 
-	shadermat = std::make_shared<IrrShaderMaterial>(r->getVideoDriver(), vsPath, psPath, type);
+	shadermat = new IrrShaderMaterial(r->getVideoDriver(), vsPath, psPath, type);
+	shadermat->grab();
 	shadermat->setRenderer(r);
 }
 
 ShaderMaterial::ShaderMaterial(const std::string& hlsl, int type) : ShaderMaterial(hlsl, hlsl, type) {}
+
+ShaderMaterial::~ShaderMaterial() {
+	if (shadermat) shadermat->drop();
+}
 
 void ShaderMaterial::setUniformFloat(const std::string& name, float v) {
 	if (!shadermat) return;
