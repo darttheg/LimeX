@@ -44,8 +44,8 @@ namespace Module {
 			sol::table FireScreenRaycast(const Vec2& start, float len, float life = 0);
 
 			Mesh CreateCubeMesh(const Vec3& size);
-			Mesh CreateSphereMesh(float r, int polyCount = 8);
-			Mesh CreateCylinderMesh(float r, float l, int polyCount = 8, bool closed = true);
+			Mesh CreateSphereMesh(float r, int polyCount = 9);
+			Mesh CreateCylinderMesh(float r, float l, int polyCount = 9, bool closed = true);
 			Mesh CreatePlaneMesh(const Vec2& tileSize, const Vec2& tileCount);
 			Mesh CreatePlaneMesh(const Vec2& tileSize, const Vec2& tileCount, const Vec2& texRepeat);
 

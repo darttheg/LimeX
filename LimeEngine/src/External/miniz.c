@@ -5023,7 +5023,8 @@ static int mz_stat64(const char *path, struct __stat64 *buffer)
             return NULL;
         }
 
-        /* Init state - save args */
+        /* Init state - save 
+        */
         pState->pZip = pZip;
         pState->flags = flags;
 

@@ -125,6 +125,10 @@ int Mesh::getMaterialCount() const {
 	return src ? src->getMaterialCount() : 0;
 }
 
+bool Mesh::converge() {
+	return rh->combineChildMeshes(src);
+}
+
 void Mesh::setHardwareHint(int hint) {
 	if (!src) return;
 
@@ -307,6 +311,10 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 	// Returns the number of `Material` slots in this `Mesh`.
 	// Returns number
 	obj.set_function("getMaterialCount", &Mesh::getMaterialCount);
+
+	// Converges all child `Mesh` objects into this `Mesh`. Child `Mesh` objects are not destroyed in the process.
+	// Returns boolean
+	obj.set_function("converge", &Mesh::converge);
 
 	// Returns the vertex count of this `Mesh`.
 	// Returns number

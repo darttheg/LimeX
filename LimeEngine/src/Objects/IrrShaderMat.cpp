@@ -37,8 +37,12 @@ void IrrShaderMaterial::OnSetConstants(irr::video::IMaterialRendererServices* se
 	wvp *= driver->getTransform(irr::video::ETS_WORLD);
 	world = driver->getTransform(irr::video::ETS_WORLD);
 
+	irr::core::matrix4 wv = driver->getTransform(irr::video::ETS_VIEW);
+	wv *= driver->getTransform(irr::video::ETS_WORLD);
+
 	const irr::f32 t = r ? r->getDtTime() : 0.0f;
 
+	services->setVertexShaderConstant("mWorldView", wv.pointer(), 16);
 	services->setVertexShaderConstant("mWorldViewProj", wvp.pointer(), 16);
 	services->setVertexShaderConstant("mWorld", world.pointer(), 16);
 	services->setVertexShaderConstant("uTime", &t, 1);

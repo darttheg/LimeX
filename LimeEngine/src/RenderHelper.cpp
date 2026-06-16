@@ -412,6 +412,8 @@ Mesh RenderHelper::createPlaneMesh(const Vec2& tileSize, const Vec2& tileCount, 
 
 #include "Objects/DebugRaycastNode.h"
 HitResult RenderHelper::fireRaycast(const Vec3& start, const Vec3& end, float life) {
+	if (!guardRenderingCheck()) return HitResult();
+
 	scene::ISceneCollisionManager* collisionManager = i_smgr->getSceneCollisionManager();
 	core::line3d<f32> ray(core::vector3df(start.getX(), start.getY(), start.getZ()), core::vector3df(end.getX(), end.getY(), end.getZ()));
 
@@ -481,6 +483,7 @@ HitResult RenderHelper::fireRaycast(const Vec3& start, const Vec3& end, float li
 }
 
 HitResult RenderHelper::fireScreenRaycast(const Vec2& start, float len, float life) {
+	if (!guardRenderingCheck()) return HitResult();
 	irr::scene::ICameraSceneNode* c = i_smgr->getActiveCamera();
 
 	irr::core::line3df ray = i_smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::vector2di(start.getX(), start.getY()), c);
@@ -490,6 +493,112 @@ HitResult RenderHelper::fireScreenRaycast(const Vec2& start, float len, float li
 	Vec3 endPos(ray.start.X + dir.X * len, ray.start.Y + dir.Y * len, ray.start.Z + dir.Z * len);
 
 	return fireRaycast(startPos, endPos, life);
+}
+
+#include <map>
+bool RenderHelper::combineChildMeshes(irr::scene::IAnimatedMeshSceneNode* node) {
+	if (!guardRenderingCheck()) return false;
+	if (!node || !node->getMesh() || node->getChildren().getSize() == 0) return false;
+
+	std::map<void*, std::pair<irr::scene::SMeshBuffer*, u32>> slots;
+	std::vector<void*> slotOrder;
+
+	auto getSlot = [&](irr::scene::IMeshBuffer* src, irr::scene::IAnimatedMeshSceneNode* srcNode, u32 bufIdx) -> std::pair<irr::scene::SMeshBuffer*, u32>& {
+		irr::video::SMaterial mat = srcNode->getMaterial(bufIdx);
+
+		for (auto& key : slotOrder) {
+			auto& [buf, offset] = slots[key];
+			if (buf->Material == mat) return slots[key];
+		}
+
+		void* key = (void*)src;
+		auto* buf = new irr::scene::SMeshBuffer();
+		buf->Material = mat;
+		slots[key] = { buf, 0 };
+		slotOrder.push_back(key);
+		return slots[key];
+	};
+
+	auto extractVertex = [](irr::scene::IMeshBuffer* buf, u32 idx) -> irr::video::S3DVertex {
+		switch (buf->getVertexType()) {
+		case irr::video::EVT_STANDARD:
+			return ((irr::video::S3DVertex*)buf->getVertices())[idx];
+		case irr::video::EVT_2TCOORDS: {
+			auto& v = ((irr::video::S3DVertex2TCoords*)buf->getVertices())[idx];
+			return irr::video::S3DVertex(v.Pos, v.Normal, v.Color, v.TCoords);
+		}
+		case irr::video::EVT_TANGENTS: {
+			auto& v = ((irr::video::S3DVertexTangents*)buf->getVertices())[idx];
+			return irr::video::S3DVertex(v.Pos, v.Normal, v.Color, v.TCoords);
+		}
+		default:
+			return irr::video::S3DVertex();
+		}
+	};
+
+	auto appendMesh = [&](irr::scene::IMesh* mesh, irr::scene::IAnimatedMeshSceneNode* srcNode, const irr::core::matrix4& transform) {
+		if (!mesh) return;
+		for (u32 i = 0; i < mesh->getMeshBufferCount(); i++) {
+			auto* src = mesh->getMeshBuffer(i);
+			auto& [dst, vertOffset] = getSlot(src, srcNode, i);
+
+			auto* verts = (irr::video::S3DVertex*)src->getVertices();
+			for (u32 j = 0; j < src->getVertexCount(); j++) {
+				irr::video::S3DVertex vert = extractVertex(src, j);
+				transform.transformVect(vert.Pos);
+				transform.rotateVect(vert.Normal);
+				dst->Vertices.push_back(vert);
+			}
+
+			u16* idx = (u16*)src->getIndices();
+			for (u32 k = 0; k < src->getIndexCount(); k++) {
+				dst->Indices.push_back(idx[k] + (u16)vertOffset);
+			}
+
+			vertOffset += src->getVertexCount();
+		}
+	};
+
+	std::function<void(irr::scene::ISceneNode*, const irr::core::matrix4&)> walk;
+	walk = [&](irr::scene::ISceneNode* n, const irr::core::matrix4& parentTransform) {
+		auto* child = dynamic_cast<irr::scene::IAnimatedMeshSceneNode*>(n);
+		if (child && child->getMesh()) {
+			irr::core::matrix4 world = parentTransform * child->getRelativeTransformation();
+			appendMesh(child->getMesh()->getMesh(child->getFrameNr()), child, world);
+			for (auto it = child->getChildren().begin(); it != child->getChildren().end(); ++it) {
+				walk(*it, world);
+			}
+		}
+	};
+
+	appendMesh(node->getMesh()->getMesh(node->getFrameNr()), node, irr::core::matrix4());
+
+	for (auto it = node->getChildren().begin(); it != node->getChildren().end(); ++it) {
+		walk(*it, irr::core::matrix4());
+	}
+
+	std::vector<irr::video::SMaterial> matList;
+
+	auto* result = new irr::scene::SMesh();
+	for (auto& key : slotOrder) {
+		auto& [buf, offset] = slots[key];
+		buf->recalculateBoundingBox();
+		matList.push_back(buf->Material);
+		result->addMeshBuffer(buf);
+		buf->drop();
+	}
+	result->recalculateBoundingBox();
+
+	auto* outMesh = new irr::scene::SAnimatedMesh(result);
+	result->drop();
+	node->setMesh(outMesh); // Destroy old mesh?
+	outMesh->drop();
+
+	for (u32 i = 0; i < matList.size(); i++) {
+		node->getMaterial(i) = matList[i];
+	}
+
+	return true;
 }
 
 Vec2 RenderHelper::toScreenPos(const Vec3& pos) {

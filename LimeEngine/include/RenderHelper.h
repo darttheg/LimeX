@@ -100,6 +100,7 @@ public:
 	Mesh createPlaneMesh(const Vec2& tileSize, const Vec2& tileCount, const Vec2& texRepeat);
 	HitResult fireRaycast(const Vec3& start, const Vec3& end, float life);
 	HitResult fireScreenRaycast(const Vec2& start, float len, float life);
+	bool combineChildMeshes(irr::scene::IAnimatedMeshSceneNode* node);
 
 	// Misc
 	Vec2 toScreenPos(const Vec3& pos);

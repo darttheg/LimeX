@@ -121,7 +121,7 @@ void QuadRenderer::presentToWindow()
         if (gppxCB) gppxCB->callSetConstants();
     }
     else {
-        qBlendMat.MaterialType = irr::video::EMT_SOLID;
+        qBlendMat.MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
     }
 
     driver->setMaterial(qMat);

@@ -42,6 +42,8 @@ public:
     bool loadMaterial(const Material& mat);
     int getMaterialCount() const;
 
+    bool converge();
+
     void setHardwareHint(int hint);
     int getVertexCount() const;
 
