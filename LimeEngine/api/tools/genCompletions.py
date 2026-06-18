@@ -1,698 +1,451 @@
-import argparse
 import re
-from dataclasses import dataclass, field
+import sys
+import argparse
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
-
-KNOWN_TYPES = {"string","number","boolean","table","any","nil","void","function","userdata","thread","number[]", "string[]"}
-ARTICLES = {"the","a","an"}
-
-OP_MAP = {
-    "+":  "add",
-    "-":  "sub",
-    "*":  "mul",
-    "/":  "div",
-    "==": "eq",
-}
-
-@dataclass
-class Param:
-    name: str
-    typ: str
-
-@dataclass
-class FieldDoc:
-    name: str
-    typ: str
-    comment: Optional[str] = None
-    event_params: List[Param] = field(default_factory=list)
-
-@dataclass
-class FunctionDoc:
-    owner: str
-    name: str
-    is_method: bool
-    doc_lines: List[str] = field(default_factory=list)
-    overloads: List[List[Param]] = field(default_factory=list)
-    returns: List[str] = field(default_factory=list)
-
-@dataclass
-class ModuleDoc:
-    name: str
-    append: bool = False
-    fields: List[FieldDoc] = field(default_factory=list)
-
-@dataclass
-class InterfaceDoc:
-    name: str
-    fields: List[FieldDoc] = field(default_factory=list)
-    methods: List[FunctionDoc] = field(default_factory=list)
-
-@dataclass
-class ObjectDoc:
-    name: str
-    ctor_comment: Optional[str] = None
-    inherits: List[str] = field(default_factory=list)
-    fields: List[FieldDoc] = field(default_factory=list)
-    ctors: List[List[Param]] = field(default_factory=list)
-    operations: List[Tuple[str, str, str]] = field(default_factory=list)
-
-def parse_params(sig: str) -> List[Param]:
-    out: List[Param] = []
-    for part in [p.strip() for p in sig.split(",") if p.strip()]:
-        tokens = part.split()
-        if len(tokens) >= 2:
-            out.append(Param(name=tokens[1].strip(), typ=tokens[0].strip()))
-    return out
-
-def looks_like_type(t: str) -> bool:
-    if not t:
-        return False
-    if t in KNOWN_TYPES:
-        return True
-    if "." in t or "?" in t:
-        return True
-    return t[0].isupper()
-
-TYPE_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*(?:\[\])?\??$")
-PARAM_NAME_RE = re.compile(r"^(?:\.\.\.|[A-Za-z_][A-Za-z0-9_]*)$")
-
-def looks_like_sig_type(t: str) -> bool:
-    if not t:
-        return False
-    if t in KNOWN_TYPES:
-        return True
-    return TYPE_NAME_RE.match(t) is not None
-
-def is_param_signature(s: str) -> bool:
-    s = s.strip()
-    if not s or s.endswith((".", "?", "!", ":")):
-        return False
-    parts = [p.strip() for p in s.split(",") if p.strip()]
-    if not parts:
-        return False
-    for p in parts:
-        tokens = p.split()
-        if len(tokens) != 2:
-            return False
-        typ, name = tokens[0], tokens[1]
-        if name.lower() in ARTICLES:
-            return False
-        if not PARAM_NAME_RE.match(name):
-            return False
-        if not looks_like_sig_type(typ):
-            return False
-    return True
-
-def parse_field_decl(s: str) -> Optional[FieldDoc]:
-    rest = s.strip()
-    comment = None
-    if "," in rest:
-        before, after = rest.split(",", 1)
-        rest = before.strip()
-        comment = after.strip() or None
-    tokens = rest.split()
-    if len(tokens) < 2:
-        return None
-    return FieldDoc(name=tokens[1].strip(), typ=tokens[0].strip(), comment=comment)
-
-def sig_key(params: List[Param]) -> Tuple[Tuple[str, str], ...]:
-    return tuple((p.name, p.typ) for p in params)
-
-def parse_returns_line(s: str) -> Tuple[Optional[str], Optional[str]]:
-    rest = s[len("Returns "):].strip()
-    if not rest:
-        return None, None
-    tokens = rest.split()
-    if len(tokens) == 1 and looks_like_type(tokens[0]):
-        return tokens[0], None
-    return None, rest
-
-def parse_module_header(s: str) -> Tuple[str, bool]:
-    rest = s[len("Module "):].strip()
-    if not rest:
-        return "", False
-    if "," in rest:
-        name, mode = rest.split(",", 1)
-        name = name.strip()
-        mode = mode.strip().lower()
-        return name, mode == "append"
-    return rest.strip(), False
-
-def parse_object_header(s: str) -> Tuple[str, Optional[str]]:
-    rest = s[len("Object "):].strip()
-    if not rest:
-        return "", None
-    if "," in rest:
-        name, comment = rest.split(",", 1)
-        name = name.strip()
-        comment = comment.strip() or None
-        return name, comment
-    return rest.strip(), None
-
-def parse_inherits_line(s: str) -> List[str]:
-    m = re.match(r"^Inherits\b(.*)$", s.strip())
-    if not m:
-        return []
-    rest = (m.group(1) or "").strip()
-    if not rest:
-        return []
-    return [x.strip() for x in rest.split(",") if x.strip()]
-
-def parse_cpp_files(src: Path) -> Tuple[Dict[str, ModuleDoc], Dict[str, InterfaceDoc], List[ObjectDoc], List[FunctionDoc]]:
-    modules: Dict[str, ModuleDoc] = {}
-    interfaces: Dict[str, InterfaceDoc] = {}
-    objects_by_name: Dict[str, ObjectDoc] = {}
-    functions: List[FunctionDoc] = []
-
-    current_module: Optional[str] = None
-    current_object: Optional[ObjectDoc] = None
-    current_interface: Optional[InterfaceDoc] = None
-
-    pending_doc: List[str] = []
-    pending_overloads: List[List[Param]] = []
-    pending_returns: List[str] = []
-    pending_event_field: Optional[FieldDoc] = None
-
-    comment_re = re.compile(r'^\s*//\s?(.*)$')
-    bind_func_re = re.compile(r'\.set_function\s*\(\s*"([^"]+)"')
-    module_field_assign_re = re.compile(r'\bmodule\s*\[\s*"([^"]+)"\s*\]\s*=')
-
-    def reset_pending():
-        nonlocal pending_doc, pending_overloads, pending_returns, pending_event_field
-        pending_doc = []
-        pending_overloads = []
-        pending_returns = []
-        pending_event_field = None
-
-    def add_field_to_current(decl: FieldDoc):
-        nonlocal pending_event_field
-        if current_module:
-            modules[current_module].fields.append(decl)
-        elif current_interface:
-            current_interface.fields.append(decl)
-        elif current_object:
-            current_object.fields.append(decl)
-        pending_event_field = decl if decl.typ == "Event" else None
-
-    for cpp in sorted([p for p in src.rglob("*.cpp") if p.is_file()]):
-        try:
-            lines = cpp.read_text(encoding="utf-8", errors="ignore").splitlines()
-        except Exception:
-            continue
-
-        for raw in lines:
-            m = comment_re.match(raw)
-            if m:
-                s = m.group(1).strip()
-
-                if s.startswith("Module "):
-                    name, append = parse_module_header(s)
-                    if name:
-                        current_module = name
-                        current_object = None
-                        current_interface = None
-                        md = modules.get(name) or ModuleDoc(name=name)
-                        md.append = md.append or append
-                        modules[name] = md
-                    reset_pending()
-                    continue
-
-                if s == "End Module":
-                    current_module = None
-                    reset_pending()
-                    continue
-
-                if s.startswith("Interface "):
-                    name = s[len("Interface "):].strip()
-                    if name:
-                        current_module = None
-                        current_object = None
-                        current_interface = interfaces.get(name) or InterfaceDoc(name=name)
-                        interfaces[name] = current_interface
-                    reset_pending()
-                    continue
-
-                if s == "End Interface":
-                    current_interface = None
-                    reset_pending()
-                    continue
-
-                if s.startswith("Object "):
-                    name, comment = parse_object_header(s)
-                    if name:
-                        current_module = None
-                        current_interface = None
-                        current_object = objects_by_name.get(name) or ObjectDoc(name=name)
-                        if comment:
-                            current_object.ctor_comment = comment
-                        objects_by_name[name] = current_object
-                    reset_pending()
-                    continue
-
-                if s == "End Object":
-                    current_object = None
-                    reset_pending()
-                    continue
-
-                if current_object:
-                    inh = parse_inherits_line(s)
-                    if inh:
-                        current_object.inherits = inh
-                        pending_event_field = None
-                        continue
-
-                if (current_module or current_interface or current_object) and s.startswith("Field "):
-                    decl = parse_field_decl(s[len("Field "):])
-                    if decl:
-                        add_field_to_current(decl)
-                    continue
-
-                if current_object and s.startswith("Constructor"):
-                    rest = s[len("Constructor"):].strip()
-                    current_object.ctors.append(parse_params(rest) if rest else [])
-                    pending_event_field = None
-                    continue
-
-                if current_object and s.startswith("Operation "):
-                    rest = s[len("Operation "):].strip()
-                    tokens = rest.split()
-                    if len(tokens) == 2:
-                        rtype, sym = tokens[0], tokens[1]
-                        if sym in OP_MAP:
-                            current_object.operations.append((rtype, rtype, sym))
-                    elif len(tokens) == 3:
-                        rtype, operand, sym = tokens[0], tokens[1], tokens[2]
-                        if sym in OP_MAP:
-                            current_object.operations.append((rtype, operand, sym))
-                    pending_event_field = None
-                    continue
-
-                if pending_event_field and s == "Params":
-                    pending_event_field.event_params = []
-                    continue
-
-                if pending_event_field and s.startswith("Params "):
-                    pending_event_field.event_params = parse_params(s[len("Params "):].strip())
-                    continue
-
-                if pending_event_field and is_param_signature(s):
-                    pending_event_field.event_params = parse_params(s)
-                    continue
-
-                pending_event_field = None
-
-                if s.startswith("Returns "):
-                    rtype, rdoc = parse_returns_line(s)
-                    if rtype:
-                        pending_returns.append(rtype)
-                    elif rdoc:
-                        pending_doc.append("Returns " + rdoc)
-                    continue
-
-                if s == "Params":
-                    pending_overloads.append([])
-                    continue
-
-                if s.startswith("Params "):
-                    pending_overloads.append(parse_params(s[len("Params "):].strip()))
-                    continue
-
-                if is_param_signature(s):
-                    pending_overloads.append(parse_params(s))
-                    continue
-
-                if s:
-                    pending_doc.append(s.rstrip())
-                continue
-
-            pending_event_field = None
-
-            if current_interface:
-                fm = bind_func_re.search(raw)
-                if fm:
-                    fname = fm.group(1).strip()
-                    if fname:
-                        current_interface.methods.append(FunctionDoc(
-                            owner=current_interface.name,
-                            name=fname,
-                            is_method=True,
-                            doc_lines=list(pending_doc),
-                            overloads=list(pending_overloads),
-                            returns=list(pending_returns)
-                        ))
-                    reset_pending()
-                continue
-
-            is_method = current_object is not None
-            owner = current_object.name if current_object else current_module
-            if owner:
-                fm = bind_func_re.search(raw)
-                if fm:
-                    fname = fm.group(1).strip()
-                    if fname:
-                        functions.append(FunctionDoc(
-                            owner=owner,
-                            name=fname,
-                            is_method=is_method,
-                            doc_lines=list(pending_doc),
-                            overloads=list(pending_overloads),
-                            returns=list(pending_returns)
-                        ))
-                    reset_pending()
-                    continue
-
-            if current_module:
-                am = module_field_assign_re.search(raw)
-                if am:
-                    key = am.group(1).strip()
-                    if key:
-                        md = modules.setdefault(current_module, ModuleDoc(name=current_module))
-                        if not any(f.name == key for f in md.fields):
-                            md.fields.append(FieldDoc(name=key, typ="any", comment=None))
-                    continue
-
-    objects = [objects_by_name[k] for k in sorted(objects_by_name.keys())]
-    functions.sort(key=lambda f: (f.owner, f.name, 0 if f.is_method else 1))
-    for idef in interfaces.values():
-        idef.methods.sort(key=lambda f: f.name)
-    return modules, interfaces, objects, functions
-
-def ctor_sig(params: List[Param]) -> str:
-    return ", ".join([f"{p.name}:{p.typ}" for p in params])
-
-def fn_sig(params: List[Param]) -> str:
-    parts: List[str] = []
-    for p in params:
-        parts.append(f"...:{p.typ}" if p.name == "..." else f"{p.name}:{p.typ}")
-    return ", ".join(parts)
-
-def callback_sig(params: List[Param]) -> str:
-    parts: List[str] = []
-    for p in params:
-        parts.append(f"{p.name}: {p.typ}" if p.name != "..." else f"...: {p.typ}")
-    return ", ".join(parts)
-
-def sanitize_ident(s: str) -> str:
-    cleaned = re.sub(r"[^0-9A-Za-z_]", "_", s)
-    if cleaned and cleaned[0].isdigit():
-        cleaned = "_" + cleaned
-    return cleaned or "Generated"
-
-def pascal_case(s: str) -> str:
-    parts = re.split(r"[^0-9A-Za-z]+", s)
-    out = "".join(part[:1].upper() + part[1:] for part in parts if part)
-    if out and out[0].isdigit():
-        out = "_" + out
-    return out or "Generated"
-
-def event_alias_name(owner: str, field_name: str) -> str:
-    return f"{pascal_case(field_name)}Callback"
-
-def event_class_name(owner: str, field_name: str) -> str:
-    return f"{pascal_case(field_name)}Event"
-
-def build_module_children(modules: Dict[str, ModuleDoc]) -> Dict[str, List[Tuple[str, str]]]:
-    children: Dict[str, List[Tuple[str, str]]] = {}
-
-    for full_name in modules.keys():
-        if "." not in full_name:
-            continue
-
-        parent, child = full_name.rsplit(".", 1)
-        children.setdefault(parent, []).append((child, full_name))
-
-    for parent in children:
-        children[parent].sort(key=lambda x: x[0])
-
-    return children
-
-def field_line(owner: str, fld: FieldDoc) -> str:
-    typ = event_class_name(owner, fld.name) if fld.typ == "Event" else fld.typ
-    return f"---@field {fld.name} {typ} @{fld.comment}" if fld.comment else f"---@field {fld.name} {typ}"
+from dataclasses import dataclass
+from typing import Optional
 
 DOC_TAGS = {
     "+": "**This function cannot be run until window creation.**",
     "-": "**This function can only be run before window creation.**",
     "x": "**DEPRECATED**",
     "s": "**This function can only be run by a server host.**",
-    "p": "**This function can only be run by a peer of a server.**"
+    "p": "**This function can only be run by a peer of a server.**",
 }
+TYPE_MAP = {
+    "void": "nil", "boolean": "boolean", "bool": "boolean",
+    "number": "number", "int": "integer", "float": "number",
+    "double": "number", "string": "string", "table": "table",
+    "nil": "nil", "function": "fun(...)",
+}
+def lua_type(t: str) -> str:
+    optional = t.endswith("?")
+    base = t.rstrip("?")
+    return TYPE_MAP.get(base, base) + ("?" if optional else "")
 
-def append_event_defs(out: List[str], owner: str, fields: List[FieldDoc], emitted: set) -> None:
-    for fld in fields:
-        if fld.typ != "Event":
+@dataclass
+class ParamSet:
+    params: list
+@dataclass
+class FunctionEntry:
+    name: str
+    description: str
+    doc_tag: Optional[str]
+    param_sets: list
+    returns: list
+    is_constructor: bool = False
+@dataclass
+class FieldEntry:
+    name: str
+    ftype: str
+    comment: str
+    params: list = None
+@dataclass
+class OperationEntry:
+    ret: str
+    operand: str
+    op: str
+@dataclass
+class ObjectEntry:
+    name: str
+    comment: str
+    inherits: list
+    fields: list
+    constructors: list
+    methods: list
+    operations: list
+@dataclass
+class ModuleEntry:
+    name: str
+    append: bool
+    functions: list
+    fields: list
+
+def strip_comment(line: str) -> Optional[str]:
+    s = line.strip()
+    if s.startswith("//"):
+        return s[2:].strip()
+    return None
+def parse_params(raw: str) -> ParamSet:
+    params = []
+    for part in raw.split(","):
+        part = part.strip()
+        if not part:
             continue
-        cls = event_class_name(owner, fld.name)
-        if cls in emitted:
+        tokens = part.split()
+        if len(tokens) >= 2:
+            params.append((tokens[0], tokens[1]))
+        elif len(tokens) == 1:
+            params.append((tokens[0], "arg"))
+    return ParamSet(params)
+def parse_returns(raw: str) -> list:
+    return [t.strip() for t in raw.split(",") if t.strip()]
+
+TAG_RE = re.compile(r"^\[([+\-xsp])\]\s*")
+SET_FN_RE = re.compile(r'set_function\s*\(\s*"([^"]+)"')
+def strip_tag(text: str):
+    m = TAG_RE.match(text)
+    if m:
+        return m.group(1), text[m.end():].strip()
+    return None, text
+
+def parse_file(path: str):
+    with open(path, encoding="utf-8") as f:
+        lines = f.readlines()
+    modules = []
+    objects = []
+    cur_module = None
+    cur_object = None
+    desc_lines = []
+    doc_tag = None
+    param_sets = []
+    returns = []
+    pending_field = []
+    def flush():
+        nonlocal desc_lines, doc_tag, param_sets, returns
+        desc_lines = []; doc_tag = None; param_sets = []; returns = []
+    def commit_pending_field():
+        nonlocal pending_field
+        for fe in pending_field:
+            if cur_object is not None:
+                cur_object.fields.append(fe)
+            elif cur_module is not None:
+                cur_module.fields.append(fe)
+        pending_field = []
+    def commit_function(name: str):
+        commit_pending_field()
+        fn = FunctionEntry(
+            name=name,
+            description=" ".join(desc_lines).strip(),
+            doc_tag=doc_tag,
+            param_sets=list(param_sets),
+            returns=list(returns),
+        )
+        if cur_object is not None:
+            cur_object.methods.append(fn)
+        elif cur_module is not None:
+            cur_module.functions.append(fn)
+        flush()
+    for raw_line in lines:
+        cmt = strip_comment(raw_line)
+        if cmt is None:
+            m = SET_FN_RE.search(raw_line)
+            if m and (cur_module is not None or cur_object is not None):
+                commit_function(m.group(1))
+            elif re.search(r'\["[^"]+"]\s*=', raw_line):
+                commit_pending_field()
             continue
-        emitted.add(cls)
-        alias = event_alias_name(owner, fld.name)
-        sig = callback_sig(fld.event_params)
-        out.append(f"---@alias {alias} fun({sig})" if sig else f"---@alias {alias} fun()")
-        out.append(f"---@class {cls} : Event")
-        if fld.comment:
-            out.append(f"--- {fld.comment}")
-        out.append(f"{cls} = {cls} or {{}}")
-        out.append(f"---@param callback {alias}")
-        out.append(f"---@return Hook")
-        out.append(f"function {cls}:hook(callback) end")
-        out.append("")
-
-def emit_lua(modules: Dict[str, ModuleDoc], interfaces: Dict[str, InterfaceDoc], objects: List[ObjectDoc], functions: List[FunctionDoc]) -> str:
-    out: List[str] = []
-    emitted_event_defs = set()
-    module_children = build_module_children(modules)
-
-    for mname in sorted(modules.keys()):
-        append_event_defs(out, mname, modules[mname].fields, emitted_event_defs)
-
-    for iname in sorted(interfaces.keys()):
-        append_event_defs(out, iname, interfaces[iname].fields, emitted_event_defs)
-
-    for obj in objects:
-        append_event_defs(out, obj.name, obj.fields, emitted_event_defs)
-        for iname in obj.inherits:
-            idef = interfaces.get(iname)
-            if idef:
-                append_event_defs(out, obj.name, idef.fields, emitted_event_defs)
-
-    module_functions: Dict[str, List[FunctionDoc]] = {}
-    for fn in functions:
-        if not fn.is_method:
-            module_functions.setdefault(fn.owner, []).append(fn)
-
-    for mname in sorted(modules.keys()):
-        md = modules[mname]
-        out.append(f"---@class {mname}")
-        for fld in md.fields:
-            out.append(field_line(mname, fld))
-        for child_name, child_full_name in module_children.get(mname, []):
-            out.append(f"---@field {child_name} {child_full_name}")
-        if "." in mname:
-            for fn in module_functions.get(mname, []):
-                overloads = fn.overloads or [[]]
-                base = min(overloads, key=lambda o: len(o))
-                base_return = fn.returns[0] if fn.returns else None
-                sig = fn_sig(base)
-                field_sig = f"fun({sig}): {base_return}" if base_return and base_return != "void" else f"fun({sig})"
-
-                inline_parts: List[str] = []
-                emitted_tags: set = set()
-                remaining_doc = ""
-                for line in fn.doc_lines:
-                    tmp = line
-                    while tmp.startswith("["):
-                        end = tmp.find("]")
-                        if end == -1:
-                            break
-                        tag = tmp[1:end].strip()
-                        tmp = tmp[end + 1:].lstrip()
-                        msg = DOC_TAGS.get(tag)
-                        if msg and tag not in emitted_tags:
-                            inline_parts.append(msg)
-                            emitted_tags.add(tag)
-                    if tmp:
-                        remaining_doc = tmp
-                        break
-                if remaining_doc:
-                    inline_parts.append(remaining_doc)
-                inline = " ".join(inline_parts)
-
-                if inline:
-                    out.append(f"---@field {fn.name} {field_sig} @{inline}")
-                else:
-                    out.append(f"---@field {fn.name} {field_sig}")
-        if not md.append:
-            out.append(f"{mname} = {mname} or {{}}")
-        out.append("")
-
-    inherited_methods: List[FunctionDoc] = []
-    inherited_set = set()
-
-    for obj in objects:
-        out.append(f"---@class {obj.name}")
-
-        field_seen = set()
-        for fld in obj.fields:
-            field_seen.add(fld.name)
-            out.append(field_line(obj.name, fld))
-
-        for iname in obj.inherits:
-            idef = interfaces.get(iname)
-            if not idef:
-                continue
-            for fld in idef.fields:
-                if fld.name in field_seen:
-                    continue
-                field_seen.add(fld.name)
-                out.append(field_line(obj.name, fld))
-
-        for rtype, operand, sym in obj.operations:
-            out.append(f"---@operator {OP_MAP[sym]}({operand}): {rtype}")
-
-        out.append(f"{obj.name} = {obj.name} or {{}}")
-
-        if obj.ctors:
-            if obj.ctor_comment:
-                out.append(f"--- {obj.ctor_comment}")
-
-            uniq: List[List[Param]] = []
-            seenk = set()
-            for c in obj.ctors:
-                k = sig_key(c)
-                if k in seenk:
-                    continue
-                seenk.add(k)
-                uniq.append(c)
-
-            base = min(uniq, key=lambda c: len(c))
-            for c in uniq:
-                if sig_key(c) == sig_key(base):
-                    continue
-                sig = ctor_sig(c)
-                out.append(f"---@overload fun({sig}): {obj.name}" if sig else f"---@overload fun(): {obj.name}")
-
-            for p in base:
-                out.append(f"---@param {p.name} {p.typ}")
-            out.append(f"---@return {obj.name}")
-            out.append(f"function {obj.name}.new({', '.join([p.name for p in base])}) end")
-            out.append("")
-
-        for iname in obj.inherits:
-            idef = interfaces.get(iname)
-            if not idef:
-                continue
-            for m in idef.methods:
-                k = (obj.name, m.name)
-                if k in inherited_set:
-                    continue
-                inherited_set.add(k)
-                inherited_methods.append(FunctionDoc(
-                    owner=obj.name,
-                    name=m.name,
-                    is_method=True,
-                    doc_lines=list(m.doc_lines),
-                    overloads=list(m.overloads),
-                    returns=list(m.returns)
-                ))
-
-    direct_methods = set((f.owner, f.name) for f in functions if f.is_method)
-    merged: List[FunctionDoc] = list(functions)
-
-    for m in inherited_methods:
-        if (m.owner, m.name) in direct_methods:
+        if cmt.startswith("Module "):
+            flush()
+            rest = cmt[7:].strip()
+            append = False
+            if rest.endswith(", append"):
+                rest = rest[:-8].strip()
+                append = True
+            cur_module = ModuleEntry(name=rest, append=append, functions=[], fields=[])
+            cur_object = None
+            modules.append(cur_module)
             continue
-        merged.append(m)
-
-    merged.sort(key=lambda f: (f.owner, f.name, 0 if f.is_method else 1))
-
-    for fn in merged:
-        emitted_tags = set()
-
-        parts: List[str] = []
-        for line in fn.doc_lines:
-            while line.startswith("["):
-                end = line.find("]")
-                if end == -1:
-                    break
-                tag = line[1:end].strip()
-                line = line[end + 1:].lstrip()
-                msg = DOC_TAGS.get(tag)
-                if msg and tag not in emitted_tags:
-                    parts.append(msg)
-                    emitted_tags.add(tag)
-            if line:
-                parts.append(line)
-
-        if parts:
-            out.append(f"--- {' '.join(parts)}")
-
-        overloads = fn.overloads or [[]]
-        uniq: List[Tuple[int, List[Param]]] = []
-        seenk = set()
-        for i, ov in enumerate(overloads):
-            k = sig_key(ov)
-            if k in seenk:
-                continue
-            seenk.add(k)
-            uniq.append((i, ov))
-
-        def return_for(overload_index: int) -> Optional[str]:
-            if not fn.returns:
-                return None
-            if len(fn.returns) == 1:
-                return fn.returns[0]
-            if overload_index < len(fn.returns):
-                return fn.returns[overload_index]
-            return fn.returns[-1]
-
-        base_i, base = min(uniq, key=lambda x: len(x[1]))
-        base_key = sig_key(base)
-        for ov_i, ov in uniq:
-            if sig_key(ov) == base_key:
-                continue
-            sig = fn_sig(ov)
-            rtype = return_for(ov_i)
-            if rtype:
-                out.append(f"---@overload fun({sig}): {rtype}" if sig else f"---@overload fun(): {rtype}")
+        if cmt.startswith("End Module"):
+            commit_pending_field(); flush(); cur_module = None
+            continue
+        if cmt.startswith("Interface "):
+            flush()
+            name = cmt[10:].strip()
+            cur_object = ObjectEntry(name=name, comment="", inherits=[], fields=[], constructors=[], methods=[], operations=[])
+            objects.append(cur_object)
+            continue
+        if cmt.startswith("Object "):
+            flush()
+            rest = cmt[7:].strip()
+            obj_comment = ""
+            if "," in rest:
+                idx = rest.index(",")
+                obj_comment = rest[idx+1:].strip()
+                rest = rest[:idx].strip()
+            cur_object = ObjectEntry(name=rest, comment=obj_comment, inherits=[], fields=[], constructors=[], methods=[], operations=[])
+            objects.append(cur_object)
+            continue
+        if cmt.startswith("End Object") or cmt.startswith("End Interface"):
+            flush(); cur_object = None
+            continue
+        if cmt.startswith("Inherits ") and cur_object is not None:
+            cur_object.inherits.extend(i.strip() for i in cmt[9:].split(",") if i.strip())
+            continue
+        if cmt.startswith("Field ") and (cur_object is not None or cur_module is not None):
+            commit_pending_field()
+            rest = cmt[6:].strip()
+            first_comma = rest.find(",")
+            if first_comma != -1:
+                before = rest[:first_comma].strip()
+                fcomment = rest[first_comma+1:].strip()
             else:
-                out.append(f"---@overload fun({sig})" if sig else f"---@overload fun()")
-
-        args: List[str] = []
-        for p in base:
-            if p.name == "...":
-                out.append(f"---@param ... {p.typ}")
-                args.append("...")
+                before = rest.strip()
+                fcomment = ""
+            tokens = before.split()
+            ftype = tokens[0] if tokens else "any"
+            fname = tokens[1] if len(tokens) > 1 else "field"
+            pending_field.append(FieldEntry(name=fname, ftype=ftype, comment=fcomment))
+            flush()
+            continue
+        if cmt.startswith("Operation ") and cur_object is not None:
+            parts = cmt[10:].strip().split()
+            if len(parts) == 3:
+                cur_object.operations.append(OperationEntry(ret=parts[0], operand=parts[1], op=parts[2]))
+            flush()
+            continue
+        if cmt.startswith("Constructor"):
+            rest = cmt[11:].strip()
+            if cur_object is not None:
+                cur_object.constructors.append(parse_params(rest) if rest else ParamSet([]))
+            flush()
+            continue
+        if cmt.startswith("Params "):
+            if pending_field and not desc_lines and not param_sets and not returns:
+                if pending_field[-1].params is None:
+                    pending_field[-1].params = []
+                pending_field[-1].params.append(parse_params(cmt[7:].strip()))
             else:
-                out.append(f"---@param {p.name} {p.typ}")
-                args.append(p.name)
+                commit_pending_field()
+                param_sets.append(parse_params(cmt[7:].strip()))
+            continue
+        if cmt.startswith("Returns "):
+            returns = parse_returns(cmt[8:].strip())
+            continue
+        tag, text = strip_tag(cmt)
+        if tag:
+            doc_tag = tag
+        if text:
+            desc_lines.append(text)
+    return modules, objects
 
-        base_return = return_for(base_i)
-        if base_return:
-            out.append(f"---@return {base_return}")
+def emit_type(t: str) -> str:
+    return lua_type(t)
+def emit_param_list(ps: ParamSet) -> str:
+    return ", ".join(p[1] for p in ps.params)
+def emit_function(fn: FunctionEntry, parent: str, indent: str = "", is_method: bool = False) -> list:
+    out = []
+    desc = fn.description
+    if fn.doc_tag and fn.doc_tag in DOC_TAGS:
+        note = DOC_TAGS[fn.doc_tag]
+        desc = f"{note} {desc}".strip() if desc else note
+    if desc:
+        out.append(f"{indent}--- {desc}")
+    ret_parts = [emit_type(r) for r in fn.returns if r.lower() not in ("void", "nil")]
+    ret_str = ", ".join(ret_parts) if ret_parts else "nil"
+    def fmt_param(pt, pn):
+        return f"... {emit_type(pt)}" if pn == "..." else f"{pn}: {emit_type(pt)}"
+    def emit_param_annotation(pt, pn):
+        return (indent + "--- @param ... " + emit_type(pt)) if pn == "..." else (indent + "--- @param " + pn + " " + emit_type(pt))
+    if len(fn.param_sets) > 1:
+        primary = max(fn.param_sets, key=lambda ps: len(ps.params))
+        max_len = len(primary.params)
+        all_same_len = all(len(ps.params) == max_len for ps in fn.param_sets)
+        if all_same_len:
+            # Same arity: union differing types per position into one signature
+            union_params = []
+            for i in range(max_len):
+                pname = primary.params[i][1]
+                types_seen = []
+                for ps in fn.param_sets:
+                    t = emit_type(ps.params[i][0])
+                    if t not in types_seen:
+                        types_seen.append(t)
+                union_params.append(("|".join(types_seen), pname))
+            for ptype, pname in union_params:
+                out.append(emit_param_annotation(ptype, pname))
+        else:
+            # Check if shorter param sets are strict prefixes of the longest
+            # (same types at every shared position) — if so, collapse to optional trailing params
+            def is_prefix(short_ps, long_ps):
+                for i, (pt, pn) in enumerate(short_ps.params):
+                    if emit_type(pt) != emit_type(long_ps.params[i][0]):
+                        return False
+                return True
+            others = [ps for ps in fn.param_sets if ps is not primary]
+            if all(is_prefix(ps, primary) for ps in others):
+                # All shorter sets are trailing-optional prefixes — fold into one signature
+                shortest = min(len(ps.params) for ps in others)
+                for i, (ptype, pname) in enumerate(primary.params):
+                    t = emit_type(ptype)
+                    if i >= shortest:
+                        t = t.rstrip("?") + "?"
+                    out.append(emit_param_annotation(t, pname))
+            else:
+                # Genuinely different signatures — keep @overload
+                for ps in fn.param_sets:
+                    if ps is primary:
+                        continue
+                    param_str = ", ".join(fmt_param(pt, pn) for pt, pn in ps.params)
+                    out.append(indent + "--- @overload fun(" + param_str + "): " + ret_str)
+                for ptype, pname in primary.params:
+                    out.append(emit_param_annotation(ptype, pname))
+    else:
+        primary = fn.param_sets[0] if fn.param_sets else ParamSet([])
+        for ptype, pname in primary.params:
+            out.append(emit_param_annotation(ptype, pname))
+    if ret_parts:
+        out.append(indent + "--- @return " + ", ".join(ret_parts))
+    param_names = ", ".join("..." if pn == "..." else pn for _, pn in primary.params)
+    sep = ":" if is_method else "."
+    out.append(f"{indent}function {parent}{sep}{fn.name}({param_names}) end")
+    out.append("")
+    return out
 
-        sep = ":" if fn.is_method else "."
-        out.append(f"function {fn.owner}{sep}{fn.name}({', '.join(args)}) end")
+def make_event_stub(alias: str, param_str: str) -> str:
+    s  = f"--- @class {alias}\n"
+    s += f"{alias} = {{}}\n"
+    s += f"--- @param Function fun({param_str})\n"
+    s += f"--- @return Hook\n"
+    s += f"function {alias}:hook(Function) end\n"
+    s += f"function {alias}:clear() end\n"
+    s += f"--- @param ... any\n"
+    s += f"function {alias}:run(...) end\n"
+    s += f"--- @return number\n"
+    s += f"function {alias}:length() end\n"
+    return s
+
+def emit_module(mod: ModuleEntry, declared: set = None) -> list:
+    if declared is None:
+        declared = set()
+    out = []
+    parts = mod.name.split(".")
+    for i, part in enumerate(parts):
+        path = ".".join(parts[:i+1])
+        is_leaf = (i == len(parts) - 1)
+        already = path in declared
+        if not already:
+            declared.add(path)
+        if is_leaf:
+            out.append(f"--- @class {path}")
+            for f in mod.fields:
+                ftype = emit_type(f.ftype)
+                if ftype == "Event":
+                    alias = f"{mod.name.replace('.', '_')}_{f.name}"
+                    param_str = ", ".join(f"{pn}: {emit_type(pt)}" for pt, pn in f.params[0].params) if f.params else ""
+                    ftype = alias
+                    out.insert(0, make_event_stub(alias, param_str))
+                line = f"--- @field {f.name} {ftype}"
+                if f.comment:
+                    line += f" {f.comment}"
+                out.append(line)
+            if i == 0:
+                out.append(f"{part} = {{}}")
+                if path == "Lime":
+                    out.append("Lime.Enum = {}")
+            else:
+                out.append(f"{'.'.join(parts[:i])}.{part} = {{}}")
+        elif not already:
+            if i == 0:
+                out.append(f"{part} = {{}}")
+            else:
+                out.append(f"{'.'.join(parts[:i])}.{part} = {{}}")
+    out.append("")
+    for fn in mod.functions:
+        out.extend(emit_function(fn, mod.name))
+    return out
+
+def emit_object(obj: ObjectEntry) -> list:
+    out = []
+    if obj.comment:
+        out.append(f"--- {obj.comment}")
+    class_line = f"--- @class {obj.name}"
+    if obj.inherits:
+        class_line += " : " + ", ".join(obj.inherits)
+    out.append(class_line)
+    op_insert_idx = len(out) - 1
+    for f in obj.fields:
+        ftype = emit_type(f.ftype)
+        if ftype == "Event":
+            alias = f"{obj.name}_{f.name}"
+            param_str = ", ".join(f"{pn}: {emit_type(pt)}" for pt, pn in f.params[0].params) if f.params else ""
+            ftype = alias
+            out.insert(0, make_event_stub(alias, param_str))
+        line = f"--- @field {f.name} {ftype}"
+        if f.comment:
+            line += f" {f.comment}"
+        out.append(line)
+    out.append(f"{obj.name} = {{}}")
+    out.append("")
+    if obj.constructors:
+        primary = obj.constructors[0]
+        for ps in obj.constructors[1:]:
+            param_str = ", ".join(f"{pn}: {emit_type(pt)}" for pt, pn in ps.params)
+            out.append(f"--- @overload fun({param_str}): {obj.name}")
+        for pt, pn in primary.params:
+            out.append(f"--- @param {pn} {emit_type(pt)}")
+        out.append(f"--- @return {obj.name}")
+        out.append(f"function {obj.name}.new({emit_param_list(primary)}) end")
         out.append("")
+    OP_KEYWORD = {"==": "eq", "+": "add", "-": "sub", "*": "mul", "/": "div", "<": "lt", "<=": "le"}
+    for n, op in enumerate(obj.operations):
+        out.insert(op_insert_idx + 1 + n, f"--- @operator {OP_KEYWORD.get(op.op, op.op)}({emit_type(op.operand)}): {emit_type(op.ret)}")
+    for fn in obj.methods:
+        out.extend(emit_function(fn, obj.name, is_method=True))
+    return out
 
-    while out and out[-1] == "":
-        out.pop()
-    return "\n".join(out) + "\n"
+def merge_modules(modules) -> list:
+    merged: dict = {}
+    order = []
+    for mod in modules:
+        if mod.name in merged:
+            merged[mod.name].fields.extend(mod.fields)
+            merged[mod.name].functions.extend(mod.functions)
+        else:
+            merged[mod.name] = ModuleEntry(name=mod.name, append=mod.append, functions=list(mod.functions), fields=list(mod.fields))
+            order.append(mod.name)
+    return [merged[n] for n in order]
 
-def main() -> int:
-    ap = argparse.ArgumentParser(add_help=True)
-    ap.add_argument("--src", required=True)
-    ap.add_argument("--out", required=True)
+def generate(modules, objects) -> str:
+    lines = ["---@meta", ""]
+    declared_tables: set = set()
+    for mod in merge_modules(modules):
+        lines.extend(emit_module(mod, declared_tables))
+    for obj in objects:
+        lines.extend(emit_object(obj))
+    return "\n".join(lines)
+
+FOLDER_ORDER = ["Interfaces", "Objects", "Modules"]
+
+def collect_files(src: Path) -> list:
+    ordered = []
+    seen = set()
+    for folder in FOLDER_ORDER:
+        d = src / folder
+        if d.is_dir():
+            for f in sorted(d.rglob("*.cpp")):
+                if f not in seen:
+                    ordered.append(f)
+                    seen.add(f)
+    for f in sorted(src.rglob("*.cpp")):
+        if f not in seen:
+            ordered.append(f)
+            seen.add(f)
+    return ordered
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--src", required=True, metavar="DIR")
+    ap.add_argument("--out", required=True, metavar="DIR")
     args = ap.parse_args()
-
-    src = Path(args.src).resolve()
-    out_dir = Path(args.out).resolve()
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    modules, interfaces, objects, functions = parse_cpp_files(src)
-    (out_dir / "Lime.lua").write_text(emit_lua(modules, interfaces, objects, functions), encoding="utf-8")
-    return 0
+    src = Path(args.src)
+    out = Path(args.out)
+    if not src.is_dir():
+        print(f"error: --src '{src}' is not a directory")
+        sys.exit(1)
+    cpp_files = collect_files(src)
+    all_modules = []
+    all_objects = []
+    for path in cpp_files:
+        mods, objs = parse_file(str(path))
+        all_modules.extend(mods)
+        all_objects.extend(objs)
+        if mods or objs:
+            print(f" + {path.relative_to(src)}: {len(objs)} objects, {len(mods)} modules")
+    out.mkdir(parents=True, exist_ok=True)
+    dest = out / "Lime.lua"
+    dest.write_text(generate(all_modules, all_objects), encoding="utf-8")
+    print(f"Compiled Lime.lua with {len(all_objects)} objects and {len(all_modules)} modules")
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()

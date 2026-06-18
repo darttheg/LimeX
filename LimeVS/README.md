@@ -2,7 +2,7 @@
 A powerful Visual Studio Code extension for Lime projects that cleanly embeds autocompletion and build/run/package commands. Stress free creation!
 
 ## Dependencies
-It is recommended to use **EmmyLua** (`tangzx.emmylua`), but **lua-language-server** (`sumneko.lua`) is also supported in patching Lime completions. These extensions can be found on the Visual Studio Code extensions marketplace.
+**lua-language-server** (`sumneko.lua`) is required in patching Lime completions. This extension can be found on the Visual Studio Code extensions marketplace.
 
 ## Getting Started
 (To be added)

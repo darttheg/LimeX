@@ -44,19 +44,18 @@ function getApiPath(context) {
 }
 async function injectLuaLibrary(context, workspaceFolder) {
     const apiPath = getApiPath(context);
-    const emmyrcPath = path.join(workspaceFolder, ".emmyrc.json");
+    const luarcPath = path.join(workspaceFolder, ".luarc.json");
     let config = {};
-    if (fs.existsSync(emmyrcPath)) {
+    if (fs.existsSync(luarcPath)) {
         try {
-            config = JSON.parse(fs.readFileSync(emmyrcPath, "utf-8"));
+            config = JSON.parse(fs.readFileSync(luarcPath, "utf-8"));
         }
         catch { }
     }
-    config.workspace = config.workspace ?? {};
-    config.workspace.library = config.workspace.library ?? [];
-    if (!config.workspace.library.includes(apiPath)) {
-        config.workspace.library.push(apiPath);
-        fs.writeFileSync(emmyrcPath, JSON.stringify(config, null, 2), "utf-8");
+    config["workspace.library"] = config["workspace.library"] ?? [];
+    if (!config["workspace.library"].includes(apiPath)) {
+        config["workspace.library"].push(apiPath);
+        fs.writeFileSync(luarcPath, JSON.stringify(config, null, 2), "utf-8");
     }
 }
 function launchApp(workspaceFolder) {
@@ -89,7 +88,7 @@ function loadIgnoreList(workspaceFolder) {
         ".lib",
         ".pdb",
         ".log",
-        ".emmyrc.json",
+        ".luarc.json",
         ".vscode",
         ".ignore",
         "bin",
