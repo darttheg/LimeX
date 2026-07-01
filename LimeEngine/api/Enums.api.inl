@@ -138,13 +138,13 @@ LIME_ENUM(LightManagementType,
 );
 
 LIME_ENUM(ZOrderMethod,
-    LIME_ENUM_VALUE(BehindAll, 0)
+    LIME_ENUM_VALUE(BehindAll, 6)
     LIME_ENUM_VALUE(Default, 1)
     LIME_ENUM_VALUE(Decal, 2)
     LIME_ENUM_VALUE(ExceptDecal, 3)
     LIME_ENUM_VALUE(XRay, 4)
     LIME_ENUM_VALUE(StrictXRay, 5)
-    LIME_ENUM_VALUE(OnTop, 6)
+    LIME_ENUM_VALUE(OnTop, 0)
 );
 
 LIME_ENUM(TextAlign,

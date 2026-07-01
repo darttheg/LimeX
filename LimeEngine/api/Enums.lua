@@ -256,13 +256,13 @@ EmptyAsActivationZone = 2,
 ---@field StrictXRay Lime.Enum.ZOrderMethod
 ---@field OnTop Lime.Enum.ZOrderMethod
 Lime.Enum.ZOrderMethod = {
-BehindAll = 0,
+BehindAll = 6,
 Default = 1,
 Decal = 2,
 ExceptDecal = 3,
 XRay = 4,
 StrictXRay = 5,
-OnTop = 6,
+OnTop = 0,
 }
 ---@alias Lime.Enum.TextAlign integer
 ---@class Lime.Enum.TextAlignEnum

@@ -18,6 +18,7 @@ TYPE_MAP = {
     "double": "number", "string": "string", "table": "table",
     "nil": "nil", "function": "fun(...)",
 }
+
 def lua_type(t: str) -> str:
     optional = t.endswith("?")
     base = t.rstrip("?")
@@ -26,6 +27,7 @@ def lua_type(t: str) -> str:
 @dataclass
 class ParamSet:
     params: list
+
 @dataclass
 class FunctionEntry:
     name: str
@@ -34,17 +36,20 @@ class FunctionEntry:
     param_sets: list
     returns: list
     is_constructor: bool = False
+
 @dataclass
 class FieldEntry:
     name: str
     ftype: str
     comment: str
     params: list = None
+
 @dataclass
 class OperationEntry:
     ret: str
     operand: str
     op: str
+
 @dataclass
 class ObjectEntry:
     name: str
@@ -54,6 +59,7 @@ class ObjectEntry:
     constructors: list
     methods: list
     operations: list
+
 @dataclass
 class ModuleEntry:
     name: str
@@ -66,6 +72,7 @@ def strip_comment(line: str) -> Optional[str]:
     if s.startswith("//"):
         return s[2:].strip()
     return None
+
 def parse_params(raw: str) -> ParamSet:
     params = []
     for part in raw.split(","):
@@ -78,11 +85,13 @@ def parse_params(raw: str) -> ParamSet:
         elif len(tokens) == 1:
             params.append((tokens[0], "arg"))
     return ParamSet(params)
+
 def parse_returns(raw: str) -> list:
     return [t.strip() for t in raw.split(",") if t.strip()]
 
 TAG_RE = re.compile(r"^\[([+\-xsp])\]\s*")
 SET_FN_RE = re.compile(r'set_function\s*\(\s*"([^"]+)"')
+
 def strip_tag(text: str):
     m = TAG_RE.match(text)
     if m:
@@ -101,9 +110,11 @@ def parse_file(path: str):
     param_sets = []
     returns = []
     pending_field = []
+
     def flush():
         nonlocal desc_lines, doc_tag, param_sets, returns
         desc_lines = []; doc_tag = None; param_sets = []; returns = []
+
     def commit_pending_field():
         nonlocal pending_field
         for fe in pending_field:
@@ -112,6 +123,7 @@ def parse_file(path: str):
             elif cur_module is not None:
                 cur_module.fields.append(fe)
         pending_field = []
+
     def commit_function(name: str):
         commit_pending_field()
         fn = FunctionEntry(
@@ -126,6 +138,7 @@ def parse_file(path: str):
         elif cur_module is not None:
             cur_module.functions.append(fn)
         flush()
+
     for raw_line in lines:
         cmt = strip_comment(raw_line)
         if cmt is None:
@@ -153,6 +166,7 @@ def parse_file(path: str):
             flush()
             name = cmt[10:].strip()
             cur_object = ObjectEntry(name=name, comment="", inherits=[], fields=[], constructors=[], methods=[], operations=[])
+            cur_object._is_interface = True
             objects.append(cur_object)
             continue
         if cmt.startswith("Object "):
@@ -210,8 +224,11 @@ def parse_file(path: str):
                 param_sets.append(parse_params(cmt[7:].strip()))
             continue
         if cmt.startswith("Returns "):
-            returns = parse_returns(cmt[8:].strip())
-            continue
+            rest = cmt[8:].strip()
+            tokens = [t.strip() for t in rest.split(",") if t.strip()]
+            if tokens and all(" " not in t for t in tokens):
+                returns.append(parse_returns(rest))
+                continue
         tag, text = strip_tag(cmt)
         if tag:
             doc_tag = tag
@@ -221,8 +238,10 @@ def parse_file(path: str):
 
 def emit_type(t: str) -> str:
     return lua_type(t)
+
 def emit_param_list(ps: ParamSet) -> str:
     return ", ".join(p[1] for p in ps.params)
+
 def emit_function(fn: FunctionEntry, parent: str, indent: str = "", is_method: bool = False) -> list:
     out = []
     desc = fn.description
@@ -231,61 +250,104 @@ def emit_function(fn: FunctionEntry, parent: str, indent: str = "", is_method: b
         desc = f"{note} {desc}".strip() if desc else note
     if desc:
         out.append(f"{indent}--- {desc}")
-    ret_parts = [emit_type(r) for r in fn.returns if r.lower() not in ("void", "nil")]
-    ret_str = ", ".join(ret_parts) if ret_parts else "nil"
+
+    returns_list = fn.returns
+    if returns_list and not isinstance(returns_list[0], list):
+        returns_list = [returns_list]
+
+    def ret_str_for(rset):
+        parts = [emit_type(r) for r in rset if r.lower() not in ("void", "nil")]
+        return ", ".join(parts) if parts else "nil"
+
+    if len(returns_list) > 1:
+        types_seen = []
+        for rset in returns_list:
+            for r in rset:
+                t = emit_type(r)
+                if t.lower() not in ("nil", "void") and t not in types_seen:
+                    types_seen.append(t)
+        ret_parts = types_seen
+    else:
+        rset = returns_list[0] if returns_list else []
+        ret_parts = [emit_type(r) for r in rset if r.lower() not in ("void", "nil")]
+
+    ret_str = "|".join(ret_parts) if len(returns_list) > 1 else (", ".join(ret_parts) if ret_parts else "nil")
+
     def fmt_param(pt, pn):
         return f"... {emit_type(pt)}" if pn == "..." else f"{pn}: {emit_type(pt)}"
+
     def emit_param_annotation(pt, pn):
         return (indent + "--- @param ... " + emit_type(pt)) if pn == "..." else (indent + "--- @param " + pn + " " + emit_type(pt))
+
     if len(fn.param_sets) > 1:
         primary = max(fn.param_sets, key=lambda ps: len(ps.params))
+        primary_idx = fn.param_sets.index(primary)
         max_len = len(primary.params)
         all_same_len = all(len(ps.params) == max_len for ps in fn.param_sets)
+
+        def get_ret(idx):
+            if idx < len(returns_list):
+                return ret_str_for(returns_list[idx])
+            return ret_str
+
         if all_same_len:
-            # Same arity: union differing types per position into one signature
-            union_params = []
-            for i in range(max_len):
-                pname = primary.params[i][1]
-                types_seen = []
-                for ps in fn.param_sets:
-                    t = emit_type(ps.params[i][0])
-                    if t not in types_seen:
-                        types_seen.append(t)
-                union_params.append(("|".join(types_seen), pname))
-            for ptype, pname in union_params:
-                out.append(emit_param_annotation(ptype, pname))
+            ret_sets = [ret_str_for(returns_list[i]) if i < len(returns_list) else ret_str for i in range(len(fn.param_sets))]
+            returns_differ = len(set(ret_sets)) > 1
+            if returns_differ:
+                self_prefix = "self, " if is_method else ""
+                for i, ps in enumerate(fn.param_sets):
+                    if ps is primary:
+                        continue
+                    param_str = ", ".join(fmt_param(pt, pn) for pt, pn in ps.params)
+                    out.append(indent + "--- @overload fun(" + self_prefix + param_str + "): " + ret_sets[i])
+                for ptype, pname in primary.params:
+                    out.append(emit_param_annotation(ptype, pname))
+            else:
+                union_params = []
+                for i in range(max_len):
+                    pname = primary.params[i][1]
+                    types_seen = []
+                    for ps in fn.param_sets:
+                        t = emit_type(ps.params[i][0])
+                        if t not in types_seen:
+                            types_seen.append(t)
+                    union_params.append(("|".join(types_seen), pname))
+                for ptype, pname in union_params:
+                    out.append(emit_param_annotation(ptype, pname))
         else:
-            # Check if shorter param sets are strict prefixes of the longest
-            # (same types at every shared position) — if so, collapse to optional trailing params
             def is_prefix(short_ps, long_ps):
                 for i, (pt, pn) in enumerate(short_ps.params):
                     if emit_type(pt) != emit_type(long_ps.params[i][0]):
                         return False
                 return True
-            others = [ps for ps in fn.param_sets if ps is not primary]
-            if all(is_prefix(ps, primary) for ps in others):
-                # All shorter sets are trailing-optional prefixes — fold into one signature
-                shortest = min(len(ps.params) for ps in others)
+            others = [(i, ps) for i, ps in enumerate(fn.param_sets) if ps is not primary]
+            if all(is_prefix(ps, primary) for _, ps in others):
+                shortest = min(len(ps.params) for _, ps in others)
                 for i, (ptype, pname) in enumerate(primary.params):
                     t = emit_type(ptype)
                     if i >= shortest:
                         t = t.rstrip("?") + "?"
                     out.append(emit_param_annotation(t, pname))
             else:
-                # Genuinely different signatures — keep @overload
-                for ps in fn.param_sets:
+                self_prefix = "self, " if is_method else ""
+                for i, ps in enumerate(fn.param_sets):
                     if ps is primary:
                         continue
                     param_str = ", ".join(fmt_param(pt, pn) for pt, pn in ps.params)
-                    out.append(indent + "--- @overload fun(" + param_str + "): " + ret_str)
+                    out.append(indent + "--- @overload fun(" + self_prefix + param_str + "): " + get_ret(i))
                 for ptype, pname in primary.params:
                     out.append(emit_param_annotation(ptype, pname))
     else:
         primary = fn.param_sets[0] if fn.param_sets else ParamSet([])
         for ptype, pname in primary.params:
             out.append(emit_param_annotation(ptype, pname))
+
     if ret_parts:
-        out.append(indent + "--- @return " + ", ".join(ret_parts))
+        if len(returns_list) > 1:
+            out.append(indent + "--- @return " + "|".join(ret_parts))
+        else:
+            out.append(indent + "--- @return " + ", ".join(ret_parts))
+
     param_names = ", ".join("..." if pn == "..." else pn for _, pn in primary.params)
     sep = ":" if is_method else "."
     out.append(f"{indent}function {parent}{sep}{fn.name}({param_names}) end")
@@ -401,7 +463,24 @@ def generate(modules, objects) -> str:
     declared_tables: set = set()
     for mod in merge_modules(modules):
         lines.extend(emit_module(mod, declared_tables))
+
+    interfaces = {obj.name: obj for obj in objects if getattr(obj, "_is_interface", False)}
+
     for obj in objects:
+        if getattr(obj, "_is_interface", False):
+            continue
+        for iface_name in obj.inherits:
+            if iface_name in interfaces:
+                iface = interfaces[iface_name]
+                existing_names = {m.name for m in obj.methods}
+                for m in iface.methods:
+                    if m.name not in existing_names:
+                        obj.methods.append(m)
+                existing_fields = {f.name for f in obj.fields}
+                for f in iface.fields:
+                    if f.name not in existing_fields:
+                        obj.fields.append(f)
+        obj.inherits = [i for i in obj.inherits if i not in interfaces]
         lines.extend(emit_object(obj))
     return "\n".join(lines)
 
