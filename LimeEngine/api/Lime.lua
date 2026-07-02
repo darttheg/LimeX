@@ -1685,7 +1685,7 @@ function Light:addRotateAnimator(rot) end
 --- @field frontfaceCulling boolean Change frontface culling behavior for this `Material`.
 --- @field quality Lime.Enum.Quality Sets the quality of this `Material` using `Lime.Enum.Quality` presets, where Low is unfiltered and High is smooth.
 --- @field wireframe boolean Enables wireframe view for this `Material`.
---- @field z Lime.Enum.ZOrderMethod Sets Z ordering method for this `Material` using `Lime.Enum.ZOrderMethod`.
+--- @field zMethod Lime.Enum.ZOrderMethod Sets Z ordering method for this `Material` using `Lime.Enum.ZOrderMethod`.
 --- @field opacity number Sets the opacity of this `Material` from 0.0 (invisible) to 1.0 (visible), affecting the transparency of objects with this `Material` applied. (NOTE: Will not affect solid types)
 --- @field mipmaps boolean Enables the generation of mipmaps.
 --- @field shine number Sets the shine for this `Material`, ranging from 0 (soft and wide shine) to 1 (harsh and small shine).
@@ -1719,9 +1719,11 @@ function Material:loadTexture(texture, layer) end
 function Material:clearTexture(layer) end
 
 --- Changes the method for `Texture` UV wrapping.
+--- @overload fun(self, method: Lime.Enum.TextureWrapType, layer: number): nil
+--- @overload fun(self, method: Lime.Enum.TextureWrapType): nil
 --- @param uMethod Lime.Enum.TextureWrapType
 --- @param vMethod Lime.Enum.TextureWrapType
---- @param layer number?
+--- @param layer number
 function Material:setTextureWrapMethod(uMethod, vMethod, layer) end
 
 --- Sets the scale of the mapping of a `Texture`.

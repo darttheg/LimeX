@@ -35,7 +35,8 @@ public:
 
 	Vec2 getTextureUVWrapBehavior(int layer = 0) const;
 	void setTextureUVWrapBehavior(int u, int v, int layer);
-	void setTextureUVWrapBehavior(int u, int v);
+	void setTextureUVWrapBehavior(int u, int layer);
+	void setTextureUVWrapBehavior(int u);
 
 	Vec2 getTextureScale(int layer = 0) const;
 	void setTextureScale(const Vec2& scale, int layer);

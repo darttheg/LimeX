@@ -4,19 +4,23 @@ Lime = {}
 --- @class Lime.File
 Lime.File = {}
 
+--- Returns true if a directory exists at `path`.
 --- @param path string
 --- @return boolean
 function Lime.File.isDirectory(path) end
 
+--- Returns a table of file paths from directory `path`.
 --- @param path string
 --- @param extension string?
 --- @return table
 function Lime.File.getFilesInDirectory(path, extension) end
 
+--- Returns true if `path` leads to a file.
 --- @param path string
 --- @return boolean
 function Lime.File.isFile(path) end
 
+--- Returns contents of file at `path`. Optionally, a provided `seed` will attempt to decrypt the data.
 --- @param path string
 --- @param seed string?
 --- @return string
@@ -29,10 +33,12 @@ function Lime.File.readFile(path, seed) end
 --- @return boolean
 function Lime.File.writeFile(path, data, seed) end
 
+--- Returns the extension of the file at `path`.
 --- @param path string
 --- @return string
 function Lime.File.getExtension(path) end
 
+--- Returns the name of the file at `path`.
 --- @param path string
 --- @return string
 function Lime.File.getFileName(path) end
@@ -205,17 +211,21 @@ function Lime_Input_onKeyPressed:length() end
 --- @field onControllerButtonReleased Lime_Input_onControllerButtonReleased Event called by Lime when a controller button is released.
 Lime.Input = {}
 
+--- Returns true if `key` is currently pressed.
 --- @param key Lime.Enum.Key
 --- @return boolean
 function Lime.Input.isKeyDown(key) end
 
+--- Returns true if `button` is currently pressed.
 --- @param button Lime.Enum.Mouse
 --- @return boolean
 function Lime.Input.isMouseButtonDown(button) end
 
+--- Returns the change in mouse position within the last frame.
 --- @return Vec2
 function Lime.Input.getMouseDelta() end
 
+--- Returns the mouse's position.
 --- @return Vec2
 function Lime.Input.getMousePosition() end
 
@@ -227,23 +237,28 @@ function Lime.Input.setMousePosition(pos) end
 --- @param visible boolean
 function Lime.Input.setMouseVisible(visible) end
 
+--- Returns the visibility of the mouse cursor.
 --- @return boolean
 function Lime.Input.isMouseVisible() end
 
+--- Returns true if controller with id `id` has button `button` pressed down.
 --- @param id number
 --- @param button Lime.Enum.Controller
 --- @return boolean
 function Lime.Input.isButtonDown(id, button) end
 
+--- Returns controller with id `id`'s `axis` axis value from -1.0 to 1.0. Triggers are ranged 0.0 to 1.0.
 --- @param id number
 --- @param axis Lime.Enum.ControllerAxis
 --- @return number
 function Lime.Input.getControllerAxis(id, axis) end
 
+--- Returns true if controller with id `id` is connected.
 --- @param id number
 --- @return boolean
 function Lime.Input.isControllerConnected(id) end
 
+--- Returns the name of the controller with id `id`.
 --- @param id number
 --- @return string
 function Lime.Input.getControllerName(id) end
@@ -252,6 +267,7 @@ function Lime.Input.getControllerName(id) end
 --- @param type Lime.Enum.MouseType
 function Lime.Input.setMouseType(type) end
 
+--- Returns the mouse behavior type.
 --- @return Lime.Enum.MouseType
 function Lime.Input.getMouseType() end
 
@@ -322,6 +338,7 @@ function Lime.close() end
 --- Clears the debug console's lines, only visually.
 function Lime.clearDebugConsole() end
 
+--- Returns the Lime version running.
 --- @return string
 function Lime.getVersion() end
 
@@ -332,12 +349,15 @@ function Lime.getVersion() end
 --- @return boolean
 function Lime.setInitConfig(driver, windowSize, renderSize) end
 
+--- Returns the elapsed time the application has been running in milliseconds.
 --- @return number
 function Lime.getElapsedTime() end
 
+--- Returns the elapsed time the application has been running in seconds.
 --- @return number
 function Lime.getElapsedTimeSeconds() end
 
+--- Returns the frame rate in frames per second.
 --- @return number
 function Lime.getFrameRate() end
 
@@ -349,9 +369,11 @@ function Lime.setFrameRate(target) end
 --- @param vSyncOn boolean
 function Lime.setVSync(vSyncOn) end
 
+--- Returns true if vertical syncronization is on.
 --- @return boolean
 function Lime.getVSync() end
 
+--- Returns the driver type.
 --- @return Lime.Enum.DriverType
 function Lime.getDriverType() end
 
@@ -361,6 +383,7 @@ function Lime.getDriverType() end
 --- @param suppressWarnings boolean?
 function Lime.setDebugConfig(enable, writeOutput, suppressWarnings) end
 
+--- Returns the application's memory usage in megabytes.
 --- @return number
 function Lime.getMemoryUsage() end
 
@@ -369,6 +392,7 @@ function Lime.getMemoryUsage() end
 --- @return number
 function Lime.executeCommandLine(cmd) end
 
+--- Returns the value of `arg` from the commmand line, if any. Returns `nil` if no such argument exists.
 --- @param arg string
 --- @return string
 function Lime.getCommandLineArg(arg) end
@@ -388,28 +412,37 @@ function Lime.loadArchive(path) end
 math = {}
 
 --- Clamps `v` to `min`, `max`.
---- @param v number|Vec2|Vec3|Vec4
+--- @overload fun(v: Vec2, min: number, max: number): Vec2
+--- @overload fun(v: Vec3, min: number, max: number): Vec3
+--- @overload fun(v: Vec4, min: number, max: number): Vec4
+--- @param v number
 --- @param min number
 --- @param max number
---- @return Vec4
+--- @return number|Vec2|Vec3|Vec4
 function math.clamp(v, min, max) end
 
 --- @class math.tween
 math.tween = {}
 
 --- Interpolates from `old` toward `target` using exponential smoothing.
---- @param old number|Vec2|Vec3|Vec4
---- @param target number|Vec2|Vec3|Vec4
+--- @overload fun(old: Vec2, target: Vec2, factor: number, dt: number): Vec2
+--- @overload fun(old: Vec3, target: Vec3, factor: number, dt: number): Vec3
+--- @overload fun(old: Vec4, target: Vec4, factor: number, dt: number): Vec4
+--- @param old number
+--- @param target number
 --- @param factor number
 --- @param dt number
---- @return Vec4
+--- @return number|Vec2|Vec3|Vec4
 function math.tween.damp(old, target, factor, dt) end
 
 --- Linearly interpolates from `old` to `target` over `a`, where `a` is between 0.0 and 1.0.
---- @param old number|Vec2|Vec3|Vec4
---- @param target number|Vec2|Vec3|Vec4
+--- @overload fun(old: Vec2, target: Vec2, a: number): Vec2
+--- @overload fun(old: Vec3, target: Vec3, a: number): Vec3
+--- @overload fun(old: Vec4, target: Vec4, a: number): Vec4
+--- @param old number
+--- @param target number
 --- @param a number
---- @return Vec4
+--- @return number|Vec2|Vec3|Vec4
 function math.tween.lerp(old, target, a) end
 
 --- Starts slow, accelerates. (Sine curve)
@@ -579,9 +612,11 @@ function Lime.Network.connect(ip, port) end
 --- Disconnects from a server. If this application is the host, it will close the server.
 function Lime.Network.disconnect() end
 
+--- Returns true if this application is hosting a server.
 --- @return boolean
 function Lime.Network.isHosting() end
 
+--- Returns true if this application is connected to a server.
 --- @return boolean
 function Lime.Network.isConnected() end
 
@@ -631,6 +666,7 @@ function Lime.Network.unbanIP(...) end
 --- Unbans all IP addresses.
 function Lime.Network.clearBannedIPs() end
 
+--- Returns a table of IP addresses that are banned.
 --- @return number[]
 function Lime.Network.getBannedIPs() end
 
@@ -696,18 +732,22 @@ function Lime.Physics.setFixedTimeStep(fixedStep) end
 --- @param maxSteps number
 function Lime.Physics.setMaxSubSteps(maxSteps) end
 
+--- Returns the number of physics objects.
 --- @return number
 function Lime.Physics.getObjectCount() end
 
 --- @class Lime.Scene
 Lime.Scene = {}
 
+--- Returns the amount of 3D objects in the scene.
 --- @return number
 function Lime.Scene.getObjectCount() end
 
+--- Returns the amount of textures in the scene.
 --- @return number
 function Lime.Scene.getTextureCount() end
 
+--- Returns the amount of cached meshes in the scene.
 --- @return number
 function Lime.Scene.getMeshCount() end
 
@@ -786,6 +826,7 @@ function Lime.Scene.createPlaneMesh(tileSize, tileCount, repeatCount) end
 --- @param active boolean
 function Lime.Scene.setRenderingActive(active) end
 
+--- Returns whether or not the application is actively rendering new output from the scene.
 --- @return boolean
 function Lime.Scene.isRenderingActive() end
 
@@ -845,6 +886,7 @@ function Lime.Scene.fireScreenspaceRaycast(startPos, length, rayLifeMs) end
 --- @class Lime.Audio
 Lime.Audio = {}
 
+--- Returns the listener velocity factor.
 --- @return number
 function Lime.Audio.getVelocityFactor() end
 
@@ -948,15 +990,19 @@ function Lime.Web.download(url, path) end
 --- Cancels the ongoing download, if any.
 function Lime.Web.cancelDownload() end
 
+--- Returns the download progress from 0.0 to 1.0.
 --- @return number
 function Lime.Web.getDownloadProgress() end
 
+--- Returns the download speed in bytes per second.
 --- @return number
 function Lime.Web.getDownloadSpeed() end
 
+--- Returns true if there is an ongoing download.
 --- @return boolean
 function Lime.Web.isDownloading() end
 
+--- Returns true if an ongoing download is extracting its content.
 --- @return boolean
 function Lime.Web.isExtracting() end
 
@@ -1011,6 +1057,7 @@ function Lime.Window.getMonitorSize() end
 --- @return boolean
 function Lime.Window.isFocused() end
 
+--- Returns true if the window is created.
 --- @return boolean
 function Lime.Window.isCreated() end
 
@@ -1026,182 +1073,15 @@ function Lime.Window.setLockAspectRatio(locked) end
 --- @param size Vec2
 function Lime.Window.setMinimumSize(size) end
 
---- @class Object2D_onPressed
-Object2D_onPressed = {}
---- @param Function fun()
---- @return Hook
-function Object2D_onPressed:hook(Function) end
-function Object2D_onPressed:clear() end
---- @param ... any
-function Object2D_onPressed:run(...) end
---- @return number
-function Object2D_onPressed:length() end
-
---- @class Object2D_onHovered
-Object2D_onHovered = {}
---- @param Function fun()
---- @return Hook
-function Object2D_onHovered:hook(Function) end
-function Object2D_onHovered:clear() end
---- @param ... any
-function Object2D_onHovered:run(...) end
---- @return number
-function Object2D_onHovered:length() end
-
---- @class Object2D
---- @field position Vec2 The 2D position of this object on the screen.
---- @field size Vec2 The 2D size of this object.
---- @field visible boolean Determines the visibility of this object and its children.
---- @field border boolean Displays a border outlining this object's bounding box on the screen.
---- @field enabled boolean Determines if this object will process hooked input events, if any.
---- @field backgroundColor Vec4 The RGBA background color of this object.
---- @field onHovered Object2D_onHovered Event called by Lime when this object is hovered.
---- @field onPressed Object2D_onPressed Event called by Lime when this object is pressed.
-Object2D = {}
-
---- Parents this object to another 2D object.
---- @param parent any
---- @return boolean
-function Object2D:parentTo(parent) end
-
---- @return boolean
-function Object2D:hasParent() end
-
---- @return boolean
-function Object2D:isHovered() end
-
---- Moves this object to the front in terms of z ordering. (Rendered last, overlaps all other objects)
---- @return boolean
-function Object2D:moveToFront() end
-
---- Moves this object to the back in terms of z ordering. (Rendered first, all other objects then overlap)
---- @return boolean
-function Object2D:moveToBack() end
-
---- @return number
-function Object2D:getReferenceCount() end
-
---- @return Vec2
-function Object2D:getAbsolutePosition() end
-
---- Destroys this object.
-function Object2D:destroy() end
-
---- @class Object3D
+--- A plane that faces the active camera.
+--- @class Billboard
+--- @field size Vec2 The width and height of this Billboard.
 --- @field position Vec3 The 3D position of this object in the scene.
 --- @field rotation Vec3 The 3D rotation of this object in the scene in degrees.
 --- @field scale Vec3 The 3D scale of this object in the scene.
 --- @field visible boolean Determines the visibility of this object and its children.
 --- @field id number The identifier for this object to be used in raycasts and object selection.
 --- @field debug boolean Show debug information about this object in the scene.
-Object3D = {}
-
---- Parents this object to another 3D object.
---- @param parent any
---- @return boolean
-function Object3D:parentTo(parent) end
-
---- @return Vec3
-function Object3D:getAbsolutePosition() end
-
---- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
-function Object3D:updateAbsolutePosition() end
-
---- @return boolean
-function Object3D:hasParent() end
-
---- @return number
-function Object3D:getReferenceCount() end
-
---- Destroys this object.
-function Object3D:destroy() end
-
---- @return Vec4
-function Object3D:getBoundingBox() end
-
---- @param pos Vec3
---- @return boolean
-function Object3D:isPointInside(pos) end
-
---- Sets `key` to `value` within this object's attributes.
---- @param key any
---- @param value any
-function Object3D:setAttribute(key, value) end
-
---- @param key any
---- @return any
-function Object3D:getAttribute(key) end
-
---- @return table
-function Object3D:getAttributes() end
-
---- Clears this object's attributes.
-function Object3D:clearAttributes() end
-
---- Clears all animators attached to this object.
-function Object3D:clearAnimators() end
-
---- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
---- @param ms number
-function Object3D:addDestroyAnimator(ms) end
-
---- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
---- @param posA Vec3
---- @param posB Vec3
---- @param ms number
---- @param loops boolean?
---- @param pingPong boolean?
-function Object3D:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
-
---- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
---- @param rot Vec3
-function Object3D:addRotateAnimator(rot) end
-
---- @class PhysicsObject_onExit
-PhysicsObject_onExit = {}
---- @param Function fun()
---- @return Hook
-function PhysicsObject_onExit:hook(Function) end
-function PhysicsObject_onExit:clear() end
---- @param ... any
-function PhysicsObject_onExit:run(...) end
---- @return number
-function PhysicsObject_onExit:length() end
-
---- @class PhysicsObject_onInside
-PhysicsObject_onInside = {}
---- @param Function fun()
---- @return Hook
-function PhysicsObject_onInside:hook(Function) end
-function PhysicsObject_onInside:clear() end
---- @param ... any
-function PhysicsObject_onInside:run(...) end
---- @return number
-function PhysicsObject_onInside:length() end
-
---- @class PhysicsObject_onEnter
-PhysicsObject_onEnter = {}
---- @param Function fun(result: CollisionResult)
---- @return Hook
-function PhysicsObject_onEnter:hook(Function) end
-function PhysicsObject_onEnter:clear() end
---- @param ... any
-function PhysicsObject_onEnter:run(...) end
---- @return number
-function PhysicsObject_onEnter:length() end
-
---- @class PhysicsObject
---- @field onEnter PhysicsObject_onEnter Event called when another physics object collides with this object for the first time.
---- @field onInside PhysicsObject_onInside Event called when another physics object is inside this physics object.
---- @field onExit PhysicsObject_onExit Event called when another physics object exits this physics object.
-PhysicsObject = {}
-
---- Destroys this object.
-function PhysicsObject:destroy() end
-
---- A plane that faces the active camera.
---- @class Billboard : Object3D
---- @field size Vec2 The width and height of this Billboard.
 Billboard = {}
 
 --- @overload fun(material: Material): Billboard
@@ -1212,8 +1092,76 @@ function Billboard.new() end
 --- @param material Material
 function Billboard:loadMaterial(material) end
 
+--- Parents this object to another 3D object.
+--- @param parent any
+--- @return boolean
+function Billboard:parentTo(parent) end
+
+--- Returns the absolute position of this 3D object.
+--- @return Vec3
+function Billboard:getAbsolutePosition() end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+function Billboard:updateAbsolutePosition() end
+
+--- Returns true if this object is parented to another 3D object.
+--- @return boolean
+function Billboard:hasParent() end
+
+--- Returns the reference count for this object.
+--- @return number
+function Billboard:getReferenceCount() end
+
+--- Destroys this object.
+function Billboard:destroy() end
+
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+--- @return Vec4
+function Billboard:getBoundingBox() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+--- @param pos Vec3
+--- @return boolean
+function Billboard:isPointInside(pos) end
+
+--- Sets `key` to `value` within this object's attributes.
+--- @param key any
+--- @param value any
+function Billboard:setAttribute(key, value) end
+
+--- Returns the content of attribute `key` from this object's attributes.
+--- @param key any
+--- @return any
+function Billboard:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+--- @return table
+function Billboard:getAttributes() end
+
+--- Clears this object's attributes.
+function Billboard:clearAttributes() end
+
+--- Clears all animators attached to this object.
+function Billboard:clearAnimators() end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+--- @param ms number
+function Billboard:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+--- @param posA Vec3
+--- @param posB Vec3
+--- @param ms number
+--- @param loops boolean?
+--- @param pingPong boolean?
+function Billboard:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+--- @param rot Vec3
+function Billboard:addRotateAnimator(rot) end
+
 --- A viewpoint in the 3D world.
---- @class Camera : Object3D
+--- @class Camera
 --- @field position Vec3 The 3D position of this object in the scene.
 --- @field rotation Vec3 The 3D rotation of this object in the scene in degrees.
 --- @field up Vec3 The up vector of this `Camera`.
@@ -1221,6 +1169,10 @@ function Billboard:loadMaterial(material) end
 --- @field fieldOfView number The field of view of this `Camera` in degrees.
 --- @field aspectRatio number The aspect ratio of this `Camera`.
 --- @field orthogonal boolean Whether or not this `Camera` renders orthographically or not. (NOTE: If this is true, `aspectRatio` modifies the zoom factor instead.)
+--- @field scale Vec3 The 3D scale of this object in the scene.
+--- @field visible boolean Determines the visibility of this object and its children.
+--- @field id number The identifier for this object to be used in raycasts and object selection.
+--- @field debug boolean Show debug information about this object in the scene.
 Camera = {}
 
 --- @overload fun(pos: Vec3): Camera
@@ -1228,29 +1180,93 @@ Camera = {}
 --- @return Camera
 function Camera.new() end
 
+--- Returns the forward vector.
 --- @return Vec3
 function Camera:getForward() end
 
+--- Returns the left vector.
 --- @return Vec3
 function Camera:getLeft() end
 
 --- When rendering, this `Camera` will take over as the active rendering viewpoint.
 function Camera:setActive() end
 
---- @class Constraint
---- @field active boolean Whether or not this `Constraint` is active.
---- @field ignoreCollision boolean Whether or not the `RigidBody` objects of this `Constraint` should ignore collision between one another. This value should be altered prior to activating this `Constraint` to take effect in the scene.
---- @field breakThreshold number The impulse threshold this `Constraint` can endure before it breaks, deactivating itself. Physics objects default to unbreakable, but altering this value will enable this object to be prone to breaking.
-Constraint = {}
+--- Parents this object to another 3D object.
+--- @param parent any
+--- @return boolean
+function Camera:parentTo(parent) end
 
---- Destroys this `Constraint`.
-function Constraint:destroy() end
+--- Returns the absolute position of this 3D object.
+--- @return Vec3
+function Camera:getAbsolutePosition() end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+function Camera:updateAbsolutePosition() end
+
+--- Returns true if this object is parented to another 3D object.
+--- @return boolean
+function Camera:hasParent() end
+
+--- Returns the reference count for this object.
+--- @return number
+function Camera:getReferenceCount() end
+
+--- Destroys this object.
+function Camera:destroy() end
+
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+--- @return Vec4
+function Camera:getBoundingBox() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+--- @param pos Vec3
+--- @return boolean
+function Camera:isPointInside(pos) end
+
+--- Sets `key` to `value` within this object's attributes.
+--- @param key any
+--- @param value any
+function Camera:setAttribute(key, value) end
+
+--- Returns the content of attribute `key` from this object's attributes.
+--- @param key any
+--- @return any
+function Camera:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+--- @return table
+function Camera:getAttributes() end
+
+--- Clears this object's attributes.
+function Camera:clearAttributes() end
+
+--- Clears all animators attached to this object.
+function Camera:clearAnimators() end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+--- @param ms number
+function Camera:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+--- @param posA Vec3
+--- @param posB Vec3
+--- @param ms number
+--- @param loops boolean?
+--- @param pingPong boolean?
+function Camera:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+--- @param rot Vec3
+function Camera:addRotateAnimator(rot) end
 
 --- A physics `Constraint` that hinges two `RigidBody` objects together. Pivots and axis parameters are in local space. Axis vector values range from 0 to 1, where 1 allows rotation around said axis and vice versa.
---- @class HingeConstraint : Constraint
+--- @class HingeConstraint
 --- @field limits Vec2 The angular limits of the hinge, where `x` is lower limit and `y` is upper limit.
 --- @field motor boolean Whether or not this `Constraint` applies angular velocity every physics step, rotating itself like a motor.
 --- @field motorVelocity number If this `Constraint` is a motor, this determines the target rotational velocity.
+--- @field active boolean Whether or not this `Constraint` is active.
+--- @field ignoreCollision boolean Whether or not the `RigidBody` objects of this `Constraint` should ignore collision between one another. This value should be altered prior to activating this `Constraint` to take effect in the scene.
+--- @field breakThreshold number The impulse threshold this `Constraint` can endure before it breaks, deactivating itself. Physics objects default to unbreakable, but altering this value will enable this object to be prone to breaking.
 HingeConstraint = {}
 
 --- @param rbA RigidBody
@@ -1262,10 +1278,16 @@ HingeConstraint = {}
 --- @return HingeConstraint
 function HingeConstraint.new(rbA, rbB, localPivotA, localPivotB, localAxisA, localAxisB) end
 
+--- Destroys this `Constraint`.
+function HingeConstraint:destroy() end
+
 --- A physics `Constraint` that twists two `RigidBody` objects together like a limited socket joint. Pivots and axis parameters are in local space. Axis vector values range from 0 to 1, where 1 allows rotation around said axis and vice versa.
---- @class ConeTwistConstraint : Constraint
+--- @class ConeTwistConstraint
 --- @field maxMotorImpulse number If this `Constraint` is a motor, this determines the maximum force allowed to spin to reach the target motorVelocity.
 --- @field swingLimits Vec2 The angular swing limits of this `Constraint`, where `x` is sideways and `y` is forward and backward.
+--- @field active boolean Whether or not this `Constraint` is active.
+--- @field ignoreCollision boolean Whether or not the `RigidBody` objects of this `Constraint` should ignore collision between one another. This value should be altered prior to activating this `Constraint` to take effect in the scene.
+--- @field breakThreshold number The impulse threshold this `Constraint` can endure before it breaks, deactivating itself. Physics objects default to unbreakable, but altering this value will enable this object to be prone to breaking.
 ConeTwistConstraint = {}
 
 --- @param rbA RigidBody
@@ -1277,8 +1299,33 @@ ConeTwistConstraint = {}
 --- @return ConeTwistConstraint
 function ConeTwistConstraint.new(rbA, rbB, localPivotA, localPivotB, localAxisA, localAxisB) end
 
+--- Destroys this `Constraint`.
+function ConeTwistConstraint:destroy() end
+
+--- @class EditBox_onPressed
+EditBox_onPressed = {}
+--- @param Function fun()
+--- @return Hook
+function EditBox_onPressed:hook(Function) end
+function EditBox_onPressed:clear() end
+--- @param ... any
+function EditBox_onPressed:run(...) end
+--- @return number
+function EditBox_onPressed:length() end
+
+--- @class EditBox_onHovered
+EditBox_onHovered = {}
+--- @param Function fun()
+--- @return Hook
+function EditBox_onHovered:hook(Function) end
+function EditBox_onHovered:clear() end
+--- @param ... any
+function EditBox_onHovered:run(...) end
+--- @return number
+function EditBox_onHovered:length() end
+
 --- A basic 2D object that allows user input. `EditBox` objects can be used for getting user input and can even be made to look like passwords.
---- @class EditBox : Object2D
+--- @class EditBox
 --- @field text string The text content of this object.
 --- @field password boolean Determines if the text content of this `EditBox` is obfuscated.
 --- @field enabled boolean Determines if this `EditBox` is enabled.
@@ -1289,6 +1336,13 @@ function ConeTwistConstraint.new(rbA, rbB, localPivotA, localPivotB, localAxisA,
 --- @field autoscroll boolean Determines if this `EditBox` will autoscroll.
 --- @field focused boolean Determines if this `EditBox` is focused.
 --- @field wordWrap boolean Determines if the text wraps when touching the border of its text box.
+--- @field position Vec2 The 2D position of this object on the screen.
+--- @field size Vec2 The 2D size of this object.
+--- @field visible boolean Determines the visibility of this object and its children.
+--- @field border boolean Displays a border outlining this object's bounding box on the screen.
+--- @field backgroundColor Vec4 The RGBA background color of this object.
+--- @field onHovered EditBox_onHovered Event called by Lime when this object is hovered.
+--- @field onPressed EditBox_onPressed Event called by Lime when this object is pressed.
 EditBox = {}
 
 --- @overload fun(text: string): EditBox
@@ -1306,13 +1360,119 @@ function EditBox:setFont(name) end
 --- @param y Lime.Enum.TextAlign?
 function EditBox:setAlignment(x, y) end
 
+--- Parents this object to another 2D object.
+--- @param parent any
+--- @return boolean
+function EditBox:parentTo(parent) end
+
+--- Returns true if this object is parented to another 2D object.
+--- @return boolean
+function EditBox:hasParent() end
+
+--- Returns true if this object is currently hovered.
+--- @return boolean
+function EditBox:isHovered() end
+
+--- Moves this object to the front in terms of z ordering. (Rendered last, overlaps all other objects)
+--- @return boolean
+function EditBox:moveToFront() end
+
+--- Moves this object to the back in terms of z ordering. (Rendered first, all other objects then overlap)
+--- @return boolean
+function EditBox:moveToBack() end
+
+--- Returns the reference count for this object.
+--- @return number
+function EditBox:getReferenceCount() end
+
+--- Returns the absolute position of this object.
+--- @return Vec2
+function EditBox:getAbsolutePosition() end
+
+--- Destroys this object.
+function EditBox:destroy() end
+
 --- An invisible object used to mark locations, parent objects, and more.
---- @class Empty : Object3D
+--- @class Empty
+--- @field position Vec3 The 3D position of this object in the scene.
+--- @field rotation Vec3 The 3D rotation of this object in the scene in degrees.
+--- @field scale Vec3 The 3D scale of this object in the scene.
+--- @field visible boolean Determines the visibility of this object and its children.
+--- @field id number The identifier for this object to be used in raycasts and object selection.
+--- @field debug boolean Show debug information about this object in the scene.
 Empty = {}
 
 --- @overload fun(pos: Vec3): Empty
 --- @return Empty
 function Empty.new() end
+
+--- Parents this object to another 3D object.
+--- @param parent any
+--- @return boolean
+function Empty:parentTo(parent) end
+
+--- Returns the absolute position of this 3D object.
+--- @return Vec3
+function Empty:getAbsolutePosition() end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+function Empty:updateAbsolutePosition() end
+
+--- Returns true if this object is parented to another 3D object.
+--- @return boolean
+function Empty:hasParent() end
+
+--- Returns the reference count for this object.
+--- @return number
+function Empty:getReferenceCount() end
+
+--- Destroys this object.
+function Empty:destroy() end
+
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+--- @return Vec4
+function Empty:getBoundingBox() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+--- @param pos Vec3
+--- @return boolean
+function Empty:isPointInside(pos) end
+
+--- Sets `key` to `value` within this object's attributes.
+--- @param key any
+--- @param value any
+function Empty:setAttribute(key, value) end
+
+--- Returns the content of attribute `key` from this object's attributes.
+--- @param key any
+--- @return any
+function Empty:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+--- @return table
+function Empty:getAttributes() end
+
+--- Clears this object's attributes.
+function Empty:clearAttributes() end
+
+--- Clears all animators attached to this object.
+function Empty:clearAnimators() end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+--- @param ms number
+function Empty:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+--- @param posA Vec3
+--- @param posB Vec3
+--- @param ms number
+--- @param loops boolean?
+--- @param pingPong boolean?
+function Empty:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+--- @param rot Vec3
+function Empty:addRotateAnimator(rot) end
 
 --- A container of functions that will run in sequence when called upon.
 --- @class Event
@@ -1333,6 +1493,7 @@ function Event:clear() end
 --- @param ... any
 function Event:run(...) end
 
+--- Returns the number of hooked functions on this Event.
 --- @return number
 function Event:length() end
 
@@ -1343,12 +1504,43 @@ Hook = {}
 --- Unhook a function to this Event.
 function Hook:unhook() end
 
+--- Returns true if this hook is still hooked to an Event.
 --- @return boolean
 function Hook:isHooked() end
 
+--- @class Image2D_onPressed
+Image2D_onPressed = {}
+--- @param Function fun()
+--- @return Hook
+function Image2D_onPressed:hook(Function) end
+function Image2D_onPressed:clear() end
+--- @param ... any
+function Image2D_onPressed:run(...) end
+--- @return number
+function Image2D_onPressed:length() end
+
+--- @class Image2D_onHovered
+Image2D_onHovered = {}
+--- @param Function fun()
+--- @return Hook
+function Image2D_onHovered:hook(Function) end
+function Image2D_onHovered:clear() end
+--- @param ... any
+function Image2D_onHovered:run(...) end
+--- @return number
+function Image2D_onHovered:length() end
+
 --- A basic 2D object to display images. Without loading a Texture, this object can be used as a container for other GUI objects if parented together.
---- @class Image2D : Object2D
+--- @class Image2D
 --- @field scaleToFit boolean Determines whether or not this `Image2D` scales to its size boundaries or not.
+--- @field position Vec2 The 2D position of this object on the screen.
+--- @field size Vec2 The 2D size of this object.
+--- @field visible boolean Determines the visibility of this object and its children.
+--- @field border boolean Displays a border outlining this object's bounding box on the screen.
+--- @field enabled boolean Determines if this object will process hooked input events, if any.
+--- @field backgroundColor Vec4 The RGBA background color of this object.
+--- @field onHovered Image2D_onHovered Event called by Lime when this object is hovered.
+--- @field onPressed Image2D_onPressed Event called by Lime when this object is pressed.
 Image2D = {}
 
 --- @overload fun(tex: Texture): Image2D
@@ -1361,8 +1553,40 @@ function Image2D.new() end
 --- @return boolean
 function Image2D:loadTexture(texture) end
 
+--- Parents this object to another 2D object.
+--- @param parent any
+--- @return boolean
+function Image2D:parentTo(parent) end
+
+--- Returns true if this object is parented to another 2D object.
+--- @return boolean
+function Image2D:hasParent() end
+
+--- Returns true if this object is currently hovered.
+--- @return boolean
+function Image2D:isHovered() end
+
+--- Moves this object to the front in terms of z ordering. (Rendered last, overlaps all other objects)
+--- @return boolean
+function Image2D:moveToFront() end
+
+--- Moves this object to the back in terms of z ordering. (Rendered first, all other objects then overlap)
+--- @return boolean
+function Image2D:moveToBack() end
+
+--- Returns the reference count for this object.
+--- @return number
+function Image2D:getReferenceCount() end
+
+--- Returns the absolute position of this object.
+--- @return Vec2
+function Image2D:getAbsolutePosition() end
+
+--- Destroys this object.
+function Image2D:destroy() end
+
 --- A source of light.
---- @class Light : Object3D
+--- @class Light
 --- @field type Lime.Enum.LightType Sets the type of this `Light`.
 --- @field intensity number Scales the intensity of luminosity from this `Light`.
 --- @field radius number The cut-off distance for light reach around its center. Not effective for directional light sources.
@@ -1371,11 +1595,85 @@ function Image2D:loadTexture(texture) end
 --- @field ambientColor Vec4 Sets the ambient color for this `Light`, the atmospheric color applied to all objects.
 --- @field specularColor Vec4 Sets the specular color for this `Light`, the color that appears on shiny objects.
 --- @field attenuation Vec3 Sets the attenuation, or spread behavior, of this `Light`. Format is `(Constant, Linear, Quadratic)`, all ranging from 0.0 to 1.0. Not effective for directional light sources.
+--- @field position Vec3 The 3D position of this object in the scene.
+--- @field rotation Vec3 The 3D rotation of this object in the scene in degrees.
+--- @field scale Vec3 The 3D scale of this object in the scene.
+--- @field visible boolean Determines the visibility of this object and its children.
+--- @field id number The identifier for this object to be used in raycasts and object selection.
+--- @field debug boolean Show debug information about this object in the scene.
 Light = {}
 
 --- @overload fun(type: Lime.Enum.LightType): Light
 --- @return Light
 function Light.new() end
+
+--- Parents this object to another 3D object.
+--- @param parent any
+--- @return boolean
+function Light:parentTo(parent) end
+
+--- Returns the absolute position of this 3D object.
+--- @return Vec3
+function Light:getAbsolutePosition() end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+function Light:updateAbsolutePosition() end
+
+--- Returns true if this object is parented to another 3D object.
+--- @return boolean
+function Light:hasParent() end
+
+--- Returns the reference count for this object.
+--- @return number
+function Light:getReferenceCount() end
+
+--- Destroys this object.
+function Light:destroy() end
+
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+--- @return Vec4
+function Light:getBoundingBox() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+--- @param pos Vec3
+--- @return boolean
+function Light:isPointInside(pos) end
+
+--- Sets `key` to `value` within this object's attributes.
+--- @param key any
+--- @param value any
+function Light:setAttribute(key, value) end
+
+--- Returns the content of attribute `key` from this object's attributes.
+--- @param key any
+--- @return any
+function Light:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+--- @return table
+function Light:getAttributes() end
+
+--- Clears this object's attributes.
+function Light:clearAttributes() end
+
+--- Clears all animators attached to this object.
+function Light:clearAnimators() end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+--- @param ms number
+function Light:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+--- @param posA Vec3
+--- @param posB Vec3
+--- @param ms number
+--- @param loops boolean?
+--- @param pingPong boolean?
+function Light:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+--- @param rot Vec3
+function Light:addRotateAnimator(rot) end
 
 --- An object used to hold material parameters for 3D objects. A Material has at most two layers, with `Lime.Enum.MaterialType` allowing for different combinations of said layers.
 --- @class Material
@@ -1421,9 +1719,11 @@ function Material:loadTexture(texture, layer) end
 function Material:clearTexture(layer) end
 
 --- Changes the method for `Texture` UV wrapping.
+--- @overload fun(self, method: Lime.Enum.TextureWrapType, layer: number): nil
+--- @overload fun(self, method: Lime.Enum.TextureWrapType): nil
 --- @param uMethod Lime.Enum.TextureWrapType
 --- @param vMethod Lime.Enum.TextureWrapType
---- @param layer number?
+--- @param layer number
 function Material:setTextureWrapMethod(uMethod, vMethod, layer) end
 
 --- Sets the scale of the mapping of a `Texture`.
@@ -1436,15 +1736,22 @@ function Material:setTextureScale(scale, layer) end
 --- @param layer number?
 function Material:setTextureOffset(scroll, layer) end
 
+--- Returns the coordinate offset of a `Texture`.
 --- @param layer number?
 --- @return Vec2
 function Material:getTextureOffset(layer) end
 
 --- A scene object capable of displaying a mesh.
---- @class Mesh : Object3D
+--- @class Mesh
 --- @field vertexColor Vec4 Sets the color of all vertexes in this `Mesh`. The `Material` of this `Mesh` must have type `VertexAlpha` to take effect.
 --- @field collision boolean Allows response to raypicks and other simple collision methods. (NOTE: This flag does not affect this `Mesh` when wrapped by a physics object.)
 --- @field frame number Controls the current frame of animation.
+--- @field position Vec3 The 3D position of this object in the scene.
+--- @field rotation Vec3 The 3D rotation of this object in the scene in degrees.
+--- @field scale Vec3 The 3D scale of this object in the scene.
+--- @field visible boolean Determines the visibility of this object and its children.
+--- @field id number The identifier for this object to be used in raycasts and object selection.
+--- @field debug boolean Show debug information about this object in the scene.
 Mesh = {}
 
 --- @overload fun(path: string): Mesh
@@ -1463,6 +1770,7 @@ function Mesh:loadMesh(path) end
 --- @return boolean
 function Mesh:loadMaterial(material, layer) end
 
+--- Returns the number of `Material` slots in this `Mesh`.
 --- @return number
 function Mesh:getMaterialCount() end
 
@@ -1470,9 +1778,11 @@ function Mesh:getMaterialCount() end
 --- @return boolean
 function Mesh:converge() end
 
+--- Returns the vertex count of this `Mesh`.
 --- @return number
 function Mesh:getVertexCount() end
 
+--- Returns the number of animation frames.
 --- @return number
 function Mesh:getFrameCount() end
 
@@ -1494,6 +1804,74 @@ function Mesh:clear() end
 --- Purges this `Mesh`, effectively removing its mesh buffer from memory. Objects using the `MeshBuffer` of this `Mesh` will use an engine-defined `Mesh` instead, but it is recommended to remove references to this `Mesh` first.
 function Mesh:purge() end
 
+--- Parents this object to another 3D object.
+--- @param parent any
+--- @return boolean
+function Mesh:parentTo(parent) end
+
+--- Returns the absolute position of this 3D object.
+--- @return Vec3
+function Mesh:getAbsolutePosition() end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+function Mesh:updateAbsolutePosition() end
+
+--- Returns true if this object is parented to another 3D object.
+--- @return boolean
+function Mesh:hasParent() end
+
+--- Returns the reference count for this object.
+--- @return number
+function Mesh:getReferenceCount() end
+
+--- Destroys this object.
+function Mesh:destroy() end
+
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+--- @return Vec4
+function Mesh:getBoundingBox() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+--- @param pos Vec3
+--- @return boolean
+function Mesh:isPointInside(pos) end
+
+--- Sets `key` to `value` within this object's attributes.
+--- @param key any
+--- @param value any
+function Mesh:setAttribute(key, value) end
+
+--- Returns the content of attribute `key` from this object's attributes.
+--- @param key any
+--- @return any
+function Mesh:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+--- @return table
+function Mesh:getAttributes() end
+
+--- Clears this object's attributes.
+function Mesh:clearAttributes() end
+
+--- Clears all animators attached to this object.
+function Mesh:clearAnimators() end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+--- @param ms number
+function Mesh:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+--- @param posA Vec3
+--- @param posB Vec3
+--- @param ms number
+--- @param loops boolean?
+--- @param pingPong boolean?
+function Mesh:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+--- @param rot Vec3
+function Mesh:addRotateAnimator(rot) end
+
 --- A container for vertices.
 --- @class MeshBuffer
 MeshBuffer = {}
@@ -1505,6 +1883,7 @@ function MeshBuffer.new() end
 --- Recalculates the bounding box of this `MeshBuffer`. This should be called after modifying this `MeshBuffer`.
 function MeshBuffer:recalculateBoundingBox() end
 
+--- Returns the vertex count of this `MeshBuffer`.
 --- @return number
 function MeshBuffer:getVertexCount() end
 
@@ -1523,6 +1902,7 @@ function MeshBuffer:getVertexCount() end
 --- @param color3 Vec4
 function MeshBuffer:pushFace(pos1, pos2, pos3, normal1, normal2, normal3, uvw1, uvw2, uvw3, color1, color2, color3) end
 
+--- Returns the reference count for this `MeshBuffer`.
 --- @return number
 function MeshBuffer:getReferenceCount() end
 
@@ -1549,6 +1929,7 @@ Noise = {}
 --- @return Noise
 function Noise.new() end
 
+--- Returns the value at `x`, `y`, `z` in this `Noise` object.
 --- @param x number
 --- @param y number?
 --- @param z number?
@@ -1592,21 +1973,27 @@ function Packet:writeString(v) end
 --- @return boolean
 function Packet:writeFile(path) end
 
+--- Returns an unsigned 8 bit number or nil on fail.
 --- @return number
 function Packet:readUint8() end
 
+--- Returns an unsigned 16 bit number or nil on fail.
 --- @return number
 function Packet:readUint16() end
 
+--- Returns an unsigned integer or nil on fail.
 --- @return number
 function Packet:readUint32() end
 
+--- Returns an integer or nil on fail.
 --- @return number
 function Packet:readInt() end
 
+--- Returns a floating point number or nil on fail.
 --- @return number
 function Packet:readFloat() end
 
+--- Returns a string or nil on fail.
 --- @return string
 function Packet:readString() end
 
@@ -1618,10 +2005,11 @@ function Packet:readFile(path) end
 --- Clears the data of this `Packet`.
 function Packet:clear() end
 
+--- Returns the size of this `Packet` in bytes.
 function Packet:getSize() end
 
 --- An object with various emitter types to emit particles.
---- @class ParticleSystem : Object3D
+--- @class ParticleSystem
 --- @field type Lime.Enum.EmitterType The emitter type.
 --- @field global boolean Whether or not particles emitted stay parented to this `ParticleSystem`.
 --- @field active boolean Whether or not this `ParticleSystem` is actively emitting particles.
@@ -1634,6 +2022,12 @@ function Packet:getSize() end
 --- @field radius number If the emitter type is **sphere**, **ring**, or **cylinder**, this alters the radius of the emitter.
 --- @field ringThickness number If the emitter type is **ring**, this alters the ring thickness.
 --- @field cylinderLength number If the emitter type is **cylinder**, this alters the length of the cylinder.
+--- @field position Vec3 The 3D position of this object in the scene.
+--- @field rotation Vec3 The 3D rotation of this object in the scene in degrees.
+--- @field scale Vec3 The 3D scale of this object in the scene.
+--- @field visible boolean Determines the visibility of this object and its children.
+--- @field id number The identifier for this object to be used in raycasts and object selection.
+--- @field debug boolean Show debug information about this object in the scene.
 ParticleSystem = {}
 
 --- @overload fun(type: Lime.Enum.EmitterType): ParticleSystem
@@ -1713,8 +2107,109 @@ function ParticleSystem:setEmitterRing(center, radius, thickness) end
 --- @param outlineOnly boolean?
 function ParticleSystem:setEmitterCylinder(center, radius, length, outlineOnly) end
 
+--- Parents this object to another 3D object.
+--- @param parent any
+--- @return boolean
+function ParticleSystem:parentTo(parent) end
+
+--- Returns the absolute position of this 3D object.
+--- @return Vec3
+function ParticleSystem:getAbsolutePosition() end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+function ParticleSystem:updateAbsolutePosition() end
+
+--- Returns true if this object is parented to another 3D object.
+--- @return boolean
+function ParticleSystem:hasParent() end
+
+--- Returns the reference count for this object.
+--- @return number
+function ParticleSystem:getReferenceCount() end
+
+--- Destroys this object.
+function ParticleSystem:destroy() end
+
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+--- @return Vec4
+function ParticleSystem:getBoundingBox() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+--- @param pos Vec3
+--- @return boolean
+function ParticleSystem:isPointInside(pos) end
+
+--- Sets `key` to `value` within this object's attributes.
+--- @param key any
+--- @param value any
+function ParticleSystem:setAttribute(key, value) end
+
+--- Returns the content of attribute `key` from this object's attributes.
+--- @param key any
+--- @return any
+function ParticleSystem:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+--- @return table
+function ParticleSystem:getAttributes() end
+
+--- Clears this object's attributes.
+function ParticleSystem:clearAttributes() end
+
+--- Clears all animators attached to this object.
+function ParticleSystem:clearAnimators() end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+--- @param ms number
+function ParticleSystem:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+--- @param posA Vec3
+--- @param posB Vec3
+--- @param ms number
+--- @param loops boolean?
+--- @param pingPong boolean?
+function ParticleSystem:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+--- @param rot Vec3
+function ParticleSystem:addRotateAnimator(rot) end
+
+--- @class RigidBody_onExit
+RigidBody_onExit = {}
+--- @param Function fun()
+--- @return Hook
+function RigidBody_onExit:hook(Function) end
+function RigidBody_onExit:clear() end
+--- @param ... any
+function RigidBody_onExit:run(...) end
+--- @return number
+function RigidBody_onExit:length() end
+
+--- @class RigidBody_onInside
+RigidBody_onInside = {}
+--- @param Function fun()
+--- @return Hook
+function RigidBody_onInside:hook(Function) end
+function RigidBody_onInside:clear() end
+--- @param ... any
+function RigidBody_onInside:run(...) end
+--- @return number
+function RigidBody_onInside:length() end
+
+--- @class RigidBody_onEnter
+RigidBody_onEnter = {}
+--- @param Function fun(result: CollisionResult)
+--- @return Hook
+function RigidBody_onEnter:hook(Function) end
+function RigidBody_onEnter:clear() end
+--- @param ... any
+function RigidBody_onEnter:run(...) end
+--- @return number
+function RigidBody_onEnter:length() end
+
 --- A wrapper to `Mesh` objects that allows for them to react to physics. It can be created with a `Mesh` as its visual and collision shape, or with a custom collision shape independent of any 3D object.
---- @class RigidBody : PhysicsObject
+--- @class RigidBody
 --- @field position Vec3 The 3D position of this object in the scene.
 --- @field gravity Vec3 The force of gravity applied to this object per physics step.
 --- @field rotation Vec3 The 3D rotation of this object in the scene in degrees.
@@ -1731,6 +2226,9 @@ function ParticleSystem:setEmitterCylinder(center, radius, length, outlineOnly) 
 --- @field angularVelocity Vec3 Sets the angular velocity.
 --- @field linearFactor Vec3 Sets the linear factor, controlling which axes linear motion is allowed on. (0 locks, 1 allows)
 --- @field angularFactor Vec3 Sets the angular factor, controlling which axes rotation is allowed on. (0 locks, 1 allows)
+--- @field onEnter RigidBody_onEnter Event called when another physics object collides with this object for the first time.
+--- @field onInside RigidBody_onInside Event called when another physics object is inside this physics object.
+--- @field onExit RigidBody_onExit Event called when another physics object exits this physics object.
 RigidBody = {}
 
 --- @overload fun(root: any, collision: Mesh): RigidBody
@@ -1749,6 +2247,7 @@ function RigidBody:loadMesh() end
 --- Clears all forces applied to this `RigidBody`.
 function RigidBody:clearForces() end
 
+--- Returns the center of mass position of this `RigidBody` in world space.
 --- @return Vec3
 function RigidBody:getCenterOfMass() end
 
@@ -1756,6 +2255,7 @@ function RigidBody:getCenterOfMass() end
 --- @param pos Vec3
 function RigidBody:lookAt(pos) end
 
+--- Returns the forward vector of this `RigidBody`.
 --- @return Vec3
 function RigidBody:getForward() end
 
@@ -1784,6 +2284,9 @@ function RigidBody:applyImpulse(force, pos) end
 --- @param impulse boolean
 function RigidBody:applyTorque(force, impulse) end
 
+--- Destroys this object.
+function RigidBody:destroy() end
+
 --- A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldViewProj` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
 --- @class Shader
 Shader = {}
@@ -1800,17 +2303,26 @@ function Shader.new(vertexShaderPath, pixelShaderPath, type) end
 --- @param value number|Vec2|Vec3|Vec4
 function Shader:setParameter(name, value) end
 
+--- Returns the path to the vertex shader file loaded in this `Shader`.
 --- @return string
 function Shader:getVSPath() end
 
+--- Returns the path to the pixel shader file loaded in this `Shader`.
 --- @return string
 function Shader:getPSPath() end
 
+--- Returns the material type. On `Shader` creation, it indexes itself in the renderer as a new material type. Newly indexed `Shader` materials will not be found in Lime.Enum.
 --- @return number
 function Shader:getType() end
 
 --- A dome rendered behind all scene objects, like a sky.
---- @class Skydome : Object3D
+--- @class Skydome
+--- @field position Vec3 The 3D position of this object in the scene.
+--- @field rotation Vec3 The 3D rotation of this object in the scene in degrees.
+--- @field scale Vec3 The 3D scale of this object in the scene.
+--- @field visible boolean Determines the visibility of this object and its children.
+--- @field id number The identifier for this object to be used in raycasts and object selection.
+--- @field debug boolean Show debug information about this object in the scene.
 Skydome = {}
 
 --- @overload fun(material: Material): Skydome
@@ -1820,6 +2332,74 @@ function Skydome.new() end
 --- Loads a new Material into this Skydome
 --- @param material Material
 function Skydome:loadMaterial(material) end
+
+--- Parents this object to another 3D object.
+--- @param parent any
+--- @return boolean
+function Skydome:parentTo(parent) end
+
+--- Returns the absolute position of this 3D object.
+--- @return Vec3
+function Skydome:getAbsolutePosition() end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+function Skydome:updateAbsolutePosition() end
+
+--- Returns true if this object is parented to another 3D object.
+--- @return boolean
+function Skydome:hasParent() end
+
+--- Returns the reference count for this object.
+--- @return number
+function Skydome:getReferenceCount() end
+
+--- Destroys this object.
+function Skydome:destroy() end
+
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+--- @return Vec4
+function Skydome:getBoundingBox() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+--- @param pos Vec3
+--- @return boolean
+function Skydome:isPointInside(pos) end
+
+--- Sets `key` to `value` within this object's attributes.
+--- @param key any
+--- @param value any
+function Skydome:setAttribute(key, value) end
+
+--- Returns the content of attribute `key` from this object's attributes.
+--- @param key any
+--- @return any
+function Skydome:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+--- @return table
+function Skydome:getAttributes() end
+
+--- Clears this object's attributes.
+function Skydome:clearAttributes() end
+
+--- Clears all animators attached to this object.
+function Skydome:clearAnimators() end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+--- @param ms number
+function Skydome:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+--- @param posA Vec3
+--- @param posB Vec3
+--- @param ms number
+--- @param loops boolean?
+--- @param pingPong boolean?
+function Skydome:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+--- @param rot Vec3
+function Skydome:addRotateAnimator(rot) end
 
 --- A source of sound, whether that be for sound effects or music.
 --- @class Sound
@@ -1850,12 +2430,15 @@ function Sound:play(is3D) end
 --- Stop this `Sound`.
 function Sound:stop() end
 
+--- Returns true if this `Sound` is playing.
 --- @return boolean
 function Sound:isPlaying() end
 
+--- Returns the playback length of this `Sound`.
 --- @return number
 function Sound:getLength() end
 
+--- Returns the file path of the sound loaded into this `Sound`.
 --- @return string
 function Sound:getPath() end
 
@@ -1864,6 +2447,7 @@ function Sound:getPath() end
 --- @return boolean
 function Sound:parentTo(parent) end
 
+--- Returns true if this `Sound` is parented to a 3D object.
 --- @return boolean
 function Sound:hasParent() end
 
@@ -1915,11 +2499,41 @@ function Sound:addCompressionEffect(threshold, ratio) end
 --- @return boolean
 function Sound:addParamEqEffect(threshold, ratio) end
 
+--- @class Text2D_onPressed
+Text2D_onPressed = {}
+--- @param Function fun()
+--- @return Hook
+function Text2D_onPressed:hook(Function) end
+function Text2D_onPressed:clear() end
+--- @param ... any
+function Text2D_onPressed:run(...) end
+--- @return number
+function Text2D_onPressed:length() end
+
+--- @class Text2D_onHovered
+Text2D_onHovered = {}
+--- @param Function fun()
+--- @return Hook
+function Text2D_onHovered:hook(Function) end
+function Text2D_onHovered:clear() end
+--- @param ... any
+function Text2D_onHovered:run(...) end
+--- @return number
+function Text2D_onHovered:length() end
+
 --- A basic 2D object to display text. Text objects support colors and basic styling. Use tags `<#HEX>` for color, `<s>` for strike, `<d>` for drop shadow, `<u>` for underline, `<b>` for bold, and `<r>` to reset styles. Example: `<#6ABE30>This is green! <b>Now, it's green and bold! <r>Now, it's back to normal.`
---- @class Text2D : Object2D
+--- @class Text2D
 --- @field text string The text content of this object.
 --- @field wordWrap boolean Determines if the text wraps when touching the border of its text box.
 --- @field opacity number The opacity of the text, from 0 to 255. For individual characters being not fully opaque, use color tags with an alpha value.
+--- @field position Vec2 The 2D position of this object on the screen.
+--- @field size Vec2 The 2D size of this object.
+--- @field visible boolean Determines the visibility of this object and its children.
+--- @field border boolean Displays a border outlining this object's bounding box on the screen.
+--- @field enabled boolean Determines if this object will process hooked input events, if any.
+--- @field backgroundColor Vec4 The RGBA background color of this object.
+--- @field onHovered Text2D_onHovered Event called by Lime when this object is hovered.
+--- @field onPressed Text2D_onPressed Event called by Lime when this object is pressed.
 Text2D = {}
 
 --- @overload fun(text: string): Text2D
@@ -1941,12 +2555,50 @@ function Text2D:setWordWrap(wrap) end
 --- @param y Lime.Enum.TextAlign?
 function Text2D:setAlignment(x, y) end
 
+--- Parents this object to another 2D object.
+--- @param parent any
+--- @return boolean
+function Text2D:parentTo(parent) end
+
+--- Returns true if this object is parented to another 2D object.
+--- @return boolean
+function Text2D:hasParent() end
+
+--- Returns true if this object is currently hovered.
+--- @return boolean
+function Text2D:isHovered() end
+
+--- Moves this object to the front in terms of z ordering. (Rendered last, overlaps all other objects)
+--- @return boolean
+function Text2D:moveToFront() end
+
+--- Moves this object to the back in terms of z ordering. (Rendered first, all other objects then overlap)
+--- @return boolean
+function Text2D:moveToBack() end
+
+--- Returns the reference count for this object.
+--- @return number
+function Text2D:getReferenceCount() end
+
+--- Returns the absolute position of this object.
+--- @return Vec2
+function Text2D:getAbsolutePosition() end
+
+--- Destroys this object.
+function Text2D:destroy() end
+
 --- A basic 3D object to display text. This object is essentially a `Text2D` tied to a 3D scene node. Text objects support colors and basic styling. Use tags `<#HEX>` for color, `<s>` for strike, `<d>` for drop shadow, `<u>` for underline, `<b>` for bold, and `<r>` to reset styles. Example: `<#6ABE30>This is green! <b>Now, it's green and bold! <r>Now, it's back to normal.`
---- @class Text3D : Object3D
+--- @class Text3D
 --- @field text string The text content of this object.
 --- @field opacity number The opacity of the text, from 0 to 255. For individual characters being not fully opaque, use color tags with an alpha value.
 --- @field wordWrap boolean Determines if the text wraps when touching the border of its text box.
 --- @field size Vec2 The size of the 2D text box.
+--- @field position Vec3 The 3D position of this object in the scene.
+--- @field rotation Vec3 The 3D rotation of this object in the scene in degrees.
+--- @field scale Vec3 The 3D scale of this object in the scene.
+--- @field visible boolean Determines the visibility of this object and its children.
+--- @field id number The identifier for this object to be used in raycasts and object selection.
+--- @field debug boolean Show debug information about this object in the scene.
 Text3D = {}
 
 --- @overload fun(text: string): Text3D
@@ -1967,6 +2619,74 @@ function Text3D:setWordWrap(wrap) end
 --- @param y Lime.Enum.TextAlign?
 function Text3D:setAlignment(x, y) end
 
+--- Parents this object to another 3D object.
+--- @param parent any
+--- @return boolean
+function Text3D:parentTo(parent) end
+
+--- Returns the absolute position of this 3D object.
+--- @return Vec3
+function Text3D:getAbsolutePosition() end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+function Text3D:updateAbsolutePosition() end
+
+--- Returns true if this object is parented to another 3D object.
+--- @return boolean
+function Text3D:hasParent() end
+
+--- Returns the reference count for this object.
+--- @return number
+function Text3D:getReferenceCount() end
+
+--- Destroys this object.
+function Text3D:destroy() end
+
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+--- @return Vec4
+function Text3D:getBoundingBox() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+--- @param pos Vec3
+--- @return boolean
+function Text3D:isPointInside(pos) end
+
+--- Sets `key` to `value` within this object's attributes.
+--- @param key any
+--- @param value any
+function Text3D:setAttribute(key, value) end
+
+--- Returns the content of attribute `key` from this object's attributes.
+--- @param key any
+--- @return any
+function Text3D:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+--- @return table
+function Text3D:getAttributes() end
+
+--- Clears this object's attributes.
+function Text3D:clearAttributes() end
+
+--- Clears all animators attached to this object.
+function Text3D:clearAnimators() end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+--- @param ms number
+function Text3D:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+--- @param posA Vec3
+--- @param posB Vec3
+--- @param ms number
+--- @param loops boolean?
+--- @param pingPong boolean?
+function Text3D:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+--- @param rot Vec3
+function Text3D:addRotateAnimator(rot) end
+
 --- A texture that is the foundation for all images for 2D and 3D objects.
 --- @class Texture
 Texture = {}
@@ -1976,9 +2696,11 @@ Texture = {}
 --- @return Texture
 function Texture.new() end
 
+--- Returns the path of this `Texture`.
 --- @return string
 function Texture:getPath() end
 
+--- Returns the size of this `Texture`.
 --- @return Vec2
 function Texture:getSize() end
 
@@ -1999,12 +2721,13 @@ function Texture:crop(topLeft, bottomRight) end
 --- @return boolean
 function Texture:append(toAppend, pos) end
 
+--- Returns the color of the pixel at `pos` in this `Texture`.
 --- @param pos Vec2
 --- @return Vec4
 function Texture:getColor(pos) end
 
 --- Sets a pixel's `color`, or fill an area of pixels with `color`.
---- @overload fun(pos: Vec2, color: Vec4): boolean
+--- @overload fun(self, pos: Vec2, color: Vec4): boolean
 --- @param topLeft Vec2
 --- @param bottomRight Vec2
 --- @param fillColor Vec4
@@ -2020,6 +2743,7 @@ function Texture:clear(color) end
 --- @return boolean
 function Texture:keyColor(keyColor) end
 
+--- Returns the reference count for this `Texture`.
 --- @return number
 function Texture:getReferenceCount() end
 
@@ -2052,25 +2776,30 @@ Vec2 = {}
 function Vec2.new() end
 
 --- Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
---- @overload fun(other: Vec3): nil
+--- @overload fun(self, other: Vec3): nil
 --- @param x number
 --- @param y number
 function Vec2:set(x, y) end
 
+--- Returns the length of the vector.
 --- @return number
 function Vec2:length() end
 
+--- Returns the length of the vector save the square root operation.
 --- @return number
 function Vec2:lengthSqr() end
 
+--- Returns the distance between two vectors.
 --- @param other Vec2
 --- @return number
 function Vec2:distance(other) end
 
+--- Returns the distance between two vectors squared.
 --- @param other Vec2
 --- @return number
 function Vec2:distanceSqr(other) end
 
+--- Returns true if the vector is effectively zero.
 --- @param epsilon number?
 --- @return boolean
 function Vec2:isNearlyZero(epsilon) end
@@ -2090,14 +2819,17 @@ function Vec2:cross(other) end
 --- @return number
 function Vec2:angle(other) end
 
+--- Returns a normalized unit vector.
 --- @return Vec2
 function Vec2:normalize() end
 
+--- Returns a normalied vector scaled to clamp between numbers min and max.
 --- @param min number
 --- @param max number
 --- @return Vec2
 function Vec2:normalizeRng(min, max) end
 
+--- Returns a clamped vector to vectors min and max.
 --- @param min Vec2
 --- @param max Vec2
 --- @return Vec2
@@ -2124,26 +2856,31 @@ Vec3 = {}
 function Vec3.new() end
 
 --- Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
---- @overload fun(other: Vec3): nil
+--- @overload fun(self, other: Vec3): nil
 --- @param x number
 --- @param y number
 --- @param z number
 function Vec3:set(x, y, z) end
 
+--- Returns the length of the vector.
 --- @return number
 function Vec3:length() end
 
+--- Returns the length of the vector save the square root operation.
 --- @return number
 function Vec3:lengthSqr() end
 
+--- Returns the distance between two vectors.
 --- @param other Vec3
 --- @return number
 function Vec3:distance(other) end
 
+--- Returns the distance between two vectors squared.
 --- @param other Vec3
 --- @return number
 function Vec3:distanceSqr(other) end
 
+--- Returns true if the vector is effectively zero.
 --- @param epsilon number?
 --- @return boolean
 function Vec3:isNearlyZero(epsilon) end
@@ -2163,14 +2900,17 @@ function Vec3:cross(other) end
 --- @return number
 function Vec3:angle(other) end
 
+--- Returns a normalized unit vector.
 --- @return Vec3
 function Vec3:normalize() end
 
+--- Returns a normalied vector scaled to clamp between numbers min and max.
 --- @param min number
 --- @param max number
 --- @return Vec3
 function Vec3:normalizeRng(min, max) end
 
+--- Returns a clamped vector to vectors min and max.
 --- @param min Vec3
 --- @param max Vec3
 --- @return Vec3
@@ -2199,13 +2939,14 @@ Vec4 = {}
 function Vec4.new() end
 
 --- Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
---- @overload fun(other: Vec4): nil
+--- @overload fun(self, other: Vec4): nil
 --- @param x number
 --- @param y number
 --- @param z number
 --- @param w number
 function Vec4:set(x, y, z, w) end
 
+--- Returns the HEX code for this object. This is useful for converting RGBA to HEX color.
 --- @return string
 function Vec4:getHEX() end
 

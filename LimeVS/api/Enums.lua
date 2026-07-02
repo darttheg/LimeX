@@ -2,13 +2,7 @@
 Lime = Lime or {}
 ---@class Lime.Enum
 Lime.Enum = Lime.Enum or {}
----@alias Lime.Enum.PrintColor integer
----@class Lime.Enum.PrintColorEnum
----@field White Lime.Enum.PrintColor
----@field Red Lime.Enum.PrintColor
----@field Green Lime.Enum.PrintColor
----@field Blue Lime.Enum.PrintColor
----@field Yellow Lime.Enum.PrintColor
+---@enum Lime.Enum.PrintColor
 Lime.Enum.PrintColor = {
 White = 0,
 Red = 1,
@@ -16,40 +10,20 @@ Green = 2,
 Blue = 3,
 Yellow = 4,
 }
----@alias Lime.Enum.PopUpIcon integer
----@class Lime.Enum.PopUpIconEnum
----@field None Lime.Enum.PopUpIcon
----@field Warning Lime.Enum.PopUpIcon
----@field Message Lime.Enum.PopUpIcon
----@field Information Lime.Enum.PopUpIcon
+---@enum Lime.Enum.PopUpIcon
 Lime.Enum.PopUpIcon = {
 None = 0,
 Warning = 1,
 Message = 2,
 Information = 3,
 }
----@alias Lime.Enum.MouseType integer
----@class Lime.Enum.MouseTypeEnum
----@field Normal Lime.Enum.MouseType
----@field Confined Lime.Enum.MouseType
----@field Raw Lime.Enum.MouseType
+---@enum Lime.Enum.MouseType
 Lime.Enum.MouseType = {
 Normal = 0,
 Confined = 1,
 Raw = 2,
 }
----@alias Lime.Enum.PeerState integer
----@class Lime.Enum.PeerStateEnum
----@field Disconnected Lime.Enum.PeerState
----@field Connecting Lime.Enum.PeerState
----@field AcknowledgingConnect Lime.Enum.PeerState
----@field ConnectionPending Lime.Enum.PeerState
----@field ConnectionSucceeded Lime.Enum.PeerState
----@field Connected Lime.Enum.PeerState
----@field DisconnectLater Lime.Enum.PeerState
----@field Disconnecting Lime.Enum.PeerState
----@field AcknowledgingDisconnect Lime.Enum.PeerState
----@field Zombie Lime.Enum.PeerState
+---@enum Lime.Enum.PeerState
 Lime.Enum.PeerState = {
 Disconnected = 0,
 Connecting = 1,
@@ -62,14 +36,7 @@ Disconnecting = 7,
 AcknowledgingDisconnect = 8,
 Zombie = 9,
 }
----@alias Lime.Enum.PhysicalPreset integer
----@class Lime.Enum.PhysicalPresetEnum
----@field Default Lime.Enum.PhysicalPreset
----@field Static Lime.Enum.PhysicalPreset
----@field Bouncy Lime.Enum.PhysicalPreset
----@field Icy Lime.Enum.PhysicalPreset
----@field Heavy Lime.Enum.PhysicalPreset
----@field Floaty Lime.Enum.PhysicalPreset
+---@enum Lime.Enum.PhysicalPreset
 Lime.Enum.PhysicalPreset = {
 Default = 0,
 Static = 1,
@@ -78,21 +45,7 @@ Icy = 3,
 Heavy = 4,
 Floaty = 5,
 }
----@alias Lime.Enum.Cursor integer
----@class Lime.Enum.CursorEnum
----@field Normal Lime.Enum.Cursor
----@field Cross Lime.Enum.Cursor
----@field Hand Lime.Enum.Cursor
----@field Help Lime.Enum.Cursor
----@field Highlighter Lime.Enum.Cursor
----@field Forbidden Lime.Enum.Cursor
----@field Hourglass Lime.Enum.Cursor
----@field ResizeAll Lime.Enum.Cursor
----@field ResizeNS Lime.Enum.Cursor
----@field ResizeWE Lime.Enum.Cursor
----@field ResizeNESW Lime.Enum.Cursor
----@field ResizeNWSE Lime.Enum.Cursor
----@field Up Lime.Enum.Cursor
+---@enum Lime.Enum.Cursor
 Lime.Enum.Cursor = {
 Normal = 0,
 Cross = 1,
@@ -108,14 +61,7 @@ ResizeNESW = 10,
 ResizeNWSE = 11,
 Up = 12,
 }
----@alias Lime.Enum.DriverType integer
----@class Lime.Enum.DriverTypeEnum
----@field None Lime.Enum.DriverType
----@field Software Lime.Enum.DriverType
----@field SoftwarePlus Lime.Enum.DriverType
----@field Direct3D8 Lime.Enum.DriverType
----@field Direct3D9 Lime.Enum.DriverType
----@field OpenGL Lime.Enum.DriverType
+---@enum Lime.Enum.DriverType
 Lime.Enum.DriverType = {
 None = 0,
 Software = 1,
@@ -124,14 +70,7 @@ Direct3D8 = 3,
 Direct3D9 = 4,
 OpenGL = 5,
 }
----@alias Lime.Enum.PhysicsDebugType integer
----@class Lime.Enum.PhysicsDebugTypeEnum
----@field None Lime.Enum.PhysicsDebugType
----@field BoundingBoxes Lime.Enum.PhysicsDebugType
----@field ContactPoints Lime.Enum.PhysicsDebugType
----@field Wireframe Lime.Enum.PhysicsDebugType
----@field Constraints Lime.Enum.PhysicsDebugType
----@field All Lime.Enum.PhysicsDebugType
+---@enum Lime.Enum.PhysicsDebugType
 Lime.Enum.PhysicsDebugType = {
 None = 0,
 BoundingBoxes = 1,
@@ -140,24 +79,7 @@ Wireframe = 3,
 Constraints = 4,
 All = 5,
 }
----@alias Lime.Enum.MaterialType integer
----@class Lime.Enum.MaterialTypeEnum
----@field Solid Lime.Enum.MaterialType
----@field SolidMultiply Lime.Enum.MaterialType
----@field Add Lime.Enum.MaterialType
----@field AlphaSoft Lime.Enum.MaterialType
----@field AlphaHarsh Lime.Enum.MaterialType
----@field VertexAlpha Lime.Enum.MaterialType
----@field SphereMap Lime.Enum.MaterialType
----@field ReflectMap Lime.Enum.MaterialType
----@field LightMap Lime.Enum.MaterialType
----@field LightMapAdd Lime.Enum.MaterialType
----@field LightMapBright Lime.Enum.MaterialType
----@field LightMapBrightest Lime.Enum.MaterialType
----@field DynamicLightMap Lime.Enum.MaterialType
----@field DynamicLightMapBright Lime.Enum.MaterialType
----@field DynamicLightMapBrightest Lime.Enum.MaterialType
----@field DetailMap Lime.Enum.MaterialType
+---@enum Lime.Enum.MaterialType
 Lime.Enum.MaterialType = {
 Solid = 0,
 SolidMultiply = 1,
@@ -176,13 +98,7 @@ DynamicLightMapBright = 7,
 DynamicLightMapBrightest = 8,
 DetailMap = 9,
 }
----@alias Lime.Enum.EmitterType integer
----@class Lime.Enum.EmitterTypeEnum
----@field Point Lime.Enum.EmitterType
----@field Box Lime.Enum.EmitterType
----@field Sphere Lime.Enum.EmitterType
----@field Ring Lime.Enum.EmitterType
----@field Cylinder Lime.Enum.EmitterType
+---@enum Lime.Enum.EmitterType
 Lime.Enum.EmitterType = {
 Point = 0,
 Box = 1,
@@ -190,24 +106,13 @@ Sphere = 2,
 Ring = 3,
 Cylinder = 4,
 }
----@alias Lime.Enum.LightType integer
----@class Lime.Enum.LightTypeEnum
----@field Point Lime.Enum.LightType
----@field Spotlight Lime.Enum.LightType
----@field Directional Lime.Enum.LightType
+---@enum Lime.Enum.LightType
 Lime.Enum.LightType = {
 Point = 0,
 Spotlight = 1,
 Directional = 2,
 }
----@alias Lime.Enum.TextureWrapType integer
----@class Lime.Enum.TextureWrapTypeEnum
----@field Repeat Lime.Enum.TextureWrapType
----@field Clamp Lime.Enum.TextureWrapType
----@field ClampToEdge Lime.Enum.TextureWrapType
----@field Mirror Lime.Enum.TextureWrapType
----@field MirrorClamp Lime.Enum.TextureWrapType
----@field MirrorClampToEdge Lime.Enum.TextureWrapType
+---@enum Lime.Enum.TextureWrapType
 Lime.Enum.TextureWrapType = {
 Repeat = 0,
 Clamp = 1,
@@ -216,61 +121,35 @@ Mirror = 4,
 MirrorClamp = 5,
 MirrorClampToEdge = 6,
 }
----@alias Lime.Enum.Quality integer
----@class Lime.Enum.QualityEnum
----@field Low Lime.Enum.Quality
----@field Medium Lime.Enum.Quality
----@field High Lime.Enum.Quality
+---@enum Lime.Enum.Quality
 Lime.Enum.Quality = {
 Low = 0,
 Medium = 1,
 High = 2,
 }
----@alias Lime.Enum.TextureCreationQuality integer
----@class Lime.Enum.TextureCreationQualityEnum
----@field Low Lime.Enum.TextureCreationQuality
----@field Medium Lime.Enum.TextureCreationQuality
----@field High Lime.Enum.TextureCreationQuality
+---@enum Lime.Enum.TextureCreationQuality
 Lime.Enum.TextureCreationQuality = {
 Low = 0,
 Medium = 1,
 High = 2,
 }
----@alias Lime.Enum.LightManagementType integer
----@class Lime.Enum.LightManagementTypeEnum
----@field EightNearestToCamera Lime.Enum.LightManagementType
----@field ThreeClosestToObjects Lime.Enum.LightManagementType
----@field EmptyAsActivationZone Lime.Enum.LightManagementType
+---@enum Lime.Enum.LightManagementType
 Lime.Enum.LightManagementType = {
 EightNearestToCamera = 0,
 ThreeClosestToObjects = 1,
 EmptyAsActivationZone = 2,
 }
----@alias Lime.Enum.ZOrderMethod integer
----@class Lime.Enum.ZOrderMethodEnum
----@field BehindAll Lime.Enum.ZOrderMethod
----@field Default Lime.Enum.ZOrderMethod
----@field Decal Lime.Enum.ZOrderMethod
----@field ExceptDecal Lime.Enum.ZOrderMethod
----@field XRay Lime.Enum.ZOrderMethod
----@field StrictXRay Lime.Enum.ZOrderMethod
----@field OnTop Lime.Enum.ZOrderMethod
+---@enum Lime.Enum.ZOrderMethod
 Lime.Enum.ZOrderMethod = {
-BehindAll = 0,
+BehindAll = 6,
 Default = 1,
 Decal = 2,
 ExceptDecal = 3,
 XRay = 4,
 StrictXRay = 5,
-OnTop = 6,
+OnTop = 0,
 }
----@alias Lime.Enum.TextAlign integer
----@class Lime.Enum.TextAlignEnum
----@field Left Lime.Enum.TextAlign
----@field Right Lime.Enum.TextAlign
----@field Center Lime.Enum.TextAlign
----@field Top Lime.Enum.TextAlign
----@field Bottom Lime.Enum.TextAlign
+---@enum Lime.Enum.TextAlign
 Lime.Enum.TextAlign = {
 Left = 0,
 Right = 1,
@@ -278,54 +157,26 @@ Center = 2,
 Top = 0,
 Bottom = 1,
 }
----@alias Lime.Enum.StorageHint integer
----@class Lime.Enum.StorageHintEnum
----@field Never Lime.Enum.StorageHint
----@field Static Lime.Enum.StorageHint
----@field Dynamic Lime.Enum.StorageHint
----@field Stream Lime.Enum.StorageHint
+---@enum Lime.Enum.StorageHint
 Lime.Enum.StorageHint = {
 Never = 0,
 Static = 1,
 Dynamic = 2,
 Stream = 3,
 }
----@alias Lime.Enum.SoundType integer
----@class Lime.Enum.SoundTypeEnum
----@field Auto Lime.Enum.SoundType
----@field Stream Lime.Enum.SoundType
----@field Static Lime.Enum.SoundType
+---@enum Lime.Enum.SoundType
 Lime.Enum.SoundType = {
 Auto = 0,
 Stream = 1,
 Static = 2,
 }
----@alias Lime.Enum.Mouse integer
----@class Lime.Enum.MouseEnum
----@field Left Lime.Enum.Mouse
----@field Right Lime.Enum.Mouse
----@field Middle Lime.Enum.Mouse
+---@enum Lime.Enum.Mouse
 Lime.Enum.Mouse = {
 Left = 0,
 Right = 1,
 Middle = 2,
 }
----@alias Lime.Enum.ControllerButton integer
----@class Lime.Enum.ControllerButtonEnum
----@field A Lime.Enum.ControllerButton
----@field B Lime.Enum.ControllerButton
----@field X Lime.Enum.ControllerButton
----@field Y Lime.Enum.ControllerButton
----@field RightBumper Lime.Enum.ControllerButton
----@field LeftBumper Lime.Enum.ControllerButton
----@field Back Lime.Enum.ControllerButton
----@field Start Lime.Enum.ControllerButton
----@field RightStick Lime.Enum.ControllerButton
----@field LeftStick Lime.Enum.ControllerButton
----@field DPadUp Lime.Enum.ControllerButton
----@field DPadRight Lime.Enum.ControllerButton
----@field DPadDown Lime.Enum.ControllerButton
----@field DPadLeft Lime.Enum.ControllerButton
+---@enum Lime.Enum.ControllerButton
 Lime.Enum.ControllerButton = {
 A = 0,
 B = 1,
@@ -342,14 +193,7 @@ DPadRight = 33,
 DPadDown = 34,
 DPadLeft = 35,
 }
----@alias Lime.Enum.ControllerAxis integer
----@class Lime.Enum.ControllerAxisEnum
----@field LeftStickX Lime.Enum.ControllerAxis
----@field LeftStickY Lime.Enum.ControllerAxis
----@field RightStickX Lime.Enum.ControllerAxis
----@field RightStickY Lime.Enum.ControllerAxis
----@field LeftTrigger Lime.Enum.ControllerAxis
----@field RightTrigger Lime.Enum.ControllerAxis
+---@enum Lime.Enum.ControllerAxis
 Lime.Enum.ControllerAxis = {
 LeftStickX = 0,
 LeftStickY = 1,
@@ -358,117 +202,7 @@ RightStickY = 4,
 LeftTrigger = 5,
 RightTrigger = 6,
 }
----@alias Lime.Enum.Key integer
----@class Lime.Enum.KeyEnum
----@field Back Lime.Enum.Key
----@field Tab Lime.Enum.Key
----@field Return Lime.Enum.Key
----@field Shift Lime.Enum.Key
----@field Control Lime.Enum.Key
----@field Alt Lime.Enum.Key
----@field Pause Lime.Enum.Key
----@field CapsLock Lime.Enum.Key
----@field Escape Lime.Enum.Key
----@field Space Lime.Enum.Key
----@field PageUp Lime.Enum.Key
----@field PageDown Lime.Enum.Key
----@field End Lime.Enum.Key
----@field Home Lime.Enum.Key
----@field Left Lime.Enum.Key
----@field Up Lime.Enum.Key
----@field Right Lime.Enum.Key
----@field Down Lime.Enum.Key
----@field PrintScreen Lime.Enum.Key
----@field Insert Lime.Enum.Key
----@field Delete Lime.Enum.Key
----@field Num0 Lime.Enum.Key
----@field Num1 Lime.Enum.Key
----@field Num2 Lime.Enum.Key
----@field Num3 Lime.Enum.Key
----@field Num4 Lime.Enum.Key
----@field Num5 Lime.Enum.Key
----@field Num6 Lime.Enum.Key
----@field Num7 Lime.Enum.Key
----@field Num8 Lime.Enum.Key
----@field Num9 Lime.Enum.Key
----@field A Lime.Enum.Key
----@field B Lime.Enum.Key
----@field C Lime.Enum.Key
----@field D Lime.Enum.Key
----@field E Lime.Enum.Key
----@field F Lime.Enum.Key
----@field G Lime.Enum.Key
----@field H Lime.Enum.Key
----@field I Lime.Enum.Key
----@field J Lime.Enum.Key
----@field K Lime.Enum.Key
----@field L Lime.Enum.Key
----@field M Lime.Enum.Key
----@field N Lime.Enum.Key
----@field O Lime.Enum.Key
----@field P Lime.Enum.Key
----@field Q Lime.Enum.Key
----@field R Lime.Enum.Key
----@field S Lime.Enum.Key
----@field T Lime.Enum.Key
----@field U Lime.Enum.Key
----@field V Lime.Enum.Key
----@field W Lime.Enum.Key
----@field X Lime.Enum.Key
----@field Y Lime.Enum.Key
----@field Z Lime.Enum.Key
----@field LWin Lime.Enum.Key
----@field RWin Lime.Enum.Key
----@field Numpad0 Lime.Enum.Key
----@field Numpad1 Lime.Enum.Key
----@field Numpad2 Lime.Enum.Key
----@field Numpad3 Lime.Enum.Key
----@field Numpad4 Lime.Enum.Key
----@field Numpad5 Lime.Enum.Key
----@field Numpad6 Lime.Enum.Key
----@field Numpad7 Lime.Enum.Key
----@field Numpad8 Lime.Enum.Key
----@field Numpad9 Lime.Enum.Key
----@field NumpadMultiply Lime.Enum.Key
----@field NumpadAdd Lime.Enum.Key
----@field NumpadSeparator Lime.Enum.Key
----@field NumpadSubtract Lime.Enum.Key
----@field NumpadDecimal Lime.Enum.Key
----@field NumpadDivide Lime.Enum.Key
----@field F1 Lime.Enum.Key
----@field F2 Lime.Enum.Key
----@field F3 Lime.Enum.Key
----@field F4 Lime.Enum.Key
----@field F5 Lime.Enum.Key
----@field F6 Lime.Enum.Key
----@field F7 Lime.Enum.Key
----@field F8 Lime.Enum.Key
----@field F9 Lime.Enum.Key
----@field F10 Lime.Enum.Key
----@field F11 Lime.Enum.Key
----@field F12 Lime.Enum.Key
----@field NumLock Lime.Enum.Key
----@field ScrollLock Lime.Enum.Key
----@field LShift Lime.Enum.Key
----@field RShift Lime.Enum.Key
----@field LControl Lime.Enum.Key
----@field RControl Lime.Enum.Key
----@field LAlt Lime.Enum.Key
----@field RAlt Lime.Enum.Key
----@field Semicolon Lime.Enum.Key
----@field Equals Lime.Enum.Key
----@field Comma Lime.Enum.Key
----@field Minus Lime.Enum.Key
----@field Period Lime.Enum.Key
----@field Slash Lime.Enum.Key
----@field Backtick Lime.Enum.Key
----@field LeftBracket Lime.Enum.Key
----@field Backslash Lime.Enum.Key
----@field RightBracket Lime.Enum.Key
----@field Apostrophe Lime.Enum.Key
----@field Oem8 Lime.Enum.Key
----@field Oem102 Lime.Enum.Key
----@field OemClear Lime.Enum.Key
+---@enum Lime.Enum.Key
 Lime.Enum.Key = {
 Back = 8,
 Tab = 9,

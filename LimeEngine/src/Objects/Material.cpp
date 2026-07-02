@@ -75,14 +75,18 @@ Vec2 Material::getTextureUVWrapBehavior(int layer) const {
 	return Vec2(material->TextureLayer[layer].TextureWrapU, material->TextureLayer[layer].TextureWrapV);
 }
 
-void Material::setTextureUVWrapBehavior(int layer, int u, int v) {
+void Material::setTextureUVWrapBehavior(int u, int v, int layer) {
 	if (layer < 0) layer = 0;
 	material->TextureLayer[layer].TextureWrapU = u;
 	material->TextureLayer[layer].TextureWrapV = v;
 }
 
-void Material::setTextureUVWrapBehavior(int u, int v) {
-	setTextureUVWrapBehavior(0, u, v);
+void Material::setTextureUVWrapBehavior(int u, int layer) {
+	setTextureUVWrapBehavior(layer, u, u);
+}
+
+void Material::setTextureUVWrapBehavior(int u) {
+	setTextureUVWrapBehavior(0, u, u);
 }
 
 Vec2 Material::getTextureScale(int layer) const {
@@ -378,12 +382,14 @@ void Object::MaterialBind::bind(lua_State* ls) {
 
 	// Changes the method for `Texture` UV wrapping.
 	// Params Lime.Enum.TextureWrapType uMethod, Lime.Enum.TextureWrapType vMethod, number layer
-	// Params Lime.Enum.TextureWrapType uMethod, Lime.Enum.TextureWrapType vMethod
+	// Params Lime.Enum.TextureWrapType method, number layer
+	// Params Lime.Enum.TextureWrapType method
 	// Returns void
 	obj.set_function("setTextureWrapMethod",
 		sol::overload(
 			sol::resolve<void(int, int, int)>(&Material::setTextureUVWrapBehavior),
-			sol::resolve<void(int, int)>(&Material::setTextureUVWrapBehavior)
+			sol::resolve<void(int, int)>(&Material::setTextureUVWrapBehavior),
+			sol::resolve<void(int)>(&Material::setTextureUVWrapBehavior)
 		));
 
 	// Sets the scale of the mapping of a `Texture`.

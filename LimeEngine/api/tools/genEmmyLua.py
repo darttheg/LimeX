@@ -86,11 +86,7 @@ def emit_module(module_path, enums, functions):
 
     for enum_name, values in enums:
         alias = f"{mod}.{enum_name}"
-        enum_table = f"{alias}Enum"
-        out.append(f"---@alias {alias} integer")
-        out.append(f"---@class {enum_table}")
-        for k in values:
-            out.append(f"---@field {k} {alias}")
+        out.append(f"---@enum {alias}")
         out.append(f"{alias} = {{")
         for k, v in values.items():
             out.append(f"{k} = {v},")
