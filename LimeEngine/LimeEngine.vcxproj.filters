@@ -268,6 +268,12 @@
     <ClInclude Include="include\Modules\ModuleLua.h">
       <Filter>Engine\Runtime\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\ShadowVolume.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Objects\IrrShadowVolume.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -437,6 +443,9 @@
     </ClCompile>
     <ClCompile Include="src\Modules\ModuleLua.cpp">
       <Filter>Engine\Runtime\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\ShadowVolume.cpp">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -42,13 +42,21 @@ void IrrShaderMaterial::OnSetConstants(irr::video::IMaterialRendererServices* se
 
 	const irr::f32 t = r ? r->getDtTime() : 0.0f;
 
+	irr::core::matrix4 viewProj = driver->getTransform(irr::video::ETS_PROJECTION);
+	viewProj *= driver->getTransform(irr::video::ETS_VIEW);
+	irr::core::matrix4 invVP;
+	viewProj.getInverse(invVP);
+
+	services->setVertexShaderConstant("mInvViewProj", invVP.pointer(), 16);
 	services->setVertexShaderConstant("mWorldView", wv.pointer(), 16);
 	services->setVertexShaderConstant("mWorldViewProj", wvp.pointer(), 16);
 	services->setVertexShaderConstant("mWorld", world.pointer(), 16);
 	services->setVertexShaderConstant("uTime", &t, 1);
 
-	const irr::f32 texLayer = 0;
-	services->setPixelShaderConstant("screenTex", &texLayer, 1);
+	const irr::f32 texLayer0 = 0;
+	const irr::f32 texLayer1 = 1;
+	services->setPixelShaderConstant("texture0", &texLayer0, 1);
+	services->setPixelShaderConstant("texture1", &texLayer1, 1);
 
 	for (auto& [name, val] : uniforms) {
 		std::visit([&](auto&& v) {

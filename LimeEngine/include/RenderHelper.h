@@ -10,6 +10,7 @@ class Vec3;
 class Vec2;
 class Mesh;
 class HitResult;
+class ShadowVolumeSceneNode;
 
 namespace irr {
 	class IrrlichtDevice;

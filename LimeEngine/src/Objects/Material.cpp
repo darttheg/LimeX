@@ -82,11 +82,11 @@ void Material::setTextureUVWrapBehavior(int u, int v, int layer) {
 }
 
 void Material::setTextureUVWrapBehavior(int u, int layer) {
-	setTextureUVWrapBehavior(layer, u, u);
+	setTextureUVWrapBehavior(u, u, layer);
 }
 
 void Material::setTextureUVWrapBehavior(int u) {
-	setTextureUVWrapBehavior(0, u, u);
+	setTextureUVWrapBehavior(u, u, 0);
 }
 
 Vec2 Material::getTextureScale(int layer) const {

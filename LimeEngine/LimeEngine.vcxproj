@@ -61,6 +61,7 @@
     <ClInclude Include="include\Objects\HitResult.h" />
     <ClInclude Include="include\Objects\Image2D.h" />
     <ClInclude Include="include\Objects\IrrShaderMat.h" />
+    <ClInclude Include="include\Objects\IrrShadowVolume.h" />
     <ClInclude Include="include\Objects\Light.h" />
     <ClInclude Include="include\Objects\Mesh.h" />
     <ClInclude Include="include\Objects\MeshBuffer.h" />
@@ -69,6 +70,7 @@
     <ClInclude Include="include\Objects\ParticleSystem.h" />
     <ClInclude Include="include\Objects\RigidBody.h" />
     <ClInclude Include="include\Objects\ShaderMaterial.h" />
+    <ClInclude Include="include\Objects\ShadowVolume.h" />
     <ClInclude Include="include\Objects\SoundSource.h" />
     <ClInclude Include="include\Objects\Text3D.h" />
     <ClInclude Include="include\Objects\Texture.h" />
@@ -130,6 +132,7 @@
     <ClCompile Include="src\Objects\ParticleSystem.cpp" />
     <ClCompile Include="src\Objects\RigidBody.cpp" />
     <ClCompile Include="src\Objects\ShaderMaterial.cpp" />
+    <ClCompile Include="src\Objects\ShadowVolume.cpp" />
     <ClCompile Include="src\Objects\SoundSource.cpp" />
     <ClCompile Include="src\Objects\Text3D.cpp" />
     <ClCompile Include="src\Objects\Texture.cpp" />

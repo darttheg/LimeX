@@ -22,6 +22,7 @@ class QuadRenderer;
 class RenderHelper;
 class ShaderMaterial;
 class PhysicsManager;
+class IrrShaderMaterial;
 
 namespace irr {
 	class IrrlichtDevice;
@@ -178,6 +179,7 @@ private:
 	Vec4S bgColor{ 0,0,0,255 };
 	Vec4S fogColor{};
 	Vec2S fogPlanes{};
+	Vec4S shadowColor{ 0, 0, 0, 180 };
 	void updateFog();
 	bool doMatchResolution = true; // Hook resolution w/h to window size
 
@@ -195,6 +197,8 @@ private:
 	QuadRenderer* qr = nullptr;
 	RenderHelper* rh = nullptr;
 	irr::scene::ILightManager* lightManager = nullptr;
+	void doDepthPass();
+	IrrShaderMaterial* depthShader = nullptr;
 
 	// Fallback
 	irr::video::ITexture* alphaBlankTex = nullptr;

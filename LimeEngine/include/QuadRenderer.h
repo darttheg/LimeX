@@ -38,7 +38,10 @@ public:
 	int getPpxType() { return ppxType; }
 	irr::video::E_MATERIAL_TYPE getMatType() { return qMat.MaterialType; }
 
+	irr::video::ITexture* getSceneTexture() { return rtScene; }
+	irr::video::ITexture* getGUITexture() { return rtGUI; }
 	irr::video::ITexture* getUserTexture() { return rtUser; }
+	irr::video::ITexture* getDepthTexture() { return rtDepth; }
 	void setUserTexture(irr::video::ITexture* tex) { rtUser = tex; }
 	void clearUserTexture() { rtUser = nullptr; }
 	void clearUsedTextures(irr::video::ITexture* tex); // If texture is purged, check that it isn't used here.
@@ -52,6 +55,7 @@ private:
 	irr::video::ITexture* rtScene = nullptr;
 	irr::video::ITexture* rtGUI = nullptr;
 	irr::video::ITexture* rtUser = nullptr;
+	irr::video::ITexture* rtDepth = nullptr;
 
 	irr::video::S3DVertex qVerts[4];
 	irr::u16 qIndices[6];

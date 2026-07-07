@@ -25,6 +25,7 @@
 #include "LightManager.h"
 
 #include "Objects/ShaderMaterial.h"
+#include "Objects/IrrShaderMat.h"
 #include <stack>
 
 static Application* a = nullptr;
@@ -70,7 +71,7 @@ static irr::video::ITexture* getCheckerError(irr::video::IVideoDriver* driver) {
 }
 
 static irr::video::ITexture* getAlphaBlank(irr::video::IVideoDriver* driver) {
-	irr::video::ITexture* blank = driver->getTexture("alpha");
+	irr::video::ITexture* blank = driver->getTexture("blank");
 	if (!blank) {
 		const irr::video::SColor L(0, 0, 0, 0);
 		irr::video::IImage* img = driver->createImage(irr::video::ECF_A1R5G5B5, irr::core::dimension2du(1, 1));
@@ -126,7 +127,7 @@ bool Renderer::Init() {
 	params.Bits = 16;
 	params.Vsync = cfg.vSync;
 	params.Fullscreen = cfg.fullscreen;
-	params.Stencilbuffer = cfg.stencil;
+	params.Stencilbuffer = false;
 	params.UsePerformanceTimer = false;
 	// params.WindowId = (void*)glfwGetWin32Window(w->getGLFWWindow());
 
@@ -145,6 +146,9 @@ bool Renderer::Init() {
 	i_driver = i_device->getVideoDriver();
 	i_gui = i_device->getGUIEnvironment();
 	i_gpu = i_driver->getGPUProgrammingServices();
+
+	// if (!i_driver->queryFeature(irr::video::EVDF_STENCIL_BUFFER))
+	// 	d->Warn("Shadow Volumes rely on the stencil buffer, which is not a supported feature in this device.");
 
 	i_device->setEventReceiver(a->GetReceiver());
 	a->GetReceiver()->initJoysticks(i_device);
@@ -215,6 +219,9 @@ bool Renderer::Init() {
 		}
 		});
 
+	alphaBlankTex = getAlphaBlank(i_driver);
+	checkerTex = getCheckerError(i_driver);
+
 	qr->init(i_driver, i_gui);
 	qr->setWindowResolution(w->getSize().getX(), w->getSize().getY());
 	qr->setInternalResolution(renderSize.x, renderSize.y);
@@ -225,13 +232,14 @@ bool Renderer::Init() {
 	if (!mountResources(i_device))
 		d->Warn("INIT WARNING: Could not mount resources.zip!");
 
-	alphaBlankTex = getAlphaBlank(i_driver);
-	checkerTex = getCheckerError(i_driver);
 	errMesh = i_smgr->getMesh("meshes/error.obj");
 
 	isCreated = true;
 	setTextureCreationQuality(1); // Medium
 	setLightManagementType(0); // EightNearest
+
+	// Shaders (switch on driver type)
+	depthShader = new IrrShaderMaterial(i_driver, "shaders/depth.hlsl", "shaders/depth.hlsl", irr::video::EMT_SOLID);
 
 	return true;
 }
@@ -252,6 +260,28 @@ bool Renderer::Shutdown() {
 bool Renderer::UpdatePhysics(float dt) {
 	if (!isCreated) return false;
 	return physics->Update(dt);
+}
+
+void Renderer::doDepthPass() {
+	i_driver->setRenderTarget(qr->getDepthTexture(), true, true);
+
+	if (auto* cam = i_smgr->getActiveCamera()) {
+		depthShader->setUniformFloat("near", cam->getNearValue());
+		depthShader->setUniformFloat("far", cam->getFarValue());
+	}
+
+	irr::video::SOverrideMaterial& over = i_driver->getOverrideMaterial();
+	over.Material.MaterialType = static_cast<irr::video::E_MATERIAL_TYPE>(depthShader->getMaterialType());
+	over.EnableFlags = EMF_MATERIAL_TYPE;
+	over.EnablePasses = irr::scene::ESNRP_SOLID;
+	over.Enabled = true;
+
+	i_smgr->drawAll();
+	i_driver->setRenderTarget(0, false, false);
+	//i_driver->draw2DImage(qr->getDepthTexture(), irr::core::position2di(0, 0));
+
+	over.EnableFlags = 0;
+	over.Enabled = false;
 }
 
 bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
@@ -288,10 +318,14 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		i_smgr->getActiveCamera()->setAspectRatio(w->getWinAR());
 	}
 
-	if (doMatchResolution && !qr->ppxActive()) {
+	bool rawDraw = doMatchResolution && !qr->ppxActive();
+
+	if (rawDraw) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		i_smgr->drawAll();
 		physics->RenderDebug();
+
+		doDepthPass();
 
 		if (qr->getUserTexture())
 			i_driver->draw2DImage(qr->getUserTexture(), irr::core::position2di());
@@ -301,6 +335,7 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		qr->beginInternal();
 		i_smgr->drawAll(); // Draw scene objects to rtScene
 		physics->RenderDebug();
+		doDepthPass();
 		qr->beginGUIPass();
 		guiManager->Render(); // Draw GUI objects to rtGUI
 		qr->endInternal();
@@ -308,17 +343,6 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		qr->presentToWindow();
 	}
-
-	/*
-	qr->beginInternal();
-	i_smgr->drawAll(); // Draw scene objects to rtScene
-	qr->beginGUIPass();
-	guiManager->Render(); // Draw GUI objects to rtGUI
-	qr->endInternal();
-
-	i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
-	qr->presentToWindow();
-	*/
 
 	i_driver->endScene();
 

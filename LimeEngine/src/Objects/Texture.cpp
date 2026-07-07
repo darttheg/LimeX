@@ -21,7 +21,7 @@ Texture::Texture() {
 }
 
 Texture::Texture(const std::string& path) : Texture() {
-	texture = rh->createTexture(path);
+	if (!texture) texture = rh->createTexture(path);
 }
 
 Texture::Texture(irr::video::ITexture* tex) : Texture() {

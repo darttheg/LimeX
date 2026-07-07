@@ -50,6 +50,10 @@ void Skydome::loadMaterial(const Material& mat) {
 	sky->setMaterialFlag(E_MATERIAL_FLAG::EMF_TRILINEAR_FILTER, mat.getMaterial().getFlag(E_MATERIAL_FLAG::EMF_TRILINEAR_FILTER));
 	sky->setMaterialFlag(E_MATERIAL_FLAG::EMF_TEXTURE_WRAP, mat.getMaterial().getFlag(E_MATERIAL_FLAG::EMF_TEXTURE_WRAP));
 	sky->setMaterialFlag(E_MATERIAL_FLAG::EMF_USE_MIP_MAPS, mat.getMaterial().getFlag(E_MATERIAL_FLAG::EMF_USE_MIP_MAPS));
+	
+	// Texture matrix stuff
+	auto& m = mat.getMaterial().getTextureMatrix(0);
+	sky->getMaterial(0).setTextureMatrix(0, m);
 }
 
 void Object::SkydomeBind::bind(lua_State* ls, RenderHelper* renh) {

@@ -130,6 +130,7 @@ irr::video::ITexture* RenderHelper::createTexture(const std::string& path) {
 		d->Warn("Could not create texture from " + path);
 		return nullptr;
 	}
+	tex->grab();
 
 	return tex;
 }
@@ -292,7 +293,7 @@ irr::scene::ISceneNode* RenderHelper::createEmptyNode() {
 
 irr::scene::ISceneNode* RenderHelper::createSkydomeNode(irr::video::ITexture* tex) {
 	if (!guardRenderingCheck()) return nullptr;
-	return i_smgr->addSkyDomeSceneNode(tex, 16, 8, 1.0, 2.0, 100.0);
+	return i_smgr->addSkyDomeSceneNode(tex, 32, 16, 1.0, 2.0, 200.0);
 }
 
 irr::scene::IBillboardSceneNode* RenderHelper::createBillboardNode() {

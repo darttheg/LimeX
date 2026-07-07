@@ -227,24 +227,30 @@ void QuadRenderer::buildQuad()
 void QuadRenderer::recreateRt() {
     if (!driver) return;
 
+    irr::s32 oW = matchWR ? winW : resW;
+    irr::s32 oH = matchWR ? winH : resH;
+
+    if (rtScene && rtScene->getSize() == irr::core::dimension2du(oW, oH)) return;
+
     if (rtScene) {
         rtScene->drop();
         driver->removeTexture(rtScene);
-        rtScene = nullptr;
     }
 
     if (rtGUI) {
         rtGUI->drop();
         driver->removeTexture(rtGUI);
-        rtGUI = nullptr;
     }
 
-    irr::s32 oW = matchWR ? winW : resW;
-    irr::s32 oH = matchWR ? winH : resH;
+    if (rtDepth) {
+        rtDepth->drop();
+        driver->removeTexture(rtDepth);
+    }
 
     const irr::core::dimension2du res(oW, oH);
     rtScene = driver->addRenderTargetTexture(res, "rtScene", irr::video::ECF_A8R8G8B8);
     rtGUI = driver->addRenderTargetTexture(res, "rtGUI", irr::video::ECF_A8R8G8B8);
+    rtDepth = driver->addRenderTargetTexture(res, "rtDepth", irr::video::ECF_A8R8G8B8);
 
     if (rtScene) {
         rtScene->grab();
@@ -252,6 +258,7 @@ void QuadRenderer::recreateRt() {
     }
 
     if (rtGUI) rtGUI->grab();
+    if (rtDepth) rtDepth->grab();
 }
 
 #undef min
