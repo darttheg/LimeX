@@ -288,6 +288,7 @@ void Renderer::renderDepthPass() {
 	over.Enabled = false;
 }
 
+#include "Objects/IrrShadowVolume.h"
 bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	if (!guardRenderingCheck()) return false;
 	if (!isCreated || !w->getGLFWWindow()) return false;
@@ -323,12 +324,13 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	}
 
 	bool rawDraw = doMatchResolution && !qr->ppxActive();
+	ShadowVolumeSceneNode::DrawingThisFrame = false;
 
 	if (rawDraw) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		i_smgr->drawAll();
 
-		if (doStencilBuffer) i_driver->drawStencilShadow(false);
+		if (doStencilBuffer && ShadowVolumeSceneNode::DrawingThisFrame) i_driver->drawStencilShadow(false);
 
 		physics->RenderDebug();
 
@@ -342,7 +344,7 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		qr->beginInternal();
 		i_smgr->drawAll(); // Draw scene objects to rtScene
 
-		if (doStencilBuffer) i_driver->drawStencilShadow(false);
+		if (doStencilBuffer && ShadowVolumeSceneNode::DrawingThisFrame) i_driver->drawStencilShadow(false);
 
 		physics->RenderDebug();
 		renderDepthPass();

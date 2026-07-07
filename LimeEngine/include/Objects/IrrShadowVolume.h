@@ -5,6 +5,8 @@ using namespace irr;
 
 class ShadowVolumeSceneNode : public scene::ISceneNode {
 public:
+	inline static bool DrawingThisFrame = false;
+
 	ShadowVolumeSceneNode(scene::IMesh* mesh, scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id)
 		: ISceneNode(parent, mgr, id), source(mesh) {
 		if (source) { source->grab(); box = source->getBoundingBox(); }
@@ -26,9 +28,24 @@ public:
 
 	void doStencil() {
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();
-		updateTriangles();
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-		driver->drawStencilShadowVolume(triangles, true, scene::EDS_OFF);
+
+		bool doDraw = true;
+		if (irr::scene::ICameraSceneNode* c = SceneManager->getActiveCamera()) {
+			core::aabbox3d<f32> wBox = box;
+			AbsoluteTransformation.transformBoxEx(wBox);
+			const scene::SViewFrustum* frust = c->getViewFrustum();
+			if (!frust->getBoundingBox().intersectsWithBox(wBox)) doDraw = false;
+		}
+
+		if (doDraw) {
+			DrawingThisFrame = true;
+			updateTriangles();
+			driver->drawStencilShadowVolume(triangles, true, scene::EDS_OFF);
+		} else {
+			core::array<core::vector3df> empty;
+			driver->drawStencilShadowVolume(empty, true, scene::EDS_OFF);
+		}
 	}
 
 	virtual void render() override {
