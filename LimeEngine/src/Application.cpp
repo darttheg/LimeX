@@ -229,7 +229,9 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	if (!initSuccess) { Stop(); return false; }
 
 	if (!didInitCfg)
-		console->Warn("Lime.setInitConfig was not called. Setting one-time parameters--such as driver type--can only be done via this function.", false);
+		console->PostError("Lime.setInitConfig was not called. Important parameters like driver type and screen size must be initialized with the device using this function.", true, false);
+
+	if (!initSuccess) { Stop(); return false; }
 
 	// Create device/true window using windowCfg
 	if (!CreateWindows())

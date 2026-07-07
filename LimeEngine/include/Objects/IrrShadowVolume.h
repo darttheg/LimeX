@@ -26,8 +26,9 @@ public:
 
 	void doStencil() {
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();
-		updateWorldTriangles();
-		driver->drawStencilShadowVolume(worldTriangles, true, scene::EDS_MESH_WIRE_OVERLAY);
+		updateTriangles();
+		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+		driver->drawStencilShadowVolume(triangles, true, scene::EDS_OFF);
 	}
 
 	virtual void render() override {
@@ -42,21 +43,27 @@ public:
 private:
 	scene::IMesh* source;
 	core::aabbox3d<f32> box;
-	core::array<core::vector3df> worldTriangles;
+	core::array<core::vector3df> triangles;
 
-	void updateWorldTriangles() {
-		worldTriangles.set_used(0);
+	void updateTriangles() {
+		triangles.set_used(0);
 		const core::matrix4& mat = AbsoluteTransformation;
 
 		for (u32 b = 0; b < source->getMeshBufferCount(); ++b) {
 			scene::IMeshBuffer* buf = source->getMeshBuffer(b);
+			if (!buf) continue;
+
 			u16* idx = buf->getIndices();
 			u32 idxCount = buf->getIndexCount();
 
-			for (u32 i = 0; i < idxCount; ++i) {
-				core::vector3df pos = buf->getPosition(idx[i]);
-				mat.transformVect(pos);
-				worldTriangles.push_back(pos);
+			for (u32 i = 0; i + 2 < idxCount; i += 3) {
+				const core::vector3df a = buf->getPosition(idx[i + 0]);
+				const core::vector3df b = buf->getPosition(idx[i + 1]);
+				const core::vector3df c = buf->getPosition(idx[i + 2]);
+
+				triangles.push_back(a);
+				triangles.push_back(b);
+				triangles.push_back(c);
 			}
 		}
 	}

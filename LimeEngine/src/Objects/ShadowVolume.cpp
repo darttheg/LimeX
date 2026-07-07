@@ -4,14 +4,19 @@
 #include <sol/sol.hpp>
 
 #include "Objects/Mesh.h"
-#include "RenderHelper.h"
+#include "Renderer.h"
 
-RenderHelper* rh = nullptr;
+Renderer* r = nullptr;
 
 ShadowVolume::ShadowVolume(const Mesh& src) {
-	if (rh->guardRenderingCheck()) return;
+	if (!r->guardRenderingCheck() || !r->isStencilBufferActive()) return;
 
 	shadow = new ShadowVolumeSceneNode(src.getMesh(), src.getNode()->getSceneManager()->getRootSceneNode(), src.getNode()->getSceneManager(), 0);
+	if (shadow) {
+		shadow->setPosition(src.getNode()->getPosition());
+		shadow->setRotation(src.getNode()->getRotation());
+		shadow->setScale(src.getNode()->getScale());
+	}
 }
 
 void ShadowVolume::destroy() {
@@ -27,7 +32,7 @@ void ShadowVolume::setDebug(bool v) {
 }
 
 bool ShadowVolume::loadMesh(const Mesh& src) {
-	if (!shadow) return false;
+	if (!shadow || !r->isStencilBufferActive()) return false;
 	return shadow->loadMesh(src.getMesh());
 }
 
@@ -35,8 +40,8 @@ irr::scene::ISceneNode* ShadowVolume::getNode() const {
 	return shadow;
 }
 
-void Object::ShadowVolumeBind::bind(lua_State* ls, RenderHelper* renh) {
-	rh = renh;
+void Object::ShadowVolumeBind::bind(lua_State* ls, Renderer* re) {
+	r = re;
 
 	sol::state_view view(ls);
 	sol::usertype<ShadowVolume> obj = view.new_usertype<ShadowVolume>(
@@ -51,7 +56,7 @@ void Object::ShadowVolumeBind::bind(lua_State* ls, RenderHelper* renh) {
 		return "ShadowVolume";
 		};
 
-	// DEPRECATED ShadowVolume, An object that draws shadows using a `Mesh` as its shape.
+	// Object ShadowVolume, An object that draws shadows using a `Mesh` as its shape. **This object is not functional if the stencil buffer is not enabled**.
 	// Inherits Object3D
 
 	// Constructor Mesh mesh

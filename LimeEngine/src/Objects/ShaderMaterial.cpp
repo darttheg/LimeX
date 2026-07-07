@@ -50,6 +50,18 @@ void ShaderMaterial::setUniformVec4(const std::string& name, const Vec4& v) {
 	shadermat->setUniformVec4(name, v);
 }
 
+void ShaderMaterial::setUniformMat4(const std::string& name, const Object3D& obj) {
+	setUniformMat4(name, obj, false);
+}
+
+#include "Interfaces/Object3D.h"
+void ShaderMaterial::setUniformMat4(const std::string& name, const Object3D& obj, bool inverse) {
+	if (!shadermat) return;
+	irr::scene::ISceneNode* node = obj.getNode();
+	if (!node) return;
+	shadermat->setUniformMat4(name, node->getAbsoluteTransformation(), inverse);
+}
+
 int ShaderMaterial::getMaterialType() const {
 	if (!shadermat) return irr::video::EMT_SOLID;
 	return shadermat->getMaterialType();
@@ -94,6 +106,7 @@ void Object::ShaderMaterialBind::bind(lua_State* ls, Renderer* rend) {
 	// Params string name, Vec2 value
 	// Params string name, Vec3 value
 	// Params string name, Vec4 value
+	// Params string name, Mesh transform, boolean? inverse
 	// Returns void
 	obj.set_function("setParameter",
 		sol::overload(
@@ -101,7 +114,9 @@ void Object::ShaderMaterialBind::bind(lua_State* ls, Renderer* rend) {
 			sol::resolve<void(const std::string&, float)>(&ShaderMaterial::setUniformFloat),
 			sol::resolve<void(const std::string&, const Vec2&)>(&ShaderMaterial::setUniformVec2),
 			sol::resolve<void(const std::string&, const Vec3&)>(&ShaderMaterial::setUniformVec3),
-			sol::resolve<void(const std::string&, const Vec4&)>(&ShaderMaterial::setUniformVec4)
+			sol::resolve<void(const std::string&, const Vec4&)>(&ShaderMaterial::setUniformVec4),
+			sol::resolve<void(const std::string&, const Object3D&)>(&ShaderMaterial::setUniformMat4),
+			sol::resolve<void(const std::string&, const Object3D&, bool)>(&ShaderMaterial::setUniformMat4)
 		));
 
 	// Returns the path to the vertex shader file loaded in this `Shader`.

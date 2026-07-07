@@ -56,6 +56,9 @@ namespace Module {
 
 			void SetUserTexture(const Texture& tex);
 			void ClearUserTexture();
+
+			void SetStencilBuffer(bool v);
+			void SetDepthPass(bool v);
 		}
 	}
 }

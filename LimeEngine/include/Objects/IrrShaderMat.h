@@ -24,6 +24,7 @@ public:
 	void setUniformVec2(const std::string& name, const Vec2& v);
 	void setUniformVec3(const std::string& name, const Vec3& v);
 	void setUniformVec4(const std::string& name, const Vec4& v);
+	void setUniformMat4(const std::string& name, const irr::core::matrix4& mat, bool inverse = false);
 
 	irr::s32 getMaterialType() const { return type; }
 	void callSetConstants() { if (cachedServices) OnSetConstants(cachedServices, 0); }

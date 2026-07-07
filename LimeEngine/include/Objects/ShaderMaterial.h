@@ -9,6 +9,7 @@ class Vec2;
 class Vec3;
 class Vec4;
 class Renderer;
+class Object3D;
 
 class ShaderMaterial {
 public:
@@ -21,6 +22,8 @@ public:
 	void setUniformVec2(const std::string& name, const Vec2& v);
 	void setUniformVec3(const std::string& name, const Vec3& v);
 	void setUniformVec4(const std::string& name, const Vec4& v);
+	void setUniformMat4(const std::string& name, const Object3D& obj);
+	void setUniformMat4(const std::string& name, const Object3D& obj, bool inverse);
 
 	int getMaterialType() const;
 	bool isValid() const { return shadermat; }

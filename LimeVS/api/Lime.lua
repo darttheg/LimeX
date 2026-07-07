@@ -768,7 +768,7 @@ function Lime.Scene.setFogColor(rgba) end
 --- @param far number
 function Lime.Scene.setFogRange(near, far) end
 
---- **This function cannot be run until window creation.** Sets the color of shadows in the scene to `rgba`.
+--- **This function cannot be run until window creation.** Sets the color of stencil shadows in the scene to `rgba`.
 --- @param rgba Vec4
 function Lime.Scene.setShadowColor(rgba) end
 
@@ -868,6 +868,14 @@ function Lime.Scene.setOverlayTexture(texture) end
 
 --- **This function cannot be run until window creation.** Clears the user-defined `Texture` drawn over the screen, if any.
 function Lime.Scene.clearOverlayTexture() end
+
+--- **This function can only be run before window creation.** Sets whether or not the stencil buffer is used. `Shadow Volume` objects are not functional without use of the stencil buffer.
+--- @param enable boolean
+function Lime.Scene.setStencilBuffer(enable) end
+
+--- Sets whether or not a depth pass should be rendered. The depth pass renders the scene to a render texture 'rtDepth' which can be fetched using `Texture.new("rtDepth")`.
+--- @param enable boolean
+function Lime.Scene.setDepthPass(enable) end
 
 --- **This function cannot be run until window creation.** Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
 --- @param startPos Vec3
@@ -2299,9 +2307,14 @@ Shader = {}
 function Shader.new(vertexShaderPath, pixelShaderPath, type) end
 
 --- Sets a uniform shader parameter within this `Shader`.
+--- @overload fun(self, name: string, value: number): nil
+--- @overload fun(self, name: string, value: Vec2): nil
+--- @overload fun(self, name: string, value: Vec3): nil
+--- @overload fun(self, name: string, value: Vec4): nil
 --- @param name string
---- @param value number|Vec2|Vec3|Vec4
-function Shader:setParameter(name, value) end
+--- @param transform Mesh
+--- @param inverse boolean?
+function Shader:setParameter(name, transform, inverse) end
 
 --- Returns the path to the vertex shader file loaded in this `Shader`.
 --- @return string
@@ -2314,6 +2327,92 @@ function Shader:getPSPath() end
 --- Returns the material type. On `Shader` creation, it indexes itself in the renderer as a new material type. Newly indexed `Shader` materials will not be found in Lime.Enum.
 --- @return number
 function Shader:getType() end
+
+--- An object that draws shadows using a `Mesh` as its shape. **This object is not functional if the stencil buffer is not enabled**.
+--- @class ShadowVolume
+--- @field position Vec3 The 3D position of this object in the scene.
+--- @field rotation Vec3 The 3D rotation of this object in the scene in degrees.
+--- @field scale Vec3 The 3D scale of this object in the scene.
+--- @field visible boolean Determines the visibility of this object and its children.
+--- @field id number The identifier for this object to be used in raycasts and object selection.
+--- @field debug boolean Show debug information about this object in the scene.
+ShadowVolume = {}
+
+--- @param mesh Mesh
+--- @return ShadowVolume
+function ShadowVolume.new(mesh) end
+
+--- Loads a new `Mesh` for this `ShadowVolume` to be shaped after.
+--- @return boolean
+function ShadowVolume:load() end
+
+--- Parents this object to another 3D object.
+--- @param parent any
+--- @return boolean
+function ShadowVolume:parentTo(parent) end
+
+--- Returns the absolute position of this 3D object.
+--- @return Vec3
+function ShadowVolume:getAbsolutePosition() end
+
+--- Updates the absolute position of this 3D object and its children. This is useful if you move a parent object and need to refresh its children's positions for the frame.
+function ShadowVolume:updateAbsolutePosition() end
+
+--- Returns true if this object is parented to another 3D object.
+--- @return boolean
+function ShadowVolume:hasParent() end
+
+--- Returns the reference count for this object.
+--- @return number
+function ShadowVolume:getReferenceCount() end
+
+--- Destroys this object.
+function ShadowVolume:destroy() end
+
+--- Returns the bounding box of this object, following: (MinEdgeX, MinEdgeY, MaxEdgeX, MaxEdgeY).
+--- @return Vec4
+function ShadowVolume:getBoundingBox() end
+
+--- Returns true if `pos` is inside this object's bounding box.
+--- @param pos Vec3
+--- @return boolean
+function ShadowVolume:isPointInside(pos) end
+
+--- Sets `key` to `value` within this object's attributes.
+--- @param key any
+--- @param value any
+function ShadowVolume:setAttribute(key, value) end
+
+--- Returns the content of attribute `key` from this object's attributes.
+--- @param key any
+--- @return any
+function ShadowVolume:getAttribute(key) end
+
+--- Returns all attributes bundled in a table object.
+--- @return table
+function ShadowVolume:getAttributes() end
+
+--- Clears this object's attributes.
+function ShadowVolume:clearAttributes() end
+
+--- Clears all animators attached to this object.
+function ShadowVolume:clearAnimators() end
+
+--- Adds a Destroy animator to this object. After `ms` milliseconds, this object will destroy itself.
+--- @param ms number
+function ShadowVolume:addDestroyAnimator(ms) end
+
+--- Adds a MoveTo animator to this object. This object will move from `posA` to `posB` over `ms` milliseconds.
+--- @param posA Vec3
+--- @param posB Vec3
+--- @param ms number
+--- @param loops boolean?
+--- @param pingPong boolean?
+function ShadowVolume:addMoveToAnimator(posA, posB, ms, loops, pingPong) end
+
+--- Adds a Rotate animator to this object. This object will rotate `rot` degrees per second.
+--- @param rot Vec3
+function ShadowVolume:addRotateAnimator(rot) end
 
 --- A dome rendered behind all scene objects, like a sky.
 --- @class Skydome

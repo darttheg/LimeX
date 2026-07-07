@@ -42,11 +42,14 @@ void IrrShaderMaterial::OnSetConstants(irr::video::IMaterialRendererServices* se
 
 	const irr::f32 t = r ? r->getDtTime() : 0.0f;
 
+	irr::core::matrix4 invWorld;
+	world.getInverse(invWorld);
 	irr::core::matrix4 viewProj = driver->getTransform(irr::video::ETS_PROJECTION);
 	viewProj *= driver->getTransform(irr::video::ETS_VIEW);
 	irr::core::matrix4 invVP;
 	viewProj.getInverse(invVP);
 
+	services->setVertexShaderConstant("mInvWorld", invWorld.pointer(), 16);
 	services->setVertexShaderConstant("mInvViewProj", invVP.pointer(), 16);
 	services->setVertexShaderConstant("mWorldView", wv.pointer(), 16);
 	services->setVertexShaderConstant("mWorldViewProj", wvp.pointer(), 16);
@@ -104,4 +107,19 @@ void IrrShaderMaterial::setUniformVec3(const std::string& name, const Vec3& v) {
 
 void IrrShaderMaterial::setUniformVec4(const std::string& name, const Vec4& v) {
 	uniforms[name] = v;
+}
+
+void IrrShaderMaterial::setUniformMat4(const std::string& name, const irr::core::matrix4& mat, bool inverse) {
+	irr::core::matrix4 m = mat;
+	if (inverse) {
+		irr::core::matrix4 inv;
+		mat.getInverse(inv);
+		m = inv;
+	}
+
+	const irr::f32* p = m.pointer();
+	setUniformVec4(name + "Row0", Vec4(p[0], p[4], p[8], p[12]));
+	setUniformVec4(name + "Row1", Vec4(p[1], p[5], p[9], p[13]));
+	setUniformVec4(name + "Row2", Vec4(p[2], p[6], p[10], p[14]));
+	setUniformVec4(name + "Row3", Vec4(p[3], p[7], p[11], p[15]));
 }

@@ -47,7 +47,7 @@
 #include "Objects/Constraints.h"
 #include "Objects/ParticleSystem.h"
 #include "Objects/Packet.h"
-// #include "Objects/ShadowVolume.h"
+#include "Objects/ShadowVolume.h"
 //
 
 void LuaBinder::BindAll(Application* app) {
@@ -98,5 +98,5 @@ void LuaBinder::BindAll(Application* app) {
 	Object::ConeTwistConstraintBind::bind(ls);
 	Object::ParticleSystemBind::bind(ls, app->GetRenderHelper());
 	Object::PacketBind::bind(ls);
-	// Object::ShadowVolumeBind::bind(ls, app->GetRenderHelper());
+	Object::ShadowVolumeBind::bind(ls, app->GetRenderer());
 }

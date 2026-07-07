@@ -127,7 +127,7 @@ bool Renderer::Init() {
 	params.Bits = 16;
 	params.Vsync = cfg.vSync;
 	params.Fullscreen = cfg.fullscreen;
-	params.Stencilbuffer = false;
+	params.Stencilbuffer = doStencilBuffer;
 	params.UsePerformanceTimer = false;
 	// params.WindowId = (void*)glfwGetWin32Window(w->getGLFWWindow());
 
@@ -147,8 +147,10 @@ bool Renderer::Init() {
 	i_gui = i_device->getGUIEnvironment();
 	i_gpu = i_driver->getGPUProgrammingServices();
 
-	// if (!i_driver->queryFeature(irr::video::EVDF_STENCIL_BUFFER))
-	// 	d->Warn("Shadow Volumes rely on the stencil buffer, which is not a supported feature in this device.");
+	if (params.Stencilbuffer && !i_driver->queryFeature(irr::video::EVDF_STENCIL_BUFFER)) {
+		d->Warn("Shadow Volumes rely on the stencil buffer, which is not a supported feature in this device.");
+		doStencilBuffer = false;
+	}
 
 	i_device->setEventReceiver(a->GetReceiver());
 	a->GetReceiver()->initJoysticks(i_device);
@@ -262,7 +264,9 @@ bool Renderer::UpdatePhysics(float dt) {
 	return physics->Update(dt);
 }
 
-void Renderer::doDepthPass() {
+void Renderer::renderDepthPass() {
+	if (!doDepthPass) return;
+
 	i_driver->setRenderTarget(qr->getDepthTexture(), true, true);
 
 	if (auto* cam = i_smgr->getActiveCamera()) {
@@ -323,9 +327,12 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	if (rawDraw) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		i_smgr->drawAll();
+
+		if (doStencilBuffer) i_driver->drawStencilShadow(false);
+
 		physics->RenderDebug();
 
-		doDepthPass();
+		renderDepthPass();
 
 		if (qr->getUserTexture())
 			i_driver->draw2DImage(qr->getUserTexture(), irr::core::position2di());
@@ -334,8 +341,11 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	} else {
 		qr->beginInternal();
 		i_smgr->drawAll(); // Draw scene objects to rtScene
+
+		if (doStencilBuffer) i_driver->drawStencilShadow(false);
+
 		physics->RenderDebug();
-		doDepthPass();
+		renderDepthPass();
 		qr->beginGUIPass();
 		guiManager->Render(); // Draw GUI objects to rtGUI
 		qr->endInternal();
@@ -863,7 +873,6 @@ void Renderer::setTextureCreationQuality(int q) {
 
 void Renderer::setShadowColor(const Vec4& color) {
 	if (!guardRenderingCheck()) return;
-
 	i_smgr->setShadowColor(irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()));
 }
 

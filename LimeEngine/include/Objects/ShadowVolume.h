@@ -5,7 +5,7 @@
 extern "C" { struct lua_State; }
 
 class ShadowVolumeSceneNode;
-class RenderHelper;
+class Renderer;
 class Mesh;
 
 namespace irr {
@@ -28,5 +28,5 @@ private:
 };
 
 namespace Object::ShadowVolumeBind {
-    void bind(lua_State* ls, RenderHelper* renh);
+    void bind(lua_State* ls, Renderer* re);
 }

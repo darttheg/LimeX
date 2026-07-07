@@ -155,7 +155,7 @@ void DebugConsole::PostError(const char* msg, bool close, bool loc) {
 
     if (close) {
         std::string src = std::string("Lime encountered an error:\n" + std::string(msg)).c_str();
-        src += "\n" + app->GetLuaLocation();
+        if (loc) src += "\n" + app->GetLuaLocation();
 
         std::wstring wStr = std::wstring(src.begin(), src.end());
         const wchar_t* wCharStr = wStr.c_str();

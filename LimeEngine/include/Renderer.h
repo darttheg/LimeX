@@ -98,7 +98,6 @@ public:
 	int getElapsedTime();
 	void setBackgroundColor(const Vec4& color);
 	void setAmbientColor(const Vec4& color);
-	void setShadowColor(const Vec4& color);
 	void setFogColor(const Vec4& color);
 	void setFogPlanes(float n, float f);
 	void setLightManagementType(int type);
@@ -161,6 +160,11 @@ public:
 	void setUserTexture(const Texture& tex);
 	void clearUserTexture();
 
+	bool isStencilBufferActive() { return doStencilBuffer; }
+	void setStencilBuffer(bool active) { if (i_device) return; doStencilBuffer = active; }
+	void setDepthPass(bool active) { doDepthPass = active; }
+	void setShadowColor(const Vec4& color);
+
 private:
 	struct Vec4S { float x, y, z, w; };
 	struct Vec2S { float x, y; };
@@ -179,9 +183,10 @@ private:
 	Vec4S bgColor{ 0,0,0,255 };
 	Vec4S fogColor{};
 	Vec2S fogPlanes{};
-	Vec4S shadowColor{ 0, 0, 0, 180 };
 	void updateFog();
 	bool doMatchResolution = true; // Hook resolution w/h to window size
+	bool doDepthPass = false;
+	bool doStencilBuffer = false;
 
 	// Irrlicht
 	irr::IrrlichtDevice* i_device = nullptr;
@@ -197,7 +202,7 @@ private:
 	QuadRenderer* qr = nullptr;
 	RenderHelper* rh = nullptr;
 	irr::scene::ILightManager* lightManager = nullptr;
-	void doDepthPass();
+	void renderDepthPass();
 	IrrShaderMaterial* depthShader = nullptr;
 
 	// Fallback

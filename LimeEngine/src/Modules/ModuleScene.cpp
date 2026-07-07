@@ -62,7 +62,7 @@ void Module::Scene::bind(Application* app) {
 	// Returns void
 	module.set_function("setFogRange", &Module::Scene::Bind::SetFogPlanes);
 
-	// [+] Sets the color of shadows in the scene to `rgba`.
+	// [+] Sets the color of stencil shadows in the scene to `rgba`.
 	// Params Vec4 rgba
 	// Returns void
 	module.set_function("setShadowColor", &Module::Scene::Bind::SetShadowColor);
@@ -174,6 +174,16 @@ void Module::Scene::bind(Application* app) {
 	// [+] Clears the user-defined `Texture` drawn over the screen, if any.
 	// Returns void
 	module.set_function("clearOverlayTexture", &Module::Scene::Bind::ClearUserTexture);
+
+	// [-] Sets whether or not the stencil buffer is used. `Shadow Volume` objects are not functional without use of the stencil buffer.
+	// Params boolean enable
+	// Returns void
+	module.set_function("setStencilBuffer", &Module::Scene::Bind::SetStencilBuffer);
+
+	// Sets whether or not a depth pass should be rendered. The depth pass renders the scene to a render texture 'rtDepth' which can be fetched using `Texture.new("rtDepth")`.
+	// Params boolean enable
+	// Returns void
+	module.set_function("setDepthPass", &Module::Scene::Bind::SetDepthPass);
 
 	// [+] Fires a raycast out into the scene from `startPos` to `endPos`. Only objects with collision enabled will be tested.
 	// Params Vec3 startPos, Vec3 endPos, number? rayLifeMs
@@ -357,4 +367,12 @@ void Module::Scene::Bind::SetUserTexture(const Texture& tex) {
 
 void Module::Scene::Bind::ClearUserTexture() {
 	r->clearUserTexture();
+}
+
+void Module::Scene::Bind::SetStencilBuffer(bool v) {
+	r->setStencilBuffer(v);
+}
+
+void Module::Scene::Bind::SetDepthPass(bool v) {
+	r->setDepthPass(v);
 }
