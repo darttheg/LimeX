@@ -13,7 +13,7 @@ public:
 	}
 
 	virtual void OnRegisterSceneNode() override {
-		if (IsVisible) SceneManager->registerNodeForRendering(this, scene::ESNRP_SHADOW);
+		if (IsVisible) SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT_EFFECT);
 		ISceneNode::OnRegisterSceneNode();
 	}
 

@@ -326,11 +326,18 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	bool rawDraw = doMatchResolution && !qr->ppxActive();
 	ShadowVolumeSceneNode::DrawingThisFrame = false;
 
+	auto drawShadows = [&]() {
+		if (doStencilBuffer && ShadowVolumeSceneNode::DrawingThisFrame) {
+			video::SColor s = i_smgr->getShadowColor();
+			i_driver->drawStencilShadow(false, s, s, s, s);
+		}
+		};
+
 	if (rawDraw) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		i_smgr->drawAll();
 
-		if (doStencilBuffer && ShadowVolumeSceneNode::DrawingThisFrame) i_driver->drawStencilShadow(false);
+		drawShadows();
 
 		physics->RenderDebug();
 
@@ -344,7 +351,7 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		qr->beginInternal();
 		i_smgr->drawAll(); // Draw scene objects to rtScene
 
-		if (doStencilBuffer && ShadowVolumeSceneNode::DrawingThisFrame) i_driver->drawStencilShadow(false);
+		drawShadows();
 
 		physics->RenderDebug();
 		renderDepthPass();
