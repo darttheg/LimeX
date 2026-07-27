@@ -253,11 +253,23 @@ namespace irr::gui {
                     continue;
                 }
 
-                const u32 w = Font->getDimension(r.text.c_str()).Width;
-                if (currentW > 0 && currentW + (s32)w > maxW) flushLine();
-
-                line.push_back(r);
-                currentW += (s32)w;
+                core::stringw word;
+                for (size_t idx = 0; idx <= r.text.size(); ++idx) {
+                    const wchar_t c = (idx < r.text.size()) ? r.text[idx] : 0;
+                    if (c == L' ' || c == 0) {
+                        if (idx < r.text.size()) word += c;
+                        if (!word.empty()) {
+                            Run wr = r;
+                            wr.text = word;
+                            const u32 w = Font->getDimension(wr.text.c_str()).Width;
+                            if (currentW > 0 && currentW + (s32)w > maxW) flushLine();
+                            line.push_back(wr);
+                            currentW += (s32)w;
+                            word = L"";
+                        }
+                    }
+                    else { word += c; }
+                }
             }
 
             if (!line.empty()) flushLine();
