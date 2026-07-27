@@ -51,6 +51,10 @@ void Module::Window::bind(Application* app) {
 	// Returns Vec2
 	module.set_function("getSize", &Module::Window::Bind::GetSize);
 
+	// [+] Returns the size of the rendered screen. This function returns the window size if dynamic resolution is enabled and the internal render resolution if disabled.
+	// Returns Vec2
+	module.set_function("getRenderSize", &Module::Window::Bind::GetRenderedSize);
+
 	// [+] Sets the window's size to `size`.
 	// Params Vec2 size
 	// Returns void
@@ -114,6 +118,10 @@ Vec2 Module::Window::Bind::GetSize() {
 
 void Module::Window::Bind::SetSize(const Vec2& size) {
 	w->setSize(size);
+}
+
+Vec2 Module::Window::Bind::GetRenderedSize() {
+	return w->getRenderedSize();
 }
 
 Vec2 Module::Window::Bind::GetMonitorSize() {

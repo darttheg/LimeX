@@ -318,6 +318,7 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 
 	// Step physics
 	updateFog(); // Update fog params pre-render
+	addToDtTime(dt);
 
 	if (doMatchResolution && i_smgr->getActiveCamera()) {
 		i_smgr->getActiveCamera()->setAspectRatio(w->getWinAR());
@@ -348,6 +349,8 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 
 		guiManager->Render();
 	} else {
+		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
+
 		qr->beginInternal();
 		i_smgr->drawAll(); // Draw scene objects to rtScene
 
@@ -359,7 +362,6 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		guiManager->Render(); // Draw GUI objects to rtGUI
 		qr->endInternal();
 
-		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 		qr->presentToWindow();
 	}
 
@@ -533,9 +535,10 @@ irr::scene::ICameraSceneNode* Renderer::getActiveCameraNode() {
 	return i_smgr->getActiveCamera();
 }
 
-irr::video::ITexture* Renderer::createRenderTargetTexture(const Vec2& size, irr::scene::ICameraSceneNode* c) {
+irr::video::ITexture* Renderer::createRenderTargetTexture(const Vec2& size, irr::scene::ICameraSceneNode* c, const std::string& name) {
 	if (!guardRenderingCheck()) return nullptr;
-	std::string outName = "rtt_" + std::to_string(rttc);
+	std::string outName = "rtt_live_" + std::to_string(rttc);
+	if (!name.empty()) outName = "live_" + name;
 	irr::video::ITexture* out = i_driver->addRenderTargetTexture(irr::core::dimension2du(size.getX(), size.getY()), outName.c_str());
 
 	irr::scene::ICameraSceneNode* prev = i_smgr->getActiveCamera();
@@ -555,8 +558,20 @@ irr::video::ITexture* Renderer::createRenderTargetTexture(const Vec2& size, irr:
 	i_smgr->setActiveCamera(prev);
 	if (prev) prev->setAspectRatio(prevAR);
 
+	irr::video::IImage* bakedImage = i_driver->createImage(out, irr::core::vector2di(0, 0), irr::core::dimension2du(size.getX(), size.getY()));
+	irr::video::ITexture* baked = nullptr;
+	if (bakedImage) {
+		std::string bname = "rtt_" + std::to_string(rttc);
+		if (!name.empty()) bname = name;
+		baked = i_driver->addTexture(bname.c_str(), bakedImage);
+		bakedImage->drop();
+	}
+
+	if (baked) i_driver->removeTexture(out);
+	else d->Warn("Could not bake render texture. Returning live texture. WARNING: If the driver resets (on resize), live render textures are destroyed.");
+
 	rttc++;
-	return out;
+	return baked ? baked : out;
 }
 
 void Renderer::setUserTexture(const Texture& tex) {

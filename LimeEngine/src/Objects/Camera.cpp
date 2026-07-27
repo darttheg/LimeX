@@ -39,21 +39,21 @@ Camera::Camera(const Vec3& pos, const Vec3& rot) {
 
 void Camera::destroy() {
 	if (camera && rh->getActiveCamera() == camera) rh->setActiveCamera(nullptr, nullptr, nullptr);
-	if (camera) camera->remove();
+	if (camera) { camera->remove(); }
 	camera = nullptr;
 }
 
 #include "Objects/DebugAxisPlaneNode.h"
 void Camera::setDebug(bool v) {
 	if (v) {
-		if (dVisual) { dVisual->drop(); dVisual->remove(); }
+		if (dVisual) { dVisual->remove(); dVisual = nullptr; }
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::CAMERA);
 		dVisual->setParent(getNode());
 		dAxis->setPointerLength(1.0f);
 	} else {
 		if (dVisual) {
-			dVisual->drop();
 			dVisual->remove();
+			dVisual = nullptr;
 		}
 	}
 }

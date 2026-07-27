@@ -110,16 +110,16 @@ int Texture::getRefCount() {
 	return texture ? texture->getReferenceCount() : 0;
 }
 
-std::string Texture::makeRenderTexture(const Vec2& size) {
+std::string Texture::makeRenderTexture(const Vec2& size, const std::string& name) {
 	r->removeTexture(texture);
-	texture = r->createRenderTargetTexture(size, nullptr);
+	texture = r->createRenderTargetTexture(size, nullptr, name);
 	return texture ? texture->getName().getPath().c_str() : "";
 }
 
 #include "Objects/Camera.h"
-std::string Texture::makeRenderTexture(const Vec2& size, const Camera& c) {
+std::string Texture::makeRenderTexture(const Vec2& size, const Camera& c, const std::string& name) {
 	r->removeTexture(texture);
-	texture = r->createRenderTargetTexture(size, static_cast<irr::scene::ICameraSceneNode*>(c.getNode()));
+	texture = r->createRenderTargetTexture(size, static_cast<irr::scene::ICameraSceneNode*>(c.getNode()), name);
 	return texture ? texture->getName().getPath().c_str() : "";
 }
 
@@ -213,13 +213,13 @@ void Object::TextureBind::bind(lua_State* ls, Renderer* rend) {
 	obj.set_function("getReferenceCount", &Texture::getRefCount);
 
 	// Renders the scene to this `Texture`. Returns the name of this `Texture`.
-	// Params Vec2 size
-	// Params Vec2 size, Camera viewpoint
+	// Params Vec2 size, string? name
+	// Params Vec2 size, Camera viewpoint, string? name
 	// Returns string
 	obj.set_function("renderToTexture",
 		sol::overload(
-			sol::resolve<std::string(const Vec2&)>(&Texture::makeRenderTexture),
-			sol::resolve<std::string(const Vec2&, const Camera&)>(&Texture::makeRenderTexture)
+			sol::resolve<std::string(const Vec2&, const std::string& name)>(&Texture::makeRenderTexture),
+			sol::resolve<std::string(const Vec2&, const Camera&, const std::string & name)>(&Texture::makeRenderTexture)
 		));
 
 	// Purges this `Texture`, effectively removing it from memory. Objects using this `Texture` will use an engine-defined `Texture` instead, but it is recommended to remove references to this `Texture` first.

@@ -24,6 +24,7 @@ namespace Module {
 			void SetPosition(const Vec2& pos);
 			Vec2 GetSize();
 			void SetSize(const Vec2& size);
+			Vec2 GetRenderedSize();
 			Vec2 GetMonitorSize();
 			bool IsFocused();
 			void SetResizable(bool on);

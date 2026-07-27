@@ -159,7 +159,7 @@ bool SoundManager::attachSoundToNode(irrklang::ISound* sound, irr::scene::IScene
 
 	// Make sure sound is not an entry already. it->parent will point to the param parent already if it is already an entry.
 	for (auto it = soundNodePairs.begin(); it != soundNodePairs.end();) {
-		if (it->sound == sound) return true;
+		if (it->sound == sound) return true; else ++it;
 	}
 
 	soundNodePairs.push_back(SoundSourceOnNode{ sound, parent });

@@ -19,7 +19,6 @@ namespace irr {
 class Object2D {
 public:
 	Object2D();
-	virtual ~Object2D() = default;
 	virtual irr::gui::IGUIElement* getNode() const = 0;
 	irr::gui::IGUIElement* getButton() const;
 	virtual void destroy() = 0;

@@ -35,13 +35,13 @@ void Text3D::destroy() {
 
 void Text3D::setDebug(bool v) {
 	if (v) {
-		if (dVisual) { dVisual->drop(); dVisual->remove(); }
+		if (dVisual) { dVisual->remove(); dVisual = nullptr; }
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::TEXT);
 		dVisual->setParent(getNode());
 	} else {
 		if (dVisual) {
-			dVisual->drop();
 			dVisual->remove();
+			dVisual = nullptr;
 		}
 	}
 }

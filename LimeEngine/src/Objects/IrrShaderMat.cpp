@@ -60,6 +60,26 @@ void IrrShaderMaterial::OnSetConstants(irr::video::IMaterialRendererServices* se
 	const irr::f32 texLayer1 = 1;
 	services->setPixelShaderConstant("texture0", &texLayer0, 1);
 	services->setPixelShaderConstant("texture1", &texLayer1, 1);
+	services->setPixelShaderConstant("uTime", &t, 1);
+
+	irr::video::SColor fogColor;
+	irr::video::E_FOG_TYPE fogType;
+	irr::f32 fogStart, fogEnd, fogDensity;
+	bool pixelFog, rangeFog;
+	driver->getFog(fogColor, fogType, fogStart, fogEnd, fogDensity, pixelFog, rangeFog);
+
+	irr::f32 fogColorF[4] = {
+		fogColor.getRed() / 255.0f,
+		fogColor.getGreen() / 255.0f,
+		fogColor.getBlue() / 255.0f,
+		fogColor.getAlpha() / 255.0f
+	};
+	irr::f32 fogParams[2] = { fogStart, fogEnd };
+
+	services->setVertexShaderConstant("uFogColor", fogColorF, 4);
+	services->setPixelShaderConstant("uFogColor", fogColorF, 4);
+	services->setVertexShaderConstant("uFogRange", fogParams, 2);
+	services->setPixelShaderConstant("uFogRange", fogParams, 2);
 
 	for (auto& [name, val] : uniforms) {
 		std::visit([&](auto&& v) {

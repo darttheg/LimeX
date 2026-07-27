@@ -15,6 +15,11 @@ function Lime.File.isDirectory(path) end
 --- @return table
 function Lime.File.getFilesInDirectory(path, extension) end
 
+--- Returns a table of immediate directories from directory `path`.
+--- @param path string
+--- @return table
+function Lime.File.getDirectoriesInDirectory(path) end
+
 --- Returns true if `path` leads to a file.
 --- @param path string
 --- @return boolean
@@ -1052,6 +1057,10 @@ function Lime.Window.setPosition(pos) end
 --- **This function cannot be run until window creation.** Returns the size of the window.
 --- @return Vec2
 function Lime.Window.getSize() end
+
+--- **This function cannot be run until window creation.** Returns the size of the rendered screen. This function returns the window size if dynamic resolution is enabled and the internal render resolution if disabled.
+--- @return Vec2
+function Lime.Window.getRenderSize() end
 
 --- **This function cannot be run until window creation.** Sets the window's size to `size`.
 --- @param size Vec2
@@ -2847,10 +2856,12 @@ function Texture:keyColor(keyColor) end
 function Texture:getReferenceCount() end
 
 --- Renders the scene to this `Texture`. Returns the name of this `Texture`.
+--- @overload fun(self, size: Vec2, name: string?): string
 --- @param size Vec2
---- @param viewpoint Camera?
+--- @param viewpoint Camera
+--- @param name string?
 --- @return string
-function Texture:renderToTexture(size, viewpoint) end
+function Texture:renderToTexture(size, viewpoint, name) end
 
 --- Purges this `Texture`, effectively removing it from memory. Objects using this `Texture` will use an engine-defined `Texture` instead, but it is recommended to remove references to this `Texture` first.
 function Texture:purge() end

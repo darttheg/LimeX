@@ -140,7 +140,6 @@ bool Window::Create() {
 		r->updateWindowSize(width, height);
 
 	resizeEvent:;
-		r->setOnResize(width, height);
 		if (r->getMatchRes()) w->WindowResize.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
 	});
 
@@ -330,6 +329,13 @@ void Window::setSize(const Vec2& size) {
 	glfwGetWindowSize(glfwWindow, &winX, &winY);
 	if ((winX != oldW) && (winY != oldH))
 		a->GetReceiver()->setSkipDeltaMouse(true);
+}
+
+Vec2 Window::getRenderedSize() {
+	if (!guardEditCheck()) return Vec2();
+	bool s = a->GetRenderer()->getMatchRes();
+	return Vec2(s ? windowSize.x : a->GetRenderer()->getRenderSize().getX(),
+		s ? windowSize.y : a->GetRenderer()->getRenderSize().getY());
 }
 
 Vec2 Window::getMonitorSize() {

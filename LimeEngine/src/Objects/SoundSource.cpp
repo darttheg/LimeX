@@ -181,19 +181,18 @@ bool SoundSource::getDebug() {
 void SoundSource::setDebug(bool v) {
 	if (v) {
 		if (!is3D || !cur) return;
-		if (dVisual) { dVisual->drop(); dVisual->remove(); }
+		if (dVisual) { dVisual->remove(); dVisual = nullptr; }
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::SOUND);
 		dAxis = new DebugAxisPlaneNode(dVisual->getSceneManager()->getRootSceneNode(), dVisual->getSceneManager());
+		dAxis->drop();
 		setPosition(getPosition());
 	} else {
 		if (dVisual) {
-			dVisual->drop();
 			dVisual->remove();
 			dVisual = nullptr;
 		}
 		if (dAxis) {
-			dAxis->drop();
-			dAxis->remove();
+			dVisual->remove();
 			dAxis = nullptr;
 		}
 	}

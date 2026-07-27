@@ -27,6 +27,11 @@ void Module::File::bind(Application* app) {
 	// Returns table
 	module.set_function("getFilesInDirectory", &Module::File::Bind::getFilesInDir);
 
+	// Returns a table of immediate directories from directory `path`.
+	// Params string path
+	// Returns table
+	module.set_function("getDirectoriesInDirectory", &Module::File::Bind::getDirsInDir);
+
 	// Returns true if `path` leads to a file.
 	// Params string path
 	// Returns boolean
@@ -92,6 +97,23 @@ sol::table Module::File::Bind::getFilesInDir(const std::string& directoryPath, c
 		if (extension.empty() || entry.path().extension().string() == extension) {
 			result[i++] = entry.path().filename().string();
 		}
+	}
+
+	return result;
+}
+
+sol::table Module::File::Bind::getDirsInDir(const std::string& directoryPath) {
+	sol::table result = l->create_table();
+	std::error_code ec;
+
+	if (!std::filesystem::exists(directoryPath, ec) || !std::filesystem::is_directory(directoryPath, ec))
+		return result;
+
+	int i = 1;
+	for (const auto& entry : std::filesystem::directory_iterator(directoryPath, ec)) {
+		if (ec) break;
+		if (!entry.is_directory(ec)) continue;
+		result[i++] = entry.path().filename().string();
 	}
 
 	return result;

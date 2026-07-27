@@ -24,13 +24,13 @@ void Empty::destroy() {
 
 void Empty::setDebug(bool v) {
 	if (v) {
-		if (dVisual) { dVisual->drop(); dVisual->remove(); }
+		if (dVisual) { dVisual->remove(); dVisual = nullptr; }
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::EMPTY);
 		dVisual->setParent(getNode());
 	} else {
 		if (dVisual) {
-			dVisual->drop();
 			dVisual->remove();
+			dVisual = nullptr;
 		}
 	}
 }

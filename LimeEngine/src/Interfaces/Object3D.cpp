@@ -90,8 +90,8 @@ void Object3D::i_setDebug(bool v) {
         dAxis = new DebugAxisPlaneNode(getNode(), getNode()->getSceneManager());
         dAxis->setPosition(irr::core::vector3df());
     } else if (!v && dAxis) {
-        dAxis->drop();
         dAxis->remove();
+        dAxis = nullptr;
     }
 
     setDebug(v);

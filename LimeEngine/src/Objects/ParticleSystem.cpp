@@ -404,15 +404,15 @@ void ParticleSystem::setDebug(bool v) {
 	if (v) {
 		if (pfx) pfx->setDebugDataVisible(
 			irr::scene::EDS_BBOX);
-		if (dVisual) { dVisual->drop(); dVisual->remove(); }
+		if (dVisual) { dVisual->remove(); dVisual = nullptr; }
 		dVisual = rh->createDebugNode(DEBUG3D_TYPE::PARTICLES);
 		dVisual->setParent(getNode());
 	}
 	else {
 		if (pfx) pfx->setDebugDataVisible(irr::scene::EDS_OFF);
 		if (dVisual) {
-			dVisual->drop();
 			dVisual->remove();
+			dVisual = nullptr;
 		}
 	}
 }

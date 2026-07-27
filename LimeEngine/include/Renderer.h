@@ -111,7 +111,7 @@ public:
 	void setPostProcessingShaderGUI(const ShaderMaterial& sm);
 	void clearPostProcessingShaderGUI();
 	irr::scene::ICameraSceneNode* getActiveCameraNode();
-	irr::video::ITexture* createRenderTargetTexture(const Vec2& size, irr::scene::ICameraSceneNode* c);
+	irr::video::ITexture* createRenderTargetTexture(const Vec2& size, irr::scene::ICameraSceneNode* c, const std::string& name);
 	bool preloadMesh(const std::string path);
 	bool preloadTexture(const std::string path);
 	std::string getMeshName(irr::scene::IAnimatedMesh* msh);

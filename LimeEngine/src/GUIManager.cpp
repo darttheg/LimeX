@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <unordered_map>
 #include "Objects/Event.h"
+#include "Objects/Vec2.h"
 #include "Interfaces/Object2D.h"
 
 // #include "irrlicht.h"

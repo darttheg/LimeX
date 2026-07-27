@@ -674,7 +674,7 @@ irr::gui::CGUIColoredText* RenderHelper::createColoredText2D() {
 
 	irr::core::rect<irr::s32> r(0, 0, 128, 64);
 	irr::gui::CGUIColoredText* out = new irr::gui::CGUIColoredText(i_gui, i_gui->getRootGUIElement(), -1, r);
-
+	out->drop();
 	return out;
 }
 

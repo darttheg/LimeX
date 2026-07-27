@@ -39,6 +39,7 @@ public:
 	void setPosition(const Vec2& pos);
 	Vec2 getSize();
 	void setSize(const Vec2& size);
+	Vec2 getRenderedSize();
 	void setSizeSimple(int w, int h) { windowSize.x = w; windowSize.y = h; }
 	Vec2 getMonitorSize();
 	bool isFocused();

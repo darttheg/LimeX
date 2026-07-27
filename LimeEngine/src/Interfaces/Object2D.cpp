@@ -37,9 +37,13 @@ Vec2 Object2D::getPosition() const {
 void Object2D::setPosition(const Vec2& pos) {
     if (!getNode()) return;
     getNode()->setRelativePosition(irr::core::position2di(pos.getX(), pos.getY()));
-    // if (bgBorder) bgBorder->setRelativePosition(irr::core::position2di(pos.getX(), pos.getY()));
-    // if (button) button->setRelativePosition(irr::core::position2di(pos.getX(), pos.getY()));
     getNode()->updateAbsolutePosition();
+    // if (bgBorder) bgBorder->setRelativePosition(irr::core::position2di(pos.getX(), pos.getY()));
+    if (bgBorder) {
+        updateBorderDimensions();
+        bgBorder->setRelativePosition(irr::core::position2di(getPosition().getX(), getPosition().getY()));
+    }
+    // if (button) button->setRelativePosition(irr::core::position2di(pos.getX(), pos.getY()));
 }
 
 bool Object2D::getVisibility() const {
@@ -72,12 +76,11 @@ void Object2D::setSize(const Vec2& size) {
 }
 
 bool Object2D::getBorder() const {
-    return getNode() && hasBorder;
+    return getNode() && bgBorder && bgBorder->isDrawBorderEnabled();
 }
 
 void Object2D::setBorder(bool enable) {
     if (!getNode()) return;
-
 
     if (auto* ebox = dynamic_cast<irr::gui::IGUIEditBox*>(getNode())) {
         ebox->setDrawBorder(enable);
@@ -88,7 +91,7 @@ void Object2D::setBorder(bool enable) {
     hasBorder = enable;
     setBGBorder();
     if (bgBorder)
-        bgBorder->setDrawBorder(hasBorder);
+        bgBorder->setDrawBorder(enable);
 }
 
 Vec4 Object2D::getBackgroundColor() const {
@@ -184,16 +187,17 @@ void Object2D::setBGBorder() {
     if ((hasBorder || hasBackground) && !bgBorder) {
         bgBorder = rh->createStaticText();
         bgBorder->setVisible(getNode()->isVisible());
-        // getNode()->getParent()->addChild(bgBorder);
-        // getNode()->getParent()->sendToBack(bgBorder);
-        getNode()->addChild(bgBorder);
+
+        getNode()->getParent()->addChild(bgBorder);
+        getNode()->getParent()->sendToBack(bgBorder);
+
         bgBorder->setDrawBackground(true);
         bgBorder->setBackgroundColor(irr::video::SColor(backgroundColor.w, backgroundColor.x, backgroundColor.y, backgroundColor.z));
         updateBorderDimensions();
-        // bgBorder->setRelativePosition(irr::core::position2di(getPosition().getX(), getPosition().getY()));
+        bgBorder->setRelativePosition(irr::core::position2di(getPosition().getX(), getPosition().getY()));
     } else if (!(hasBorder || hasBackground) && bgBorder) {
-        bgBorder->drop();
         bgBorder->remove();
+        bgBorder = nullptr;
     }
 }
 

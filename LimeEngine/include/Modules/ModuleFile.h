@@ -11,6 +11,7 @@ namespace Module {
 		namespace Bind {
 			bool folderExists(const std::string& folderPath);
 			sol::table getFilesInDir(const std::string& directoryPath, const std::string& extension = "");
+			sol::table getDirsInDir(const std::string& directoryPath);
 			bool fileExists(const std::string& path);
 			std::string readFile(const std::string& path);
 			std::string readFileEncrypted(const std::string& path, const std::string& seed);
