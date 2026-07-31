@@ -128,7 +128,7 @@ int Object2D::getZOrder() const {
 
 void Object2D::setZOrder(int z) {
     if (!getNode()) return;
-    getNode()->setZOrder(z); // Hmmm... is this legit? No. It doesn't work.
+    getNode()->setZOrder(z);
 }
 
 void Object2D::updateBackgroundZ() {
