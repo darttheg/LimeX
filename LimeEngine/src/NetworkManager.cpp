@@ -24,7 +24,7 @@ void NetworkManager::Update() {
 	while (inbound.pop(event)) {
 		switch (event.type) {
 		case NetEvent::Type::Connect:
-			if (event.peerID == 0) {
+			if (!event.isServer) {
 				// Lime.Network.onConnect
 				LimeOnConnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
 			} else {
@@ -33,7 +33,7 @@ void NetworkManager::Update() {
 			}
 			break;
 		case NetEvent::Type::Disconnect:
-			if (event.peerID == 0) {
+			if (!event.isServer) {
 				int reason = event.reason;
 				// Lime.Network.onDisconnect
 				LimeOnDisconnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, reason);
@@ -70,7 +70,7 @@ bool NetworkManager::host(int port, int maxPlayers) {
 	ENetAddress address;
 	address.host = ENET_HOST_ANY;
 	address.port = port;
-	server = enet_host_create(&address, maxPlayers, 2, 0, 0);
+	server = enet_host_create(&address, maxPlayers, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0, 0);
 
 	if (!server) return false;
 
@@ -91,7 +91,7 @@ void NetworkManager::connect(const std::string& ip, int port) {
 		return;
 	}
 
-	client = enet_host_create(nullptr, 1, 2, 0, 0);
+	client = enet_host_create(nullptr, 1, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0, 0);
 	if (!client) {
 		d->PostError("Failed to create client");
 		return;
@@ -100,7 +100,7 @@ void NetworkManager::connect(const std::string& ip, int port) {
 	ENetAddress address;
 	enet_address_set_host(&address, ip.c_str());
 	address.port = port;
-	serverPeer = enet_host_connect(client, &address, 2, 0);
+	serverPeer = enet_host_connect(client, &address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
 	if (!serverPeer) {
 		d->PostError("Failed to create client");
 		enet_host_destroy(client);
@@ -306,7 +306,7 @@ void NetworkManager::loop() {
 
 void NetworkManager::pollHost(ENetHost* host, bool isServer) {
 	ENetEvent event;
-	while (enet_host_service(host, &event, 1) > 0) {
+	while (enet_host_service(host, &event, 10) > 0) {
 		switch (event.type) {
 		case ENET_EVENT_TYPE_CONNECT: {
 			if (isServer && autoRejectIPs.find(event.peer->address.host) != autoRejectIPs.end()) {
@@ -316,6 +316,7 @@ void NetworkManager::pollHost(ENetHost* host, bool isServer) {
 
 			connected = true;
 			NetEvent ne;
+			ne.isServer = isServer;
 			ne.type = NetEvent::Type::Connect;
 			ne.peerID = isServer ? event.peer->incomingPeerID : 0;
 			inbound.push(std::move(ne));
@@ -325,6 +326,7 @@ void NetworkManager::pollHost(ENetHost* host, bool isServer) {
 			connected = false;
 			NetEvent ne;
 			ne.reason = event.data;
+			ne.isServer = isServer;
 			ne.type = NetEvent::Type::Disconnect;
 			ne.peerID = isServer ? event.peer->incomingPeerID : 0;
 			inbound.push(std::move(ne));
