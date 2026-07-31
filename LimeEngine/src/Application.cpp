@@ -150,6 +150,33 @@ bool Application::RunEntry() {
 	return true;
 }
 
+#include <algorithm>
+#include <sstream>
+sol::object Application::FindExternalModule(const std::string& name) {
+	std::string path = name;
+	std::replace(path.begin(), path.end(), '.', '/');
+	path = externalModuleRoot + "/" + path + ".lua";
+
+	std::ifstream file(path, std::ios::binary);
+	if (!file.is_open()) return sol::make_object(*lua, "\n\tNo file found: " + path);
+
+	std::ostringstream src;
+	src << file.rdbuf();
+
+	sol::load_result chunk = lua->load(src.str(), path);
+	if (!chunk.valid()) {
+		sol::error err = chunk;
+		return sol::make_object(*lua, "\n\tError loading file " + path + ": " + err.what());
+	}
+
+	return sol::make_object(*lua, chunk.get<sol::protected_function>());
+}
+
+void Application::InstallExternalFinder() {
+	sol::table searchers = (*lua)["package"]["searchers"];
+	searchers[searchers.size() + 1] = [this](const std::string& name) { return FindExternalModule(name); };
+}
+
 bool Application::Init(const void* data, size_t size, int argc, const char** argv) {
 	// Create new Lua state
 
@@ -187,6 +214,7 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	);
 
 	InstallPackageFinder();
+	InstallExternalFinder();
 
 	// Run randomseed using os time
 	lua->script(R"(

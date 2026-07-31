@@ -96,6 +96,9 @@ private:
 	uint16_t LoadPackage(const void* data, size_t size);
 	static int LuaPackageFinder(lua_State* l);
 	void InstallPackageFinder();
+	void InstallExternalFinder();
+	sol::object FindExternalModule(const std::string& name);
+	std::string externalModuleRoot = ".";
 
 	// Lua
 	std::unique_ptr<sol::state> lua;
