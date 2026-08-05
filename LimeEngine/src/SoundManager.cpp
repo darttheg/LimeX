@@ -145,9 +145,9 @@ irrklang::ISound* SoundManager::play(irrklang::ISoundSource* src, bool td, bool 
 
 	irrklang::ISound* out = nullptr;
 	if (td)
-		out = i_sound->play3D(src, irrklang::vec3df(), loops, false, true, sfx);
+		out = i_sound->play3D(src, irrklang::vec3df(), loops, true, true, sfx);
 	else
-		out = i_sound->play2D(src, loops, false, true, sfx);
+		out = i_sound->play2D(src, loops, true, true, sfx);
 
 	std::string s = src->getName();
 	if (!out) d->Warn("Could not play sound from path " + s);

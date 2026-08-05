@@ -140,7 +140,7 @@ bool Window::Create() {
 		r->updateWindowSize(width, height);
 
 	resizeEvent:;
-		if (r->getMatchRes()) w->WindowResize.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
+		if (r->getMatchRes()) w->WindowResize.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); });
 	});
 
 	if (glfwRawMouseMotionSupported()) {

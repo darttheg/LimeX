@@ -26,26 +26,26 @@ void NetworkManager::Update() {
 		case NetEvent::Type::Connect:
 			if (!event.isServer) {
 				// Lime.Network.onConnect
-				LimeOnConnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
+				LimeOnConnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); });
 			} else {
 				// Lime.Network.onPeerConnected
-				LimeOnPeerConnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, event.peerID);
+				LimeOnPeerConnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, event.peerID);
 			}
 			break;
 		case NetEvent::Type::Disconnect:
 			if (!event.isServer) {
 				int reason = event.reason;
 				// Lime.Network.onDisconnect
-				LimeOnDisconnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, reason);
+				LimeOnDisconnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, reason);
 			} else {
 				// Lime.Network.onPeerDisconnected
-				LimeOnPeerDisonnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, event.peerID);
+				LimeOnPeerDisonnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, event.peerID);
 			}
 			break;
 		case NetEvent::Type::Receive:
 			Packet p(event.data);
 			// Lime.Network.onPacketReceived
-			LimeOnReceive.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, p, event.peerID, event.channel); // peerID is only used by server
+			LimeOnReceive.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, p, event.peerID, event.channel); // peerID is only used by server
 			break;
 		}
 	}

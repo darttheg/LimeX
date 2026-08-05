@@ -981,7 +981,7 @@ void Renderer::setOnResize(int w, int h) {
 bool Renderer::runEventFromGUI(std::shared_ptr<Event> e, std::function<void(const std::string&)> onError) {
 	if (!e)
 		return false;
-	e.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
+	e.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); });
 	return true;
 }
 

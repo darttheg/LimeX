@@ -372,12 +372,12 @@ void PhysicsManager::processCollisions() {
 
 		if (!lastCollisions.count(pair)) {
 			// Call Enter
-			physA.onEnter.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, getResult(info, false));
-			physB.onEnter.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, getResult(info, true));
+			physA.onEnter.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, getResult(info, false));
+			physB.onEnter.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, getResult(info, true));
 		} else {
 			// Call Inside
-			physA.onInside.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, getResult(info, false));
-			physB.onInside.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, getResult(info, true));
+			physA.onInside.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, getResult(info, false));
+			physB.onInside.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, getResult(info, true));
 		}
 	}
 
@@ -394,8 +394,8 @@ void PhysicsManager::processCollisions() {
 		if (!physA.node || !physB.node) continue;
 
 		// Run Exit, doesn't have info
-		physA.onExit.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
-		physB.onExit.get()->engineRun([&](const std::string& msg) { d->PostError(msg); });
+		physA.onExit.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); });
+		physB.onExit.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); });
 	}
 
 	lastCollisions = std::move(currentCollisions);

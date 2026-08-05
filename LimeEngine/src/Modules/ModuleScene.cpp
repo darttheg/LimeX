@@ -301,9 +301,9 @@ sol::table Module::Scene::Bind::FireRaycast(const Vec3& start, const Vec3& end, 
 	out["startPos"] = hit.startPos;
 	out["endPos"] = hit.endPos;
 	out["normal"] = hit.normal;
-	out["objID"] = hit.objID;
-	out["matID"] = hit.matID;
-	out["attr"] = hit.attr.valid() ? hit.attr : lua.create_table();
+	out["objectID"] = hit.objID;
+	out["materialID"] = hit.matID;
+	out["attributes"] = hit.attr.valid() ? hit.attr : lua.create_table();
 
 	return out;
 }
@@ -318,9 +318,9 @@ sol::table Module::Scene::Bind::FireScreenRaycast(const Vec2& start, float len, 
 	out["startPos"] = hit.startPos;
 	out["endPos"] = hit.endPos;
 	out["normal"] = hit.normal;
-	out["objID"] = hit.objID;
-	out["matID"] = hit.matID;
-	out["attr"] = hit.attr;
+	out["objectID"] = hit.objID;
+	out["materialID"] = hit.matID;
+	out["attributes"] = hit.attr;
 
 	return out; // Only issue is if your window is huge but render size is small, you'll have to figure out inaccuracies within the big pixels vs. small mouse position.
 }

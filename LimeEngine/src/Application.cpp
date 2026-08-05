@@ -196,10 +196,13 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	lua = std::make_unique<sol::state>();
 
 	if (!lua) {
-		console->PostError("Failed to create Lua state", true);
-		displayMessage("Lime Init Error", "Failed to create Lua state", 1);
+		console->PostError("Failed to create Lua state", true, false);
 		return false;
 	}
+
+	lua->set_exception_handler([](lua_State* L, sol::optional<const std::exception&> ex, sol::string_view desc) -> int {
+		return luaL_error(L, "%s", ex ? ex->what() : std::string(desc).c_str());
+	});
 
 	lua->open_libraries(
 		sol::lib::base,
@@ -228,8 +231,7 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	// Load Lua code
 	uint16_t modulesCount = LoadPackage(data, size);
 	if (modulesCount == 0) {
-		console->PostError("Failed to load Lime package from memory", true);
-		displayMessage("Lime Init Error", "Failed to load Lime package from memory", 1);
+		console->PostError("Failed to load Lime package from memory", true, false);
 		return false;
 	}
 	else {
@@ -252,7 +254,7 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	if (!initSuccess) { Stop(); return false; }
 
 	// Run Init Event
-	LimeInit.get()->engineRun([&](const std::string& msg) { console->PostError(msg); });
+	LimeInit.get()->engineRun([&](const std::string& msg) { console->PostError(msg, false, false); });
 
 	if (!initSuccess) { Stop(); return false; }
 
@@ -268,14 +270,12 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	renderer->GetPhysicsManager()->SetLuaState(lua.get()->lua_state());
 
 	if (!soundManager->Init()) {
-		console->PostError("Failed to create sound manager", true);
-		displayMessage("Lime Init Error", "Failed to create sound manager", 1);
+		console->PostError("Failed to create sound manager", true, false);
 		return false;
 	}
 
 	if (!network->Init()) {
-		console->PostError("Failed to create network manager", true);
-		displayMessage("Lime Init Error", "Failed to create network manager", 1);
+		console->PostError("Failed to create network manager", true, false);
 		return false;
 	}
 
@@ -313,7 +313,7 @@ bool Application::Run() {
 	window->Focus();
 
 	// Run Start Event
-	LimeStart.get()->engineRun([&](const std::string& msg) { console->PostError(msg); });
+	LimeStart.get()->engineRun([&](const std::string& msg) { console->PostError(msg, false, false); });
 
 	renderer->PrepareRenderingPostInit();
 	bool fail = false;
@@ -342,7 +342,7 @@ bool Application::Run() {
 		if (!renderer->RunDevice()) { fail = true; running = false; continue; }
 		receiver->beginFrame();
 		renderer->UpdatePhysics(dt);
-		LimeUpdate.get()->engineRun([&](const std::string& msg) { console->PostError(msg); }, dt);
+		LimeUpdate.get()->engineRun([&](const std::string& msg) { console->PostError(msg, false, false); }, dt);
 		soundManager->Update(dt);
 		network->Update();
 		web->Update();
@@ -362,7 +362,7 @@ bool Application::Run() {
 		if (fail) break;
 	}
 
-	LimeEnd.get()->engineRun([&](const std::string& msg) { console->PostError(msg); });
+	LimeEnd.get()->engineRun([&](const std::string& msg) { console->PostError(msg, false, false); });
 
 	Stop();
 	return true;
@@ -550,19 +550,19 @@ bool Application::getVSync() {
 
 bool Application::CreateWindows() {
 	if (!window->Create()) {
-		console->PostError("Failed to create GLFW window", true);
+		console->PostError("Failed to create GLFW window", true, false);
 		displayMessage("Lime Init Error", "Failed to create GLFW window", 1);
 		return false;
 	}
 
 	if (!renderer->Init()) {
-		console->PostError("Failed to create rendering window", true);
+		console->PostError("Failed to create rendering window", true, false);
 		displayMessage("Lime Init Error", "Failed to create rendering window", 1);
 		return false;
 	}
 
 	if (!renderer->InitPhysics()) {
-		console->PostError("Failed to create physics manager", true);
+		console->PostError("Failed to create physics manager", true, false);
 		displayMessage("Lime Init Error", "Failed to create physics manager", 1);
 		return false;
 	}
@@ -570,7 +570,7 @@ bool Application::CreateWindows() {
 	HWND glfwHWND = window->GetHandle();
 
 	if (!glfwHWND) {
-		console->PostError("Could not get valid window handle(s)", true);
+		console->PostError("Could not get valid window handle(s)", true, false);
 		displayMessage("Lime Init Error", "Could not get valid window handle(s)", 1);
 		return false;
 	}

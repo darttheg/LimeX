@@ -58,7 +58,8 @@ void Event::run() {
 	int passc = (argc >= 1) ? (argc - 1) : 0;
 
 	running = true;
-	for (int ref : funcs) {
+	std::vector<int> snapshot = funcs;
+	for (int ref : snapshot) {
 		if (ref == LUA_NOREF) continue;
 
 		lua_rawgeti(ls, LUA_REGISTRYINDEX, ref); // Push callback function from registry onto stack

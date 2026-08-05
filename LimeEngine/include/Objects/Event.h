@@ -36,26 +36,41 @@ public:
 		onLengthChanged = std::move(cb);
 		lastLen = (int)funcs.size();
 	}
+	static int errorHandler(lua_State* L);
 
 	template<class ...Args>
 	void engineRun(std::function<void(const std::string&)> onError, Args&&... args);
 };
 
+#include <sstream>
+inline int Event::errorHandler(lua_State* L) {
+	const char* msg = lua_tostring(L, 1);
+	luaL_traceback(L, L, msg, 1);
+	return 1;
+}
+
 template<class... Args>
 inline void Event::engineRun(std::function<void(const std::string&)> onError, Args&&... args) {
 	running = true;
-	for (int ref : funcs) {
+	std::vector<int> snapshot = funcs;
+	for (int ref : snapshot) {
 		if (ref == LUA_NOREF) continue;
+
+		lua_pushcfunction(ls, &Event::errorHandler);
+		int msgh = lua_gettop(ls);
 
 		lua_rawgeti(ls, LUA_REGISTRYINDEX, ref);
 		(sol::stack::push(ls, std::forward<Args>(args)), ...);
-		if (lua_pcall(ls, sizeof...(Args), 0, 0) != LUA_OK) {
+		if (lua_pcall(ls, sizeof...(Args), 0, msgh) != LUA_OK) {
 			size_t n = 0;
 			const char* s = luaL_tolstring(ls, -1, &n);
 			std::string msg(s, n);
 			lua_pop(ls, 1);
+			lua_remove(ls, msgh);
 			if (onError) onError(msg);
+			continue;
 		}
+		lua_remove(ls, msgh);
 	}
 	running = false;
 

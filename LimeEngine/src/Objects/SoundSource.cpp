@@ -36,6 +36,7 @@ bool SoundSource::play(bool td) {
 		cur->setMinDistance(minDist);
 		cur->setMaxDistance(maxDist);
 		cur->setVolume(vol);
+		cur->setIsPaused(false);
 	}
 	is3D = td;
 
@@ -225,7 +226,7 @@ void SoundSource::collected() {
 }
 
 sol::object SoundSource::destroy() {
-	cur->stop();
+	if (cur) cur->stop();
 	cur = nullptr;
 	src = nullptr;
 	return sol::make_object(l, sol::nil);

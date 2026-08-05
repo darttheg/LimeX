@@ -26,22 +26,22 @@ void WebManager::Update() {
 		switch (e.type) {
 			case WebEventType::GetComplete: {
 				// Lime.Web.onGetComplete
-				LimeOnGetComplete.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, e.code, e.data);
+				LimeOnGetComplete.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, e.code, e.data);
 				break;
 			}
 			case WebEventType::GetFail: {
 				// Lime.Web.onGetFail
-				LimeOnGetFail.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, e.code);
+				LimeOnGetFail.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, e.code);
 				break;
 			}
 			case WebEventType::DownloadComplete: {
 				// Lime.Web.onDownloadComplete
-				LimeOnDownloadComplete.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, e.code, e.data);
+				LimeOnDownloadComplete.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, e.code, e.data);
 				break;
 			}
 			case WebEventType::DownloadFail: {
 				// Lime.Web.onDownloadFail
-				LimeOnDownloadFail.get()->engineRun([&](const std::string& msg) { d->PostError(msg); }, e.code);
+				LimeOnDownloadFail.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, e.code);
 				break;
 			}
 		}

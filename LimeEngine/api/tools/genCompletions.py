@@ -181,7 +181,7 @@ def parse_file(path: str):
             objects.append(cur_object)
             continue
         if cmt.startswith("End Object") or cmt.startswith("End Interface"):
-            flush(); cur_object = None
+            commit_pending_field(); flush(); cur_object = None
             continue
         if cmt.startswith("Inherits ") and cur_object is not None:
             cur_object.inherits.extend(i.strip() for i in cmt[9:].split(",") if i.strip())
