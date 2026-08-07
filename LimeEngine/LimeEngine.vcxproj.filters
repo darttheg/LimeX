@@ -274,6 +274,12 @@
     <ClInclude Include="include\Objects\IrrShadowVolume.h">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\IrrFadeInAffector.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Objects\IrrFadeInOutAffector.h">
+      <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">

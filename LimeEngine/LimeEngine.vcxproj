@@ -60,6 +60,8 @@
     <ClInclude Include="include\Objects\Event.h" />
     <ClInclude Include="include\Objects\HitResult.h" />
     <ClInclude Include="include\Objects\Image2D.h" />
+    <ClInclude Include="include\Objects\IrrFadeInAffector.h" />
+    <ClInclude Include="include\Objects\IrrFadeInOutAffector.h" />
     <ClInclude Include="include\Objects\IrrShaderMat.h" />
     <ClInclude Include="include\Objects\IrrShadowVolume.h" />
     <ClInclude Include="include\Objects\Light.h" />

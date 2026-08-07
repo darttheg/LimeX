@@ -35,6 +35,8 @@ public:
 
     void addAttractionAffector(const Vec3& pos, float spd, bool attract, const Vec3& affectAxis);
     void addFadeOutAffector(const Vec4& color, int timeMs);
+    void addFadeInAffector(int timeMs);
+    void addFadeInOutAffector(float amplitude);
     void addGravityAffector(const Vec3& grav, int timeToTakeOverMs);
     void addRotationAffector(const Vec3& rotSpd, const Vec3& pos);
     void addScalarAffector(float scalar);

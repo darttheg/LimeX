@@ -1281,6 +1281,7 @@ function Camera:addRotateAnimator(rot) end
 --- @field limits Vec2 The angular limits of the hinge, where `x` is lower limit and `y` is upper limit.
 --- @field motor boolean Whether or not this `Constraint` applies angular velocity every physics step, rotating itself like a motor.
 --- @field motorVelocity number If this `Constraint` is a motor, this determines the target rotational velocity.
+--- @field maxMotorImpulse number If this `Constraint` is a motor, this determines the maximum force allowed to spin to reach the target motorVelocity.
 --- @field active boolean Whether or not this `Constraint` is active.
 --- @field ignoreCollision boolean Whether or not the `RigidBody` objects of this `Constraint` should ignore collision between one another. This value should be altered prior to activating this `Constraint` to take effect in the scene.
 --- @field breakThreshold number The impulse threshold this `Constraint` can endure before it breaks, deactivating itself. Physics objects default to unbreakable, but altering this value will enable this object to be prone to breaking.
@@ -1300,8 +1301,8 @@ function HingeConstraint:destroy() end
 
 --- A physics `Constraint` that twists two `RigidBody` objects together like a limited socket joint. Pivots and axis parameters are in local space. Axis vector values range from 0 to 1, where 1 allows rotation around said axis and vice versa.
 --- @class ConeTwistConstraint
---- @field maxMotorImpulse number If this `Constraint` is a motor, this determines the maximum force allowed to spin to reach the target motorVelocity.
 --- @field swingLimits Vec2 The angular swing limits of this `Constraint`, where `x` is sideways and `y` is forward and backward.
+--- @field twistLimit number The angular twist limit.
 --- @field active boolean Whether or not this `Constraint` is active.
 --- @field ignoreCollision boolean Whether or not the `RigidBody` objects of this `Constraint` should ignore collision between one another. This value should be altered prior to activating this `Constraint` to take effect in the scene.
 --- @field breakThreshold number The impulse threshold this `Constraint` can endure before it breaks, deactivating itself. Physics objects default to unbreakable, but altering this value will enable this object to be prone to breaking.
@@ -1612,6 +1613,7 @@ function Image2D:destroy() end
 --- @field ambientColor Vec4 Sets the ambient color for this `Light`, the atmospheric color applied to all objects.
 --- @field specularColor Vec4 Sets the specular color for this `Light`, the color that appears on shiny objects.
 --- @field attenuation Vec3 Sets the attenuation, or spread behavior, of this `Light`. Format is `(Constant, Linear, Quadratic)`, all ranging from 0.0 to 1.0. Not effective for directional light sources.
+--- @field cones Vec2 Sets the inner and outer cones of this `Light`. This is only used for spotlights.
 --- @field position Vec3 The 3D position of this object in the scene.
 --- @field rotation Vec3 The 3D rotation of this object in the scene in degrees.
 --- @field scale Vec3 The 3D scale of this object in the scene.
@@ -2030,7 +2032,7 @@ function Packet:getSize() end
 --- @field type Lime.Enum.EmitterType The emitter type.
 --- @field global boolean Whether or not particles emitted stay parented to this `ParticleSystem`.
 --- @field active boolean Whether or not this `ParticleSystem` is actively emitting particles.
---- @field particlesPerSecond Vec2 The particles per second emitted.
+--- @field particlesPerSecond Vec2 The minimum and maximum particles per second emitted.
 --- @field speed number The particle emit speed in units per second, where 0.001 is one unit per second.
 --- @field maxAngle number The max angle variation for emitting particles. If set to 0 (360... etc.) then it will emit omnidirectionally.
 --- @field scaleRange Vec2 The minimum and maximum range of scale for particles first being emitted.
@@ -2081,6 +2083,14 @@ function ParticleSystem:addAttractionAffector(pos, spd, attract, affectAxis) end
 --- @param color Vec4
 --- @param ms number
 function ParticleSystem:addFadeOutAffector(color, ms) end
+
+--- Adds a fade in affector to this `ParticleSystem`. This affector influences particle opacity over `ms` milliseconds.
+--- @param ms number
+function ParticleSystem:addFadeInAffector(ms) end
+
+--- Adds a fade in out affector to this `ParticleSystem`. This affector influences particle opacity over its lifetime.
+--- @param amplitude number
+function ParticleSystem:addFadeInOutAffector(amplitude) end
 
 --- Adds a gravity affector to this `ParticleSystem`. This affector influences particle gravity to fully take over by `ms` milliseconds.
 --- @param gravity Vec3
@@ -3074,6 +3084,7 @@ function Vec4:getHEX() end
 --- @field velocityAtPointB Vec3 Actual velocity at physics object B contact point
 --- @field relativeVelocity Vec3 velocityAtPointB - velocityAtPointA
 --- @field impactSpeed number Impact speed
+--- @field attributesB table Attributes of physics object B
 CollisionResult = {}
 
 --- An object that stores raycast hit data.
@@ -3084,4 +3095,5 @@ CollisionResult = {}
 --- @field objectID number If hit, this will be the hit object's ID. Else, 0.
 --- @field materialID number If hit, this will be the hit material's ID. Else, 0.
 --- @field hit boolean True if the raycast hit a collidable object.
+--- @field attributes table Attributes of the hit object, if any.
 HitResult = {}

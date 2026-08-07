@@ -10,6 +10,9 @@
 #include "Objects/Vec4.h"
 #include "Objects/Material.h"
 
+#include "Objects/IrrFadeInAffector.h"
+#include "Objects/IrrFadeInOutAffector.h"
+
 static RenderHelper* rh = nullptr;
 
 ParticleSystem::ParticleSystem() {
@@ -90,30 +93,49 @@ void ParticleSystem::addAttractionAffector(const Vec3& pos, float spd, bool attr
 	irr::core::vector3df outPos(pos.getX(), pos.getY(), pos.getZ());
 	irr::scene::IParticleAffector* out = pfx->createAttractionAffector(outPos, spd, attract, ceil(affectAxis.getX()) == 1, ceil(affectAxis.getY()) == 1, ceil(affectAxis.getZ()) == 1);
 	pfx->addAffector(out);
+	out->drop();
 }
 
 void ParticleSystem::addFadeOutAffector(const Vec4& color, int timeMs) {
 	if (!pfx) return;
 	irr::scene::IParticleAffector* out = pfx->createFadeOutParticleAffector(irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()), timeMs);
 	pfx->addAffector(out);
+	out->drop();
+}
+
+void ParticleSystem::addFadeInAffector(int timeMs) {
+	if (!pfx) return;
+	irr::scene::IParticleAffector* out = new CParticleFadeInAffector(timeMs);
+	pfx->addAffector(out);
+	out->drop();
+}
+
+void ParticleSystem::addFadeInOutAffector(float amplitude) {
+	if (!pfx) return;
+	irr::scene::IParticleAffector* out = new CParticleFadeInOutAffector(amplitude);
+	pfx->addAffector(out);
+	out->drop();
 }
 
 void ParticleSystem::addGravityAffector(const Vec3& grav, int timeToTakeOverMs) {
 	if (!pfx) return;
 	irr::scene::IParticleAffector* out = pfx->createGravityAffector(irr::core::vector3df(grav.getX(), grav.getY(), grav.getZ()), timeToTakeOverMs);
 	pfx->addAffector(out);
+	out->drop();
 }
 
 void ParticleSystem::addRotationAffector(const Vec3& rotSpd, const Vec3& pos) {
 	if (!pfx) return;
 	irr::scene::IParticleAffector* out = pfx->createRotationAffector(irr::core::vector3df(rotSpd.getX(), rotSpd.getY(), rotSpd.getZ()), irr::core::vector3df(pos.getX(), pos.getY(), pos.getZ()));
 	pfx->addAffector(out);
+	out->drop();
 }
 
 void ParticleSystem::addScalarAffector(float scalar) {
 	if (!pfx) return;
 	irr::scene::IParticleAffector* out = pfx->createScaleParticleAffector(irr::core::dimension2df(scalar, scalar));
 	pfx->addAffector(out);
+	out->drop();
 }
 
 void ParticleSystem::clearAffectors() {
@@ -159,6 +181,7 @@ void ParticleSystem::loadSphereEmitter(const Vec3& center, float radius) {
 	out->drop();
 
 	curType = 2;
+	rad = radius;
 	loadUserParams();
 }
 
@@ -171,6 +194,7 @@ void ParticleSystem::loadRingEmitter(const Vec3& center, float radius, float thi
 	out->drop();
 
 	curType = 3;
+	rad = radius;
 	loadUserParams();
 }
 
@@ -183,6 +207,7 @@ void ParticleSystem::loadCylinderEmitter(const Vec3& center, float radius, float
 	out->drop();
 
 	curType = 4;
+	rad = radius;
 	loadUserParams();
 }
 
@@ -334,7 +359,7 @@ void ParticleSystem::setBoxSize(const Vec3& size) {
 
 float ParticleSystem::getRadius() const {
 	if (!pfx || !pfx->getEmitter()) return 0.0f;
-	switch (pfx->getType()) {
+	switch (pfx->getEmitter()->getType()) {
 	case irr::scene::EPET_SPHERE:
 		return static_cast<irr::scene::IParticleSphereEmitter*>(pfx->getEmitter())->getRadius();
 		break;
@@ -447,7 +472,7 @@ void Object::ParticleSystemBind::bind(lua_State* ls, RenderHelper* renh) {
 		// Field boolean active, Whether or not this `ParticleSystem` is actively emitting particles.
 		"active", sol::property(&ParticleSystem::getActive, &ParticleSystem::setActive),
 
-		// Field Vec2 particlesPerSecond, The particles per second emitted.
+		// Field Vec2 particlesPerSecond, The minimum and maximum particles per second emitted.
 		"particlesPerSecond", sol::property(
 			[](ParticleSystem& c) { return Vec2( [&c]{ return c.getRates(); }, [&c](const Vec2& v){ c.setRates(v); } ); },
 			[](ParticleSystem& c, const Vec2& v) { c.setRates(v); }
@@ -524,6 +549,16 @@ void Object::ParticleSystemBind::bind(lua_State* ls, RenderHelper* renh) {
 	// Params Vec4 color, number ms
 	// Returns void
 	obj.set_function("addFadeOutAffector", &ParticleSystem::addFadeOutAffector);
+
+	// Adds a fade in affector to this `ParticleSystem`. This affector influences particle opacity over `ms` milliseconds.
+	// Params number ms
+	// Returns void
+	obj.set_function("addFadeInAffector", &ParticleSystem::addFadeInAffector);
+
+	// Adds a fade in out affector to this `ParticleSystem`. This affector influences particle opacity over its lifetime.
+	// Params number amplitude
+	// Returns void
+	obj.set_function("addFadeInOutAffector", &ParticleSystem::addFadeInOutAffector);
 
 	// Adds a gravity affector to this `ParticleSystem`. This affector influences particle gravity to fully take over by `ms` milliseconds.
 	// Params Vec3 gravity, number ms

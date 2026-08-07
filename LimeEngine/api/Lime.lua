@@ -2032,7 +2032,7 @@ function Packet:getSize() end
 --- @field type Lime.Enum.EmitterType The emitter type.
 --- @field global boolean Whether or not particles emitted stay parented to this `ParticleSystem`.
 --- @field active boolean Whether or not this `ParticleSystem` is actively emitting particles.
---- @field particlesPerSecond Vec2 The particles per second emitted.
+--- @field particlesPerSecond Vec2 The minimum and maximum particles per second emitted.
 --- @field speed number The particle emit speed in units per second, where 0.001 is one unit per second.
 --- @field maxAngle number The max angle variation for emitting particles. If set to 0 (360... etc.) then it will emit omnidirectionally.
 --- @field scaleRange Vec2 The minimum and maximum range of scale for particles first being emitted.
@@ -2083,6 +2083,14 @@ function ParticleSystem:addAttractionAffector(pos, spd, attract, affectAxis) end
 --- @param color Vec4
 --- @param ms number
 function ParticleSystem:addFadeOutAffector(color, ms) end
+
+--- Adds a fade in affector to this `ParticleSystem`. This affector influences particle opacity over `ms` milliseconds.
+--- @param ms number
+function ParticleSystem:addFadeInAffector(ms) end
+
+--- Adds a fade in out affector to this `ParticleSystem`. This affector influences particle opacity over its lifetime.
+--- @param amplitude number
+function ParticleSystem:addFadeInOutAffector(amplitude) end
 
 --- Adds a gravity affector to this `ParticleSystem`. This affector influences particle gravity to fully take over by `ms` milliseconds.
 --- @param gravity Vec3
