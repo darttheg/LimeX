@@ -98,12 +98,22 @@ bool PhysicsManager::guardPhysicsCheck(const std::string& msg) {
 bool PhysicsManager::addConstraintToWorld(btTypedConstraint* constraint, bool ignoreCollision) {
 	if (!guardPhysicsCheck() || !constraint) return false;
 	world->getPointer()->addConstraint(constraint, ignoreCollision);
+
+	constraintsByBody[&constraint->getRigidBodyA()].insert(constraint);
+	constraintsByBody[&constraint->getRigidBodyB()].insert(constraint);
 	return true;
 }
 
 bool PhysicsManager::removeConstraintFromWorld(btTypedConstraint* constraint) {
 	if (!guardPhysicsCheck() || !constraint) return false;
 	world->getPointer()->removeConstraint(constraint);
+
+	for (btRigidBody* body : { &constraint->getRigidBodyA(), &constraint->getRigidBodyB() }) {
+		auto it = constraintsByBody.find(body);
+		if (it == constraintsByBody.end()) continue;
+		it->second.erase(constraint);
+		if (it->second.empty()) constraintsByBody.erase(it);
+	}
 	return true;
 }
 
@@ -142,10 +152,10 @@ IRigidBody* PhysicsManager::createRigidBody(const Object3D& m, const Mesh& c) {
 	IRigidBody* rb = world->addRigidBody(shape);
 	rb->includeNodeOnRemoval(false);
 	rb->setSleepingThresholds(0.5, 0.5);
+	rb->getPointer()->setUserPointer(rb->getPointer());
 
 	src->grab();
 	collision->grab();
-
 	++meshesInUseCounts[collision->getMesh()];
 	
 	return rb;
@@ -153,12 +163,23 @@ IRigidBody* PhysicsManager::createRigidBody(const Object3D& m, const Mesh& c) {
 
 void PhysicsManager::removeRigidBody(IRigidBody* rb, irr::scene::IAnimatedMesh* col) {
 	if (!guardPhysicsCheck()) return;
+	if (rb) rb->getPointer()->setUserPointer(nullptr);
 	world->removeCollisionObject(rb, false);
 	
 	auto it = meshesInUseCounts.find(col);
 	if (it != meshesInUseCounts.end()) {
 		if (--it->second <= 0) meshesInUseCounts.erase(it);
 	}
+}
+
+void PhysicsManager::removeConstraintsReferencingBody(btRigidBody* body) {
+	if (!body) return;
+	auto it = constraintsByBody.find(body);
+	if (it == constraintsByBody.end()) return;
+
+	std::vector<btTypedConstraint*> toRemove(it->second.begin(), it->second.end());
+	for (btTypedConstraint* c : toRemove)
+		removeConstraintFromWorld(c);
 }
 
 int PhysicsManager::getMeshUseCount(irr::scene::IAnimatedMesh* mesh) {

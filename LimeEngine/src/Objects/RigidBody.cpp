@@ -321,6 +321,7 @@ void RigidBody::destroy() {
     if (cm) colOut = cm->getMesh();
 
     ICollisionShape* shape = rb->getCollisionShape();
+    p->removeConstraintsReferencingBody(rb->getPointer());
     p->removeRigidBody(rb, colOut);
     if (src) src->drop();
     if (col) col->drop();

@@ -63,6 +63,7 @@ public:
 
 	// Clean-up
 	void removeRigidBody(IRigidBody* rb, irr::scene::IAnimatedMesh* col);
+	void removeConstraintsReferencingBody(btRigidBody* body);
 	int getMeshUseCount(irr::scene::IAnimatedMesh* mesh);
 
 	// Configuration
@@ -101,4 +102,6 @@ private:
 
 	float fixedStep = 1.0f / 30.0f;
 	int maxSubSteps = 8;
+
+	std::unordered_map<btRigidBody*, std::unordered_set<btTypedConstraint*>> constraintsByBody;
 };
