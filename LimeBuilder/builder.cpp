@@ -388,6 +388,12 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 			continue;
 		}
 
+		std::string firstLine = m.code.substr(0, m.code.find('\n'));
+		if (firstLine.find("---@ignore") != std::string::npos) {
+			std::cerr << "Ignoring " << entry.path().string() << "\n";
+			continue;
+		}
+
 		if (modulesByName.count(m.name))
 			throw std::runtime_error("There are multiple '" + m.name + "' modules.");
 
