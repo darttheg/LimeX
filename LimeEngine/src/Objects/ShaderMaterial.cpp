@@ -87,7 +87,7 @@ void Object::ShaderMaterialBind::bind(lua_State* ls, Renderer* rend, DebugConsol
 	r = rend;
 	d = deb;
 
-	// Object Shader, A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldViewProj` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
+	// Object Shader, A special material that can produce custom effects. Load a `Shader` into a `Material` to use, or directly load one into the screen using the respective `Lime.Scene` or `Lime.GUI` functions. Built-in values are set automatically by Lime each frame: `mWorld`, `mWorldView`, `mWorldViewProj`, `mInvWorld`, `mInvViewProj`, `uTime` (seconds), `uFogColor`, `uFogRange`, `texture0`, and `texture1`. See the Lime Shaders tutorial for more detail.
 
 	// Constructor string vertexShaderPath, string pixelShaderPath, Lime.Enum.MaterialType? type
 	// Constructor string hlslShaderPath, Lime.Enum.MaterialType? type
