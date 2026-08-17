@@ -22,8 +22,8 @@ IrrShaderMaterial::IrrShaderMaterial(irr::video::IVideoDriver* driver, const std
 	auto* gpu = driver->getGPUProgrammingServices();
 	if (!gpu) return;
 
-	bool isHlsl = endsWith(vsPath, ".hlsl") || endsWith(psPath, ".hlsl");
-	bool isGlsl = endsWith(vsPath, ".vsh") || endsWith(psPath, ".psh");
+	bool isHlsl = endsWith(vsPath, ".hlsl");
+	bool isGlsl = endsWith(vsPath, ".vsh") || endsWith(psPath, ".psh") || endsWith(vsPath, ".glsl");
 	bool driverWantsHlsl = wantsHLSL(driver->getDriverType());
 
 	if ((isHlsl && !driverWantsHlsl) || (isGlsl && driverWantsHlsl))

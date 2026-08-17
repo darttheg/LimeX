@@ -87,10 +87,10 @@ void Object::ShaderMaterialBind::bind(lua_State* ls, Renderer* rend, DebugConsol
 	r = rend;
 	d = deb;
 
-	// Object Shader, A special material that can produce custom effects. Load a `Shader` into a `Material` to use, or directly load one into the screen using the respective `Lime.Scene` or `Lime.GUI` functions. Built-in values are set automatically by Lime each frame: `mWorld`, `mWorldView`, `mWorldViewProj`, `mInvWorld`, `mInvViewProj`, `uTime` (seconds), `uFogColor`, `uFogRange`, `texture0`, and `texture1`. See the Lime Shaders tutorial for more detail.
+	// Object Shader, A special material that can produce custom effects. Accepts a pairing of vertex and pixel shader paths or a high level shader path. (.hlsl or .glsl depending on the driver type) Load a `Shader` into a `Material` to use, or directly load one into the screen using the respective `Lime.Scene` or `Lime.GUI` functions. Built-in values are set automatically by Lime each frame: `mWorld`, `mWorldView`, `mWorldViewProj`, `mInvWorld`, `mInvViewProj`, `uTime` (seconds), `uFogColor`, `uFogRange`, `texture0`, and `texture1`. See the Lime Shaders tutorial for more detail.
 
 	// Constructor string vertexShaderPath, string pixelShaderPath, Lime.Enum.MaterialType? type
-	// Constructor string hlslShaderPath, Lime.Enum.MaterialType? type
+	// Constructor string shaderPath, Lime.Enum.MaterialType? type
 
 	sol::state_view view(ls);
 	sol::usertype<ShaderMaterial> obj = view.new_usertype<ShaderMaterial>(

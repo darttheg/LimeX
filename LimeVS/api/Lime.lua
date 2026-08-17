@@ -2314,11 +2314,11 @@ function RigidBody:applyTorque(force, impulse) end
 --- Destroys this object.
 function RigidBody:destroy() end
 
---- A special material that can produce custom effects. Load a `Shader` into a `Material` to use, or directly load one into the screen using the respective `Lime.Scene` or `Lime.GUI` functions. Built-in values are set automatically by Lime each frame: `mWorld`, `mWorldView`, `mWorldViewProj`, `mInvWorld`, `mInvViewProj`, `uTime` (seconds), `uFogColor`, `uFogRange`, `texture0`, and `texture1`. See the Lime Shaders tutorial for more detail.
+--- A special material that can produce custom effects. Accepts a pairing of vertex and pixel shader paths or a high level shader path. (.hlsl or .glsl depending on the driver type) Load a `Shader` into a `Material` to use, or directly load one into the screen using the respective `Lime.Scene` or `Lime.GUI` functions. Built-in values are set automatically by Lime each frame: `mWorld`, `mWorldView`, `mWorldViewProj`, `mInvWorld`, `mInvViewProj`, `uTime` (seconds), `uFogColor`, `uFogRange`, `texture0`, and `texture1`. See the Lime Shaders tutorial for more detail.
 --- @class Shader
 Shader = {}
 
---- @overload fun(hlslShaderPath: string, type: Lime.Enum.MaterialType?): Shader
+--- @overload fun(shaderPath: string, type: Lime.Enum.MaterialType?): Shader
 --- @param vertexShaderPath string
 --- @param pixelShaderPath string
 --- @param type Lime.Enum.MaterialType?
