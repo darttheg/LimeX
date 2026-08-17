@@ -97,7 +97,7 @@ private:
 	std::unordered_set<std::pair<btCollisionObject*, btCollisionObject*>, PairHash> currentCollisions;
 	std::unordered_map<std::pair<btCollisionObject*, btCollisionObject*>, ContactInfo, PairHash> curData;
 	std::unordered_map<btCollisionObject*, ColliderInfo> colliderPair;
-	std::unordered_set<irr::scene::IAnimatedMesh*> meshesInUse;
+	std::unordered_map<irr::scene::IAnimatedMesh*, int> meshesInUseCounts;
 
 	float fixedStep = 1.0f / 30.0f;
 	int maxSubSteps = 8;

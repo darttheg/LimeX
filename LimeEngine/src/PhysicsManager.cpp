@@ -146,7 +146,7 @@ IRigidBody* PhysicsManager::createRigidBody(const Object3D& m, const Mesh& c) {
 	src->grab();
 	collision->grab();
 
-	meshesInUse.insert(collision->getMesh());
+	++meshesInUseCounts[collision->getMesh()];
 	
 	return rb;
 }
@@ -154,11 +154,16 @@ IRigidBody* PhysicsManager::createRigidBody(const Object3D& m, const Mesh& c) {
 void PhysicsManager::removeRigidBody(IRigidBody* rb, irr::scene::IAnimatedMesh* col) {
 	if (!guardPhysicsCheck()) return;
 	world->removeCollisionObject(rb, false);
-	meshesInUse.erase(col);
+	
+	auto it = meshesInUseCounts.find(col);
+	if (it != meshesInUseCounts.end()) {
+		if (--it->second <= 0) meshesInUseCounts.erase(it);
+	}
 }
 
 int PhysicsManager::getMeshUseCount(irr::scene::IAnimatedMesh* mesh) {
-	return meshesInUse.count(mesh);
+	auto it = meshesInUseCounts.find(mesh);
+	return it != meshesInUseCounts.end() ? it->second : 0;
 }
 
 Vec3 PhysicsManager::getGravity() {
