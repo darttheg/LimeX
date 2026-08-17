@@ -115,6 +115,7 @@ void NetworkManager::connect(const std::string& ip, int port) {
 void NetworkManager::disconnect() {
 	running = false;
 	if (netThread.joinable()) netThread.join();
+	connected = false;
 
 	if (serverPeer) {
 		enet_peer_disconnect_now(serverPeer, 0);
@@ -313,8 +314,8 @@ void NetworkManager::pollHost(ENetHost* host, bool isServer) {
 				enet_peer_reset(event.peer);
 				break;
 			}
-
-			connected = true;
+			// Connected is for non-host so protect it
+			if (!isServer) connected = true;
 			NetEvent ne;
 			ne.isServer = isServer;
 			ne.type = NetEvent::Type::Connect;
@@ -323,7 +324,7 @@ void NetworkManager::pollHost(ENetHost* host, bool isServer) {
 			break;
 			}
 		case ENET_EVENT_TYPE_DISCONNECT: {
-			connected = false;
+			if (!isServer) connected = false;
 			NetEvent ne;
 			ne.reason = event.data;
 			ne.isServer = isServer;
@@ -352,14 +353,22 @@ void NetworkManager::flushOutbound() {
 		uint32_t flags = s.reliable ? ENET_PACKET_FLAG_RELIABLE : 0;
 		ENetPacket* packet = enet_packet_create(s.data.data(), s.data.size(), flags);
 
+		int result = -1;
 		if (server) {
-			if (s.peerID == -1) enet_host_broadcast(server, s.channel, packet);
-			else {
+			if (s.peerID == -1) {
+				enet_host_broadcast(server, s.channel, packet);
+				result = 0;
+			} else {
 				ENetPeer* peer = &server->peers[s.peerID];
-				if (peer) enet_peer_send(peer, s.channel, packet);
+				if (peer->state == ENET_PEER_STATE_CONNECTED) enet_peer_send(peer, s.channel, packet);
 			}
-		} else if (client && serverPeer)
-			enet_peer_send(serverPeer, s.channel, packet);
+		} else if (client && serverPeer && serverPeer->state == ENET_PEER_STATE_CONNECTED)
+			result = enet_peer_send(serverPeer, s.channel, packet);
+
+		if (result != 0) {
+			enet_packet_destroy(packet);
+			d->Warn("Failed to send Packet to peer " + std::to_string(s.peerID) + " (not connected or invalid id)", false);
+		}
 	}
 }
 
