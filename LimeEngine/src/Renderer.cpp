@@ -352,6 +352,7 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 
 		qr->beginInternal();
+
 		i_smgr->drawAll(); // Draw scene objects to rtScene
 
 		drawShadows();
