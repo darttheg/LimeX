@@ -221,6 +221,12 @@ bool WebManager::extract(const std::string& zipPath, const std::string& outDir) 
 	std::error_code ec;
 	std::filesystem::create_directories(outDir, ec);
 
+	std::filesystem::path root = std::filesystem::weakly_canonical(outDir, ec);
+	if (ec) {
+		mz_zip_reader_end(&zip);
+		return false;
+	}
+
 	extracting = true;
 	progress.store(0.0f);
 	int extracted = 0;
@@ -232,7 +238,15 @@ bool WebManager::extract(const std::string& zipPath, const std::string& outDir) 
 		std::string name = stat.m_filename ? stat.m_filename : "";
 		if (name.empty()) continue;
 
-		std::filesystem::path dest = std::filesystem::path(outDir) / name;
+		std::filesystem::path entryPath(name);
+		if (entryPath.is_absolute() || entryPath.has_root_name()) continue;
+
+		std::filesystem::path dest = std::filesystem::weakly_canonical(root / entryPath, ec);
+		if (ec) continue;
+
+		std::filesystem::path rel = dest.lexically_relative(root);
+		if (rel.empty() || *rel.begin() == "..") continue;
+
 		if (mz_zip_reader_is_file_a_directory(&zip, i)) {
 			std::filesystem::create_directories(dest, ec);
 			continue;
