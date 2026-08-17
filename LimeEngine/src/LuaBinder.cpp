@@ -89,7 +89,7 @@ void LuaBinder::BindAll(Application* app) {
 	Object::MeshBind::bind(ls, app->GetDebugConsole(), app->GetRenderer(), app->GetRenderHelper());
 	Object::MeshBufferBind::bind(ls, app->GetRenderer());
 	Object::LightBind::bind(ls, app->GetRenderHelper());
-	Object::ShaderMaterialBind::bind(ls, app->GetRenderer());
+	Object::ShaderMaterialBind::bind(ls, app->GetRenderer(), app->GetDebugConsole());
 	Object::SoundSourceBind::bind(ls, app->GetSoundManager(), app->GetRenderHelper());
 	Object::NoiseBind::bind(ls);
 	Object::EditBoxBind::bind(ls, app->GetRenderHelper(), app->GetGUIManager());

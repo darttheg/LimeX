@@ -1,7 +1,9 @@
 #include "Objects/ShaderMaterial.h"
 
 #include "Renderer.h"
+#include "DebugConsole.h"
 
+static DebugConsole* d;
 static Renderer* r;
 
 #include "Objects/IrrShaderMat.h"
@@ -15,6 +17,10 @@ ShaderMaterial::ShaderMaterial(const std::string& vs, const std::string& ps, int
 	psPath = fs->getAbsolutePath(ps.c_str()).c_str();
 
 	shadermat = new IrrShaderMaterial(r->getVideoDriver(), vsPath, psPath, type);
+	if (!shadermat->isValid()) {
+		d->Warn("Could not create Shader. The driver type may be mismatched or there are errors in the provided shader files.");
+		return;
+	}
 	shadermat->grab();
 	shadermat->setRenderer(r);
 }
@@ -26,27 +32,27 @@ ShaderMaterial::~ShaderMaterial() {
 }
 
 void ShaderMaterial::setUniformFloat(const std::string& name, float v) {
-	if (!shadermat) return;
+	if (!shadermat || !shadermat->isValid()) return;
 	shadermat->setUniformFloat(name, v);
 }
 
 void ShaderMaterial::setUniformInt(const std::string& name, int v) {
-	if (!shadermat) return;
+	if (!shadermat || !shadermat->isValid()) return;
 	shadermat->setUniformInt(name, v);
 }
 
 void ShaderMaterial::setUniformVec2(const std::string& name, const Vec2& v) {
-	if (!shadermat) return;
+	if (!shadermat || !shadermat->isValid()) return;
 	shadermat->setUniformVec2(name, v);
 }
 
 void ShaderMaterial::setUniformVec3(const std::string& name, const Vec3& v) {
-	if (!shadermat) return;
+	if (!shadermat || !shadermat->isValid()) return;
 	shadermat->setUniformVec3(name, v);
 }
 
 void ShaderMaterial::setUniformVec4(const std::string& name, const Vec4& v) {
-	if (!shadermat) return;
+	if (!shadermat || !shadermat->isValid()) return;
 	shadermat->setUniformVec4(name, v);
 }
 
@@ -56,14 +62,14 @@ void ShaderMaterial::setUniformMat4(const std::string& name, const Object3D& obj
 
 #include "Interfaces/Object3D.h"
 void ShaderMaterial::setUniformMat4(const std::string& name, const Object3D& obj, bool inverse) {
-	if (!shadermat) return;
+	if (!shadermat || !shadermat->isValid()) return;
 	irr::scene::ISceneNode* node = obj.getNode();
 	if (!node) return;
 	shadermat->setUniformMat4(name, node->getAbsoluteTransformation(), inverse);
 }
 
 int ShaderMaterial::getMaterialType() const {
-	if (!shadermat) return irr::video::EMT_SOLID;
+	if (!shadermat || !shadermat->isValid()) return irr::video::EMT_SOLID;
 	return shadermat->getMaterialType();
 }
 
@@ -77,8 +83,9 @@ std::string ShaderMaterial::getPsPath() const {
 	return psPath;
 }
 
-void Object::ShaderMaterialBind::bind(lua_State* ls, Renderer* rend) {
+void Object::ShaderMaterialBind::bind(lua_State* ls, Renderer* rend, DebugConsole* deb) {
 	r = rend;
+	d = deb;
 
 	// Object Shader, A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldViewProj` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
 

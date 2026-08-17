@@ -9,6 +9,7 @@ class Vec2;
 class Vec3;
 class Vec4;
 class Renderer;
+class DebugConsole;
 class Object3D;
 
 class ShaderMaterial {
@@ -38,5 +39,5 @@ private:
 };
 
 namespace Object::ShaderMaterialBind {
-	void bind(lua_State* ls, Renderer* rend);
+	void bind(lua_State* ls, Renderer* rend, DebugConsole* deb);
 }

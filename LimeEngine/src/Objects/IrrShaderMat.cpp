@@ -9,9 +9,25 @@
 
 static Renderer* r;
 
+static bool wantsHLSL(irr::video::E_DRIVER_TYPE t) {
+	return t == irr::video::EDT_DIRECT3D8 || t == irr::video::EDT_DIRECT3D9;
+}
+
+static bool endsWith(const std::string& s, const std::string& suffix) {
+	return s.size() >= suffix.size() &&
+		   s.compare(s.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
 IrrShaderMaterial::IrrShaderMaterial(irr::video::IVideoDriver* driver, const std::string& vsPath, const std::string& psPath, int type) {
 	auto* gpu = driver->getGPUProgrammingServices();
 	if (!gpu) return;
+
+	bool isHlsl = endsWith(vsPath, ".hlsl") || endsWith(psPath, ".hlsl");
+	bool isGlsl = endsWith(vsPath, ".vsh") || endsWith(psPath, ".psh");
+	bool driverWantsHlsl = wantsHLSL(driver->getDriverType());
+
+	if ((isHlsl && !driverWantsHlsl) || (isGlsl && driverWantsHlsl))
+		return;
 
 	this->type = gpu->addHighLevelShaderMaterialFromFiles(
 		vsPath.c_str(), "vertexMain", irr::video::EVST_VS_3_0,

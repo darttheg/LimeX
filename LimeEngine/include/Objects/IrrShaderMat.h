@@ -27,6 +27,7 @@ public:
 	void setUniformMat4(const std::string& name, const irr::core::matrix4& mat, bool inverse = false);
 
 	irr::s32 getMaterialType() const { return type; }
+	bool isValid() const { return type != -1; }
 	void callSetConstants() { if (cachedServices) OnSetConstants(cachedServices, 0); }
 private:
 	irr::s32 type = -1;
