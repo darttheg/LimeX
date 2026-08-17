@@ -104,6 +104,7 @@ private:
 	std::unique_ptr<sol::state> lua;
 	std::string entryModuleName;
 	std::unordered_map<std::string, std::string> modules;
+	void setSandboxFileIO();
 
 	// Debug console
 	struct DebugConfig { bool on, write, suppress; };

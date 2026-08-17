@@ -172,6 +172,124 @@ sol::object Application::FindExternalModule(const std::string& name) {
 	return sol::make_object(*lua, chunk.get<sol::protected_function>());
 }
 
+#include <filesystem>
+namespace {
+	std::filesystem::path luaIOSandboxRoot() {
+		static std::filesystem::path root = std::filesystem::current_path();
+		return root;
+	}
+
+	std::filesystem::path resolveSafeLuaPath(const std::string& path) {
+		std::filesystem::path requested(path);
+		if (requested.is_absolute() || requested.has_root_name()) return {};
+
+		std::error_code ec;
+		std::filesystem::path root = std::filesystem::weakly_canonical(luaIOSandboxRoot(), ec);
+		if (ec) return {};
+
+		std::filesystem::path resolved = std::filesystem::weakly_canonical(root / requested, ec);
+		if (ec) return {};
+
+		std::filesystem::path rel = resolved.lexically_relative(root);
+		if (rel.empty() || *rel.begin() == "..") return {};
+
+		return resolved;
+	}
+}
+
+void Application::setSandboxFileIO() {
+	sol::table io = (*lua)["io"];
+	sol::table os = (*lua)["os"];
+
+	sol::function realOpen = io["open"];
+	io.set_function("open", [this, realOpen](const std::string& path, sol::optional<std::string> mode) -> std::tuple<sol::object, sol::object> {
+		std::filesystem::path safe = resolveSafeLuaPath(path);
+		if (safe.empty()) {
+			console->Warn("io.open failed as path is outside application directory: " + path);
+			return { sol::make_object(*lua, sol::nil), sol::make_object(*lua, "permission denied") };
+		}
+		sol::protected_function_result res = realOpen(safe.string(), mode.value_or(std::string("r")));
+		sol::object file = res.get<sol::object>(0);
+		sol::object err = res.return_count() > 1 ? res.get<sol::object>(1) : sol::make_object(*lua, sol::nil);
+		return { file, err };
+	});
+
+	sol::function realLines = io["lines"];
+	io.set_function("lines", [this, realLines](sol::variadic_args va) -> sol::object {
+		if (va.size() == 0) return realLines();
+		std::string path = va[0].as<std::string>();
+		std::filesystem::path safe = resolveSafeLuaPath(path);
+		if (safe.empty()) {
+			console->Warn("io.lines failed as path is outside application directory: " + path);
+			return sol::make_object(*lua, sol::nil);
+		}
+		return realLines(safe.string());
+	});
+
+	sol::function realInput = io["input"];
+	io.set_function("input", [this, realInput](sol::optional<std::string> path) -> sol::object {
+		if (!path) return realInput();
+		std::filesystem::path safe = resolveSafeLuaPath(*path);
+		if (safe.empty()) {
+			console->Warn("io.input failed as path is outside application directory: " + *path);
+			return sol::make_object(*lua, sol::nil);
+		}
+		return realInput(safe.string());
+	});
+
+	sol::function realOutput = io["output"];
+	io.set_function("output", [this, realOutput](sol::optional<std::string> path) -> sol::object {
+		if (!path) return realOutput();
+		std::filesystem::path safe = resolveSafeLuaPath(*path);
+		if (safe.empty()) {
+			console->Warn("io.output failed as path is outside application directory: " + *path);
+			return sol::make_object(*lua, sol::nil);
+		}
+		return realOutput(safe.string());
+	});
+
+	os.set_function("remove", [this](const std::string& path) -> std::tuple<bool, sol::object> {
+		std::filesystem::path safe = resolveSafeLuaPath(path);
+		if (safe.empty()) return { false, sol::make_object(*lua, "permission denied") };
+		std::error_code ec;
+		bool ok = std::filesystem::remove(safe, ec);
+		return { ok, ok ? sol::object(sol::make_object(*lua, sol::nil)) : sol::make_object(*lua, ec.message()) };
+	});
+
+	os.set_function("rename", [this](const std::string& from, const std::string& to) -> std::tuple<bool, sol::object> {
+		std::filesystem::path safeFrom = resolveSafeLuaPath(from);
+		std::filesystem::path safeTo = resolveSafeLuaPath(to);
+		if (safeFrom.empty() || safeTo.empty()) return { false, sol::make_object(*lua, "permission denied") };
+		std::error_code ec;
+		std::filesystem::rename(safeFrom, safeTo, ec);
+		return { !ec, ec ? sol::make_object(*lua, ec.message()) : sol::object(sol::make_object(*lua, sol::nil)) };
+	});
+
+	os.set_function("execute", []() -> bool { return false; });
+
+	sol::function realLoadfile = (*lua)["loadfile"];
+	lua->set_function("loadfile", [this, realLoadfile](sol::optional<std::string> path) -> sol::object {
+		if (!path) return sol::make_object(*lua, sol::nil);
+		std::filesystem::path safe = resolveSafeLuaPath(*path);
+		if (safe.empty()) {
+			console->Warn("loadfile failed as path is outside application directory: " + *path);
+			return sol::make_object(*lua, sol::nil);
+		}
+		return realLoadfile(safe.string());
+	});
+
+	sol::function realDofile = (*lua)["dofile"];
+	lua->set_function("dofile", [this, realDofile](sol::optional<std::string> path) -> sol::object {
+		if (!path) return sol::make_object(*lua, sol::nil);
+		std::filesystem::path safe = resolveSafeLuaPath(*path);
+		if (safe.empty()) {
+			console->Warn("dofile failed as path is outside application directory: " + *path);
+			return sol::make_object(*lua, sol::nil);
+		}
+		return realDofile(safe.string());
+	});
+}
+
 void Application::InstallExternalFinder() {
 	sol::table searchers = (*lua)["package"]["searchers"];
 	searchers[searchers.size() + 1] = [this](const std::string& name) { return FindExternalModule(name); };
@@ -212,10 +330,10 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 		sol::lib::io,
 		sol::lib::math,
 		sol::lib::table,
-		sol::lib::package,
-		sol::lib::debug
+		sol::lib::package
 	);
 
+	setSandboxFileIO();
 	InstallPackageFinder();
 	InstallExternalFinder();
 
