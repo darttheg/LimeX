@@ -392,7 +392,7 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou, RenderHelpe
 	// Returns boolean
 	obj.set_function("load", &SoundSource::loadFromFile);
 
-	// Destroys this `Sound`, which stops itself from playing in the scene as well as detaching from a parent 3D object. To free this sound from memory, see `SoundSource:purge`.
+	// Destroys this `Sound`, which stops itself from playing in the scene as well as detaching from a parent 3D object. To free this sound from memory, see `Sound:purge`.
 	// Returns nil
 	obj.set_function("destroy", &SoundSource::destroy);
 
