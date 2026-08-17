@@ -75,22 +75,53 @@ void Module::File::bind(Application* app) {
 	// End Module
 }
 
+namespace {
+	std::filesystem::path fileSandboxRoot() {
+		static std::filesystem::path root = std::filesystem::current_path();
+		return root;
+	}
+
+	std::filesystem::path resolveSafePath(const std::string& path) {
+		std::filesystem::path requested(path);
+		if (requested.is_absolute() || requested.has_root_name()) return {};
+
+		std::error_code ec;
+		std::filesystem::path root = std::filesystem::weakly_canonical(fileSandboxRoot(), ec);
+		if (ec) return {};
+
+		std::filesystem::path resolved = std::filesystem::weakly_canonical(root / requested, ec);
+		if (ec) return {};
+
+		std::filesystem::path rel = resolved.lexically_relative(root);
+		if (rel.empty() || *rel.begin() == "..") return {};
+
+		return resolved;
+	}
+}
+
 // Functions
 
 bool Module::File::Bind::folderExists(const std::string& folderPath) {
+	std::filesystem::path safe = resolveSafePath(folderPath);
+	if (safe.empty()) return false;
+
 	std::error_code ec;
-	return std::filesystem::exists(folderPath, ec) && std::filesystem::is_directory(folderPath, ec);
+	return std::filesystem::exists(safe, ec) && std::filesystem::is_directory(safe, ec);
 }
 
 sol::table Module::File::Bind::getFilesInDir(const std::string& directoryPath, const std::string& extension) {
 	sol::table result = l->create_table();
+
+	std::filesystem::path safe = resolveSafePath(directoryPath);
+	if (safe.empty()) return result;
+
 	std::error_code ec;
 
-	if (!std::filesystem::exists(directoryPath, ec) || !std::filesystem::is_directory(directoryPath, ec))
+	if (!std::filesystem::exists(safe, ec) || !std::filesystem::is_directory(safe, ec))
 		return result;
 
 	int i = 1;
-	for (const auto& entry : std::filesystem::directory_iterator(directoryPath, ec)) {
+	for (const auto& entry : std::filesystem::directory_iterator(safe, ec)) {
 		if (ec) break;
 		if (!entry.is_regular_file()) continue;
 
@@ -106,11 +137,14 @@ sol::table Module::File::Bind::getDirsInDir(const std::string& directoryPath) {
 	sol::table result = l->create_table();
 	std::error_code ec;
 
-	if (!std::filesystem::exists(directoryPath, ec) || !std::filesystem::is_directory(directoryPath, ec))
+	std::filesystem::path safe = resolveSafePath(directoryPath);
+	if (safe.empty()) return result;
+
+	if (!std::filesystem::exists(safe, ec) || !std::filesystem::is_directory(safe, ec))
 		return result;
 
 	int i = 1;
-	for (const auto& entry : std::filesystem::directory_iterator(directoryPath, ec)) {
+	for (const auto& entry : std::filesystem::directory_iterator(safe, ec)) {
 		if (ec) break;
 		if (!entry.is_directory(ec)) continue;
 		result[i++] = entry.path().filename().string();
@@ -120,8 +154,11 @@ sol::table Module::File::Bind::getDirsInDir(const std::string& directoryPath) {
 }
 
 bool Module::File::Bind::fileExists(const std::string& path) {
+	std::filesystem::path safe = resolveSafePath(path);
+	if (safe.empty()) return false;
+
 	std::error_code ec;
-	return std::filesystem::exists(path, ec) && std::filesystem::is_regular_file(path, ec);
+	return std::filesystem::exists(safe, ec) && std::filesystem::is_regular_file(safe, ec);
 }
 
 static void xorCipher(std::vector<uint8_t>& data, const std::string& seed) {
@@ -131,7 +168,10 @@ static void xorCipher(std::vector<uint8_t>& data, const std::string& seed) {
 }
 
 std::string Module::File::Bind::readFile(const std::string& path) {
-	std::ifstream file(path, std::ios::in | std::ios::binary);
+	std::filesystem::path safe = resolveSafePath(path);
+	if (safe.empty()) return "";
+
+	std::ifstream file(safe, std::ios::in | std::ios::binary);
 	if (!file.is_open()) return "";
 
 	std::ostringstream ss;
@@ -140,7 +180,10 @@ std::string Module::File::Bind::readFile(const std::string& path) {
 }
 
 std::string Module::File::Bind::readFileEncrypted(const std::string& path, const std::string& seed) {
-	std::ifstream file(path, std::ios::in | std::ios::binary);
+	std::filesystem::path safe = resolveSafePath(path);
+	if (safe.empty()) return "";
+	
+	std::ifstream file(safe, std::ios::in | std::ios::binary);
 	if (!file.is_open()) return "";
 
 	std::ostringstream ss;
@@ -153,7 +196,10 @@ std::string Module::File::Bind::readFileEncrypted(const std::string& path, const
 
 
 bool Module::File::Bind::writeFile(const std::string& path, const std::string& data) {
-	std::ofstream file(path, std::ios::out | std::ios::binary);
+	std::filesystem::path safe = resolveSafePath(path);
+	if (safe.empty()) return false;
+	
+	std::ofstream file(safe, std::ios::out | std::ios::binary);
 	if (!file.is_open()) return false;
 
 	file.write(data.c_str(), data.size());
@@ -161,7 +207,10 @@ bool Module::File::Bind::writeFile(const std::string& path, const std::string& d
 }
 
 bool Module::File::Bind::writeFileEncrypted(const std::string& path, const std::string& data, const std::string& seed) {
-	std::ofstream file(path, std::ios::out | std::ios::binary);
+	std::filesystem::path safe = resolveSafePath(path);
+	if (safe.empty()) return false;
+	
+	std::ofstream file(safe, std::ios::out | std::ios::binary);
 	if (!file.is_open()) return false;
 	
 	std::vector<uint8_t> bytes(data.begin(), data.end());
@@ -171,16 +220,25 @@ bool Module::File::Bind::writeFileEncrypted(const std::string& path, const std::
 }
 
 std::string Module::File::Bind::getFileExtension(const std::string& path) {
-	return std::filesystem::path(path).extension().string();
+	std::filesystem::path safe = resolveSafePath(path);
+	if (safe.empty()) return "";
+	
+	return std::filesystem::path(safe).extension().string();
 }
 
 std::string Module::File::Bind::getFileName(const std::string& path) {
-	return std::filesystem::path(path).filename().string();
+	std::filesystem::path safe = resolveSafePath(path);
+	if (safe.empty()) return "";
+
+	return std::filesystem::path(safe).filename().string();
 }
 
 bool Module::File::Bind::createDir(const std::string& path) {
+	std::filesystem::path safe = resolveSafePath(path);
+	if (safe.empty()) return false;
+
 	std::error_code ec;
-	if (std::filesystem::exists(path, ec))
-		return std::filesystem::is_directory(path, ec);
-	return std::filesystem::create_directories(path, ec);
+	if (std::filesystem::exists(safe, ec))
+		return std::filesystem::is_directory(safe, ec);
+	return std::filesystem::create_directories(safe, ec);
 }
