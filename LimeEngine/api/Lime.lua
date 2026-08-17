@@ -2314,7 +2314,7 @@ function RigidBody:applyTorque(force, impulse) end
 --- Destroys this object.
 function RigidBody:destroy() end
 
---- A special material that can produce custom effects. Apply `Shader` objects to `Material` objects or to the screen with `Lime.Scene.setPostProcessingShader`. By default, all `Shader` objects set internal parameters `uWorldViewProj` to the current world-view projection matrix, `uWorld` to just the current world matrix, and `uTime` to the elapsed time in seconds. (decimal)
+--- A special material that can produce custom effects. Load a `Shader` into a `Material` to use, or directly load one into the screen using the respective `Lime.Scene` or `Lime.GUI` functions. Built-in values are set automatically by Lime each frame: `mWorld`, `mWorldView`, `mWorldViewProj`, `mInvWorld`, `mInvViewProj`, `uTime` (seconds), `uFogColor`, `uFogRange`, `texture0`, and `texture1`. See the Lime Shaders tutorial for more detail.
 --- @class Shader
 Shader = {}
 
@@ -2575,7 +2575,7 @@ function Sound:hasParent() end
 --- @return boolean
 function Sound:load(path, type) end
 
---- Destroys this `Sound`, which stops itself from playing in the scene as well as detaching from a parent 3D object. To free this sound from memory, see `SoundSource:purge`.
+--- Destroys this `Sound`, which stops itself from playing in the scene as well as detaching from a parent 3D object. To free this sound from memory, see `Sound:purge`.
 function Sound:destroy() end
 
 --- Purges this `Sound`, effectively removing it from memory. If other `Sound` objects use this sound, there may be issues.
