@@ -669,27 +669,23 @@ bool Application::getVSync() {
 bool Application::CreateWindows() {
 	if (!window->Create()) {
 		console->PostError("Failed to create GLFW window", true, false);
-		displayMessage("Lime Init Error", "Failed to create GLFW window", 1);
 		return false;
 	}
 
 	if (!renderer->Init()) {
 		console->PostError("Failed to create rendering window", true, false);
-		displayMessage("Lime Init Error", "Failed to create rendering window", 1);
 		return false;
 	}
 
 	if (!renderer->InitPhysics()) {
 		console->PostError("Failed to create physics manager", true, false);
-		displayMessage("Lime Init Error", "Failed to create physics manager", 1);
 		return false;
 	}
 
 	HWND glfwHWND = window->GetHandle();
 
 	if (!glfwHWND) {
-		console->PostError("Could not get valid window handle(s)", true, false);
-		displayMessage("Lime Init Error", "Could not get valid window handle(s)", 1);
+		console->PostError("Could not get valid window handles", true, false);
 		return false;
 	}
 
