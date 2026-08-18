@@ -346,7 +346,12 @@ irr::scene::IAnimatedMesh* RenderHelper::createMesh(const std::string& path) {
 
 irr::scene::IAnimatedMeshSceneNode* RenderHelper::createEmptyMesh() {
 	if (!guardRenderingCheck()) return nullptr;
-	return i_smgr->addAnimatedMeshSceneNode(nullptr);
+	return i_smgr->addAnimatedMeshSceneNode(nullptr, 0, -1,
+		   irr::core::vector3df(),
+		   irr::core::vector3df(),
+		   irr::core::vector3df(),
+		   true
+		);
 }
 
 irr::scene::IAnimatedMeshSceneNode* RenderHelper::createAnimatedMesh(irr::scene::IAnimatedMesh* m) {
