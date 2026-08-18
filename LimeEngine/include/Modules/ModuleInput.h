@@ -24,7 +24,6 @@ namespace Module {
 			bool isControllerConnected(int id);
 			void setMouseType(int v);
 			int getMouseType();
-			std::string getControllerName(int id);
 		}
 	}
 }

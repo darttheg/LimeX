@@ -94,14 +94,11 @@ public:
 
 	struct Impl;
 	std::unique_ptr<Impl> joystickImpl;
-	void initJoysticks(IrrlichtDevice* device);
-	void pollNewJoysticks();
-	void pollDisconnectedJoysticks();
+	void pollJoystickInput();
 
 	bool isButtonDown(int id, int btn);
 	float getControllerAxis(int id, int axis);
 	bool isControllerConnected(int id);
-	std::string getControllerName(int id);
 private:
 	Mouse mouse{};
 	Keyboard keyboard{};
@@ -110,6 +107,5 @@ private:
 
 	void handleKey(const irr::SEvent::SKeyInput& k);
 	void handleMouse(const irr::SEvent::SMouseInput& m);
-	void handleJoystick(const irr::SEvent::SJoystickEvent& j);
 	void handleGUI(const irr::SEvent::SGUIEvent& g);
 };

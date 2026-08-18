@@ -124,7 +124,7 @@ bool Renderer::Init() {
 	else
 		params.WindowSize = irr::core::dimension2d<u32>(cfg.renderSize[0], cfg.renderSize[1]);
 
-	params.Bits = 16;
+	params.Bits = 32;
 	params.Vsync = cfg.vSync;
 	params.Fullscreen = cfg.fullscreen;
 	params.Stencilbuffer = doStencilBuffer;
@@ -153,7 +153,6 @@ bool Renderer::Init() {
 	}
 
 	i_device->setEventReceiver(a->GetReceiver());
-	a->GetReceiver()->initJoysticks(i_device);
 
 	guiManager->SetGUIEnv(i_gui, i_device);
 

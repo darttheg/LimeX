@@ -6,6 +6,8 @@
 #include "Objects/Vec2.h"
 #include "Window.h"
 
+#include <Xinput.h>
+
 #include "irrlicht.h"
 
 static Application* a;
@@ -15,10 +17,31 @@ static Window* w;
 static IrrlichtDevice* device;
 
 struct Receiver::Impl {
-	irr::core::array<irr::SJoystickInfo> joysticks;
-	std::unordered_map<int32_t, irr::SEvent::SJoystickEvent> lastJoystickState;
-	std::unordered_map<int32_t, uint64_t> lastSeenMs;
+	static constexpr int MAX_CONTROLLERS = XUSER_MAX_COUNT;
+	XINPUT_STATE state[MAX_CONTROLLERS]{};
+	bool connected[MAX_CONTROLLERS]{};
+	WORD prevButtons[MAX_CONTROLLERS]{};
 };
+
+static WORD ButtonToXFlag(int btn) {
+	switch (btn) {
+	case 0: return XINPUT_GAMEPAD_A;
+	case 1: return XINPUT_GAMEPAD_B;
+	case 2: return XINPUT_GAMEPAD_X;
+	case 3: return XINPUT_GAMEPAD_Y;
+	case 4: return XINPUT_GAMEPAD_RIGHT_SHOULDER;
+	case 5: return XINPUT_GAMEPAD_LEFT_SHOULDER;
+	case 6: return XINPUT_GAMEPAD_BACK;
+	case 7: return XINPUT_GAMEPAD_START;
+	case 8: return XINPUT_GAMEPAD_RIGHT_THUMB;
+	case 9: return XINPUT_GAMEPAD_LEFT_THUMB;
+	case 32: return XINPUT_GAMEPAD_DPAD_UP;
+	case 33: return XINPUT_GAMEPAD_DPAD_RIGHT;
+	case 34: return XINPUT_GAMEPAD_DPAD_DOWN;
+	case 35: return XINPUT_GAMEPAD_DPAD_LEFT;
+	default: return 0;
+	}
+}
 
 Receiver::Receiver(Application* app, GUIManager* gui) {
 	a = app;
@@ -68,8 +91,7 @@ void Receiver::endFrame() {
 	mouse.lastPos = mouse.pos;
 	firstMouse = false;
 
-	pollNewJoysticks();
-	pollDisconnectedJoysticks();
+	pollJoystickInput();
 }
 
 void Receiver::syncMouse() {
@@ -100,9 +122,6 @@ bool Receiver::OnEvent(const irr::SEvent& e) {
 			return false;
 		case irr::EET_MOUSE_INPUT_EVENT:
 			handleMouse(e.MouseInput);
-			return false;
-		case irr::EET_JOYSTICK_INPUT_EVENT:
-			handleJoystick(e.JoystickEvent);
 			return false;
 		case irr::EET_GUI_EVENT:
 			handleGUI(e.GUIEvent);
@@ -212,70 +231,55 @@ static uint64_t NowMs() {
 	return (uint64_t)duration_cast<milliseconds>(steady_clock::now() - start).count();
 }
 
-void Receiver::initJoysticks(IrrlichtDevice* dev) {
-	if (!dev) return;
-	device = dev;
-	joystickImpl->joysticks.clear();
+void Receiver::pollJoystickInput() {
+	for (int i = 0; i < Impl::MAX_CONTROLLERS; ++i) {
+		XINPUT_STATE state{};
+		const bool isConnected = (XInputGetState((DWORD)i, &state) == ERROR_SUCCESS);
 
-	if (!device->activateJoysticks(joystickImpl->joysticks))
-		d->Warn("Could not activate controller support: it is unsupported on this device.");
-}
-
-void Receiver::pollNewJoysticks() {
-	if (!device) return;
-
-	if (true) return; // Could not set DirectInput device cooperative level error, probably because of GLFW ownership?
-
-	const uint64_t t = NowMs();
-	if (t - lastPulsedJoysticks < pulseFreq) {
-		return;
-	}
-	lastPulsedJoysticks = t;
-
-	irr::core::array<irr::SJoystickInfo> tmp;
-	const bool ok = device->activateJoysticks(tmp);
-	if (!ok) return;
-
-	if (tmp.size() == 0 && joystickImpl->joysticks.size() > 0) return;
-
-	const irr::u32 oldC = joystickImpl->joysticks.size();
-	const irr::u32 newC = tmp.size();
-
-	joystickImpl->joysticks = tmp;
-
-	if (newC > oldC) {
-		for (irr::u32 i = oldC; i < newC; ++i) {
-			const int32_t id = (int32_t)i;
-			InputJoystickConnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, id);
+		if (isConnected && !joystickImpl->connected[i]) {
+			InputJoystickConnect.get()->engineRun([&](const std::string& msg) {
+				d->PostError(msg, false);
+			}, i);
 		}
-	}
-}
+		else if (!isConnected && joystickImpl->connected[i]) {
+			InputJoystickDisconnect.get()->engineRun([&](const std::string& msg) {
+				d->PostError(msg, false);
+				}, i);
+		}
+		joystickImpl->connected[i] = isConnected;
+		if (!isConnected) continue;
+		const WORD now = state.Gamepad.wButtons;
+		const WORD prev = joystickImpl->prevButtons[i];
+		const WORD pressedMask = (~prev) & now;
+		const WORD releasedMask = prev & (~now);
 
-void Receiver::pollDisconnectedJoysticks() {
-	const uint64_t t = NowMs();
+		static const int allButtons[] = { 0,1,2,3,4,5,6,7,8,9,32,33,34,35 };
+		for (int btn : allButtons) {
+			const WORD flag = ButtonToXFlag(btn);
+			if (pressedMask & flag) {
+				InputJoystickButtonPressed.get()->engineRun([&](const std::string& msg) {
+					d->PostError(msg, false);
+					}, i, btn);
+			}
+			if (releasedMask & flag) {
+				InputJoystickButtonReleased.get()->engineRun([&](const std::string& msg) {
+					d->PostError(msg, false);
+					}, i, btn);
+			}
+		}
 
-	for (auto it = joystickImpl->lastSeenMs.begin(); it != joystickImpl->lastSeenMs.end(); ) {
-		const int32_t id = it->first;
-		const uint64_t lastSeen = it->second;
-
-		if (t - lastSeen > pulseFreq) {
-			InputJoystickDisconnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, id);
-
-			joystickImpl->lastSeenMs.erase(it++);
-			joystickImpl->lastJoystickState.erase(id);
-		} else
-			++it;
+		joystickImpl->prevButtons[i] = now;
+		joystickImpl->state[i] = state;
 	}
 }
 
 bool Receiver::isButtonDown(int id, int btn) {
-	if (id < 0 || btn < 0) return false;
-	if ((irr::u32)id >= joystickImpl->joysticks.size()) return false;
-	auto it = joystickImpl->lastJoystickState.find(id);
-	if (it == joystickImpl->lastJoystickState.end()) return false;
+	if (id < 0 || id >= Impl::MAX_CONTROLLERS || !joystickImpl->connected[id]) return false;
 
-	if (btn >= 32) return false;
-	return it->second.IsButtonPressed((irr::u32)btn);
+	const WORD flag = ButtonToXFlag(btn);
+	if (!flag) return false;
+
+	return (joystickImpl->state[id].Gamepad.wButtons & flag) != 0;
 }
 
 static inline float SnapToOne(float x) {
@@ -286,121 +290,27 @@ static inline float SnapToOne(float x) {
 }
 
 float Receiver::getControllerAxis(int id, int axis) {
-	if (id < 0 || axis < 0) return 0.0f;
-	if ((irr::u32)id >= joystickImpl->joysticks.size()) return 0.0f;
-	auto it = joystickImpl->lastJoystickState.find(id);
-	if (it == joystickImpl->lastJoystickState.end()) return 0.0f;
+	if (id < 0 || id >= Impl::MAX_CONTROLLERS || !joystickImpl->connected[id]) return 0.0f;
 
-	// const int maxAxes = irr::SEvent::SJoystickEvent::NUMBER_OF_AXES;
-	if (axis > 6) return 0.0f;
+	const auto& pad = joystickImpl->state[id].Gamepad;
+	const float deadzone = 0.12f;
 
-	// Triggers
-	if (axis == 5 || axis == 6) {
-		float out = getControllerAxis(0, irr::SEvent::SJoystickEvent::AXIS_Z);
-		bool left = axis == 5;
-
-		if (left) {
-			if (out < 0.0f) return 0.0f;
-			return SnapToOne(out);
-		}
-		else {
-			if (out > 0.0f) return 0.0f;
-			return SnapToOne(out * -1.0f);
-		}
+	switch (axis) {
+	case 0: return ApplyDeadzone(NormalizeAxisS16(pad.sThumbLX), deadzone);
+	case 1: return ApplyDeadzone(NormalizeAxisS16(pad.sThumbLY), deadzone);
+	case 3: return ApplyDeadzone(NormalizeAxisS16(pad.sThumbRX), deadzone);
+	case 4: return ApplyDeadzone(NormalizeAxisS16(pad.sThumbRY), deadzone);
+	case 5: return SnapToOne(pad.bLeftTrigger / 255.0f);
+	case 6: return SnapToOne(pad.bRightTrigger / 255.0f);
+	default: return 0.0f;
 	}
 
-	const irr::s16 raw = it->second.Axis[axis];
-	float x = NormalizeAxisS16(raw);
-	if (std::abs(x) <= 0.001) return 0.0f;
-	return NormalizeAxisS16(raw);
+	// Leave snapping for triggers?
 }
 
 bool Receiver::isControllerConnected(int id) {
-	if (id < 0) return false;
-	return (irr::u32)id < joystickImpl->joysticks.size();
-}
-
-std::string Receiver::getControllerName(int id) {
-	if (id > joystickImpl->joysticks.size()) return "";
-	return joystickImpl->joysticks[id].Name.c_str();
-}
-
-void Receiver::handleJoystick(const irr::SEvent::SJoystickEvent& j) {
-	const int32_t id = (int32_t)j.Joystick;
-
-	const bool firstTime = (joystickImpl->lastJoystickState.find(id) == joystickImpl->lastJoystickState.end());
-
-	if (firstTime) {
-		joystickImpl->lastJoystickState[id] = j;
-		InputJoystickConnect.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, id);
-	}
-
-	auto& prevState = joystickImpl->lastJoystickState[id];
-
-	uint32_t btnCount = 32u;
-	if (id >= 0 && id < (int32_t)joystickImpl->joysticks.size())
-		btnCount = joystickImpl->joysticks[(irr::u32)id].Buttons;
-
-	const uint32_t prev = (uint32_t)prevState.ButtonStates;
-	const uint32_t now = (uint32_t)j.ButtonStates;
-
-	const uint32_t pressedMask = (~prev) & now;
-	const uint32_t releasedMask = prev & (~now);
-
-	const uint32_t limit = (btnCount >= 32u) ? 32u : btnCount;
-
-	for (uint32_t i = 0; i < limit; ++i)
-	{
-		const uint32_t bit = 1u << i;
-
-		if (pressedMask & bit)
-			InputJoystickButtonPressed.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, id, (int)i);
-
-		if (releasedMask & bit)
-			InputJoystickButtonReleased.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, id, (int)i);
-	}
-
-	uint32_t base = 32u;
-	auto povTo4 = [](uint16_t pov, bool& up, bool& right, bool& down, bool& left) {
-		up = right = down = left = false;
-		if (pov == 0xFFFF) return;
-
-		int dir = (int)(((pov + 2250) / 4500) % 8);
-		// 0=N,1=NE,2=E,3=SE,4=S,5=SW,6=W,7=NW
-		up = (dir == 7 || dir == 0 || dir == 1);
-		right = (dir == 1 || dir == 2 || dir == 3);
-		down = (dir == 3 || dir == 4 || dir == 5);
-		left = (dir == 5 || dir == 6 || dir == 7);
-		};
-
-	bool pup, pright, pdown, pleft;
-	bool nup, nright, ndown, nleft;
-	povTo4(prevState.POV, pup, pright, pdown, pleft);
-	povTo4(j.POV, nup, nright, ndown, nleft);
-
-	auto edge = [&](bool was, bool now, int virtualIndex) {
-		if (!was && now)
-			InputJoystickButtonPressed.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, id, virtualIndex);
-		if (was && !now)
-			InputJoystickButtonReleased.get()->engineRun([&](const std::string& msg) { d->PostError(msg, false, false); }, id, virtualIndex);
-		};
-
-	edge(pup, nup, (int)(base + 0)); // POV_Up
-	edge(pright, nright, (int)(base + 1)); // POV_Right
-	edge(pdown, ndown, (int)(base + 2)); // POV_Down
-	edge(pleft, nleft, (int)(base + 3)); // POV_Left
-
-	const int axisCount = (int)j.NUMBER_OF_AXES;
-	const float deadzone = 0.12f;
-	const float eps = 0.0025f;
-
-	for (int axis = 0; axis < axisCount; ++axis) {
-		float prev = ApplyDeadzone(NormalizeAxisS16(prevState.Axis[axis]), deadzone);
-		float now = ApplyDeadzone(NormalizeAxisS16(j.Axis[axis]), deadzone);
-	}
-
-	joystickImpl->lastJoystickState[id] = j;
-	joystickImpl->lastSeenMs[id] = NowMs();
+	if (id < 0 || id >= Impl::MAX_CONTROLLERS) return false;
+	return joystickImpl->connected[id];
 }
 
 void Receiver::handleGUI(const irr::SEvent::SGUIEvent& ge) {

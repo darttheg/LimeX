@@ -105,15 +105,15 @@ void Module::Input::bind(Application* app) {
 	module["onControllerDisconnected"] = receiver->InputJoystickDisconnect;
 
 	// Field Event onControllerButtonPressed, Event called by Lime when a controller button is pressed.
-	// Params number id, Lime.Enum.Controller button
+	// Params number id, Lime.Enum.ControllerButton button
 	module["onControllerButtonPressed"] = receiver->InputJoystickButtonPressed;
 
 	// Field Event onControllerButtonReleased, Event called by Lime when a controller button is released.
-	// Params number id, Lime.Enum.Controller button
+	// Params number id, Lime.Enum.ControllerButton button
 	module["onControllerButtonReleased"] = receiver->InputJoystickButtonReleased;
 
 	// Returns true if controller with id `id` has button `button` pressed down.
-	// Params number id, Lime.Enum.Controller button
+	// Params number id, Lime.Enum.ControllerButton button
 	// Returns boolean
 	module.set_function("isButtonDown", &Module::Input::Bind::isButtonDown);
 
@@ -126,11 +126,6 @@ void Module::Input::bind(Application* app) {
 	// Params number id
 	// Returns boolean
 	module.set_function("isControllerConnected", &Module::Input::Bind::isControllerConnected);
-
-	// Returns the name of the controller with id `id`.
-	// Params number id
-	// Returns string
-	module.set_function("getControllerName", &Module::Input::Bind::getControllerName);
 
 	// Sets the mouse behavior type.
 	// Params Lime.Enum.MouseType type
@@ -208,8 +203,4 @@ void Module::Input::Bind::setMouseType(int v) {
 
 int Module::Input::Bind::getMouseType() {
 	return w->getMouseType();
-}
-
-std::string Module::Input::Bind::getControllerName(int id) {
-	return receiver->getControllerName(id);
 }
