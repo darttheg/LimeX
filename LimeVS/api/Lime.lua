@@ -95,7 +95,7 @@ function Lime.GUI.loadTTF(path, fontSize, name, aa) end
 
 --- @class Lime_Input_onControllerButtonReleased
 Lime_Input_onControllerButtonReleased = {}
---- @param Function fun(id: number, button: Lime.Enum.Controller)
+--- @param Function fun(id: number, button: Lime.Enum.ControllerButton)
 --- @return Hook
 function Lime_Input_onControllerButtonReleased:hook(Function) end
 function Lime_Input_onControllerButtonReleased:clear() end
@@ -106,7 +106,7 @@ function Lime_Input_onControllerButtonReleased:length() end
 
 --- @class Lime_Input_onControllerButtonPressed
 Lime_Input_onControllerButtonPressed = {}
---- @param Function fun(id: number, button: Lime.Enum.Controller)
+--- @param Function fun(id: number, button: Lime.Enum.ControllerButton)
 --- @return Hook
 function Lime_Input_onControllerButtonPressed:hook(Function) end
 function Lime_Input_onControllerButtonPressed:clear() end
@@ -248,7 +248,7 @@ function Lime.Input.isMouseVisible() end
 
 --- Returns true if controller with id `id` has button `button` pressed down.
 --- @param id number
---- @param button Lime.Enum.Controller
+--- @param button Lime.Enum.ControllerButton
 --- @return boolean
 function Lime.Input.isButtonDown(id, button) end
 
@@ -262,11 +262,6 @@ function Lime.Input.getControllerAxis(id, axis) end
 --- @param id number
 --- @return boolean
 function Lime.Input.isControllerConnected(id) end
-
---- Returns the name of the controller with id `id`.
---- @param id number
---- @return string
-function Lime.Input.getControllerName(id) end
 
 --- Sets the mouse behavior type.
 --- @param type Lime.Enum.MouseType

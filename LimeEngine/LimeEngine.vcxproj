@@ -296,7 +296,7 @@ call "$(SolutionDir)build.bat"</Command>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>$(CoreLibraryDependencies);winmm.lib;ws2_32.lib;glfw3.lib;Lua54.lib;opengl32.lib;irrlicht.lib;freetype.lib;irrBullet.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;enet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);winmm.lib;ws2_32.lib;glfw3.lib;Lua54.lib;opengl32.lib;irrlicht.lib;freetype.lib;irrBullet.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;enet.lib;Xinput9_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\glfw-3.4.bin.WIN64\lib-vc2022;..\..\Lua54\x64\Release;..\..\irrlicht-1.8.5\lib\Win64-visualStudio;..\..\irrKlang-1.6.0\lib\Winx64-visualStudio;..\..\freetype-master\build\Release;..\..\bullet3-2.83.7\build\lib\Release;..\..\irrBullet\x64\Release;..\..\enet-1.3.18\build\Release</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
