@@ -31,6 +31,7 @@ namespace Module {
 			void SetLightManagementType(int type);
 			void SetTextureCreationQuality(int quality);
 			void SetMatchRenderResToWindow(bool v);
+			void SetIntegerScaling(bool v);
 			Texture GetErrorTexture();
 			void SetRenderSize(const Vec2& size);
 			void SetRenderQuality(int q);

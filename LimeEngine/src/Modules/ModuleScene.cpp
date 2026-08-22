@@ -86,6 +86,11 @@ void Module::Scene::bind(Application* app) {
 	// Returns void
 	module.set_function("setDynamicResolution", &Module::Scene::Bind::SetMatchRenderResToWindow);
 
+	// If set to true and dynamic resolution is false, the render window is scaled strictly to whole-number multiples, avoiding jagged pixels. This may introduce larger letterbox borders, however.
+	// Params boolean intScaling
+	// Returns void
+	module.set_function("setIntegerScaling", &Module::Scene::Bind::SetIntegerScaling);
+
 	// Sets the render size to `size`. If the render size is set to rescale to the window size then this change will not take effect. See `Lime.Scene.setDynamicResolution`.
 	// Params Vec2 size
 	// Returns void
@@ -252,6 +257,10 @@ void Module::Scene::Bind::SetTextureCreationQuality(int quality) {
 
 void Module::Scene::Bind::SetMatchRenderResToWindow(bool v) {
 	r->setMatchRes(v);
+}
+
+void Module::Scene::Bind::SetIntegerScaling(bool v) {
+	r->setIntegerScaling(v);
 }
 
 Texture Module::Scene::Bind::GetErrorTexture() {

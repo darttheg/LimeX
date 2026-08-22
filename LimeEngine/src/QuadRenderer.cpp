@@ -169,6 +169,13 @@ void QuadRenderer::setSceneRenderQuality(int q) {
     if (q == 0) highQuality = false; else highQuality = true;
 }
 
+void QuadRenderer::setIntegerScaling(bool enable) {
+    if (integerScaling == enable) return;
+
+    integerScaling = enable;
+    recreateRt();
+}
+
 void QuadRenderer::clearUsedTextures(irr::video::ITexture* tex) {
     // if (tex == rtScene) rtScene = nullptr;
     // if (tex == rtGUI) rtGUI = nullptr;
@@ -269,7 +276,11 @@ void QuadRenderer::setVp() {
     if (!matchWR) {
         const float sx = winW / (float)resW;
         const float sy = winH / (float)resH;
-        const float s = std::min(sx, sy);
+        float s = std::min(sx, sy);
+
+        if (integerScaling && s >= 1.0f)
+            s = std::floor(s);
+
         const int dstW = (int)std::lround(resW * s);
         const int dstH = (int)std::lround(resH * s);
 

@@ -788,6 +788,10 @@ function Lime.Scene.getErrorTexture() end
 --- @param dynamic boolean
 function Lime.Scene.setDynamicResolution(dynamic) end
 
+--- If set to true and dynamic resolution is false, the render window is scaled strictly to whole-number multiples, avoiding jagged pixels. This may introduce larger letterbox borders, however.
+--- @param intScaling boolean
+function Lime.Scene.setIntegerScaling(intScaling) end
+
 --- Sets the render size to `size`. If the render size is set to rescale to the window size then this change will not take effect. See `Lime.Scene.setDynamicResolution`.
 --- @param size Vec2
 function Lime.Scene.setSize(size) end

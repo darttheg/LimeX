@@ -32,6 +32,7 @@ public:
 	irr::core::recti getViewport() { return vp; }
 
 	void setSceneRenderQuality(int q);
+	void setIntegerScaling(bool enable);
 
 	bool ppxActive() { return ppxType != -1 || gppxType != -1; }
 	
@@ -62,6 +63,7 @@ private:
 	irr::video::SMaterial qMat;
 	irr::video::SMaterial qBlendMat;
 	bool matchWR = true;
+	bool integerScaling = false;
 	IrrShaderMaterial* ppxCB = nullptr;
 	IrrShaderMaterial* gppxCB = nullptr;
 

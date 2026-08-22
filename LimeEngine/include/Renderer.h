@@ -105,6 +105,7 @@ public:
 	Texture getErrorTexture();
 	void setMatchRes(bool v);
 	bool getMatchRes() { return doMatchResolution; }
+	void setIntegerScaling(bool v);
 	void setSceneRenderQuality(int q);
 	void setPostProcessingShader(const ShaderMaterial& sm);
 	void clearPostProcessingShader();

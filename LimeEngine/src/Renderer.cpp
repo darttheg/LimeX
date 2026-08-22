@@ -931,6 +931,10 @@ void Renderer::setMatchRes(bool v) {
 	doMatchResolution = v;
 }
 
+void Renderer::setIntegerScaling(bool v) {
+	qr->setIntegerScaling(v);
+}
+
 bool Renderer::getMouseVisible() {
 	if (!guardRenderingCheck()) return false;
 	return i_device->getCursorControl()->isVisible();
