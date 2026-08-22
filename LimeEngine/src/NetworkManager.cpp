@@ -365,10 +365,12 @@ void NetworkManager::flushOutbound() {
 		} else if (client && serverPeer && serverPeer->state == ENET_PEER_STATE_CONNECTED)
 			result = enet_peer_send(serverPeer, s.channel, packet);
 
+		/*
 		if (result != 0) {
 			enet_packet_destroy(packet);
 			d->Warn("Failed to send Packet to peer " + std::to_string(s.peerID) + " (not connected or invalid id)", false);
 		}
+		*/
 	}
 }
 
