@@ -52,6 +52,7 @@ public:
 	void unloadSound(irrklang::ISoundSource* src);
 	irrklang::ISound* play(irrklang::ISoundSource* src, bool td, bool loops, bool sfx);
 	bool attachSoundToNode(irrklang::ISound* sound, irr::scene::ISceneNode* parent);
+	void detachSoundFromNode(irrklang::ISound* sound);
 private:
 	irrklang::ISoundEngine* i_sound = nullptr;
 

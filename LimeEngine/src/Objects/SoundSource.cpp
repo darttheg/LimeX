@@ -204,6 +204,7 @@ bool SoundSource::attachTo(sol::optional<Object3D*> p) {
 
 	if (!p || *p == nullptr) {
 		parent = nullptr; // SoundManager update will resolve
+		s->detachSoundFromNode(cur);
 		return true;
 	}
 
@@ -226,14 +227,20 @@ void SoundSource::collected() {
 }
 
 sol::object SoundSource::destroy() {
-	if (cur) cur->stop();
+	if (cur) {
+		s->detachSoundFromNode(cur);
+		cur->stop();
+	}
 	cur = nullptr;
 	src = nullptr;
 	return sol::make_object(l, sol::nil);
 }
 
 sol::object SoundSource::purge() {
-	if (cur) cur->stop();
+	if (cur) {
+		s->detachSoundFromNode(cur);
+		cur->stop();
+	}
 	s->unloadSound(src);
 	cur = nullptr;
 	src = nullptr;

@@ -65,6 +65,7 @@ bool SoundManager::Update(float dt) {
 		if (!it->sound || !it->parent) { // || s.sound->isFinished() ?
 			it = soundNodePairs.erase(it);
 		} else {
+			it->parent->updateAbsolutePosition();
 			auto pos = it->parent->getAbsolutePosition();
 			it->sound->setPosition(pos);
 			++it;
@@ -157,13 +158,25 @@ irrklang::ISound* SoundManager::play(irrklang::ISoundSource* src, bool td, bool 
 bool SoundManager::attachSoundToNode(irrklang::ISound* sound, irr::scene::ISceneNode* parent) {
 	if (!guardSoundCheck() || !sound || !parent) return false;
 
-	// Make sure sound is not an entry already. it->parent will point to the param parent already if it is already an entry.
-	for (auto it = soundNodePairs.begin(); it != soundNodePairs.end();) {
-		if (it->sound == sound) return true; else ++it;
+	for (auto& pair : soundNodePairs) {
+		if (pair.sound == sound) {
+			pair.parent = parent;
+			return true;
+		}
 	}
 
 	soundNodePairs.push_back(SoundSourceOnNode{ sound, parent });
 	return true;
+}
+
+void SoundManager::detachSoundFromNode(irrklang::ISound* sound) {
+	if (!sound) return;
+	for (auto it = soundNodePairs.begin(); it != soundNodePairs.end(); ++it) {
+		if (it->sound == sound) {
+			soundNodePairs.erase(it);
+			return;
+		}
+	}
 }
 
 void SoundManager::warnGarbageCollection(const std::string& path) {

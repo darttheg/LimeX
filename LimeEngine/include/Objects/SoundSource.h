@@ -62,6 +62,7 @@ public:
 	bool loadFromFile(const std::string& pat, int type = 0);
 
 	bool attachTo(sol::optional<Object3D*> parent); // 3D
+
 	bool isAttached();
 	std::string getPath();
 
