@@ -282,6 +282,17 @@ function Lime_onClose:run(...) end
 --- @return number
 function Lime_onClose:length() end
 
+--- @class Lime_onPostStart
+Lime_onPostStart = {}
+--- @param Function fun()
+--- @return Hook
+function Lime_onPostStart:hook(Function) end
+function Lime_onPostStart:clear() end
+--- @param ... any
+function Lime_onPostStart:run(...) end
+--- @return number
+function Lime_onPostStart:length() end
+
 --- @class Lime_onUpdate
 Lime_onUpdate = {}
 --- @param Function fun(dt: number)
@@ -319,6 +330,7 @@ function Lime_onInit:length() end
 --- @field onInit Lime_onInit Event called by Lime prior to initializing the window.
 --- @field onStart Lime_onStart Event called by Lime following window creation and rendering services are available.
 --- @field onUpdate Lime_onUpdate Event called by Lime every rendering frame. This Event is run with a number `dt` argument.
+--- @field onPostStart Lime_onPostStart Event called by Lime after the first rendered frame.
 --- @field onClose Lime_onClose Event called by Lime once the application closes in any way.
 Lime = {}
 Lime.Enum = {}
@@ -2863,6 +2875,13 @@ function Texture:keyColor(keyColor) end
 --- Returns the reference count for this `Texture`.
 --- @return number
 function Texture:getReferenceCount() end
+
+--- Creates a nine-slice `Texture` from this `Texture`.
+--- @param cornerMargin number
+--- @param size Vec2
+--- @param name string?
+--- @return Texture
+function Texture:toNineSlice(cornerMargin, size, name) end
 
 --- Renders the scene to this `Texture`. Returns the name of this `Texture`.
 --- @overload fun(self, size: Vec2, name: string?): string

@@ -147,6 +147,7 @@ void Module::Lime::bind(Application* app) {
 	a->LimeInit = std::make_shared<Event>();
 	a->LimeStart = std::make_shared<Event>();
 	a->LimeUpdate = std::make_shared<Event>(); // Call with dt
+	a->LimePostStart = std::make_shared<Event>();
 	a->LimeEnd = std::make_shared<Event>(); // Call with bool isError?
 
 	// Field Event onInit, Event called by Lime prior to initializing the window.
@@ -158,6 +159,9 @@ void Module::Lime::bind(Application* app) {
 	// Field Event onUpdate, Event called by Lime every rendering frame. This Event is run with a number `dt` argument.
 	// Params number dt
 	module["onUpdate"] = a->LimeUpdate;
+
+	// Field Event onPostStart, Event called by Lime after the first rendered frame.
+	module["onPostStart"] = a->LimePostStart;
 
 	// Field Event onClose, Event called by Lime once the application closes in any way.
 	module["onClose"] = a->LimeEnd;

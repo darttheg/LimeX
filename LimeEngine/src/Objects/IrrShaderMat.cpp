@@ -105,8 +105,9 @@ void IrrShaderMaterial::OnSetConstants(irr::video::IMaterialRendererServices* se
 				services->setPixelShaderConstant(name.c_str(), &v, 1);
 			}
 			else if constexpr (std::is_same_v<T, int>) {
-				services->setVertexShaderConstant(name.c_str(), (irr::f32*)&v, 1);
-				services->setPixelShaderConstant(name.c_str(), (irr::f32*)&v, 1);
+				const irr::f32 fv = static_cast<irr::f32>(v);
+				services->setVertexShaderConstant(name.c_str(), &fv, 1);
+				services->setPixelShaderConstant(name.c_str(), &fv, 1);
 			}
 			else if constexpr (std::is_same_v<T, Vec2>) {
 				irr::f32 buf[2] = { v.getX(), v.getY() };

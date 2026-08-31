@@ -368,6 +368,7 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	i_driver->endScene();
 
 	hasBegunNewScene = true;
+	didRenderOnce = true;
 
 	return true;
 }
@@ -1073,4 +1074,99 @@ bool Renderer::writeMeshToPath(irr::scene::IMesh* m, const std::string& path) {
 	writer->drop();
 
 	return ok;
+}
+
+static void drawTiledRegion(irr::video::IVideoDriver* driver, irr::video::ITexture* tx,
+	const irr::core::rect<irr::s32>& src,
+	irr::s32 dstX, irr::s32 dstY, irr::s32 dstW, irr::s32 dstH)
+{
+	const irr::s32 tileW = src.getWidth();
+	const irr::s32 tileH = src.getHeight();
+	if (tileW <= 0 || tileH <= 0 || dstW <= 0 || dstH <= 0) return;
+
+	for (irr::s32 y = 0; y < dstH; y += tileH) {
+		const irr::s32 h = std::min(tileH, dstH - y);
+		for (irr::s32 x = 0; x < dstW; x += tileW) {
+			const irr::s32 w = std::min(tileW, dstW - x);
+			irr::core::rect<irr::s32> s(src.UpperLeftCorner.X, src.UpperLeftCorner.Y,
+				src.UpperLeftCorner.X + w, src.UpperLeftCorner.Y + h);
+			irr::core::rect<irr::s32> d(dstX + x, dstY + y, dstX + x + w, dstY + y + h);
+			driver->draw2DImage(tx, d, s, nullptr, nullptr, true);
+		}
+	}
+}
+
+irr::video::ITexture* Renderer::toNineSliceTexture(irr::video::ITexture* tx, int cornerMargin, const Vec2& size, const std::string& name) {
+	if (!guardRenderingCheck()) return nullptr;
+	bool fail = false;
+	if (!tx) fail = true;
+	if (cornerMargin <= 0) fail = true;
+	if (size.getX() <= cornerMargin || size.getY() <= cornerMargin) fail = true;
+	if (!didRenderOnce) fail = true;
+
+	if (fail) {
+		std::string out = "Failed to create nine slice of Texture ";
+		if (tx) {
+			out += tx->getName().getPath().c_str();
+			out += ".";
+		}
+
+		if (!didRenderOnce) out = "Failed to create nine slice because the scene is not yet ready. Nine-slice textures must be created after the first rendered frame. Use Lime.onPostStart or Lime.onUpdate.";
+
+		d->Warn(out);
+		return nullptr;
+	}
+
+	irr::core::dimension2du srcSize = tx->getSize();
+	irr::s32 sw = (irr::s32)srcSize.Width;
+	irr::s32 sh = (irr::s32)srcSize.Height;
+	irr::s32 dw = (irr::s32)size.getX();
+	irr::s32 dh = (irr::s32)size.getY();
+	irr::s32 m = cornerMargin;
+	irr::s32 sR = sw - m, sB = sh - m;
+	irr::s32 dR = dw - m, dB = dh - m;
+
+	std::string liveName = "rtt_nineslice_live_" + std::to_string(rttc);
+	irr::video::ITexture* rtt = i_driver->addRenderTargetTexture(irr::core::dimension2du(dw, dh), liveName.c_str(), irr::video::ECF_A8R8G8B8);
+	if (!rtt) return nullptr;
+
+	const irr::core::rect<irr::s32> prevVp = i_driver->getViewPort();
+	i_driver->setRenderTarget(rtt, true, true, irr::video::SColor(0, 0, 0, 0));
+	i_driver->setViewPort(irr::core::rect<irr::s32>(0, 0, dw, dh));
+	using irr::core::rect;
+	
+	i_driver->draw2DImage(tx, rect<irr::s32>(0, 0, m, m), rect<irr::s32>(0, 0, m, m), nullptr, nullptr, true);
+	i_driver->draw2DImage(tx, rect<irr::s32>(dR, 0, dw, m), rect<irr::s32>(sR, 0, sw, m), nullptr, nullptr, true);
+	i_driver->draw2DImage(tx, rect<irr::s32>(0, dB, m, dh), rect<irr::s32>(0, sB, m, sh), nullptr, nullptr, true);
+	i_driver->draw2DImage(tx, rect<irr::s32>(dR, dB, dw, dh), rect<irr::s32>(sR, sB, sw, sh), nullptr, nullptr, true);
+
+	drawTiledRegion(i_driver, tx, rect<irr::s32>(m, 0, sR, m), m, 0, dR - m, m);
+	drawTiledRegion(i_driver, tx, rect<irr::s32>(m, sB, sR, sh), m, dB, dR - m, dh - dB);
+	drawTiledRegion(i_driver, tx, rect<irr::s32>(0, m, m, sB), 0, m, m, dB - m);
+	drawTiledRegion(i_driver, tx, rect<irr::s32>(sR, m, sw, sB), dR, m, dw - dR, dB - m);
+	drawTiledRegion(i_driver, tx, rect<irr::s32>(m, m, sR, sB), m, m, dR - m, dB - m);
+
+	i_driver->setViewPort(prevVp);
+	i_driver->setRenderTarget(nullptr, true, true, 0);
+
+	irr::video::IImage* baked = i_driver->createImage(rtt, irr::core::vector2di(0, 0), irr::core::dimension2du(dw, dh));
+	irr::video::ITexture* bakedtx = nullptr;
+	if (baked) {
+		std::string bakedName;
+		if (name.empty())
+			bakedName = "rtt_nineslice_" + std::to_string(rttc);
+		else {
+			bakedName = name;
+			if (irr::video::ITexture* existing = i_driver->getTexture(bakedName.c_str()))
+				removeTexture(existing);
+		}
+		bakedtx = i_driver->addTexture(bakedName.c_str(), baked);
+		if (bakedtx)
+			preloadedPaths.insert(bakedName);
+		baked->drop();
+	}
+	i_driver->removeTexture(rtt);
+	rttc++;
+
+	return bakedtx;
 }

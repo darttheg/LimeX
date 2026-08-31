@@ -39,6 +39,9 @@ public:
 	std::string getPath() const;
 	int getRefCount();
 
+	Texture toNineSlice(int cornerMargin, const Vec2& size);
+	Texture toNineSlice(int cornerMargin, const Vec2& size, const std::string& name);
+
 	std::string makeRenderTexture(const Vec2& size, const std::string& name = "");
 	std::string makeRenderTexture(const Vec2& size, const Camera& c, const std::string& name = "");
 

@@ -110,6 +110,16 @@ int Texture::getRefCount() {
 	return texture ? texture->getReferenceCount() : 0;
 }
 
+Texture Texture::toNineSlice(int cornerMargin, const Vec2& size) {
+	return toNineSlice(cornerMargin, size, "");
+}
+
+Texture Texture::toNineSlice(int cornerMargin, const Vec2& size, const std::string& name) {
+	irr::video::ITexture* out = r->toNineSliceTexture(texture, cornerMargin, size, name);
+	if (!out) return Texture();
+	return Texture(out);
+}
+
 std::string Texture::makeRenderTexture(const Vec2& size, const std::string& name) {
 	r->removeTexture(texture);
 	texture = r->createRenderTargetTexture(size, nullptr, name);
@@ -211,6 +221,15 @@ void Object::TextureBind::bind(lua_State* ls, Renderer* rend) {
 	// Returns the reference count for this `Texture`.
 	// Returns number
 	obj.set_function("getReferenceCount", &Texture::getRefCount);
+
+	// Creates a nine-slice `Texture` from this `Texture`.
+	// Params number cornerMargin, Vec2 size, string? name
+	// Returns Texture
+	obj.set_function("toNineSlice",
+		sol::overload(
+			sol::resolve<Texture(int cornerMargin, const Vec2&)>(&Texture::toNineSlice),
+			sol::resolve<Texture(int cornerMargin, const Vec2&, const std::string& name)>(&Texture::toNineSlice)
+		));
 
 	// Renders the scene to this `Texture`. Returns the name of this `Texture`.
 	// Params Vec2 size, string? name

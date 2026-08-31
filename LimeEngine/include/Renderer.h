@@ -118,6 +118,8 @@ public:
 	std::string getMeshName(irr::scene::IAnimatedMesh* msh);
 	bool writeTextureToPath(irr::video::ITexture* t, const std::string& path);
 	bool writeMeshToPath(irr::scene::IMesh* m, const std::string& path);
+	irr::video::ITexture* toNineSliceTexture(irr::video::ITexture* tx, int cornerMargin, const Vec2& size, const std::string& name);
+	bool didRenderOnce = false;
 
 	// Preloading - Add to queue and load one mesh+texture per frame
 	// bool preloadMesh(sol::variadic_args va);

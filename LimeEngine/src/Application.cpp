@@ -430,10 +430,11 @@ bool Application::Run() {
 
 	window->Focus();
 
+	renderer->PrepareRenderingPostInit();
+
 	// Run Start Event
 	LimeStart.get()->engineRun([&](const std::string& msg) { console->PostError(msg, false, false); });
 
-	renderer->PrepareRenderingPostInit();
 	bool fail = false;
 	double dt = 0.0f;
 
@@ -465,6 +466,11 @@ bool Application::Run() {
 		network->Update();
 		web->Update();
 		if (!renderer->Render(dt)) { fail = true; }
+
+		if (!didPostStart) {
+			LimePostStart.get()->engineRun([&](const std::string& msg) { console->PostError(msg, false, false); });
+			didPostStart = true;
+		}
 
 		// Clean-up
 		updateFrameRate();

@@ -47,8 +47,10 @@ public:
 
 	std::shared_ptr<Event> LimeInit = nullptr;
 	std::shared_ptr<Event> LimeStart = nullptr;
+	std::shared_ptr<Event> LimePostStart = nullptr;
 	std::shared_ptr<Event> LimeUpdate = nullptr;
 	std::shared_ptr<Event> LimeEnd = nullptr;
+	bool didPostStart = false;
 
 	bool Init(const void* data, size_t size, int argc, const char** argv);
 	bool Run();

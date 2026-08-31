@@ -130,7 +130,7 @@ irr::video::ITexture* RenderHelper::createTexture(const std::string& path) {
 		d->Warn("Could not create texture from " + path);
 		return nullptr;
 	}
-	tex->grab();
+	// tex->grab();
 
 	return tex;
 }
