@@ -838,6 +838,15 @@ function Lime.Scene.createCylinderMesh(radius, length, polyCount, closed) end
 --- @return Mesh
 function Lime.Scene.createPlaneMesh(tileSize, tileCount, repeatCount) end
 
+--- Sets a global shader parameter. Instead of using a loop and updating the shader parameters of each object, a global shader parameter can be set and it will update in all shaders utilizing the parameter.
+--- @param name string
+--- @param value number|Vec2|Vec3|Vec4
+function Lime.Scene.setShaderParameter(name, value) end
+
+--- Clears a global shader parameter and stops updating it, if it exists.
+--- @param name string
+function Lime.Scene.clearShaderParameter(name) end
+
 --- If set to false, the application will not update the scene output. A use case is a pseudo-pause your game to save on resources while loading assets.
 --- @param active boolean
 function Lime.Scene.setRenderingActive(active) end
@@ -888,6 +897,10 @@ function Lime.Scene.clearOverlayTexture() end
 --- **This function can only be run before window creation.** Sets whether or not the stencil buffer is used. `Shadow Volume` objects are not functional without use of the stencil buffer.
 --- @param enable boolean
 function Lime.Scene.setStencilBuffer(enable) end
+
+--- **This function cannot be run until window creation.** Sets a `Camera` to be rendered after the main active `Camera` has rendered the scene. Only objects parented to this `Camera` are rendered.
+--- @param camera Camera?
+function Lime.Scene.setViewModelCamera(camera) end
 
 --- Sets whether or not a depth pass should be rendered. The depth pass renders the scene to a render texture 'rtDepth' which can be fetched using `Texture.new("rtDepth")`.
 --- @param enable boolean
@@ -2346,7 +2359,7 @@ function Shader.new(vertexShaderPath, pixelShaderPath, type) end
 --- @param inverse boolean?
 function Shader:setParameter(name, transform, inverse) end
 
---- Returns the path to the vertex shader file loaded in this `Shader`.
+--- sol::resolve<void(const std::string&, int)>(&ShaderMaterial::setUniformInt), Returns the path to the vertex shader file loaded in this `Shader`.
 --- @return string
 function Shader:getVSPath() end
 
