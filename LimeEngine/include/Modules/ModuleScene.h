@@ -13,6 +13,7 @@ class Vec4;
 class Texture;
 class Mesh;
 class HitResult;
+class Camera;
 class ShaderMaterial;
 
 namespace Module {
@@ -57,9 +58,16 @@ namespace Module {
 
 			void SetUserTexture(const Texture& tex);
 			void ClearUserTexture();
+			void SetViewModelCamera(sol::optional<Camera*> cam);
 
 			void SetStencilBuffer(bool v);
 			void SetDepthPass(bool v);
+
+			void SetShaderParameterFloat(const std::string& name, float v);
+			void SetShaderParameterVec2(const std::string& name, const Vec2& v);
+			void SetShaderParameterVec3(const std::string& name, const Vec3& v);
+			void SetShaderParameterVec4(const std::string& name, const Vec4& v);
+			void ClearShaderParameter(const std::string& name);
 		}
 	}
 }

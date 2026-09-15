@@ -333,8 +333,10 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		}
 		};
 
+	bool isVMVisible = viewModelCamera && viewModelCamera->isVisible();
 	if (rawDraw) {
 		i_driver->beginScene(true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
+		if (viewModelCamera) viewModelCamera->setVisible(false);
 		i_smgr->drawAll();
 
 		drawShadows();
@@ -342,6 +344,11 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		physics->RenderDebug();
 
 		renderDepthPass();
+
+		if (viewModelCamera) {
+			viewModelCamera->setVisible(isVMVisible);
+			renderViewModel();
+		}
 
 		if (qr->getUserTexture())
 			i_driver->draw2DImage(qr->getUserTexture(), irr::core::position2di());
@@ -352,12 +359,19 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 
 		qr->beginInternal();
 
+		if (viewModelCamera) viewModelCamera->setVisible(false);
 		i_smgr->drawAll(); // Draw scene objects to rtScene
 
 		drawShadows();
 
 		physics->RenderDebug();
 		renderDepthPass();
+
+		if (viewModelCamera) {
+			viewModelCamera->setVisible(isVMVisible);
+			renderViewModel();
+		}
+		
 		qr->beginGUIPass();
 		guiManager->Render(); // Draw GUI objects to rtGUI
 		qr->endInternal();
@@ -584,6 +598,32 @@ void Renderer::setUserTexture(const Texture& tex) {
 void Renderer::clearUserTexture() {
 	if (!guardRenderingCheck()) return;
 	qr->clearUserTexture();
+}
+
+void Renderer::setViewModelCamera(irr::scene::ICameraSceneNode* cam) {
+	if (!guardRenderingCheck()) return;
+	viewModelCamera = cam;
+}
+
+void Renderer::renderViewModel() {
+	if (doMatchResolution) viewModelCamera->setAspectRatio(w->getWinAR());
+	const irr::u32 now = i_device->getTimer()->getTime();
+	viewModelCamera->OnAnimate(now);
+
+	i_driver->clearZBuffer();
+
+	auto* prev = i_smgr->getActiveCamera();
+	i_smgr->setActiveCamera(viewModelCamera);
+	viewModelCamera->render();
+
+	std::function<void(irr::scene::ISceneNode*)> draw = [&](irr::scene::ISceneNode* n) {
+		if (!n->isVisible()) return;
+		n->render();
+		for (auto* ch : n->getChildren()) draw(ch);
+	};
+	for (auto* c : viewModelCamera->getChildren()) draw(c);
+
+	i_smgr->setActiveCamera(prev);
 }
 
 bool Renderer::preloadMesh(const std::string path) {
@@ -980,6 +1020,34 @@ bool Renderer::addArchive(const std::string path) {
 void Renderer::setOnResize(int w, int h) {
 	if (!i_device) return;
 	i_device->getVideoDriver()->OnResize(irr::core::dimension2du(w, h));
+}
+
+void Renderer::setShaderParameter(const std::string& name, float v) {
+	ShaderParam& p = shaderParams[name];
+	p.data[0] = v;
+	p.count = 1;
+}
+
+void Renderer::setShaderParameter(const std::string& name, const Vec2& v) {
+	ShaderParam& p = shaderParams[name];
+	p.data[0] = v.getX(); p.data[1] = v.getY();
+	p.count = 2;
+}
+
+void Renderer::setShaderParameter(const std::string& name, const Vec3& v) {
+	ShaderParam& p = shaderParams[name];
+	p.data[0] = v.getX(); p.data[1] = v.getY(); p.data[2] = v.getZ();
+	p.count = 3;
+}
+
+void Renderer::setShaderParameter(const std::string& name, const Vec4& v) {
+	ShaderParam& p = shaderParams[name];
+	p.data[0] = v.getX(); p.data[1] = v.getY(); p.data[2] = v.getZ(); p.data[3] = v.getW();
+	p.count = 4;
+}
+
+void Renderer::clearShaderParameter(const std::string& name) {
+	shaderParams.erase(name);
 }
 
 #include "Objects/Event.h"

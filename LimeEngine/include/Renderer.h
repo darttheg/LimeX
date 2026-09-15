@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
 #include <functional>
 
 class Vec2;
@@ -159,9 +160,22 @@ public:
 	void addToDtTime(float dt) { dtTime += dt; }
 	float getDtTime() const { return dtTime; }
 
+	// Shader params
+	struct ShaderParam { float data[4]; int count; };
+	void setShaderParameter(const std::string& name, float v);
+	void setShaderParameter(const std::string& name, const Vec2& v);
+	void setShaderParameter(const std::string& name, const Vec3& v);
+	void setShaderParameter(const std::string& name, const Vec4& v);
+	void clearShaderParameter(const std::string& name);
+	const std::unordered_map<std::string, ShaderParam>& getShaderParameters() const { return shaderParams; }
+
 	// Custom user texture
 	void setUserTexture(const Texture& tex);
 	void clearUserTexture();
+
+	irr::scene::ICameraSceneNode* getViewModelCamera() { return viewModelCamera; }
+	void setViewModelCamera(irr::scene::ICameraSceneNode* cam);
+	void renderViewModel();
 
 	bool isStencilBufferActive() { return doStencilBuffer; }
 	void setStencilBuffer(bool active) { if (i_device) return; doStencilBuffer = active; }
@@ -180,6 +194,8 @@ private:
 
 	float dtTime = 0.0f;
 
+	std::unordered_map<std::string, ShaderParam> shaderParams;
+
 	// Renderer parameters
 	Vec2S renderSize{};
 	// Vec4S bgColor{15,15,25,255};
@@ -190,6 +206,8 @@ private:
 	bool doMatchResolution = true; // Hook resolution w/h to window size
 	bool doDepthPass = false;
 	bool doStencilBuffer = false;
+
+	irr::scene::ICameraSceneNode* viewModelCamera = nullptr;
 
 	// Irrlicht
 	irr::IrrlichtDevice* i_device = nullptr;
