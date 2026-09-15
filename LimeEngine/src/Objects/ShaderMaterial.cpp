@@ -117,7 +117,7 @@ void Object::ShaderMaterialBind::bind(lua_State* ls, Renderer* rend, DebugConsol
 	// Returns void
 	obj.set_function("setParameter",
 		sol::overload(
-			sol::resolve<void(const std::string&, int)>(&ShaderMaterial::setUniformInt),
+			// sol::resolve<void(const std::string&, int)>(&ShaderMaterial::setUniformInt),
 			sol::resolve<void(const std::string&, float)>(&ShaderMaterial::setUniformFloat),
 			sol::resolve<void(const std::string&, const Vec2&)>(&ShaderMaterial::setUniformVec2),
 			sol::resolve<void(const std::string&, const Vec3&)>(&ShaderMaterial::setUniformVec3),

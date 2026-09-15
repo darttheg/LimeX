@@ -97,6 +97,13 @@ void IrrShaderMaterial::OnSetConstants(irr::video::IMaterialRendererServices* se
 	services->setVertexShaderConstant("uFogRange", fogParams, 2);
 	services->setPixelShaderConstant("uFogRange", fogParams, 2);
 
+	if (r) {
+		for (auto& [name, p] : r->getShaderParameters()) {
+			services->setVertexShaderConstant(name.c_str(), p.data, p.count);
+			services->setPixelShaderConstant(name.c_str(), p.data, p.count);
+		}
+	}
+
 	for (auto& [name, val] : uniforms) {
 		std::visit([&](auto&& v) {
 			using T = std::decay_t<decltype(v)>;
