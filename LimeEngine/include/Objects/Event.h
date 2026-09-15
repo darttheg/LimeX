@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <vector>
 #include <memory>
 #include <sol/sol.hpp>
@@ -52,8 +53,9 @@ inline int Event::errorHandler(lua_State* L) {
 template<class... Args>
 inline void Event::engineRun(std::function<void(const std::string&)> onError, Args&&... args) {
 	running = true;
-	std::vector<int> snapshot = funcs;
-	for (int ref : snapshot) {
+	size_t n = funcs.size();
+	for (size_t i = 0; i < n; ++i) {
+		int ref = funcs[i];
 		if (ref == LUA_NOREF) continue;
 
 		lua_pushcfunction(ls, &Event::errorHandler);
@@ -76,11 +78,11 @@ inline void Event::engineRun(std::function<void(const std::string&)> onError, Ar
 
 	for (int ref : pendingRemove) {
 		luaL_unref(ls, LUA_REGISTRYINDEX, ref);
-		funcs.erase(std::find(funcs.begin(), funcs.end(), LUA_NOREF));
 	}
 
 	if (!pendingRemove.empty()) {
 		pendingRemove.clear();
+		funcs.erase(std::find(funcs.begin(), funcs.end(), LUA_NOREF));
 		updateLen();
 	}
 }

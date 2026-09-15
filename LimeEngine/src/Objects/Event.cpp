@@ -41,6 +41,15 @@ bool Event::removeRef(int ref) {
 }
 
 void Event::clear() {
+	if (running) {
+		for (int& ref : funcs) {
+			if (ref == LUA_NOREF) continue;
+			pendingRemove.push_back(ref);
+			ref = LUA_NOREF;
+		}
+		return;
+	}
+
 	for (int ref : funcs) {
 		luaL_unref(ls, LUA_REGISTRYINDEX, ref);
 	}
@@ -58,8 +67,9 @@ void Event::run() {
 	int passc = (argc >= 1) ? (argc - 1) : 0;
 
 	running = true;
-	std::vector<int> snapshot = funcs;
-	for (int ref : snapshot) {
+	size_t n = funcs.size();
+	for (size_t i = 0; i < n; ++i) {
+		int ref = funcs[i];
 		if (ref == LUA_NOREF) continue;
 
 		lua_rawgeti(ls, LUA_REGISTRYINDEX, ref); // Push callback function from registry onto stack
@@ -74,13 +84,12 @@ void Event::run() {
 	}
 	running = false;
 
-	for (int ref : pendingRemove) {
+	for (int ref : pendingRemove)
 		luaL_unref(ls, LUA_REGISTRYINDEX, ref);
-		funcs.erase(std::find(funcs.begin(), funcs.end(), LUA_NOREF));
-	}
 
 	if (!pendingRemove.empty()) {
 		pendingRemove.clear();
+		funcs.erase(std::find(funcs.begin(), funcs.end(), LUA_NOREF));
 		updateLen();
 	}
 
