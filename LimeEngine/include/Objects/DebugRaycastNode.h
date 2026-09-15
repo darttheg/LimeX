@@ -19,6 +19,13 @@ public:
 	RaycastVisualSceneNode(ISceneNode* parent, ISceneManager* smgr, s32 id = -1) : ISceneNode(parent, smgr, id) {}
 
 	virtual void OnRegisterSceneNode() override {
+		bBox.reset(start);
+		bBox.addInternalPoint(end);
+		if (hit) {
+			float s = 0.05f;
+			bBox.addInternalPoint(end - vector3df(s));
+			bBox.addInternalPoint(end + vector3df(s));
+		}
 		if (IsVisible) SceneManager->registerNodeForRendering(this, ESNRP_TRANSPARENT);
 		ISceneNode::OnRegisterSceneNode();
 	}
