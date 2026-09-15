@@ -16,8 +16,7 @@ namespace FontLoader {
         return name + "_" + std::to_string(size);
     }
 
-    irr::gui::IGUIFont* loadTTF(irr::IrrlichtDevice* device, const char* ttfPath, int size, const char* fontName, bool aa)
-    {
+    irr::gui::IGUIFont* loadTTF(irr::IrrlichtDevice* device, const char* ttfPath, int size, const char* fontName, bool aa) {
         FT_Library ft;
         FT_Face    face;
         if (FT_Init_FreeType(&ft)) return nullptr;
@@ -25,7 +24,9 @@ namespace FontLoader {
             FT_Done_FreeType(ft);
             return nullptr;
         }
-        FT_Set_Pixel_Sizes(face, 0, size);
+
+        const int SS = aa ? 4 : 1;
+        FT_Set_Pixel_Sizes(face, 0, size * SS);
 
         const irr::u32 atlasW = 512;
         const irr::u32 atlasH = 512;
@@ -38,15 +39,16 @@ namespace FontLoader {
         };
 
         irr::core::map<wchar_t, GlyphArea> charMap;
-
         irr::s32 penX = 0, penY = 0, rowH = 0;
 
         for (FT_ULong c = 32; c < 127; c++) {
             if (FT_Load_Char(face, c, loadFlags)) continue;
             FT_GlyphSlot g = face->glyph;
-            irr::u32 w = g->bitmap.width;
-            irr::u32 h = g->bitmap.rows;
-            if (w == 0 || h == 0) continue;
+            irr::u32 wSS = g->bitmap.width;
+            irr::u32 hSS = g->bitmap.rows;
+            if (wSS == 0 || hSS == 0) continue;
+
+            irr::u32 w = (wSS + SS - 1) / SS;
 
             if (penX + (irr::s32)w > (irr::s32)atlasW) {
                 penX = 0;
@@ -54,11 +56,11 @@ namespace FontLoader {
                 rowH = 0;
             }
 
-            irr::u32 cellH = (face->size->metrics.ascender - face->size->metrics.descender) >> 6;
+            irr::u32 cellH = ((face->size->metrics.ascender - face->size->metrics.descender) >> 6) / SS;
             GlyphArea ga;
-            ga.rect = irr::core::rect<irr::s32>(penX, penY, penX + w, penY + cellH);
-            ga.underhang = g->bitmap_left;
-            ga.overhang = (g->advance.x >> 6) - g->bitmap_left - (irr::s32)w;
+            ga.rect = irr::core::rect<irr::s32>(penX, penY, penX + (irr::s32)w, penY + (irr::s32)cellH);
+            ga.underhang = g->bitmap_left / SS;
+            ga.overhang = ((g->advance.x >> 6) / SS) - ga.underhang - (irr::s32)w;
             charMap.insert(c, ga);
 
             penX += (irr::s32)w + 1;
@@ -71,30 +73,40 @@ namespace FontLoader {
         if (texH > atlasH) texH = atlasH;
 
         irr::video::IVideoDriver* driver = device->getVideoDriver();
-
         irr::video::IImage* img = driver->createImage(irr::video::ECF_A8R8G8B8, irr::core::dimension2du(atlasW, texH));
-        img->fill(irr::video::SColor(0, 0, 0, 0));
+        img->fill(irr::video::SColor(0, 255, 255, 255));
 
         for (FT_ULong c = 32; c < 127; c++) {
             if (!charMap.find(c)) continue;
             if (FT_Load_Char(face, c, loadFlags)) continue;
 
             FT_Bitmap& bmp = face->glyph->bitmap;
-            irr::core::map<wchar_t, GlyphArea>::Node* node = charMap.find(c);
+            auto* node = charMap.find(c);
             if (!node) continue;
             GlyphArea& ga = node->getValue();
 
-            irr::u32 yDest = ga.rect.UpperLeftCorner.Y + (face->size->metrics.ascender >> 6) - face->glyph->bitmap_top;
-            irr::u32 xDest = ga.rect.UpperLeftCorner.X;
+            irr::u32 dstW = (bmp.width + SS - 1) / SS;
+            irr::u32 dstH = (bmp.rows + SS - 1) / SS;
 
-            for (irr::u32 row = 0; row < bmp.rows; row++)
-                for (irr::u32 col = 0; col < bmp.width; col++) {
-                    irr::u8 v = aa ? bmp.buffer[row * bmp.pitch + col] : ((bmp.buffer[row * bmp.pitch + col / 8] & (0x80 >> (col % 8))) ? 255 : 0);
-                    img->setPixel(
-                        xDest + col,
-                        yDest + row,
-                        irr::video::SColor(v, 255, 255, 255));
+            irr::u32 yDestBase = ga.rect.UpperLeftCorner.Y + ((face->size->metrics.ascender >> 6) / SS) - (face->glyph->bitmap_top / SS);
+            irr::u32 xDestBase = ga.rect.UpperLeftCorner.X;
+
+            auto sample = [&](irr::u32 sx, irr::u32 sy) -> irr::u8 {
+                if (sx >= bmp.width || sy >= bmp.rows) return 0;
+                if (aa) return bmp.buffer[sy * bmp.pitch + sx];
+                return (bmp.buffer[sy * bmp.pitch + sx / 8] & (0x80 >> (sx % 8))) ? 255 : 0;
+            };
+
+            for (irr::u32 dy = 0; dy < dstH; dy++) {
+                for (irr::u32 dx = 0; dx < dstW; dx++) {
+                    irr::u32 sum = 0;
+                    for (irr::u32 oy = 0; oy < (irr::u32)SS; oy++)
+                        for (irr::u32 ox = 0; ox < (irr::u32)SS; ox++)
+                            sum += sample(dx * SS + ox, dy * SS + oy);
+                    irr::u8 v = (irr::u8)(sum / (SS * SS));
+                    img->setPixel(xDestBase + dx, yDestBase + dy, irr::video::SColor(v, 255, 255, 255));
                 }
+            }
         }
 
         FT_Done_Face(face);
@@ -140,7 +152,10 @@ namespace FontLoader {
         writer->writeClosingTag(L"font");
         writer->drop();
 
+        bool prevMips = driver->getTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS);
+        driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, false);
         irr::gui::IGUIFont* font = device->getGUIEnvironment()->getFont(xmlPath.c_str());
+        driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, prevMips);
 
         remove(imgPath.c_str());
         remove(xmlPath.c_str());
