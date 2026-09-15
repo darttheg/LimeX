@@ -12,6 +12,7 @@
 #include "Objects/Vec4.h"
 #include "Objects/Mesh.h"
 #include "Objects/ShaderMaterial.h"
+#include "Objects/Camera.h"
 
 #include <sol/sol.hpp>
 
@@ -128,6 +129,23 @@ void Module::Scene::bind(Application* app) {
 			sol::resolve<Mesh(const Vec2&, const Vec2&, const Vec2&)>(&Module::Scene::Bind::CreatePlaneMesh)
 		));
 
+	// Sets a global shader parameter. Instead of using a loop and updating the shader parameters of each object, a global shader parameter can be set and it will update in all shaders utilizing the parameter.
+	// Params string name, number value
+	// Params string name, Vec2 value
+	// Params string name, Vec3 value
+	// Params string name, Vec4 value
+	module.set_function("setShaderParameter",
+		sol::overload(
+			sol::resolve<void(const std::string&, float)>(&Module::Scene::Bind::SetShaderParameterFloat),
+			sol::resolve<void(const std::string&, const Vec2&)>(&Module::Scene::Bind::SetShaderParameterVec2),
+			sol::resolve<void(const std::string&, const Vec3&)>(&Module::Scene::Bind::SetShaderParameterVec3),
+			sol::resolve<void(const std::string&, const Vec4&)>(&Module::Scene::Bind::SetShaderParameterVec4)
+		));
+
+	// Clears a global shader parameter and stops updating it, if it exists.
+	// Params string name
+	module.set_function("clearShaderParameter", &Module::Scene::Bind::ClearShaderParameter);
+
 	// If set to false, the application will not update the scene output. A use case is a pseudo-pause your game to save on resources while loading assets.
 	// Params boolean active
 	// Returns void
@@ -184,6 +202,11 @@ void Module::Scene::bind(Application* app) {
 	// Params boolean enable
 	// Returns void
 	module.set_function("setStencilBuffer", &Module::Scene::Bind::SetStencilBuffer);
+
+	// [+] Sets a `Camera` to be rendered after the main active `Camera` has rendered the scene. Only objects parented to this `Camera` are rendered.
+	// Params Camera? camera
+	// Returns void
+	module.set_function("setViewModelCamera", &Module::Scene::Bind::SetViewModelCamera);
 
 	// Sets whether or not a depth pass should be rendered. The depth pass renders the scene to a render texture 'rtDepth' which can be fetched using `Texture.new("rtDepth")`.
 	// Params boolean enable
@@ -378,10 +401,37 @@ void Module::Scene::Bind::ClearUserTexture() {
 	r->clearUserTexture();
 }
 
+void Module::Scene::Bind::SetViewModelCamera(sol::optional<Camera*> cam) {
+	Camera* p = *cam;
+	if (!p->getNode()) { r->setViewModelCamera(nullptr); return; }
+	if (auto* camNode = dynamic_cast<irr::scene::ICameraSceneNode*>(p->getNode()))
+		r->setViewModelCamera(camNode);
+}
+
 void Module::Scene::Bind::SetStencilBuffer(bool v) {
 	r->setStencilBuffer(v);
 }
 
 void Module::Scene::Bind::SetDepthPass(bool v) {
 	r->setDepthPass(v);
+}
+
+void Module::Scene::Bind::SetShaderParameterFloat(const std::string& name, float v) {
+	r->setShaderParameter(name, v);
+}
+
+void Module::Scene::Bind::SetShaderParameterVec2(const std::string& name, const Vec2& v) {
+	r->setShaderParameter(name, v);
+}
+
+void Module::Scene::Bind::SetShaderParameterVec3(const std::string& name, const Vec3& v) {
+	r->setShaderParameter(name, v);
+}
+
+void Module::Scene::Bind::SetShaderParameterVec4(const std::string& name, const Vec4& v) {
+	r->setShaderParameter(name, v);
+}
+
+void Module::Scene::Bind::ClearShaderParameter(const std::string& name) {
+	r->clearShaderParameter(name);
 }

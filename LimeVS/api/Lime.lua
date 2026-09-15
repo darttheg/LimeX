@@ -838,6 +838,15 @@ function Lime.Scene.createCylinderMesh(radius, length, polyCount, closed) end
 --- @return Mesh
 function Lime.Scene.createPlaneMesh(tileSize, tileCount, repeatCount) end
 
+--- Sets a global shader parameter. Instead of using a loop and updating the shader parameters of each object, a global shader parameter can be set and it will update in all shaders utilizing the parameter.
+--- @param name string
+--- @param value number|Vec2|Vec3|Vec4
+function Lime.Scene.setShaderParameter(name, value) end
+
+--- Clears a global shader parameter and stops updating it, if it exists.
+--- @param name string
+function Lime.Scene.clearShaderParameter(name) end
+
 --- If set to false, the application will not update the scene output. A use case is a pseudo-pause your game to save on resources while loading assets.
 --- @param active boolean
 function Lime.Scene.setRenderingActive(active) end
