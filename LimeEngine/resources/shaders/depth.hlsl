@@ -20,9 +20,9 @@ struct PS_OUTPUT {
 
 PS_OUTPUT pixelMain(float2 Depth : TEXCOORD0) {
     float d = Depth.x / Depth.y;
-    float lDepth = (2.0 * near) / (far + near - d * (far - near));
+    float lDepth = (near * far) / (far - d * (far - near));
+    lDepth /= far;
     PS_OUTPUT o;
-    
     o.RGBColor = float4(lDepth, lDepth, lDepth, 1.0);
     return o;
 }

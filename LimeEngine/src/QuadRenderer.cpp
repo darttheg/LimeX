@@ -105,6 +105,7 @@ void QuadRenderer::presentToWindow()
 
     // Scene
     qMat.setTexture(0, rtScene);
+    qMat.setTexture(1, rtDepth);
     qMat.setFlag(irr::video::EMF_BILINEAR_FILTER, highQuality);
     qMat.setFlag(irr::video::EMF_ANTI_ALIASING, highQuality ? irr::video::E_ANTI_ALIASING_MODE::EAAM_SIMPLE : irr::video::E_ANTI_ALIASING_MODE::EAAM_OFF);
     
