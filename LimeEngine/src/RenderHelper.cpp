@@ -491,8 +491,29 @@ HitResult RenderHelper::fireRaycast(const Vec3& start, const Vec3& end, float li
 HitResult RenderHelper::fireScreenRaycast(const Vec2& start, float len, float life) {
 	if (!guardRenderingCheck()) return HitResult();
 	irr::scene::ICameraSceneNode* c = i_smgr->getActiveCamera();
+	if (!c) return HitResult();
 
-	irr::core::line3df ray = i_smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::vector2di(start.getX(), start.getY()), c);
+	float w = targetW;
+	float h = targetH;
+	if (w <= 0 || h <= 0) {
+		w = (float)i_driver->getViewPort().getWidth();
+		h = (float)i_driver->getViewPort().getHeight();
+	}
+
+	const irr::scene::SViewFrustum* f = c->getViewFrustum();
+	irr::core::vector3df farLeftUp = f->getFarLeftUp();
+	irr::core::vector3df leftToRight = f->getFarRightUp() - farLeftUp;
+	irr::core::vector3df upToDown = f->getFarLeftDown() - farLeftUp;
+
+	float dx = start.getX() / w;
+	float dy = start.getY() / h;
+
+	irr::core::line3df ray;
+	if (c->isOrthogonal())
+		ray.start = f->cameraPosition + leftToRight * (dx - 0.5f) + upToDown * (dy - 0.5f);
+	else
+		ray.start = f->cameraPosition;
+	ray.end = farLeftUp + leftToRight * dx + upToDown * dy;
 
 	irr::core::vector3df dir = ray.getVector().normalize();
 	Vec3 startPos(ray.start.X, ray.start.Y, ray.start.Z);
@@ -609,11 +630,28 @@ bool RenderHelper::combineChildMeshes(irr::scene::IAnimatedMeshSceneNode* node) 
 
 Vec2 RenderHelper::toScreenPos(const Vec3& pos) {
 	if (!guardRenderingCheck()) return Vec2();
+	irr::scene::ICameraSceneNode* c = i_smgr->getActiveCamera();
+	if (!c) return Vec2();
 
-	irr::core::vector3df world = irr::core::vector3df(pos.getX(), pos.getY(), pos.getZ());
-	irr::core::vector2di screen = i_smgr->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(world, i_smgr->getActiveCamera());
+	float w = targetW;
+	float h = targetH;
 
-	return Vec2(screen.X, screen.Y);
+	if (w <= 0 || h <= 0) {
+		w = (float)i_driver->getViewPort().getWidth();
+		h = (float)i_driver->getViewPort().getHeight();
+	}
+
+	irr::core::matrix4 trans = c->getProjectionMatrix();
+	trans *= c->getViewMatrix();
+
+	irr::f32 p[4] = { pos.getX(), pos.getY(), pos.getZ(), 1.0f };
+	trans.multiplyWith1x4Matrix(p);
+	if (p[3] < 0) return Vec2();
+
+	float zDiv = p[3] == 0.0f ? 1.0f : 1.0f / p[3];
+	float hw = w * 0.5f;
+	float hh = h * 0.5f;
+	return Vec2(hw + hw * p[0] * zDiv, hh - hh * p[1] * zDiv);
 }
 
 int RenderHelper::getCurrentTime() {
@@ -642,23 +680,18 @@ irr::scene::ICameraSceneNode* RenderHelper::createCameraNode() {
 	return out;
 }
 
-void RenderHelper::updateCameraMatrix(irr::scene::ICameraSceneNode* c) {
-	if (!c) return;
+void RenderHelper::updateCameraMatrix(irr::scene::ICameraSceneNode* c, float w, float h) {
+	if (!c || w <= 0 || h <= 0) return;
+	float aspect = w / h;
 
 	if (c->isTrulyOrthogonal) {
 		irr::core::matrix4 orthoMat;
-		float z = c->getFOV() * 180.0 / irr::core::PI / 5.0;
-		int width = i_driver->getScreenSize().Width;
-		int height = i_driver->getScreenSize().Height;
-		orthoMat.buildProjectionMatrixOrthoLH(width / z, height / z, c->getNearValue(), c->getFarValue());
+		const float viewH = std::max(c->getFOV() * irr::core::RADTODEG / 5.0f, 0.001f);
+		orthoMat.buildProjectionMatrixOrthoLH(viewH * aspect, viewH, c->getNearValue(), c->getFarValue());
 		c->setProjectionMatrix(orthoMat, true);
-	}
-	else {
-		irr::core::matrix4 perspectiveMat;
-		float aspectRatio = c->getAspectRatio();
-		perspectiveMat.buildProjectionMatrixPerspectiveFovLH(c->getFOV(), aspectRatio, c->getNearValue(), c->getFarValue());
-
-		c->setProjectionMatrix(perspectiveMat, false);
+	} else {
+		c->setAspectRatio(w / h);
+		c->setProjectionMatrix(c->getProjectionMatrix(), false);
 	}
 }
 

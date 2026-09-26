@@ -397,10 +397,10 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 		return false;
 	}
 
+	console->SetWriteOutput(debugCfg.write);
 	// Init console
 	if (debugCfg.on) {
 		console->Create();
-		console->SetWriteOutput(debugCfg.write);
 		if (debugCfg.suppress) console->Warn("Warnings are suppressed. Potential issues with this application will not be logged.", false);
 		console->setSuppressWarnings(debugCfg.suppress);
 	}
@@ -408,22 +408,39 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 	return true;
 }
 
-#include <psapi.h>
-int getMemUsed() {
-	PROCESS_MEMORY_COUNTERS_EX pmc;
-	GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
-	SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
-	int physMemUsedMB = (int)physMemUsedByMe / (1024 * 1024) - 30;
+#ifdef __ANDROID__
+	#include <unistd.h>
+	#include <android/log.h>
+	int getMemUsed() {
+		long pages = 0, resident = 0;
+		FILE* f = fopen("/proc/self/statm", "r");
+		if (!f) return 0;
+		if (fscanf(f, "%ld %ld", &pages, &resident) != 2) resident = 0;
+		fclose(f);
+		return (int)(resident * sysconf(_SC_PAGESIZE) / (1024 * 1024));
+	}
+#else
+	#include <psapi.h>
+	int getMemUsed() {
+		PROCESS_MEMORY_COUNTERS_EX pmc;
+		GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+		SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
+		int physMemUsedMB = (int)physMemUsedByMe / (1024 * 1024) - 30;
 
-	if (physMemUsedMB < 0) physMemUsedMB = 0;
-	return physMemUsedMB;
-}
+		if (physMemUsedMB < 0) physMemUsedMB = 0;
+		return physMemUsedMB;
+	}
+#endif
 
 #include <iostream>
-#include <timeapi.h>
-#pragma comment (lib, "winmm.lib")
+#ifdef _WIN32
+	#include <timeapi.h>
+	#pragma comment (lib, "winmm.lib")
+#endif
 bool Application::Run() {
+#ifdef _WIN32
 	timeBeginPeriod(1);
+#endif
 
 	// Run application loop
 	running = true;
@@ -512,7 +529,9 @@ bool Application::Stop() {
 	renderer->Shutdown();
 	window->Close();
 
+#ifdef _WIN32
 	timeEndPeriod(1);
+#endif
 	return false;
 }
 
@@ -597,6 +616,10 @@ sol::object Application::getCommandLineValue(const std::string& key) {
 }
 
 void Application::displayMessage(const std::string& title, const std::string message, int img) {
+#ifdef __ANDROID__
+	__android_log_print(img == 1 ? ANDROID_LOG_WARN : ANDROID_LOG_INFO, "Lime", "%s: %s",
+		title.c_str(), message.c_str());
+#else
 	std::wstring nTitle = std::wstring(title.begin(), title.end());
 	const wchar_t* nTitleC = nTitle.c_str();
 
@@ -622,6 +645,7 @@ void Application::displayMessage(const std::string& title, const std::string mes
 	}
 
 	MessageBox(nullptr, nMessageC, nTitleC, icon);
+#endif
 }
 
 bool Application::addArchive(const std::string& path) {
@@ -688,12 +712,14 @@ bool Application::CreateWindows() {
 		return false;
 	}
 
+#ifndef __ANDROID__
 	HWND glfwHWND = window->GetHandle();
 
 	if (!glfwHWND) {
 		console->PostError("Could not get valid window handles", true, false);
 		return false;
 	}
+#endif
 
 	// ShowWindow(glfwHWND, SW_SHOWNORMAL);
 	// SetForegroundWindow(glfwHWND);

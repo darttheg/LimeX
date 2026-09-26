@@ -8,6 +8,11 @@ LIME_ENUM(PrintColor,
     LIME_ENUM_VALUE(Yellow, 4)
 );
 
+LIME_ENUM(Platform,
+    LIME_ENUM_VALUE(Windows, 0)
+    LIME_ENUM_VALUE(Android, 1)
+);
+
 LIME_ENUM(PopUpIcon,
     LIME_ENUM_VALUE(None, 0)
     LIME_ENUM_VALUE(Warning, 1)

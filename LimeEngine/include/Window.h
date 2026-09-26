@@ -2,10 +2,14 @@
 #include <string>
 #include <memory>
 
-#define GLFW_INCLUDE_NONE
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include "GLFW/glfw3.h"
-#include <GLFW/glfw3native.h>
+#ifdef __ANDROID__
+	namespace irr { class IrrlichtDevice; }
+#else
+	#define GLFW_INCLUDE_NONE
+	#define GLFW_EXPOSE_NATIVE_WIN32
+	#include "GLFW/glfw3.h"
+	#include <GLFW/glfw3native.h>
+#endif
 
 class Application;
 
@@ -24,9 +28,17 @@ public:
 	void PollEvents();
 	bool ShouldClose();
 	void PreUpdateBG();
+
 	void EndFrame();
+	
+#ifdef __ANDROID__
+	bool isOpen() const { return created; }
+#else
+	bool isOpen() const { return glfwWindow != nullptr; }
 	HWND GetHandle() const { return glfwGetWin32Window(glfwWindow); }
 	GLFWwindow* getGLFWWindow() const { return glfwWindow; }
+#endif
+
 	void Focus();
 	bool guardEditCheck();
 
@@ -63,8 +75,15 @@ public:
 private:
 	struct Vec2S { float x, y; };
 
-	bool isFullscreened = false;
+#ifdef __ANDROID__
+	bool created = false;
+	bool closeRequested = false;
+	irr::IrrlichtDevice* getDevice() const;
+#else
 	GLFWwindow* glfwWindow = nullptr;
+#endif
+
+	bool isFullscreened = false;
 	Vec2S preFullWinSize{};
 	Vec2S preFullWinPos{};
 	Vec2S windowSize{};
@@ -74,5 +93,8 @@ private:
 
 	int mouseType = 0;
 
+#ifndef __ANDROID__
 	GLFWmonitor* getCurrentMonitor();
+#endif
+
 };

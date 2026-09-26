@@ -20,9 +20,13 @@ public:
 	void clearPostProcessingShaderGUI();
 
 	void beginInternal();
+	void bindScene(bool clearTarget);
 	void beginGUIPass();
 	void endInternal();
 	void presentToWindow();
+
+	void setLetterboxing(bool v) { letterbox = v; }
+	bool getLetterboxing() { return letterbox; }
 
 	void prepareToRecreateRt();
 	int getTimeRt() { return timeToRecreate; }
@@ -64,6 +68,7 @@ private:
 	irr::video::SMaterial qBlendMat;
 	bool matchWR = true;
 	bool integerScaling = false;
+	bool letterbox = true;
 	IrrShaderMaterial* ppxCB = nullptr;
 	IrrShaderMaterial* gppxCB = nullptr;
 

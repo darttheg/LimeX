@@ -9,6 +9,15 @@
 #include <sstream>
 #include <fstream>
 
+#ifdef __ANDROID__
+#include <android/log.h>
+static void LogToLogcat(MESSAGE_TYPE type, const std::string& line) {
+    int priority = ANDROID_LOG_INFO;
+    if (type == MESSAGE_TYPE::RED) priority = ANDROID_LOG_ERROR;
+    else if (type == MESSAGE_TYPE::YELLOW) priority = ANDROID_LOG_WARN;
+    __android_log_write(priority, "Lime", line.c_str());
+}
+#else
 static void CreateDebugConsole() {
     AllocConsole();
 
@@ -21,12 +30,17 @@ static void CreateDebugConsole() {
     setvbuf(stdout, nullptr, _IONBF, 0);
     setvbuf(stderr, nullptr, _IONBF, 0);
 }
+#endif
 
 const char* getTime() {
     auto now = std::chrono::system_clock::now();
     std::time_t now_c = std::chrono::system_clock::to_time_t(now);
     std::tm now_tm;
+#ifdef __ANDROID__
+    localtime_r(&now_c, &now_tm);
+#else
     localtime_s(&now_tm, &now_c);
+#endif
     std::stringstream ss;
     ss << std::put_time(&now_tm, "[%H:%M:%S]");
     static std::string timeStr;
@@ -34,6 +48,7 @@ const char* getTime() {
     return timeStr.c_str();
 }
 
+#ifdef _WIN32
 static WORD getColorFromType(MESSAGE_TYPE type) {
     switch (type) {
     case MESSAGE_TYPE::RED: return FOREGROUND_RED | FOREGROUND_INTENSITY;
@@ -47,6 +62,7 @@ static WORD getColorFromType(MESSAGE_TYPE type) {
     default: return FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
     }
 }
+#endif
 
 DebugConsole::DebugConsole(Application* owner) {
     app = owner;
@@ -65,18 +81,23 @@ void DebugConsole::Close(bool endApp) {
     Clear();
     created = false;
 
+#ifdef _WIN32
     if (endApp)
         FreeConsole();
+#endif
 }
 
+#ifndef __ANDROID__
 void DebugConsole::SetEnable(bool v) {
     HWND h = GetConsoleWindow();
     if (h)
         ShowWindow(h, v ? SW_SHOW : SW_HIDE);
-    else if(!created)
+    else if (!created)
         Create();
 }
+#endif
 
+#ifndef __ANDROID__
 void DebugConsole::ClearConsole() {
     HWND h = GetConsoleWindow();
     if (!h) return;
@@ -89,11 +110,13 @@ void DebugConsole::ClearConsole() {
     FillConsoleOutputAttribute(consoleHandle, csbi.wAttributes, csbi.dwSize.X * csbi.dwSize.Y, coord, &written);
     SetConsoleCursorPosition(consoleHandle, coord);
 }
+#endif
 
 void DebugConsole::Clear() {
     consoleLines.clear();
 }
 
+#ifndef __ANDROID__
 void DebugConsole::Create() {
     if (created) return;
 
@@ -122,7 +145,9 @@ void DebugConsole::Create() {
 
     created = true;
 }
+#endif
 
+#ifndef __ANDROID__
 void DebugConsole::AddLineToConsole(Line l) {
     SetConsoleTextAttribute(consoleHandle, getColorFromType(l.type));
     DWORD written = 0;
@@ -130,14 +155,18 @@ void DebugConsole::AddLineToConsole(Line l) {
     WriteConsoleA(consoleHandle, "\n", 1, &written, nullptr);
     SetConsoleTextAttribute(consoleHandle, defaultAttr);
 }
+#endif
 
 void DebugConsole::Log(const char* msg, MESSAGE_TYPE type) {
     std::string time = getTime();
     std::string full = time + " " + msg;
 
     consoleLines.push_back(Line(type, full));
-    if (created)
-        AddLineToConsole(Line(type, full));
+#ifdef __ANDROID__
+    LogToLogcat(type, msg);
+#else
+    if (created) AddLineToConsole(Line(type, full));
+#endif
 }
 
 void DebugConsole::Log(std::string msg, MESSAGE_TYPE type) {
@@ -154,13 +183,14 @@ void DebugConsole::PostError(const char* msg, bool close, bool loc) {
     errCount++;
 
     if (close) {
+#ifdef _WIN32
         std::string src = std::string("Lime encountered an error:\n" + std::string(msg)).c_str();
         if (loc) src += "\n" + app->GetLuaLocation();
 
         std::wstring wStr = std::wstring(src.begin(), src.end());
         const wchar_t* wCharStr = wStr.c_str();
-
         MessageBox(nullptr, wStr.c_str(), TEXT("Lime Error"), MB_ICONEXCLAMATION);
+#endif
 
         if (app) app->Stop();
     }
@@ -186,10 +216,12 @@ void DebugConsole::Warn(std::string msg, bool loc) {
 
 void DebugConsole::Update(int memMB) {
     memUsed = memMB;
-    if (!created) return;
 
+#ifdef _WIN32
+    if (!created) return;
     std::wstring out = L"Lime | mem: " + std::to_wstring(memMB) + L" mb";
     SetConsoleTitleW(out.c_str());
+#endif
 }
 
 void DebugConsole::WriteOutputLog() {

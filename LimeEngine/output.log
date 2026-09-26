@@ -1,0 +1,10 @@
+[20:26:54] Lime started with 1 modules loaded
+[20:26:54] Hello from before the init function.
+[20:26:54] Hello from init!
+[20:26:54] 5.0
+[20:26:54] Hello from start!
+[20:26:54] WARNING: [string "content.main.lua"]:15: Could not create texture from ./content/assets/char.png
+[20:26:54] WARNING: [string "content.main.lua"]:16: GetPath failed: There is no valid Image!
+[20:26:54] 
+[20:27:01] Hello from the close Event!
+[20:27:01] Lime ended with 2 warnings, 0 errors

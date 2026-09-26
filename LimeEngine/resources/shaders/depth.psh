@@ -1,0 +1,8 @@
+uniform float far;
+
+varying float vDepth;
+
+void main() {
+	float d = vDepth / far;
+	gl_FragColor = vec4(d, d, d, 1.0);
+}

@@ -41,8 +41,11 @@ bool Image2D::loadTexture(const Texture& tx) {
 	img->setImage(tx.getTexture());
 	img->setName(tx.getPath().c_str());
 
-	Object2D::setSize(Vec2(tx.getTexture()->getSize().Width, tx.getTexture()->getSize().Height));
+	if (!img->isImageScaled() || !hasTexLoaded)
+		Object2D::setSize(Vec2(tx.getTexture()->getSize().Width, tx.getTexture()->getSize().Height));
 	// if (match) img->setMaxSize(tx.getTexture()->getSize());
+
+	hasTexLoaded = true;
 
 	return true;
 }
@@ -54,6 +57,21 @@ bool Image2D::getScaledFit() const {
 void Image2D::setScaledFit(bool v) {
 	if (img)
 		img->setScaleImage(v);
+}
+
+int Image2D::getOpacity() const {
+	return img ? img->getColor().getAlpha() : 255;
+}
+
+void Image2D::setOpacity(int o) {
+	if (!img) return;
+	if (o < 0) o = 0;
+	else if (o > 255) o = 255;
+
+	irr::video::SColor c = img->getColor();
+	c.setAlpha(o);
+	img->setColor(c);
+	img->setUseAlphaChannel(true);
 }
 
 irr::gui::IGUIElement* Image2D::getNode() const {
@@ -79,7 +97,10 @@ void Object::Image2DBind::bind(lua_State* ls, RenderHelper* renh) {
 		sol::meta_function::type, [](const Image2D&) { return "Image2D"; },
 
 		// Field boolean scaleToFit, Determines whether or not this `Image2D` scales to its size boundaries or not.
-		"scaleToFit", sol::property(&Image2D::getScaledFit, &Image2D::setScaledFit)
+		"scaleToFit", sol::property(&Image2D::getScaledFit, &Image2D::setScaledFit),
+
+		// Field number opacity, The opacity of this `Image2D`, from 0 to 255.
+		"opacity", sol::property(&Image2D::getOpacity, &Image2D::setOpacity)
 	);
 
 	obj[sol::meta_function::to_string] = [](const Image2D& v) {

@@ -24,10 +24,14 @@ public:
 	bool loadTexture(const Texture& tx);
 	bool getScaledFit() const;
 	void setScaledFit(bool v);
+	int getOpacity() const;
+	void setOpacity(int o);
 
 	irr::gui::IGUIElement* getNode() const override;
 private:
 	irr::gui::IGUIImage* img = nullptr;
+
+	bool hasTexLoaded = false;
 };
 
 namespace Object::Image2DBind {

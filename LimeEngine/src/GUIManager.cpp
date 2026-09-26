@@ -151,7 +151,11 @@ bool GUIManager::isFontEmbedded(const std::string& name) {
 }
 
 bool GUIManager::isAnyElementHovered() {
-	return guienv ? guienv->getRootGUIElement()->getElementFromPoint(device->getCursorControl()->getPosition()) : false;
+	if (!guienv) return false;
+	irr::core::position2di cursorPos = device->getCursorControl()->getPosition();
+	Vec2 corrected = r->getMousePosCorrected((float)cursorPos.X, (float)cursorPos.Y);
+	irr::gui::IGUIElement* hit = guienv->getRootGUIElement()->getElementFromPoint(irr::core::position2di((irr::s32)corrected.getX(), (irr::s32)corrected.getY()));
+	return hit && hit != guienv->getRootGUIElement();
 }
 
 bool GUIManager::isElementFocused(irr::gui::IGUIElement* e) {

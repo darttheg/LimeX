@@ -113,7 +113,8 @@ public:
 	irr::scene::ISceneNodeAnimator* createRotationAnimator(const Vec3& rot);
 
 	// Camera
-	void updateCameraMatrix(irr::scene::ICameraSceneNode* c);
+	void updateCameraMatrix(irr::scene::ICameraSceneNode* c, float w, float h);
+	void setTargetSize(float w, float h) { targetW = w; targetH = h; }
 	void setActiveCamera(irr::scene::ICameraSceneNode* c, irr::scene::ISceneNode* l, irr::scene::ISceneNode* f);
 	irr::scene::ICameraSceneNode* getActiveCamera();
 	irr::scene::ISceneNode* getActiveCameraLeft() { return cleft; }
@@ -138,6 +139,9 @@ private:
 	irr::video::IVideoDriver* i_driver = nullptr;
 	irr::gui::IGUIEnvironment* i_gui = nullptr;
 	irr::video::IGPUProgrammingServices* i_gpu = nullptr;
+
+	float targetW = 0.0f;
+	float targetH = 0.0f;
 
 	irr::scene::ISceneNode* cleft = nullptr;
 	irr::scene::ISceneNode* cforward = nullptr;

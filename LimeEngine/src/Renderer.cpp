@@ -28,6 +28,8 @@
 #include "Objects/IrrShaderMat.h"
 #include <stack>
 
+#include <thread>
+
 static Application* a = nullptr;
 static DebugConsole* d = nullptr;
 static Window* w = nullptr;
@@ -81,6 +83,20 @@ static irr::video::ITexture* getAlphaBlank(irr::video::IVideoDriver* driver) {
 	return blank;
 }
 
+#ifdef __ANDROID__
+#include "LimeAndroid.h"
+bool mountResources(irr::IrrlichtDevice* device) {
+	if (!device) return false;
+	unsigned long size = 0;
+	const unsigned char* data = LimeAndroid::getResourcesZip(&size);
+	if (!data || size == 0) return false;
+	auto* fs = device->getFileSystem();
+	irr::io::IReadFile* mem = fs->createMemoryReadFile((void*)data, (irr::s32)size, "resources.zip", false);
+	bool out = fs->addFileArchive(mem);
+	mem->drop();
+	return out;
+}
+#else
 bool mountResources(irr::IrrlichtDevice* device) {
 	if (!device) return false;
 
@@ -111,6 +127,7 @@ bool mountResources(irr::IrrlichtDevice* device) {
 	mem->drop();
 	return out;
 }
+#endif
 
 bool Renderer::Init() {
 	if (isCreated) return false;
@@ -131,7 +148,13 @@ bool Renderer::Init() {
 	params.UsePerformanceTimer = false;
 	// params.WindowId = (void*)glfwGetWin32Window(w->getGLFWWindow());
 
+#ifdef __ANDROID__
+	params.WindowId = LimeAndroid::getApp();
+	params.WindowSize = irr::core::dimension2d<u32>(w->getRawWinSize().getX(), w->getRawWinSize().getY());
+	params.Fullscreen = true;
+#endif
 	i_device = irr::createDeviceEx(params);
+
 	if (!i_device || !i_device->getVideoDriver()) {
 		d->Warn("Failed to create device!");
 		return false;
@@ -139,8 +162,13 @@ bool Renderer::Init() {
 
 	i_device->getLogger()->setLogLevel(irr::ELOG_LEVEL::ELL_WARNING);
 
+#ifdef __ANDROID__
+	renderSize.x = cfg.renderSize[0];
+	renderSize.y = cfg.renderSize[1];
+#else
 	renderSize.x = doMatchResolution ? cfg.windowSize[0] : cfg.renderSize[0];
 	renderSize.y = doMatchResolution ? cfg.windowSize[1] : cfg.renderSize[1];
+#endif
 
 	i_smgr = i_device->getSceneManager();
 	i_driver = i_device->getVideoDriver();
@@ -162,6 +190,8 @@ bool Renderer::Init() {
 
 	using namespace irr;
 	using namespace video;
+	
+#ifndef __ANDROID__
 	E_DRIVER_TYPE dout = (E_DRIVER_TYPE)cfg.driverType;
 
 	bool nullWin = false;
@@ -219,6 +249,7 @@ bool Renderer::Init() {
 			SendMessage(h, WM_KILLFOCUS, 0, 0);
 		}
 		});
+#endif
 
 	alphaBlankTex = getAlphaBlank(i_driver);
 	checkerTex = getCheckerError(i_driver);
@@ -239,8 +270,11 @@ bool Renderer::Init() {
 	setTextureCreationQuality(1); // Medium
 	setLightManagementType(0); // EightNearest
 
-	// Shaders (switch on driver type)
-	depthShader = new IrrShaderMaterial(i_driver, "shaders/depth.hlsl", "shaders/depth.hlsl", irr::video::EMT_SOLID);
+	// Shaders
+	if (i_driver->getDriverType() == irr::video::EDT_OPENGL)
+		depthShader = new IrrShaderMaterial(i_driver, "shaders/depth.vsh", "shaders/depth.psh", irr::video::EMT_SOLID);
+	else
+		depthShader = new IrrShaderMaterial(i_driver, "shaders/depth.hlsl", "shaders/depth.hlsl", irr::video::EMT_SOLID);
 
 	return true;
 }
@@ -263,8 +297,8 @@ bool Renderer::UpdatePhysics(float dt) {
 	return physics->Update(dt);
 }
 
-void Renderer::renderDepthPass() {
-	if (!doDepthPass) return;
+void Renderer::renderDepthPass(bool rawDraw) {
+	if (!doDepthPass || !depthShader || !depthShader->isValid()) return;
 
 	i_driver->setRenderTarget(qr->getDepthTexture(), true, true);
 
@@ -280,7 +314,10 @@ void Renderer::renderDepthPass() {
 	over.Enabled = true;
 
 	i_smgr->drawAll();
-	i_driver->setRenderTarget(0, false, false);
+	if (rawDraw)
+		i_driver->setRenderTarget(0, false, false);
+	else
+		qr->bindScene(false);
 	//i_driver->draw2DImage(qr->getDepthTexture(), irr::core::position2di(0, 0));
 
 	over.EnableFlags = 0;
@@ -290,7 +327,7 @@ void Renderer::renderDepthPass() {
 #include "Objects/IrrShadowVolume.h"
 bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	if (!guardRenderingCheck()) return false;
-	if (!isCreated || !w->getGLFWWindow()) return false;
+	if (!isCreated || !w->isOpen()) return false;
 
 	if (!doRender) return true;
 
@@ -319,9 +356,13 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 	updateFog(); // Update fog params pre-render
 	addToDtTime(dt);
 
-	if (doMatchResolution && i_smgr->getActiveCamera()) {
+	if (doMatchResolution && i_smgr->getActiveCamera())
 		i_smgr->getActiveCamera()->setAspectRatio(w->getWinAR());
-	}
+
+	Vec2 target = getTargetSize();
+	rh->setTargetSize(target.getX(), target.getY());
+	if (auto* cam = i_smgr->getActiveCamera())
+		rh->updateCameraMatrix(cam, target.getX(), target.getY());
 
 	bool rawDraw = doMatchResolution && !qr->ppxActive();
 	ShadowVolumeSceneNode::DrawingThisFrame = false;
@@ -343,7 +384,7 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 
 		physics->RenderDebug();
 
-		renderDepthPass();
+		renderDepthPass(true);
 
 		if (viewModelCamera) {
 			viewModelCamera->setVisible(isVMVisible);
@@ -365,7 +406,7 @@ bool Renderer::Render(float dt, bool clearBackBuffer, bool clearZBuffer) {
 		drawShadows();
 
 		physics->RenderDebug();
-		renderDepthPass();
+		renderDepthPass(false);
 
 		if (viewModelCamera) {
 			viewModelCamera->setVisible(isVMVisible);
@@ -488,7 +529,9 @@ int Renderer::updateFrameRate() {
 
 void Renderer::updateWindowSize(int w, int h) {
 	qr->setWindowResolution(w, h);
+#ifndef __ANDROID__
 	MoveWindow(getHandle(), 0, 0, w, h, TRUE);
+#endif
 	qr->prepareToRecreateRt();
 }
 
@@ -496,13 +539,20 @@ int Renderer::getDriverFrameRate() {
 	return i_device ? i_device->getVideoDriver()->getFPS() : 0;
 }
 
+Vec2 Renderer::getTargetSize() {
+	if (doMatchResolution) return Vec2(w->getSize().getX(), w->getSize().getY());
+	return Vec2(renderSize.x, renderSize.y);
+}
+
 std::string Renderer::getMeshName(irr::scene::IAnimatedMesh* msh) {
 	return msh ? i_smgr->getMeshCache()->getMeshName(msh).getPath().c_str() : "";
 }
 
+#ifndef __ANDROID__
 HWND Renderer::getDeviceVideoData() {
 	return i_device ? reinterpret_cast<HWND>(i_device->getVideoDriver()->getExposedVideoData().OpenGLWin32.HWnd) : nullptr;
 }
+#endif
 
 int Renderer::getObjectCount() {
 	if (!i_driver) return 0;
@@ -565,7 +615,7 @@ irr::video::ITexture* Renderer::createRenderTargetTexture(const Vec2& size, irr:
 
 	updateFog();
 	i_smgr->setActiveCamera(c ? c : prev);
-	i_smgr->getActiveCamera()->setAspectRatio(size.getX() / size.getY());
+	rh->updateCameraMatrix(i_smgr->getActiveCamera(), size.getX(), size.getY());
 	i_driver->setRenderTarget(out, true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
 	i_smgr->drawAll();
 	i_driver->setRenderTarget(nullptr, true, true, 0);
@@ -606,7 +656,9 @@ void Renderer::setViewModelCamera(irr::scene::ICameraSceneNode* cam) {
 }
 
 void Renderer::renderViewModel() {
-	if (doMatchResolution) viewModelCamera->setAspectRatio(w->getWinAR());
+	Vec2 target = getTargetSize();
+	rh->updateCameraMatrix(viewModelCamera, target.getX(), target.getY());
+
 	const irr::u32 now = i_device->getTimer()->getTime();
 	viewModelCamera->OnAnimate(now);
 
@@ -882,8 +934,18 @@ void Renderer::setGUIQuality(int q) {
 Vec2 Renderer::getMousePosCorrected(float x, float y) {
 	if (doMatchResolution) return Vec2(x, y);
 	irr::core::recti vp = qr->getViewport();
+
+	const int vpW = vp.getWidth() > 0 ? vp.getWidth() : (int)w->getSize().getX();
+	const int vpH = vp.getHeight() > 0 ? vp.getHeight() : (int)w->getSize().getY();
+
+	int vMouseX = (x - vp.UpperLeftCorner.X) * renderSize.x / (float)vpW;
+	int vMouseY = (y - vp.UpperLeftCorner.Y) * renderSize.y / (float)vpH;
+
+	/*
 	int vMouseX = (x - vp.UpperLeftCorner.X) * renderSize.x / w->getSize().getX();
 	int vMouseY = (y - vp.UpperLeftCorner.Y) * renderSize.y / w->getSize().getY();
+	*/
+
 	return Vec2(vMouseX, vMouseY);
 }
 
@@ -891,6 +953,10 @@ void Renderer::setAmbientColor(const Vec4& color) {
 	if (!guardRenderingCheck()) return;
 
 	i_smgr->setAmbientLight(irr::video::SColor(color.getW(), color.getX(), color.getY(), color.getZ()));
+}
+
+void Renderer::setLetterboxing(bool v) {
+	qr->setLetterboxing(v);
 }
 
 void Renderer::setBackgroundColor(const Vec4& color) {
@@ -914,26 +980,19 @@ void Renderer::setLightManagementType(int type) {
 void Renderer::setTextureCreationQuality(int q) {
 	if (!guardRenderingCheck()) return;
 
-	switch (q) {
-	case 1: // Medium
-		i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_QUALITY, false);
-		i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED, false);
-		i_driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
-		i_driver->setTextureCreationFlag(irr::video::ETCF_ALLOW_NON_POWER_2, true);
-		break;
-	case 2: // High
-		i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_QUALITY, true);
-		i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED, false);
-		i_driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
-		i_driver->setTextureCreationFlag(irr::video::ETCF_ALLOW_NON_POWER_2, true);
-		break;
-	default: // Low
-		i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_QUALITY, false);
-		i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED, true);
-		i_driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, false);
-		i_driver->setTextureCreationFlag(irr::video::ETCF_ALLOW_NON_POWER_2, false);
-		break;
-	}
+	q = std::clamp<int>(q, 0, 2);
+	i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_QUALITY, q == 2);
+	i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED, q == 0);
+}
+
+void Renderer::setDoMipmapGen(bool enable) {
+	if (!guardRenderingCheck()) return;
+	i_driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, enable);
+}
+
+bool Renderer::getDoMipmapGen() {
+	if (!guardRenderingCheck()) return false;
+	return i_driver->getTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS);
 }
 
 void Renderer::setShadowColor(const Vec4& color) {
@@ -1005,7 +1064,8 @@ void Renderer::removeButtonPair(irr::gui::IGUIButton* button) {
 
 bool Renderer::isElementHovered(irr::gui::IGUIElement* element) {
 	if (!element) return false;
-	return element->isPointInside(irr::core::vector2di(r->getMouseState().pos.x, r->getMouseState().pos.y));
+	Vec2 corrected = getMousePosCorrected(r->getMouseState().pos.x, r->getMouseState().pos.y);
+	return element->isPointInside(irr::core::vector2di((irr::s32)corrected.getX(), (irr::s32)corrected.getY()));
 }
 
 irr::io::IFileSystem* const Renderer::getFileSystem() {

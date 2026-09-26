@@ -139,6 +139,10 @@ void Module::Lime::bind(Application* app) {
 	// Returns void
 	module.set_function("displayMessage", &Module::Lime::Bind::DisplayMessage);
 
+	// Returns the current platform the application is running on.
+	// Returns Lime.Enum.Platform
+	module.set_function("getPlatform", &Module::Lime::Bind::GetPlatform);
+
 	// Loads an archive of assets to the application. Content is accessed as if it were at the application's root. For example: If the archive contains folder/image.png, the path ./folder/image.png is valid for loading `Texture` objects.
 	// Params string path
 	// Returns boolean
@@ -230,6 +234,14 @@ void Module::Lime::Bind::DisplayMessage(const std::string& title, const std::str
 
 bool Module::Lime::Bind::AddArchive(const std::string& path) {
 	return a->addArchive(path);
+}
+
+int Module::Lime::Bind::GetPlatform() {
+	int out = 0;
+#ifdef __ANDROID__
+	out = 1;
+#endif
+	return out;
 }
 
 bool Module::Lime::Bind::SetInitConfig(int driverType) {

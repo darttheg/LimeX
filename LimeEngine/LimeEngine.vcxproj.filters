@@ -58,8 +58,17 @@
     <Filter Include="Engine\Runtime\External\Monitor">
       <UniqueIdentifier>{eaf4de9b-a3fe-44ef-bd8a-3d8251b9b020}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Runtime\External\Audio">
+      <UniqueIdentifier>{f6f6ce84-fcbe-4e93-a95d-687c32cfcc7f}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Engine\Runtime\External\HTTP">
       <UniqueIdentifier>{56438182-d366-411e-91da-186e4d3e561b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime\Platforms">
+      <UniqueIdentifier>{4c2ff846-bf3d-4a69-9ae7-4e73c58c8d76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Runtime\Platforms\Android">
+      <UniqueIdentifier>{783ea0d6-0dbe-4c35-8a7c-4c23df8556fc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -280,6 +289,9 @@
     <ClInclude Include="include\Objects\IrrFadeInOutAffector.h">
       <Filter>Engine\Runtime\Objects\3D</Filter>
     </ClInclude>
+    <ClInclude Include="include\External\SoundMini.h">
+      <Filter>Engine\Runtime\External\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
@@ -438,6 +450,9 @@
     <ClCompile Include="src\Modules\ModuleNetwork.cpp">
       <Filter>Engine\Runtime\Modules</Filter>
     </ClCompile>
+    <ClCompile Include="src\External\miniaudio.c">
+      <Filter>Engine\Runtime\External\Audio</Filter>
+    </ClCompile>
     <ClCompile Include="src\External\miniz.c">
       <Filter>Engine\Runtime\External\HTTP</Filter>
     </ClCompile>
@@ -452,6 +467,12 @@
     </ClCompile>
     <ClCompile Include="src\Objects\ShadowVolume.cpp">
       <Filter>Engine\Runtime\Objects\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\External\SoundMini.cpp">
+      <Filter>Engine\Runtime\External\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Android\WindowAndroid.cpp">
+      <Filter>Engine\Runtime\Platforms\Android</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

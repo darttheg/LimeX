@@ -1,9 +1,12 @@
 #pragma once
 
-#define GLFW_INCLUDE_NONE
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include "GLFW/glfw3.h"
-#include <GLFW/glfw3native.h>
+#ifndef __ANDROID__
+	#define GLFW_INCLUDE_NONE
+	#define GLFW_EXPOSE_NATIVE_WIN32
+	#include "GLFW/glfw3.h"
+	#include <GLFW/glfw3native.h>
+#endif
+
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -85,13 +88,17 @@ public:
 	bool maximizeDevice();
 	bool restoreDevice();
 	bool isFocused();
+#ifndef __ANDROID__
 	HWND getDeviceVideoData();
+#endif
 	int getObjectCount();
 	int getTextureCount();
 	int getMeshCount();
 	int updateFrameRate();
 	void updateWindowSize(int w, int h);
 	int getDriverFrameRate();
+	Vec2 getTargetSize();
+	void setLetterboxing(bool v);
 
 	// Scene
 	Vec2 getRenderSize();
@@ -103,6 +110,8 @@ public:
 	void setFogPlanes(float n, float f);
 	void setLightManagementType(int type);
 	void setTextureCreationQuality(int quality);
+	void setDoMipmapGen(bool enable);
+	bool getDoMipmapGen();
 	Texture getErrorTexture();
 	void setMatchRes(bool v);
 	bool getMatchRes() { return doMatchResolution; }
@@ -143,7 +152,10 @@ public:
 	bool getMouseVisible();
 	bool setMouseVisible(bool vis);
 	bool setMousePosition(const Vec2& pos);
+#ifndef __ANDROID__
 	HWND getHandle() { return hwndIrr; }
+#endif
+	irr::IrrlichtDevice* getDevice() const { return i_device; }
 	GUIManager* getGUIManager() { return guiManager; }
 	bool runEventFromGUI(std::shared_ptr<Event> e, std::function<void(const std::string&)> onError);
 	void addButtonPair(irr::gui::IGUIButton* button, ButtonPair pair);
@@ -219,11 +231,13 @@ private:
 	int lastTime = 0;
 	int fps = 0;
 	int rttc = 0;
+#ifndef __ANDROID__
 	HWND hwndIrr = nullptr;
+#endif
 	QuadRenderer* qr = nullptr;
 	RenderHelper* rh = nullptr;
 	irr::scene::ILightManager* lightManager = nullptr;
-	void renderDepthPass();
+	void renderDepthPass(bool rawDraw);
 	IrrShaderMaterial* depthShader = nullptr;
 
 	// Fallback

@@ -8,7 +8,7 @@ class Application;
 class Renderer;
 class Vec2;
 
-#define LIME_VERSION "beta-0.34"
+#define LIME_VERSION "beta-1.0"
 
 namespace Module {
 	namespace Lime {
@@ -36,6 +36,7 @@ namespace Module {
 			sol::object GetCommandLineEntry(const std::string& key);
 			void DisplayMessage(const std::string& title, const std::string message, int img = 0);
 			bool AddArchive(const std::string& path);
+			int GetPlatform();
 		}
 	}
 }

@@ -77,7 +77,13 @@ void QuadRenderer::beginInternal() {
 
     if (!rtScene) recreateRt();
 
-    driver->setRenderTarget(rtScene, true, true, clear);
+    bindScene(true);
+}
+
+void QuadRenderer::bindScene(bool clearTarget) {
+    if (!driver || !rtScene) return;
+
+    driver->setRenderTarget(rtScene, clearTarget, clearTarget, clear);
 
     irr::s32 oW = matchWR ? winW : resW;
     irr::s32 oH = matchWR ? winH : resH;
@@ -274,7 +280,7 @@ void QuadRenderer::recreateRt() {
 void QuadRenderer::setVp() {
     if (!driver) return;
 
-    if (!matchWR) {
+    if (!matchWR && letterbox) {
         const float sx = winW / (float)resW;
         const float sy = winH / (float)resH;
         float s = std::min(sx, sy);

@@ -6,9 +6,20 @@
 #include "Objects/Vec2.h"
 #include "Window.h"
 
-#include <Xinput.h>
+#ifdef _WIN32
+	#include <Xinput.h>
+#endif
+
+#include "Renderer.h"
+
+#ifdef __ANDROID__
+	#include "LimeAndroid.h"
+#endif
 
 #include "irrlicht.h"
+#include <chrono>
+#include <cmath>
+#include <cstdint>
 
 static Application* a;
 static DebugConsole* d;
@@ -16,6 +27,28 @@ static GUIManager* g;
 static Window* w;
 static IrrlichtDevice* device;
 
+#ifdef __ANDROID__
+// Pads come from CIrrDeviceAndroid as joystick events, already in XInput's layout:
+// buttons 0-9, d-pad on bits 10-13, axes LX LY RX RY LT RT
+struct Receiver::Impl {
+	static constexpr int MAX_CONTROLLERS = 4;
+	struct Pad {
+		uint32_t buttons = 0;
+		int16_t axis[6]{};
+	};
+	Pad state[MAX_CONTROLLERS]{};  // latest event
+	Pad polled[MAX_CONTROLLERS]{}; // what the game sees this frame
+	bool seen[MAX_CONTROLLERS]{};
+	bool connected[MAX_CONTROLLERS]{};
+	uint32_t prevButtons[MAX_CONTROLLERS]{};
+};
+
+static uint32_t ButtonToXFlag(int btn) {
+	if (btn >= 0 && btn <= 9) return 1u << btn;
+	if (btn >= 32 && btn <= 35) return 1u << (btn - 22);
+	return 0;
+}
+#else
 struct Receiver::Impl {
 	static constexpr int MAX_CONTROLLERS = XUSER_MAX_COUNT;
 	XINPUT_STATE state[MAX_CONTROLLERS]{};
@@ -42,6 +75,7 @@ static WORD ButtonToXFlag(int btn) {
 	default: return 0;
 	}
 }
+#endif
 
 Receiver::Receiver(Application* app, GUIManager* gui) {
 	a = app;
@@ -120,12 +154,36 @@ bool Receiver::OnEvent(const irr::SEvent& e) {
 		case irr::EET_KEY_INPUT_EVENT:
 			handleKey(e.KeyInput);
 			return false;
-		case irr::EET_MOUSE_INPUT_EVENT:
+		case irr::EET_MOUSE_INPUT_EVENT: {
 			handleMouse(e.MouseInput);
-			return false;
+
+			Renderer* r = a->GetRenderer();
+			irr::IrrlichtDevice* device = r ? r->getDevice() : nullptr;
+			if (!device || r->getMatchRes()) return false;
+
+			irr::SEvent ge = e;
+			Vec2 corrected = r->getMousePosCorrected((float)e.MouseInput.X, (float)e.MouseInput.Y);
+			ge.MouseInput.X = (irr::s32)corrected.getX();
+			ge.MouseInput.Y = (irr::s32)corrected.getY();
+
+			if (!device->getGUIEnvironment()->postEventFromUser(ge))
+				device->getSceneManager()->postEventFromUser(e);
+			return true;
+		}
 		case irr::EET_GUI_EVENT:
 			handleGUI(e.GUIEvent);
 			return false;
+#ifdef __ANDROID__
+		case irr::EET_JOYSTICK_INPUT_EVENT: {
+			const int id = e.JoystickEvent.Joystick;
+			if (id < 0 || id >= Impl::MAX_CONTROLLERS) return false;
+			auto& pad = joystickImpl->state[id];
+			pad.buttons = e.JoystickEvent.ButtonStates;
+			for (int i = 0; i < 6; ++i) pad.axis[i] = e.JoystickEvent.Axis[i];
+			joystickImpl->seen[id] = true;
+			return false;
+		}
+#endif
 		default: return false;
 	}
 }
@@ -158,6 +216,12 @@ void Receiver::handleKey(const irr::SEvent::SKeyInput& k) {
 #define MOUSE_RIGHT 1
 #define MOUSE_MIDDLE 2
 void Receiver::handleMouse(const irr::SEvent::SMouseInput& m) {
+#ifdef __ANDROID__
+	mouse.pos.x = (float)m.X;
+	mouse.pos.y = (float)m.Y;
+	if (m.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) { mouse.lastPos = mouse.pos; mouse.delta = { 0, 0 }; }
+#endif
+
 	switch (m.Event) {
 	case irr::EMIE_LMOUSE_PRESSED_DOWN: // LMB pressed
 		if (!mouse.lmbDown) {
@@ -231,6 +295,48 @@ static uint64_t NowMs() {
 	return (uint64_t)duration_cast<milliseconds>(steady_clock::now() - start).count();
 }
 
+#ifdef __ANDROID__
+void Receiver::pollJoystickInput() {
+	for (int i = 0; i < Impl::MAX_CONTROLLERS; ++i) {
+		// Android only tells us about a pad once it sends input
+		const bool isConnected = joystickImpl->seen[i];
+		if (isConnected && !joystickImpl->connected[i]) {
+			InputJoystickConnect.get()->engineRun([&](const std::string& msg) {
+				d->PostError(msg, false);
+				}, i);
+		}
+		joystickImpl->connected[i] = isConnected;
+		if (!isConnected) continue;
+
+		const uint32_t now = joystickImpl->state[i].buttons;
+		const uint32_t prev = joystickImpl->prevButtons[i];
+
+		static const int allButtons[] = { 0,1,2,3,4,5,6,7,8,9,32,33,34,35 };
+		for (int btn : allButtons) {
+			const uint32_t flag = ButtonToXFlag(btn);
+			if ((~prev & now) & flag) {
+				InputJoystickButtonPressed.get()->engineRun([&](const std::string& msg) {
+					d->PostError(msg, false);
+					}, i, btn);
+			}
+			if ((prev & ~now) & flag) {
+				InputJoystickButtonReleased.get()->engineRun([&](const std::string& msg) {
+					d->PostError(msg, false);
+					}, i, btn);
+			}
+		}
+
+		joystickImpl->prevButtons[i] = now;
+		joystickImpl->polled[i] = joystickImpl->state[i];
+	}
+}
+
+bool Receiver::isButtonDown(int id, int btn) {
+	if (id < 0 || id >= Impl::MAX_CONTROLLERS || !joystickImpl->connected[id]) return false;
+	const uint32_t flag = ButtonToXFlag(btn);
+	return flag && (joystickImpl->polled[id].buttons & flag) != 0;
+}
+#else
 void Receiver::pollJoystickInput() {
 	for (int i = 0; i < Impl::MAX_CONTROLLERS; ++i) {
 		XINPUT_STATE state{};
@@ -281,6 +387,7 @@ bool Receiver::isButtonDown(int id, int btn) {
 
 	return (joystickImpl->state[id].Gamepad.wButtons & flag) != 0;
 }
+#endif
 
 static inline float SnapToOne(float x) {
 	float eps = 0.01f;
@@ -292,8 +399,21 @@ static inline float SnapToOne(float x) {
 float Receiver::getControllerAxis(int id, int axis) {
 	if (id < 0 || id >= Impl::MAX_CONTROLLERS || !joystickImpl->connected[id]) return 0.0f;
 
-	const auto& pad = joystickImpl->state[id].Gamepad;
 	const float deadzone = 0.12f;
+
+#ifdef __ANDROID__
+	const auto& p = joystickImpl->polled[id];
+	switch (axis) {
+	case 0: return ApplyDeadzone(NormalizeAxisS16(p.axis[0]), deadzone);
+	case 1: return ApplyDeadzone(NormalizeAxisS16(p.axis[1]), deadzone);
+	case 3: return ApplyDeadzone(NormalizeAxisS16(p.axis[2]), deadzone);
+	case 4: return ApplyDeadzone(NormalizeAxisS16(p.axis[3]), deadzone);
+	case 5: return SnapToOne(p.axis[4] / 32767.0f);
+	case 6: return SnapToOne(p.axis[5] / 32767.0f);
+	default: return 0.0f;
+	}
+#else
+	const auto& pad = joystickImpl->state[id].Gamepad;
 
 	switch (axis) {
 	case 0: return ApplyDeadzone(NormalizeAxisS16(pad.sThumbLX), deadzone);
@@ -304,6 +424,7 @@ float Receiver::getControllerAxis(int id, int axis) {
 	case 6: return SnapToOne(pad.bRightTrigger / 255.0f);
 	default: return 0.0f;
 	}
+#endif
 
 	// Leave snapping for triggers?
 }
@@ -314,5 +435,15 @@ bool Receiver::isControllerConnected(int id) {
 }
 
 void Receiver::handleGUI(const irr::SEvent::SGUIEvent& ge) {
+#ifdef __ANDROID__
+	if (ge.Caller && ge.Caller->getType() == irr::gui::EGUIET_EDIT_BOX && a->GetRenderer()) {
+		irr::IrrlichtDevice* dev = a->GetRenderer()->getDevice();
+		if (ge.EventType == irr::gui::EGET_ELEMENT_FOCUSED) LimeAndroid::showSoftKeyboard(dev, true);
+		else if (ge.EventType == irr::gui::EGET_ELEMENT_FOCUS_LOST ||
+				 ge.EventType == irr::gui::EGET_EDITBOX_ENTER)
+				 LimeAndroid::showSoftKeyboard(dev, false);
+	}
+#endif
+
 	g->handleGUIEvent(ge.Caller, ge.Element, ge.EventType);
 }

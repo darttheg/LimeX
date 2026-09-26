@@ -1,9 +1,14 @@
 #pragma once
+#include <stddef.h>
 
-#ifdef LIMEENGINE_EXPORT
-	#define LIMEAPI __declspec(dllexport)
+#if defined(_WIN32)
+	#ifdef LIMEENGINE_EXPORT
+		#define LIMEAPI __declspec(dllexport)
+	#else
+		#define LIMEAPI __declspec(dllimport)
+	#endif
 #else
-	#define LIMEAPI __declspec(dllimport)
+	#define LIMEAPI __attribute__((visibility("default")))
 #endif
 
 extern "C" {

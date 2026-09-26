@@ -19,16 +19,30 @@ public:
 	DebugConsole(Application* owner);
 	~DebugConsole();
 
-	void Create(); // Create console
+	struct Line {
+		Line(MESSAGE_TYPE m, std::string c) : type(m), content(std::move(c)) {}
+		MESSAGE_TYPE type;
+		std::string content;
+	};
+
 	void Close(bool endApp = false); // Close console
 	void Update(int memMB);
 
 	bool IsEnabled() { return created; }
 
 	int GetMemUsed() { return memUsed; }
+
+#ifdef __ANDROID__
+	void SetEnable(bool v) { if (v && !created) Create(); }
+	void ClearConsole() {}
+	void Create() { created = true; }
+	void AddLineToConsole(Line l) {}
+#else
 	void SetEnable(bool v); // Enable/disable console
 	void ClearConsole(); // Only the lines in the console visually
-	void Clear(); // Clear lines
+	void Create(); // Create console
+	void AddLineToConsole(Line l);
+#endif
 
 	void Log(const char* msg, MESSAGE_TYPE type = MESSAGE_TYPE::NORMAL);
 	void Log(std::string msg, MESSAGE_TYPE type = MESSAGE_TYPE::NORMAL);
@@ -56,15 +70,10 @@ private:
 	int errCount = 0;
 	bool suppressWarnings = false;
 
-	struct Line {
-		Line(MESSAGE_TYPE m, std::string c) : type(m), content(std::move(c)) {}
-		MESSAGE_TYPE type;
-		std::string content;
-	};
+	void Clear(); // Clear lines
 
 	std::vector<Line> consoleLines;
 
 	void* consoleHandle = nullptr;
 	unsigned short defaultAttr = 0;
-	void AddLineToConsole(Line l);
 };

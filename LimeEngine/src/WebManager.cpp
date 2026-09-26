@@ -11,6 +11,29 @@
 static Application* a = nullptr;
 static DebugConsole* d = nullptr;
 
+#if defined(__ANDROID__) && defined(CPPHTTPLIB_OPENSSL_SUPPORT)
+#include <mutex>
+// Android stores trusted CA certs as separate files OpenSSL can't look up, so bundle them once
+static const std::string& androidCaBundle() {
+	static std::once_flag once;
+	static std::string bundle;
+	std::call_once(once, [] {
+		namespace fs = std::filesystem;
+		// Android 14+ keeps them in the Conscrypt APEX, older versions in /system
+		for (const char* dir : { "/apex/com.android.conscrypt/cacerts", "/system/etc/security/cacerts" }) {
+			std::error_code ec;
+			for (const auto& entry : fs::directory_iterator(dir, ec)) {
+				std::ifstream f(entry.path(), std::ios::binary);
+				bundle.append(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
+				bundle += '\n';
+			}
+			if (!bundle.empty()) break;
+		}
+	});
+	return bundle;
+}
+#endif
+
 bool WebManager::Init(Application* owner) {
 	a = owner;
 	d = owner->GetDebugConsole();
@@ -78,6 +101,12 @@ std::unique_ptr<httplib::Client> WebManager::makeClient(const std::string& url, 
 	cli->set_connection_timeout(sec, usec);
 	cli->set_read_timeout(sec, usec);
 	cli->set_write_timeout(sec, usec);
+
+#if defined(__ANDROID__) && defined(CPPHTTPLIB_OPENSSL_SUPPORT)
+	const std::string& ca = androidCaBundle();
+	if (scheme == "https" && !ca.empty())
+		cli->load_ca_cert_store(ca.data(), ca.size());
+#endif
 
 	return cli;
 }

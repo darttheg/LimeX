@@ -31,7 +31,6 @@ Camera::Camera(const Vec3& pos, const Vec3& rot) {
 
 	setPosition(pos);
 	setRotation(rot);
-	rh->updateCameraMatrix(camera);
 
 	if (setActive)
 		rh->setActiveCamera(camera, left, forward);
@@ -191,7 +190,7 @@ void Object::CameraBind::bind(lua_State* ls, RenderHelper* renh) {
 		"fieldOfView", sol::property(&Camera::getFieldOfView, &Camera::setFieldOfView),
 		// Field number aspectRatio, The aspect ratio of this `Camera`.
 		"aspectRatio", sol::property(&Camera::getAspectRatio, &Camera::setAspectRatio),
-		// Field boolean orthogonal, Whether or not this `Camera` renders orthographically or not. (NOTE: If this is true, `aspectRatio` modifies the zoom factor instead.)
+		// Field boolean orthogonal, Whether or not this `Camera` renders orthographically or not.
 		"orthogonal", sol::property(&Camera::getOrtho, &Camera::setOrtho)
 	);
 

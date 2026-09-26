@@ -12,6 +12,8 @@ namespace Object::EventBind {
 	void bind(lua_State* l);
 }
 
+class Hook;
+
 class Event : public std::enable_shared_from_this<Event> {
 private:
 	std::vector<int> funcs;

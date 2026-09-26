@@ -415,6 +415,10 @@ function Lime.getCommandLineArg(arg) end
 --- @param icon Lime.Enum.PopUpIcon?
 function Lime.displayMessage(title, message, icon) end
 
+--- Returns the current platform the application is running on.
+--- @return Lime.Enum.Platform
+function Lime.getPlatform() end
+
 --- Loads an archive of assets to the application. Content is accessed as if it were at the application's root. For example: If the archive contains folder/image.png, the path ./folder/image.png is valid for loading `Texture` objects.
 --- @param path string
 --- @return boolean
@@ -792,17 +796,21 @@ function Lime.Scene.setLightManagementType(type) end
 --- @param quality Lime.Enum.TextureCreationQuality
 function Lime.Scene.setTextureCreationQuality(quality) end
 
---- **This function cannot be run until window creation.** Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
+--- **This function cannot be run until window creation.** If set to true, newly created textures will generate mipmaps.
+--- @param mipmaps boolean
+function Lime.Scene.setMipMapping(mipmaps) end
+
+--- **This function cannot be run until window creation.** Returns whether or not textures create mipmaps on load.
+--- @return boolean
+function Lime.Scene.getMipMapping() end
+
+--- **This function cannot be run until window creation.** Returns a `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
 --- @return Texture
 function Lime.Scene.getErrorTexture() end
 
 --- If set to true, the rendering resolution will be that of the window resolution, updating on any window size changes. If false, the rendering resolution will remain the same size but upscale to the window resolution using a letterboxed viewport.
 --- @param dynamic boolean
 function Lime.Scene.setDynamicResolution(dynamic) end
-
---- If set to true and dynamic resolution is false, the render window is scaled strictly to whole-number multiples, avoiding jagged pixels. This may introduce larger letterbox borders, however.
---- @param intScaling boolean
-function Lime.Scene.setIntegerScaling(intScaling) end
 
 --- Sets the render size to `size`. If the render size is set to rescale to the window size then this change will not take effect. See `Lime.Scene.setDynamicResolution`.
 --- @param size Vec2
@@ -942,6 +950,9 @@ function Lime.Audio.setMainVolume(volume) end
 --- **This function cannot be run until window creation.** Sets all `Sound` objects to paused or unpaused.
 --- @param paused boolean
 function Lime.Audio.setAllSoundsPaused(paused) end
+
+--- **This function cannot be run until window creation.** Stops all `Sound` objects.
+function Lime.Audio.stopAllSounds() end
 
 --- **This function cannot be run until window creation.** Sets the default minimum listening distance for new sounds.
 --- @param distance number
@@ -1114,6 +1125,14 @@ function Lime.Window.setLockAspectRatio(locked) end
 --- @param size Vec2
 function Lime.Window.setMinimumSize(size) end
 
+--- If set to true and dynamic resolution is false, the render output is scaled strictly to whole-number multiples, avoiding jagged pixels. This may introduce larger letterbox borders, however.
+--- @param intScaling boolean
+function Lime.Window.setIntegerScaling(intScaling) end
+
+--- If set to true and dynamic resolution is false, the rendered output is letterboxed to retain the render size aspect ratio. If false, the rendered output is scaled to fit the window.
+--- @param letterboxing boolean
+function Lime.Window.setLetterboxing(letterboxing) end
+
 --- A plane that faces the active camera.
 --- @class Billboard
 --- @field size Vec2 The width and height of this Billboard.
@@ -1209,7 +1228,7 @@ function Billboard:addRotateAnimator(rot) end
 --- @field viewPlanes Vec2 The near and far clipping planes of this `Camera`.
 --- @field fieldOfView number The field of view of this `Camera` in degrees.
 --- @field aspectRatio number The aspect ratio of this `Camera`.
---- @field orthogonal boolean Whether or not this `Camera` renders orthographically or not. (NOTE: If this is true, `aspectRatio` modifies the zoom factor instead.)
+--- @field orthogonal boolean Whether or not this `Camera` renders orthographically or not.
 --- @field scale Vec3 The 3D scale of this object in the scene.
 --- @field visible boolean Determines the visibility of this object and its children.
 --- @field id number The identifier for this object to be used in raycasts and object selection.
@@ -1575,6 +1594,7 @@ function Image2D_onHovered:length() end
 --- A basic 2D object to display images. Without loading a Texture, this object can be used as a container for other GUI objects if parented together.
 --- @class Image2D
 --- @field scaleToFit boolean Determines whether or not this `Image2D` scales to its size boundaries or not.
+--- @field opacity number The opacity of this `Image2D`, from 0 to 255.
 --- @field position Vec2 The 2D position of this object on the screen.
 --- @field size Vec2 The 2D size of this object.
 --- @field visible boolean Determines the visibility of this object and its children.
@@ -2555,7 +2575,6 @@ function Skydome:addRotateAnimator(rot) end
 --- @field playbackPosition number The current playback position of this `Sound`.
 --- @field velocity Vec3 The velocity of this `Sound`. Only applicable if this object is played in 3D.
 --- @field position Vec3 The position of this `Sound` in the scene. Only applicable if this `Sound` is played in 3D.
---- @field effects boolean Whether or not sound effects are enabled on playback. This flag must first be enabled to apply effects, as it is false by default. Sound effects are more resource-intensive.
 --- @field debug boolean Show debug information about this object in the scene.
 Sound = {}
 
@@ -2608,12 +2627,6 @@ function Sound:purge() end
 --- Clears all effects applied to this `Sound`. Stopping or destroying this `Sound` will clear its effects.
 function Sound:clearEffects() end
 
---- Enables distortion on this `Sound`. Only applicable if this `Sound` is playing. This effect messes with the sound's frequency and other attributes to produce an odd result. Params
---- @param gain number
---- @param edge number
---- @return boolean
-function Sound:addDistortionEffect(gain, edge) end
-
 --- Enables echoing on this `Sound`. Only applicable if this `Sound` is playing. This effect repeats the sound with decay over time. Params
 --- @param wetDry number
 --- @param feedback number
@@ -2628,12 +2641,6 @@ function Sound:addEchoEffect(wetDry, feedback, delayMs) end
 --- @param freqRatio number
 --- @return boolean
 function Sound:addReverbEffect(inputGain, mix, timeMs, freqRatio) end
-
---- Enables compression on this `Sound`. Only applicable if this `Sound` is playing. This effect reduces the dynamic range of the sound's waveform. Params
---- @param threshold number
---- @param ratio number
---- @return boolean
-function Sound:addCompressionEffect(threshold, ratio) end
 
 --- Enables parametric equilization on this `Sound`. Only applicable if this `Sound` is playing. This effect amplifies or attenuates signals at a given frequency. Params
 --- @param threshold number
