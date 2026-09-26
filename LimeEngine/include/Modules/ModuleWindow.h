@@ -31,6 +31,8 @@ namespace Module {
 			void SetMaintainAR(bool on);
 			bool IsCreated();
 			void SetMinimumSize(const Vec2& size);
+			void SetIntegerScaling(bool v);
+			void SetLetterboxing(bool v);
 		}
 	}
 }

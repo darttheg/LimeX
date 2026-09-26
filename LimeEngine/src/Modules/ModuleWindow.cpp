@@ -87,6 +87,16 @@ void Module::Window::bind(Application* app) {
 	// Returns void
 	module.set_function("setMinimumSize", &Module::Window::Bind::SetMinimumSize);
 
+	// If set to true and dynamic resolution is false, the render output is scaled strictly to whole-number multiples, avoiding jagged pixels. This may introduce larger letterbox borders, however.
+	// Params boolean intScaling
+	// Returns void
+	module.set_function("setIntegerScaling", &Module::Window::Bind::SetIntegerScaling);
+
+	// If set to true and dynamic resolution is false, the rendered output is letterboxed to retain the render size aspect ratio. If false, the rendered output is scaled to fit the window.
+	// Params boolean letterboxing
+	// Returns void
+	module.set_function("setLetterboxing", &Module::Window::Bind::SetLetterboxing);
+
 	// Field Event onResize, Event called by Lime once the window is resized in any way.
 	w->WindowResize = std::make_shared<Event>();
 	module["onResize"] = w->WindowResize;
@@ -118,6 +128,14 @@ Vec2 Module::Window::Bind::GetSize() {
 
 void Module::Window::Bind::SetSize(const Vec2& size) {
 	w->setSize(size);
+}
+
+void Module::Window::Bind::SetIntegerScaling(bool v) {
+	r->setIntegerScaling(v);
+}
+
+void Module::Window::Bind::SetLetterboxing(bool v) {
+	r->setLetterboxing(v);
 }
 
 Vec2 Module::Window::Bind::GetRenderedSize() {

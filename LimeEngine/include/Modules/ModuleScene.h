@@ -31,8 +31,11 @@ namespace Module {
 			void SetShadowColor(const Vec4& color);
 			void SetLightManagementType(int type);
 			void SetTextureCreationQuality(int quality);
+			void SetMipMapGen(bool enable);
+			bool GetMipMapGen();
 			void SetMatchRenderResToWindow(bool v);
-			void SetIntegerScaling(bool v);
+			//void SetIntegerScaling(bool v);
+			// void SetLetterboxing(bool v);
 			Texture GetErrorTexture();
 			void SetRenderSize(const Vec2& size);
 			void SetRenderQuality(int q);

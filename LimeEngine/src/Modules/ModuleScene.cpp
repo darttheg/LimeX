@@ -78,7 +78,16 @@ void Module::Scene::bind(Application* app) {
 	// Returns void
 	module.set_function("setTextureCreationQuality", &Module::Scene::Bind::SetTextureCreationQuality);
 
-	// [+] Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
+	// [+] If set to true, newly created textures will generate mipmaps.
+	// Params boolean mipmaps
+	// Returns void
+	module.set_function("setMipMapping", &Module::Scene::Bind::SetMipMapGen);
+
+	// [+] Returns whether or not textures create mipmaps on load.
+	// Returns boolean
+	module.set_function("getMipMapping", &Module::Scene::Bind::GetMipMapGen);
+
+	// [+] Returns a `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
 	// Returns Texture
 	module.set_function("getErrorTexture", &Module::Scene::Bind::GetErrorTexture);
 
@@ -86,11 +95,6 @@ void Module::Scene::bind(Application* app) {
 	// Params boolean dynamic
 	// Returns void
 	module.set_function("setDynamicResolution", &Module::Scene::Bind::SetMatchRenderResToWindow);
-
-	// If set to true and dynamic resolution is false, the render window is scaled strictly to whole-number multiples, avoiding jagged pixels. This may introduce larger letterbox borders, however.
-	// Params boolean intScaling
-	// Returns void
-	module.set_function("setIntegerScaling", &Module::Scene::Bind::SetIntegerScaling);
 
 	// Sets the render size to `size`. If the render size is set to rescale to the window size then this change will not take effect. See `Lime.Scene.setDynamicResolution`.
 	// Params Vec2 size
@@ -278,12 +282,16 @@ void Module::Scene::Bind::SetTextureCreationQuality(int quality) {
 	r->setTextureCreationQuality(quality);
 }
 
-void Module::Scene::Bind::SetMatchRenderResToWindow(bool v) {
-	r->setMatchRes(v);
+void Module::Scene::Bind::SetMipMapGen(bool enable) {
+	r->setDoMipmapGen(enable);
 }
 
-void Module::Scene::Bind::SetIntegerScaling(bool v) {
-	r->setIntegerScaling(v);
+bool Module::Scene::Bind::GetMipMapGen() {
+	return r->getDoMipmapGen();
+}
+
+void Module::Scene::Bind::SetMatchRenderResToWindow(bool v) {
+	r->setMatchRes(v);
 }
 
 Texture Module::Scene::Bind::GetErrorTexture() {
