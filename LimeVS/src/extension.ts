@@ -68,7 +68,10 @@ function loadIgnoreList(workspaceFolder: string): Set<string> {
     ".git",
     ".gitignore",
     ".gitmodules",
-    ".gitattributes"
+    ".gitattributes",
+    "bin-android",
+    ".android-build",
+    "android.json"
   ]);
 
   const ignorePath = path.join(workspaceFolder, ".ignore");
@@ -229,6 +232,142 @@ async function checkMissingDlls(context: vscode.ExtensionContext, workspaceFolde
   }
 }
 
+type Platform = "windows" | "android";
+let platformItem: vscode.StatusBarItem;
+
+function getPlatform(context: vscode.ExtensionContext): Platform {
+  return context.workspaceState.get<Platform>("lime.platform", "windows");
+}
+
+function updatePlatformItem(context: vscode.ExtensionContext): void {
+  platformItem.text = getPlatform(context) === "android" ? "$(device-mobile) Lime: Android" : "$(device-desktop) Lime: Windows";
+  platformItem.tooltip = "Select the platform Lime builds for";
+}
+
+async function selectPlatform(context: vscode.ExtensionContext): Promise<void> {
+  const items: (vscode.QuickPickItem & { value: Platform })[] = [
+    { label: "$(device-desktop) Windows", value: "windows" },
+    { label: "$(device-mobile) Android", value: "android" },
+  ];
+  const pick = await vscode.window.showQuickPick(items, { placeHolder: "Build for" });
+  if (!pick) return;
+  await context.workspaceState.update("lime.platform", pick.value);
+  updatePlatformItem(context);
+
+  if (pick.value === "android") {
+    createAndroidJson();
+    await checkAndroidPaths();
+  }
+}
+
+function createAndroidJson(): void {
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+  if (!workspaceFolder) return;
+  const file = path.join(workspaceFolder, "android.json");
+  if (fs.existsSync(file)) return;
+
+  const folderName = path.basename(workspaceFolder);
+  let id = folderName.toLowerCase().replace(/[^a-z0-9_]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
+  if (!/^[a-z]/.test(id)) id = "game" + id;
+
+  const settings = {
+    package: `com.lime.${id}`,
+    name: folderName,
+    version: "1.0",
+    versionCode: 1,
+    orientation: "landscape",
+    backButton: "escape",
+  };
+  fs.writeFileSync(file, JSON.stringify(settings, null, 2) + "\n", "utf-8");
+  vscode.window.showInformationMessage("Lime: Created android.json with the app's Android settings.");
+}
+
+async function checkAndroidPaths(): Promise<void> {
+  const cfg = vscode.workspace.getConfiguration("lime.android");
+  const missing: string[] = [];
+  if (!cfg.get<string>("sdkPath") && !process.env.ANDROID_HOME) missing.push("Android SDK path");
+  if (!cfg.get<string>("javaHome") && !process.env.JAVA_HOME) missing.push("Java path");
+  if (missing.length === 0) return;
+
+  const choice = await vscode.window.showWarningMessage(
+    `Lime: Building for Android needs the ${missing.join(" and ")} set in Settings.`,
+    "Open Settings"
+  );
+  if (choice === "Open Settings")
+    vscode.commands.executeCommand("workbench.action.openSettings", "lime.android");
+}
+
+function androidSdk(): string {
+  const sdk = vscode.workspace.getConfiguration("lime.android").get<string>("sdkPath");
+  return sdk || process.env.ANDROID_HOME || path.join(process.env.LOCALAPPDATA ?? "", "Android", "Sdk");
+}
+
+function androidEnv(): { [key: string]: string } {
+  const cfg = vscode.workspace.getConfiguration("lime.android");
+  const env: { [key: string]: string } = {};
+  const sdk = cfg.get<string>("sdkPath");
+  const java = cfg.get<string>("javaHome");
+  if (sdk) env.ANDROID_HOME = sdk;
+  if (java) env.JAVA_HOME = java;
+  return env;
+}
+
+function listAndroidDevices(): Promise<string[]> {
+  const adb = path.join(androidSdk(), "platform-tools", "adb.exe");
+  return new Promise((resolve) => {
+    exec(`"${adb}" devices`, (err, stdout) => {
+      if (err) { resolve([]); return; }
+      resolve(stdout.split(/\r?\n/).slice(1).filter(l => /\tdevice$/.test(l)).map(l => l.split("\t")[0]));
+    });
+  });
+}
+
+async function pickAndroidDevice(): Promise<string | undefined> {
+  const devices = await listAndroidDevices();
+  if (devices.length === 0) {
+    vscode.window.showErrorMessage("Lime: No Android device or emulator connected.");
+    return undefined;
+  }
+  if (devices.length === 1) return devices[0];
+  return vscode.window.showQuickPick(devices, { placeHolder: "Run on" });
+}
+
+// args go in as-is so switches like -RunOnly stay switches
+function runAndroid(context: vscode.ExtensionContext, name: string, args: string): void {
+  const script = path.join(context.extensionPath, "android", "buildApk.ps1");
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
+
+  const existing = terminals.get(name);
+  if (existing && !existing.exitStatus) existing.dispose();
+
+  const terminal = vscode.window.createTerminal({
+    name,
+    cwd: workspaceFolder,
+    shellPath: "powershell.exe",
+    shellArgs: ["-NoProfile", "-ExecutionPolicy", "Bypass"],
+    env: androidEnv(),
+  });
+  terminals.set(name, terminal);
+  terminal.show(true);
+  terminal.sendText(`& '${script}' -Project '${workspaceFolder.replace(/'/g, "''")}' ${args}`, true);
+}
+
+interface LogLink extends vscode.TerminalLink {
+  file: string;
+}
+
+const logLinkProvider: vscode.TerminalLinkProvider<LogLink> = {
+  provideTerminalLinks(ctx) {
+    const match = /Details in "([^"]+)"/.exec(ctx.line);
+    if (!match) return [];
+    const start = match.index + match[0].indexOf('"');
+    return [{ startIndex: start, length: match[1].length + 2, tooltip: "Open build.log", file: match[1] }];
+  },
+  handleTerminalLink(link) {
+    vscode.window.showTextDocument(vscode.Uri.file(link.file));
+  },
+};
+
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
   if (workspaceFolder) {
@@ -240,6 +379,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     );
   }
 
+  platformItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+  platformItem.command = "lime.selectPlatform";
+  updatePlatformItem(context);
+  if (workspaceFolder) platformItem.show();
+  context.subscriptions.push(platformItem);
+  context.subscriptions.push(vscode.window.registerTerminalLinkProvider(logLinkProvider));
+
   context.subscriptions.push(
     vscode.window.onDidCloseTerminal((closed) => {
       for (const [key, terminal] of terminals) {
@@ -247,19 +393,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       }
     }),
     vscode.commands.registerCommand("lime.build", () => {
-      const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
-      const batPath = path.join(context.extensionPath, "cmd", "build.bat");
-
+      if (getPlatform(context) === "android") {
+        runAndroid(context, "Lime: Build", "");
+        return;
+      }
       runBat(context, "build.bat", "Lime: Build");
-      
-      exec(`"${batPath}" "${workspaceFolder}"`, (error) => {
-        if (error) {
-          vscode.window.showErrorMessage("Lime: Build failed.");
-          return;
-        }
-      });
     }),
-    vscode.commands.registerCommand("lime.run", () => {
+    vscode.commands.registerCommand("lime.run", async () => {
+      if (getPlatform(context) === "android") {
+        const device = await pickAndroidDevice();
+        if (device) runAndroid(context, "Lime: Run", `-RunOnly -Device '${device}'`);
+        return;
+      }
       const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
       try {
         launchApp(workspaceFolder);
@@ -267,38 +412,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         vscode.window.showErrorMessage("Lime: Run failed.");
       }
     }),
-    vscode.commands.registerCommand("lime.buildAndRun", () => {
-      const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
-      const batPath = path.join(context.extensionPath, "cmd", "build.bat");
-
-      runBat(context, "build.bat", "Lime: Run");
-
-      exec(`"${batPath}" "${workspaceFolder}"`, (error) => {
-        if (error) {
-          vscode.window.showErrorMessage("Lime: Build failed.");
-          return;
-        }
-
-        let finished = false;
-        const timeout = setTimeout(() => {
-          if (!finished) {
-            vscode.window.showErrorMessage("Lime: Run timed out.");
-          }
-        }, 5000);
-
-        try {
-          setTimeout(() => {
-            launchApp(workspaceFolder);
-          }, 200);
-          finished = true;
-          clearTimeout(timeout);
-        } catch (e) {
-          clearTimeout(timeout);
-          vscode.window.showErrorMessage("Lime: Run failed.");
-        }
-      });
-    }),
+    vscode.commands.registerCommand("lime.selectPlatform", () => selectPlatform(context)),
     vscode.commands.registerCommand("lime.package", () => {
+      if (getPlatform(context) === "android") {
+        runAndroid(context, "Lime: Package", "");
+        return;
+      }
       const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
       if (!workspaceFolder) {
         vscode.window.showWarningMessage("Lime: Open a folder to package a project.");

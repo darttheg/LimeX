@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="{{PACKAGE}}"
+	android:versionCode="{{VERSION_CODE}}"
+	android:versionName="{{VERSION_NAME}}">
+
+	<uses-feature android:glEsVersion="0x00020000" android:required="true" />
+	<uses-permission android:name="android.permission.INTERNET" />
+
+	<application
+		android:label="{{LABEL}}"
+		android:icon="@mipmap/ic_launcher"
+		android:hasCode="true"
+		android:extractNativeLibs="false"
+		android:appCategory="game"
+		android:isGame="true"
+		android:enableOnBackInvokedCallback="{{BACK_CALLBACK}}">
+
+		<activity
+			android:name="org.lime.LimeActivity"
+			android:label="{{LABEL}}"
+			android:exported="true"
+			android:launchMode="singleTask"
+			android:screenOrientation="{{ORIENTATION}}"
+			android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+			android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation|uiMode|density">
+			<meta-data android:name="android.app.lib_name" android:value="lime" />
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+	</application>
+</manifest>

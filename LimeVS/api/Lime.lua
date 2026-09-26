@@ -415,6 +415,10 @@ function Lime.getCommandLineArg(arg) end
 --- @param icon Lime.Enum.PopUpIcon?
 function Lime.displayMessage(title, message, icon) end
 
+--- Returns the current platform the application is running on.
+--- @return Lime.Enum.Platform
+function Lime.getPlatform() end
+
 --- Loads an archive of assets to the application. Content is accessed as if it were at the application's root. For example: If the archive contains folder/image.png, the path ./folder/image.png is valid for loading `Texture` objects.
 --- @param path string
 --- @return boolean
@@ -792,7 +796,15 @@ function Lime.Scene.setLightManagementType(type) end
 --- @param quality Lime.Enum.TextureCreationQuality
 function Lime.Scene.setTextureCreationQuality(quality) end
 
---- **This function cannot be run until window creation.** Returns an `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
+--- **This function cannot be run until window creation.** If set to true, newly created textures will generate mipmaps.
+--- @param mipmaps boolean
+function Lime.Scene.setMipMapping(mipmaps) end
+
+--- **This function cannot be run until window creation.** Returns whether or not textures create mipmaps on load.
+--- @return boolean
+function Lime.Scene.getMipMapping() end
+
+--- **This function cannot be run until window creation.** Returns a `Texture` of a lime and white checkerboard pattern, 2x2. Useful for missing Textures and the like.
 --- @return Texture
 function Lime.Scene.getErrorTexture() end
 
@@ -897,6 +909,10 @@ function Lime.Scene.clearOverlayTexture() end
 --- **This function can only be run before window creation.** Sets whether or not the stencil buffer is used. `Shadow Volume` objects are not functional without use of the stencil buffer.
 --- @param enable boolean
 function Lime.Scene.setStencilBuffer(enable) end
+
+--- **This function cannot be run until window creation.** Sets a `Camera` to be rendered after the main active `Camera` has rendered the scene. Only objects parented to this `Camera` are rendered.
+--- @param camera Camera?
+function Lime.Scene.setViewModelCamera(camera) end
 
 --- Sets whether or not a depth pass should be rendered. The depth pass renders the scene to a render texture 'rtDepth' which can be fetched using `Texture.new("rtDepth")`.
 --- @param enable boolean
@@ -1571,6 +1587,7 @@ function Image2D_onHovered:length() end
 --- A basic 2D object to display images. Without loading a Texture, this object can be used as a container for other GUI objects if parented together.
 --- @class Image2D
 --- @field scaleToFit boolean Determines whether or not this `Image2D` scales to its size boundaries or not.
+--- @field opacity number The opacity of this `Image2D`, from 0 to 255.
 --- @field position Vec2 The 2D position of this object on the screen.
 --- @field size Vec2 The 2D size of this object.
 --- @field visible boolean Determines the visibility of this object and its children.
@@ -2355,7 +2372,7 @@ function Shader.new(vertexShaderPath, pixelShaderPath, type) end
 --- @param inverse boolean?
 function Shader:setParameter(name, transform, inverse) end
 
---- Returns the path to the vertex shader file loaded in this `Shader`.
+--- sol::resolve<void(const std::string&, int)>(&ShaderMaterial::setUniformInt), Returns the path to the vertex shader file loaded in this `Shader`.
 --- @return string
 function Shader:getVSPath() end
 
@@ -2551,7 +2568,6 @@ function Skydome:addRotateAnimator(rot) end
 --- @field playbackPosition number The current playback position of this `Sound`.
 --- @field velocity Vec3 The velocity of this `Sound`. Only applicable if this object is played in 3D.
 --- @field position Vec3 The position of this `Sound` in the scene. Only applicable if this `Sound` is played in 3D.
---- @field effects boolean Whether or not sound effects are enabled on playback. This flag must first be enabled to apply effects, as it is false by default. Sound effects are more resource-intensive.
 --- @field debug boolean Show debug information about this object in the scene.
 Sound = {}
 
@@ -2604,12 +2620,6 @@ function Sound:purge() end
 --- Clears all effects applied to this `Sound`. Stopping or destroying this `Sound` will clear its effects.
 function Sound:clearEffects() end
 
---- Enables distortion on this `Sound`. Only applicable if this `Sound` is playing. This effect messes with the sound's frequency and other attributes to produce an odd result. Params
---- @param gain number
---- @param edge number
---- @return boolean
-function Sound:addDistortionEffect(gain, edge) end
-
 --- Enables echoing on this `Sound`. Only applicable if this `Sound` is playing. This effect repeats the sound with decay over time. Params
 --- @param wetDry number
 --- @param feedback number
@@ -2624,12 +2634,6 @@ function Sound:addEchoEffect(wetDry, feedback, delayMs) end
 --- @param freqRatio number
 --- @return boolean
 function Sound:addReverbEffect(inputGain, mix, timeMs, freqRatio) end
-
---- Enables compression on this `Sound`. Only applicable if this `Sound` is playing. This effect reduces the dynamic range of the sound's waveform. Params
---- @param threshold number
---- @param ratio number
---- @return boolean
-function Sound:addCompressionEffect(threshold, ratio) end
 
 --- Enables parametric equilization on this `Sound`. Only applicable if this `Sound` is playing. This effect amplifies or attenuates signals at a given frequency. Params
 --- @param threshold number

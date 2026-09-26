@@ -10,6 +10,11 @@ Green = 2,
 Blue = 3,
 Yellow = 4,
 }
+---@enum Lime.Enum.Platform
+Lime.Enum.Platform = {
+Windows = 0,
+Android = 1,
+}
 ---@enum Lime.Enum.PopUpIcon
 Lime.Enum.PopUpIcon = {
 None = 0,

@@ -29,11 +29,6 @@
         "icon": "$(play)"
       },
       {
-        "command": "lime.buildAndRun",
-        "title": "Lime: Build and Run",
-        "icon": "$(play-circle)"
-      },
-      {
         "command": "lime.package",
         "title": "Lime: Package Project",
         "icon": "$(package)"
@@ -42,6 +37,11 @@
         "command": "lime.newProject",
         "title": "Lime: Create New Project",
         "icon": "$(new-folder)"
+      },
+      {
+        "command": "lime.selectPlatform",
+        "title": "Lime: Select Platform",
+        "icon": "$(device-mobile)"
       }
     ],
     "viewsContainers": {
@@ -64,18 +64,25 @@
           "group": "navigation@2"
         },
         {
-          "command": "lime.buildAndRun",
-          "group": "navigation@3"
-        },
-        {
           "command": "lime.package",
-          "group": "navigation@4"
+          "group": "navigation@3"
         }
       ]
     },
     "configuration": {
       "title": "Lime Engine",
-      "properties": {}
+      "properties": {
+        "lime.android.sdkPath": {
+          "type": "string",
+          "default": "",
+          "description": "Android SDK folder. Empty uses ANDROID_HOME or Android Studio's default location."
+        },
+        "lime.android.javaHome": {
+          "type": "string",
+          "default": "",
+          "description": "Java folder (JDK). Empty uses JAVA_HOME or Android Studio's bundled one."
+        }
+      }
     }
   },
   "scripts": {
