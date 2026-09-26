@@ -39,6 +39,10 @@ void Module::Sound::bind(Application* app) {
 	// Returns void
 	module.set_function("setAllSoundsPaused", &Module::Sound::Bind::SetAllPaused);
 
+	// [+] Stops all `Sound` objects.
+	// Returns void
+	module.set_function("stopAllSounds", &Module::Sound::Bind::StopAll);
+
 	// [+] Sets the default minimum listening distance for new sounds.
 	// Params number distance
 	// Returns void

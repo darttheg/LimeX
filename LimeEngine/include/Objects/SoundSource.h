@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
 extern "C" { struct lua_State; }
@@ -10,10 +11,8 @@ class RenderHelper;
 #include <sol/forward.hpp>
 #include <Interfaces/Object3D.h>
 
-namespace irrklang {
-	class ISound;
-	class ISoundSource;
-}
+struct SoundMini;
+struct SoundData;
 
 namespace irr::scene {
 	class ISceneNode;
@@ -53,8 +52,6 @@ public:
 	Vec3 getVelocity();
 	void setPosition(const Vec3& vel);
 	Vec3 getPosition();
-	bool getDoSFX();
-	void setDoSFX(bool v);
 	
 	bool getDebug();
 	void setDebug(bool v);
@@ -67,10 +64,8 @@ public:
 	std::string getPath();
 
 	void clearEffects();
-	bool addDistortionEffect(float gain = -18.0f, float edge = 15.0f);
 	bool addEchoEffect(float wetDry = 50.0f, float feedback = 50.0f, float delay = 250.0f);
 	bool addReverbEffect(float inputGain = 0.0f, float mix = 0.0f, float time = 1000.0f, float freqRatio = 0.001f);
-	bool addCompressionEffect(float threshold = -20.0f, float ratio = 3.0f);
 	bool addParamEqEffect(float fCenter = 8000.0f, float fBandwidth = 12.0f, float fGain = 0.0f);
 
 	void collected();
@@ -80,18 +75,18 @@ public:
 	sol::object purge();
 
 private:
-	irrklang::ISound* cur = nullptr;
-	irrklang::ISoundSource* src = nullptr;
+	std::shared_ptr<SoundMini> cur;
+	SoundData* src = nullptr;
 
 	struct Vec3S { float x, y, z; };
 
 	bool loops = false;
 	bool is3D = false;
-	bool doSFX = false;
-	float vol = 100.0f;
+	float vol = 1.0f;
 	float minDist = 1.0f;
 	float maxDist = 5000.0f;
 	Vec3S pos = Vec3S{ 0,0,0 };
+	Vec3S vel = Vec3S{ 0,0,0 };
 	irr::scene::ISceneNode* parent = nullptr;
 
 	irr::scene::IBillboardSceneNode* dVisual = nullptr;

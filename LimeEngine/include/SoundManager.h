@@ -1,24 +1,27 @@
 #pragma once
+#include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 class Application;
 class Vec2;
 class Vec3;
-
-namespace irrklang {
-	class ISoundEngine;
-	class ISound;
-	class ISoundSource;
-}
+struct SoundMini;
+struct ma_engine;
 
 namespace irr::scene {
 	class ICameraSceneNode;
 	class ISceneNode;
 }
 
+struct SoundData {
+	std::string path;
+	bool stream = false;
+};
+
 struct SoundSourceOnNode {
-	irrklang::ISound* sound;
+	std::weak_ptr<SoundMini> sound;
 	irr::scene::ISceneNode* parent;
 };
 
@@ -29,10 +32,14 @@ public:
 
 	bool Init();
 	bool Update(float dt);
+	void Shutdown();
 	bool guardSoundCheck(std::string msg = "");
 
 	float getVelFactor() { return velFactor; }
 	void setVelFactor(float f) { velFactor = f; }
+	float getDefaultMin() { return defaultMin; }
+	float getDefaultMax() { return defaultMax; }
+	float getDistanceFactor() { return distanceFactor; }
 
 	int getMainVolume();
 	void setMainVolume(int v);
@@ -45,16 +52,18 @@ public:
 	void setDopplerEffectParameters(float dopplerFactor, float distanceFactor);
 	void warnGarbageCollection(const std::string& path);
 	bool preloadSound(const std::string& path);
-	// bool appendSourceToAlias(const Sound& src, const std::string& name);
-	// bool removeAliasAndSources(const std::string& name);
 
-	irrklang::ISoundSource* createSoundSource(const std::string& path, int type = 0);
-	void unloadSound(irrklang::ISoundSource* src);
-	irrklang::ISound* play(irrklang::ISoundSource* src, bool td, bool loops, bool sfx);
-	bool attachSoundToNode(irrklang::ISound* sound, irr::scene::ISceneNode* parent);
-	void detachSoundFromNode(irrklang::ISound* sound);
+	SoundData* createSoundSource(const std::string& path, int type = 0);
+	void unloadSound(SoundData* src);
+	std::shared_ptr<SoundMini> play(SoundData* src, bool td, bool loops);
+	bool attachSoundToNode(const std::shared_ptr<SoundMini>& sound, irr::scene::ISceneNode* parent);
+	void detachSoundFromNode(const SoundMini* sound);
 private:
-	irrklang::ISoundEngine* i_sound = nullptr;
+	std::unique_ptr<ma_engine> engine;
+	bool ready = false;
+
+	std::unordered_map<std::string, std::unique_ptr<SoundData>> sources;
+	std::vector<std::shared_ptr<SoundMini>> soundMinis;
 
 	struct Vec3S { float x, y, z; };
 	Vec3S lastCamPos{ 0,0,0 };
@@ -62,6 +71,10 @@ private:
 	float velFactor = 0.0f;
 	float mainVol = 1.0f;
 	bool muteUnfocus = false;
+	float defaultMin = 1.0f;
+	float defaultMax = 100000000.0f;
+	float dopplerFactor = 1.0f;
+	float distanceFactor = 1.0f;
 
 	irr::scene::ICameraSceneNode* last = nullptr;
 

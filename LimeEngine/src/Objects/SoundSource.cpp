@@ -2,26 +2,27 @@
 
 #include "RenderHelper.h"
 #include "SoundManager.h"
-#include "irrKlang.h"
 #include <sol/sol.hpp>
 #include "Objects/Vec3.h"
 #include "Interfaces/Object3D.h"
 #include "Objects/DebugAxisPlaneNode.h"
+#include "External/SoundMini.h"
 
 static SoundManager* s = nullptr;
 static RenderHelper* rh = nullptr;
 static lua_State* l = nullptr;
 
 SoundSource::SoundSource() {
+	minDist = s->getDefaultMin();
+	maxDist = s->getDefaultMax();
 }
 
-SoundSource::SoundSource(const SoundSource& s) {
-	src = s.src;
+SoundSource::SoundSource(const SoundSource& o) : SoundSource() {
+	src = o.src;
 }
 
 SoundSource::SoundSource(const std::string& path, int type) {
 	loadFromFile(path, type);
-	if (!src) return;
 }
 
 bool SoundSource::play(bool td) {
@@ -29,18 +30,18 @@ bool SoundSource::play(bool td) {
 	if (cur)
 		cur->stop();
 
-	cur = s->play(src, td, loops, doSFX);
+	cur = s->play(src, td, loops);
 	if (cur && td)
-		cur->setPosition(irrklang::vec3df(pos.x, pos.y, pos.z));
+		ma_sound_set_position(&cur->sound, pos.x, pos.y, -pos.z);
 	if (cur) {
-		cur->setMinDistance(minDist);
-		cur->setMaxDistance(maxDist);
-		cur->setVolume(vol);
-		cur->setIsPaused(false);
+		ma_sound_set_min_distance(&cur->sound, minDist);
+		ma_sound_set_max_distance(&cur->sound, maxDist);
+		ma_sound_set_volume(&cur->sound, vol);
+		cur->setPaused(false);
 	}
 	is3D = td;
 
-	return cur;
+	return cur != nullptr;
 }
 
 void SoundSource::stop() {
@@ -57,91 +58,99 @@ bool SoundSource::isPlaying() {
 
 bool SoundSource::getPaused() {
 	if (!src || !cur) return false;
-	return cur->getIsPaused();
+	return cur->paused;
 }
 
 void SoundSource::setPaused(bool v) {
 	if (!src || !cur) return;
-	cur->setIsPaused(v);
+	cur->setPaused(v);
 }
 
 bool SoundSource::getLooping() {
-	return cur ? cur->isLooped() : loops;
+	return cur ? ma_sound_is_looping(&cur->sound) != MA_FALSE : loops;
 }
 
 void SoundSource::setLooping(bool v) {
 	loops = v;
-	if (cur) cur->setIsLooped(v);
+	if (cur) ma_sound_set_looping(&cur->sound, v);
 }
 
 float SoundSource::getMinDist() {
-	return cur ? cur->getMinDistance() : 0.0f;
+	return cur ? ma_sound_get_min_distance(&cur->sound) : 0.0f;
 }
 
 void SoundSource::setMinDist(float f) {
 	if (!src || !cur) return;
-	cur->setMinDistance(f);
+	ma_sound_set_min_distance(&cur->sound, f);
 	minDist = f;
 }
 
 float SoundSource::getMaxDist() {
-	return cur ? cur->getMaxDistance() : 0.0f;
+	return cur ? ma_sound_get_max_distance(&cur->sound) : 0.0f;
 }
 
 void SoundSource::setMaxDist(float f) {
 	if (!src || !cur) return;
-	cur->setMaxDistance(f);
+	ma_sound_set_max_distance(&cur->sound, f);
 	maxDist = f;
 }
 
 void SoundSource::setVolume(float f) {
 	if (!src) return;
 	vol = f / 100.0f;
-	if (cur) cur->setVolume(vol);
+	if (cur) ma_sound_set_volume(&cur->sound, vol);
 }
 
 float SoundSource::getVolume() {
-	return cur ? cur->getVolume() * 100.0f : vol;
+	return (cur ? ma_sound_get_volume(&cur->sound) : vol) * 100.0f;
 }
 
 void SoundSource::setPitch(float f) {
 	if (!src || !cur) return;
-	cur->setPlaybackSpeed(f);
+	ma_sound_set_pitch(&cur->sound, f > 0.01f ? f : 0.0f);
 }
 
 float SoundSource::getPitch() {
-	return cur ? cur->getPlaybackSpeed() : 0.0f;
+	return cur ? ma_sound_get_pitch(&cur->sound) : 0.0f;
 }
 
 void SoundSource::setPan(float f) {
 	if (!src || !cur) return;
-	cur->setPan(f);
+	ma_sound_set_pan(&cur->sound, f);
 }
 
 float SoundSource::getPan() {
-	return cur ? cur->getPan() : 0.0f;
+	return cur ? ma_sound_get_pan(&cur->sound) : 0.0f;
 }
 
 int SoundSource::getPlayPosition() {
-	return cur ? cur->getPlayPosition() : 0;
+	if (!cur) return 0;
+	float sec = 0.0f;
+	if (ma_sound_get_cursor_in_seconds(&cur->sound, &sec) != MA_SUCCESS) return -1;
+	return (int)(sec * 1000.0f);
 }
 
 void SoundSource::setPlayPosition(int ms) {
 	if (!src || !cur) return;
-	cur->setPlayPosition(ms);
+	ma_sound_seek_to_second(&cur->sound, ms / 1000.0f);
 }
 
 int SoundSource::getPlayLength() {
-	return cur ? cur->getPlayLength() : 0;
+	if (!cur) return 0;
+	float sec = 0.0f;
+	if (ma_sound_get_length_in_seconds(&cur->sound, &sec) != MA_SUCCESS) return -1;
+	return (int)(sec * 1000.0f);
 }
 
-void SoundSource::setVelocity(const Vec3& vel) {
+void SoundSource::setVelocity(const Vec3& v) {
 	if (!src || !cur) return;
-	cur->setVelocity(irrklang::vec3df(vel.getX(), vel.getY(), vel.getZ()));
+	vel = Vec3S{ v.getX(), v.getY(), v.getZ() };
+	float f = s->getDistanceFactor();
+	ma_sound_set_velocity(&cur->sound, vel.x * f, vel.y * f, -vel.z * f);
 }
 
 Vec3 SoundSource::getVelocity() {
-	return cur ? Vec3(cur->getVelocity().X, cur->getVelocity().Y, cur->getVelocity().Z) : Vec3();
+	return cur ? Vec3(vel.x, vel.y, vel.z) : Vec3();
 }
 
 void SoundSource::setPosition(const Vec3& p) {
@@ -150,14 +159,14 @@ void SoundSource::setPosition(const Vec3& p) {
 	pos.z = p.getZ();
 
 	if (!src || !cur) return;
-	cur->setPosition(irrklang::vec3df(p.getX(), p.getY(), p.getZ()));
+	ma_sound_set_position(&cur->sound, pos.x, pos.y, -pos.z);
 
 	if (dVisual && dAxis) {
 		irr::core::vector3df out;
 		if (parent)
 			out = parent->getAbsolutePosition();
 		else
-			out = irr::core::vector3df(cur->getPosition().X, cur->getPosition().Y, cur->getPosition().Z);
+			out = irr::core::vector3df(pos.x, pos.y, pos.z);
 		dVisual->setPosition(out);
 		dAxis->setPosition(out);
 	}
@@ -165,14 +174,6 @@ void SoundSource::setPosition(const Vec3& p) {
 
 Vec3 SoundSource::getPosition() {
 	return cur ? Vec3(pos.x, pos.y, pos.z) : Vec3();
-}
-
-bool SoundSource::getDoSFX() {
-	return doSFX;
-}
-
-void SoundSource::setDoSFX(bool v) {
-	doSFX = v;
 }
 
 bool SoundSource::getDebug() {
@@ -204,7 +205,7 @@ bool SoundSource::attachTo(sol::optional<Object3D*> p) {
 
 	if (!p || *p == nullptr) {
 		parent = nullptr; // SoundManager update will resolve
-		s->detachSoundFromNode(cur);
+		s->detachSoundFromNode(cur.get());
 		return true;
 	}
 
@@ -219,16 +220,16 @@ bool SoundSource::isAttached() {
 }
 
 std::string SoundSource::getPath() {
-	return src ? src->getName() : "";
+	return src ? src->path : "";
 }
 
 void SoundSource::collected() {
-	if (src) s->warnGarbageCollection(src->getName());
+	if (src) s->warnGarbageCollection(src->path);
 }
 
 sol::object SoundSource::destroy() {
 	if (cur) {
-		s->detachSoundFromNode(cur);
+		s->detachSoundFromNode(cur.get());
 		cur->stop();
 	}
 	cur = nullptr;
@@ -238,7 +239,7 @@ sol::object SoundSource::destroy() {
 
 sol::object SoundSource::purge() {
 	if (cur) {
-		s->detachSoundFromNode(cur);
+		s->detachSoundFromNode(cur.get());
 		cur->stop();
 	}
 	s->unloadSound(src);
@@ -254,43 +255,22 @@ bool SoundSource::loadFromFile(const std::string& path, int type) {
 }
 
 void SoundSource::clearEffects() {
-	if (!cur) return;
-	cur->getSoundEffectControl()->disableAllEffects();
-}
-
-bool SoundSource::addDistortionEffect(float gain, float edge) {
-	if (!cur || !doSFX) return false;
-	if (!cur->getSoundEffectControl()) return false;
-	cur->getSoundEffectControl()->enableDistortionSoundEffect(gain, edge);
-	return true;
+	if (cur) cur->clearEffects();
 }
 
 bool SoundSource::addEchoEffect(float wetDry, float feedback, float delay) {
-	if (!cur || !doSFX) return false;
-	if (!cur->getSoundEffectControl()) return false;
-	cur->getSoundEffectControl()->enableEchoSoundEffect(wetDry, feedback, delay, delay);
-	return true;
+	if (!cur) return false;
+	return cur->setEffect(SoundEffectType::Echo, makeEchoEffect(cur->engine, wetDry, feedback, delay));
 }
 
 bool SoundSource::addReverbEffect(float inputGain, float mix, float time, float freqRatio) {
-	if(!cur || !doSFX) return false;
-	if (!cur->getSoundEffectControl()) return false;
-	cur->getSoundEffectControl()->enableWavesReverbSoundEffect(inputGain, mix, time, freqRatio);
-	return true;
-}
-
-bool SoundSource::addCompressionEffect(float threshold, float ratio) {
-	if (!cur || !doSFX) return false;
-	if (!cur->getSoundEffectControl()) return false;
-	cur->getSoundEffectControl()->enableCompressorSoundEffect(0.0f, 10.0f, 200.0f, threshold, ratio, 4.0f);
-	return true;
+	if (!cur) return false;
+	return cur->setEffect(SoundEffectType::Reverb, makeReverbEffect(cur->engine, inputGain, mix, time, freqRatio));
 }
 
 bool SoundSource::addParamEqEffect(float fCenter, float fBandwidth, float fGain) {
-	if (!cur || !doSFX) return false;
-	if (!cur->getSoundEffectControl()) return false;
-	cur->getSoundEffectControl()->enableParamEqSoundEffect(fCenter, fBandwidth, fGain);
-	return true;
+	if (!cur) return false;
+	return cur->setEffect(SoundEffectType::ParamEq, makeParamEqEffect(cur->engine, fCenter, fBandwidth, fGain));
 }
 
 void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou, RenderHelper* renh) {
@@ -353,9 +333,6 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou, RenderHelpe
 			[](SoundSource& c, const Vec3& v) { c.setPosition(v); }
 		),
 
-		// Field boolean effects, Whether or not sound effects are enabled on playback. This flag must first be enabled to apply effects, as it is false by default. Sound effects are more resource-intensive.
-		"effects", sol::property(&SoundSource::getDoSFX, &SoundSource::setDoSFX),
-
 		// Field boolean debug, Show debug information about this object in the scene.
 		"debug", sol::property(&SoundSource::getDebug, &SoundSource::setDebug)
 	);
@@ -411,12 +388,6 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou, RenderHelpe
 	// Returns void
 	obj.set_function("clearEffects", &SoundSource::clearEffects);
 
-	// Enables distortion on this `Sound`. Only applicable if this `Sound` is playing. This effect messes with the sound's frequency and other attributes to produce an odd result.
-	// Params
-	// Params number gain, number edge
-	// Returns bool
-	obj.set_function("addDistortionEffect", &SoundSource::addDistortionEffect);
-
 	// Enables echoing on this `Sound`. Only applicable if this `Sound` is playing. This effect repeats the sound with decay over time.
 	// Params
 	// Params number wetDry, number feedback, number delayMs
@@ -428,12 +399,6 @@ void Object::SoundSourceBind::bind(lua_State* ls, SoundManager* sou, RenderHelpe
 	// Params number inputGain, number mix, number timeMs, number freqRatio
 	// Returns bool
 	obj.set_function("addReverbEffect", &SoundSource::addReverbEffect);
-
-	// Enables compression on this `Sound`. Only applicable if this `Sound` is playing. This effect reduces the dynamic range of the sound's waveform.
-	// Params
-	// Params number threshold, number ratio
-	// Returns bool
-	obj.set_function("addCompressionEffect", &SoundSource::addCompressionEffect);
 
 	// Enables parametric equilization on this `Sound`. Only applicable if this `Sound` is playing. This effect amplifies or attenuates signals at a given frequency.
 	// Params
