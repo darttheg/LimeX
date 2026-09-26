@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <LimeDepsDir Condition="'$(LimeDepsDir)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</LimeDepsDir>
+    <!-- Builds liblime.so with the rest of the solution. Off until the engine compiles for Android. -->
+    <LimeBuildAndroid Condition="'$(LimeBuildAndroid)' == ''">true</LimeBuildAndroid>
+  </PropertyGroup>
+</Project>

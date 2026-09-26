@@ -9,6 +9,7 @@
 #include <Windows.h>
 
 #include "builder.h"
+#include "BuildOutput.h"
 
 extern "C" {
 #include "lua.h"
@@ -364,11 +365,11 @@ void EmbedPackage(const std::string& exePath, const std::string& pkgPath) {
 	exe.close();
 }
 
-void BuildPackage(const std::string& pDir, const std::string& oDir) {
+BuildResult BuildPackage(const std::string& pDir, const std::string& oDir, bool packageOnly) {
+	BuildResult result;
 	modules.clear();
 	modulesByName.clear();
 	fs::path src = fs::path(pDir);
-	std::cout << "Compiling project from root " << src.string() << "...\n";
 
 	bool hasMain = false;
 	std::string mainFull;
@@ -384,13 +385,14 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 		m.name = toModuleName(src, entry.path());
 		m.code = readModule(entry.path());
 		if (m.code.empty()) {
-			std::cerr << "WARNING: Could not read " << entry.path().string() << "\n";
+			BuildOutput::Warn("Could not read " + entry.path().string());
 			continue;
 		}
 
 		std::string firstLine = m.code.substr(0, m.code.find('\n'));
 		if (firstLine.find("---@ignore") != std::string::npos) {
-			std::cerr << "Ignoring " << entry.path().string() << "\n";
+			BuildOutput::Log("   - " + m.name);
+			result.skipped++;
 			continue;
 		}
 
@@ -414,12 +416,15 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 
 	resolveRequires();
 
+	BuildOutput::SetTotal((int)modules.size() + (packageOnly ? 1 : 3));
+
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
 
 	for (auto& m : modules) {
+		BuildOutput::Step(m.name);
 		try {
-			std::cout << "   + " << m.name << "\n";
+			BuildOutput::Log("   + " + m.name);
 			std::string strippedCode = stripLuaComments(m.code);
 			m.bytecode = compileLuaToBC(L, strippedCode, m.name);
 		}
@@ -428,12 +433,10 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 		}
 	}
 
-	std::cout << "Compiled " << modules.size();
-	if (modules.size() == 1)
-		std::cout << " module\n";
-	else
-		std::cout << " modules\n";
+	BuildOutput::Log("Compiled " + std::to_string(modules.size()) + (modules.size() == 1 ? " module" : " modules"));
+	result.modules = (int)modules.size();
 
+	BuildOutput::Step("Writing package");
 	fs::create_directories(oDir);
 	fs::path outPkg = fs::path(oDir) / "app.limepkg";
 	std::ofstream f(outPkg, std::ios::binary);
@@ -460,7 +463,13 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 	}
 	f.close();
 
-	// std::cout << "Created Lime package at: " << outPkg.string() << "\n";
+	if (packageOnly) {
+		BuildOutput::Log("Created Lime package at " + outPkg.string());
+		result.output = outPkg.string();
+		return result;
+	}
+
+	BuildOutput::Step("Creating app.exe");
 
 	std::vector<char> templateExe;
 	if (!LoadEmbeddedPlayer(templateExe))
@@ -473,6 +482,7 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 	exe.write(templateExe.data(), templateExe.size());
 	exe.close();
 
+	BuildOutput::Step("Applying icon");
 #ifdef _WIN32
 	try {
 		fs::path ico = fs::path(pDir) / "icon.ico";
@@ -482,7 +492,7 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 		}
 	}
 	catch (const std::exception& e) {
-		std::cout << "WARNING: Failed to apply icon: " << e.what() << "\n";
+		BuildOutput::Warn(std::string("Failed to apply icon: ") + e.what());
 	}
 #endif
 
@@ -491,7 +501,9 @@ void BuildPackage(const std::string& pDir, const std::string& oDir) {
 	std::error_code ec;
 	fs::remove(outPkg, ec);
 	if (ec)
-		std::cout << "WARNING: Failed to remove limepkg: " << ec.message() << "\n";
+		BuildOutput::Warn("Failed to remove limepkg: " + ec.message());
 
-	std::cout << "Created application at " << finalExe << "\n";
+	BuildOutput::Log("Created application at " + finalExe);
+	result.output = finalExe;
+	return result;
 }

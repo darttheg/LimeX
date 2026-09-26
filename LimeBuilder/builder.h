@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 struct AppAlterables {
 	std::string name = "app";
@@ -8,4 +9,10 @@ struct AppAlterables {
 	std::string copyright = "";
 };
 
-void BuildPackage(const std::string& pDir, const std::string& oDir);
+struct BuildResult {
+	std::string output;
+	int modules = 0;
+	int skipped = 0;
+};
+
+BuildResult BuildPackage(const std::string& pDir, const std::string& oDir, bool packageOnly = false);

@@ -4,7 +4,12 @@
 #include <iostream>
 #include <chrono>
 #include <iomanip>
+#include <string>
+#include <vector>
+#include <filesystem>
+#include <cctype>
 #include "builder.h"
+#include "BuildOutput.h"
 
 AppAlterables parseArgs(int argc, char* argv[]) {
 	AppAlterables out;
@@ -32,35 +37,44 @@ AppAlterables parseArgs(int argc, char* argv[]) {
 int main(int argc, char** argv) {
 	auto start = std::chrono::steady_clock::now();
 
-	if (argc < 2) {
-		std::cout << "LimeBuilder <project dir> <output dir>\n";
-		std::cout << "LimeBuilder <project + output dir>\n";
+	std::vector<std::string> positional;
+	bool packageOnly = false;
+	std::string platform = "Windows";
+	for (int i = 1; i < argc; i++) {
+		std::string a = argv[i];
+		if (a == "--package-only")
+			packageOnly = true;
+		else if (a == "--platform" && i + 1 < argc) {
+			platform = argv[++i];
+			if (!platform.empty()) platform[0] = (char)std::toupper((unsigned char)platform[0]);
+		}
+		else
+			positional.push_back(a);
+	}
+
+	if (positional.empty()) {
+		std::cout << "LimeBuilder <project dir> [output dir] [--package-only] [--platform Windows|Android]\n";
 		return 0;
 	}
 
 	AppAlterables out = parseArgs(argc, argv);
 
-	std::string pDir = argv[1];
-	std::string oDir;
-	if (argc == 2)
-		oDir = pDir;
-	else
-		oDir = argv[2];
+	std::string pDir = positional[0];
+	std::string oDir = positional.size() > 1 ? positional[1] : pDir;
 
+	BuildOutput::Begin((std::filesystem::path(pDir) / "build.log").string(), platform, pDir);
+
+	BuildResult result;
 	try {
-		BuildPackage(pDir, oDir);
+		result = BuildPackage(pDir, oDir, packageOnly);
 	} catch (const std::exception& e) {
-		std::cout << "\nFailed to build:\n  " << e.what() << "\n";
+		BuildOutput::Fail(e.what());
 		return 1;
 	}
 
 	auto end = std::chrono::steady_clock::now();
 	double ms = std::chrono::duration<double, std::milli>(end - start).count();
-
-	if (ms < 1000.0)
-		std::cout << "\Build complete in " << std::fixed << std::setprecision(1) << ms << "ms\n";
-	else
-		std::cout << "\Build complete in " << std::fixed << std::setprecision(2) << ms / 1000.0 << "s\n";
+	BuildOutput::Finish(result.output, result.modules, result.skipped, ms);
 
 	return 0;
 }
