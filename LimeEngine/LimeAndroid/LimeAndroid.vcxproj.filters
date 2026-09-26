@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{3B1F6C2A-5D84-4E97-B0A3-7C1E2F4D8A65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Irrlicht">
+      <UniqueIdentifier>{9E4D2B7C-1A36-4F58-8C0B-5D7E3A9F1B24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{C5A8E1F3-6B29-4D7A-9E4C-0F2B8D6A3C71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Java">
+      <UniqueIdentifier>{4F7B9D2E-8C13-4A65-B1E0-6D3C5A8F2E97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Build">
+      <UniqueIdentifier>{A2C6E8F0-3B5D-4719-8E2A-9C4F6B1D7E38}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\LimeAndroid.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="irrlicht\CIrrDeviceAndroid.h">
+      <Filter>Irrlicht</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="irrlicht\CIrrDeviceAndroid.cpp">
+      <Filter>Irrlicht</Filter>
+    </ClCompile>
+    <ClCompile Include="irrlicht\GLExtensionStubs.c">
+      <Filter>Irrlicht</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AndroidMain.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="java\org\lime\LimeActivity.java">
+      <Filter>Java</Filter>
+    </None>
+    <None Include="CMakeLists.txt">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="cmake\EmbedFile.cmake">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="androidTools.ps1">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="buildNative.ps1">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="local.properties">
+      <Filter>Build</Filter>
+    </None>
+  </ItemGroup>
+</Project>

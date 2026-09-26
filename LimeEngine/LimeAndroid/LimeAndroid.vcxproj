@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{7C2E5A41-9B3D-4F6E-A8C1-2D5B6E9F0A13}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup>
+    <OutDir>$(ProjectDir)bin\</OutDir>
+    <IntDir>$(ProjectDir)build\vs\$(Configuration)\</IntDir>
+    <LimeAndroidScript>powershell -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)buildNative.ps1" -Config $(Configuration)</LimeAndroidScript>
+    <LimeAndroidSkipped>echo LimeAndroid skipped: set LimeBuildAndroid to true in Directory.Build.props</LimeAndroidSkipped>
+    <NMakeBuildCommandLine Condition="'$(LimeBuildAndroid)'=='true'">$(LimeAndroidScript)</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine Condition="'$(LimeBuildAndroid)'=='true'">$(LimeAndroidScript) -Clean</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine Condition="'$(LimeBuildAndroid)'!='true'">$(LimeAndroidSkipped)</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine Condition="'$(LimeBuildAndroid)'!='true'">$(LimeAndroidSkipped)</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>$(LimeAndroidScript) -CleanOnly</NMakeCleanCommandLine>
+    <NMakeOutput>$(ProjectDir)bin\arm64-v8a\liblime.so</NMakeOutput>
+    <!-- IntelliSense only; the real flags come from CMakeLists.txt -->
+    <NMakePreprocessorDefinitions>__ANDROID__;__linux__;_USE_MATH_DEFINES;LIME_WITH_OPENSSL;_IRR_STATIC_LIB_</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>$(ProjectDir)include;$(ProjectDir)irrlicht;$(ProjectDir)..\include;$(ProjectDir)..\api;$(LimeDepsDir)sol2\include;$(LimeDepsDir)lua-5.4.8\src;$(LimeDepsDir)irrlicht-1.8.5\include;$(LimeDepsDir)irrlicht-1.8.5\source\Irrlicht;$(LimeDepsDir)bullet3-2.83.7\src;$(LimeDepsDir)irrBullet;$(LimeDepsDir)enet-1.3.18\include;$(LimeDepsDir)miniaudio;$(LimeDepsDir)stb;$(LimeDepsDir)gl4es\include;$(LimeDepsDir)boringssl\include</NMakeIncludeSearchPath>
+    <AdditionalOptions>/std:c++17</AdditionalOptions>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClInclude Include="include\LimeAndroid.h" />
+    <ClInclude Include="irrlicht\CIrrDeviceAndroid.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="irrlicht\CIrrDeviceAndroid.cpp" />
+    <ClCompile Include="irrlicht\GLExtensionStubs.c" />
+    <ClCompile Include="src\AndroidMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CMakeLists.txt" />
+    <None Include="cmake\EmbedFile.cmake" />
+    <None Include="androidTools.ps1" />
+    <None Include="buildNative.ps1" />
+    <None Include="local.properties" />
+    <None Include="java\org\lime\LimeActivity.java" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>
