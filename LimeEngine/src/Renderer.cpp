@@ -604,14 +604,16 @@ irr::video::ITexture* Renderer::createRenderTargetTexture(const Vec2& size, irr:
 	if (!guardRenderingCheck()) return nullptr;
 	std::string outName = "rtt_live_" + std::to_string(rttc);
 	if (!name.empty()) outName = "live_" + name;
-	irr::video::ITexture* out = i_driver->addRenderTargetTexture(irr::core::dimension2du(size.getX(), size.getY()), outName.c_str());
 
 	irr::scene::ICameraSceneNode* prev = i_smgr->getActiveCamera();
-	if (!prev || !c) {
+	if (!prev) {
 		d->Warn("Failed to create render target texture: No valid Camera");
 		return nullptr;
 	}
-	irr::f32 prevAR = prev ? prev->getAspectRatio() : 0.0f;
+	irr::f32 prevAR = prev->getAspectRatio();
+
+	irr::video::ITexture* out = i_driver->addRenderTargetTexture(irr::core::dimension2du(size.getX(), size.getY()), outName.c_str());
+	if (!out) return nullptr;
 
 	updateFog();
 	i_smgr->setActiveCamera(c ? c : prev);
@@ -637,6 +639,31 @@ irr::video::ITexture* Renderer::createRenderTargetTexture(const Vec2& size, irr:
 
 	rttc++;
 	return baked ? baked : out;
+}
+
+irr::video::ITexture* Renderer::createLiveRenderTarget(const Vec2& size, const std::string& name) {
+	if (!guardRenderingCheck()) return nullptr;
+	std::string outName = name.empty() ? "rtt_live_" + std::to_string(rttc++) : name;
+	return i_driver->addRenderTargetTexture(irr::core::dimension2du(size.getX(), size.getY()), outName.c_str());
+}
+
+bool Renderer::renderSceneToTarget(irr::video::ITexture* target, irr::scene::ICameraSceneNode* c) {
+	if (!guardRenderingCheck() || !target || !c) return false;
+	irr::scene::ICameraSceneNode* prev = i_smgr->getActiveCamera();
+	if (!prev) return false;
+	irr::f32 prevAR = prev->getAspectRatio();
+	irr::core::dimension2du size = target->getOriginalSize();
+
+	updateFog();
+	i_smgr->setActiveCamera(c);
+	rh->updateCameraMatrix(c, size.Width, size.Height);
+	i_driver->setRenderTarget(target, true, true, irr::video::SColor(bgColor.w, bgColor.x, bgColor.y, bgColor.z));
+	i_smgr->drawAll();
+	i_driver->setRenderTarget(nullptr, true, true, 0);
+
+	i_smgr->setActiveCamera(prev);
+	prev->setAspectRatio(prevAR);
+	return true;
 }
 
 void Renderer::setUserTexture(const Texture& tex) {
@@ -697,26 +724,18 @@ bool Renderer::preloadTexture(const std::string path) {
 bool Renderer::purgeMesh(const std::string path) {
 	if (!guardRenderingCheck()) return false;
 	irr::scene::IMeshCache* c = i_smgr->getMeshCache();
-	if (c->getMeshByName(path.c_str())) {
-		irr::scene::IAnimatedMesh* m = c->getMeshByName(path.c_str());
-		m->drop();
-		removeMesh(m);
-		preloadedPaths.erase(i_device->getFileSystem()->getAbsolutePath(path.c_str()).c_str());
-		return true;
-	}
-	return false;
+	irr::scene::IAnimatedMesh* m = c->getMeshByName(path.c_str());
+	if (!m || !removeMesh(m)) return false;
+	preloadedPaths.erase(i_device->getFileSystem()->getAbsolutePath(path.c_str()).c_str());
+	return true;
 }
 
 bool Renderer::purgeTexture(const std::string path) {
 	if (!guardRenderingCheck()) return false;
-	if (i_driver->findTexture(path.c_str())) {
-		irr::video::ITexture* t = i_driver->findTexture(path.c_str());
-		t->drop();
-		removeTexture(t);
-		preloadedPaths.erase(i_device->getFileSystem()->getAbsolutePath(path.c_str()).c_str());
-		return true;
-	}
-	return false;
+	irr::video::ITexture* t = i_driver->findTexture(path.c_str());
+	if (!t || !removeTexture(t)) return false;
+	preloadedPaths.erase(i_device->getFileSystem()->getAbsolutePath(path.c_str()).c_str());
+	return true;
 }
 
 void Renderer::addToDeletionQueue(irr::scene::ISceneNode* node) {
@@ -724,7 +743,7 @@ void Renderer::addToDeletionQueue(irr::scene::ISceneNode* node) {
 	i_smgr->addToDeletionQueue(node);
 }
 
-bool Renderer::removeTexture(irr::video::ITexture* tex) {
+bool Renderer::removeTexture(irr::video::ITexture* tex, irr::video::ITexture* replacement) {
 	if (!i_driver || !tex) return false;
 
 	if (tex == checkerTex || tex == alphaBlankTex) {
@@ -734,38 +753,45 @@ bool Renderer::removeTexture(irr::video::ITexture* tex) {
 
 	qr->clearUsedTextures(tex);
 
-	bool safe = tex->getReferenceCount() == 1; // Texture obj still owns it so ref == 1
+	irr::video::ITexture* swap = replacement ? replacement : checkerTex;
 
-	if (!safe) {
-		std::string out = "UNSAFE TEXTURE REMOVAL: Texture is being called for purging but has ";
-		out += std::to_string(tex->getReferenceCount());
-		out += " reference(s)! (";
-		out += tex->getName().getPath().c_str();
-		out += ")";
-		d->Warn(out);
+	// Scene materials don't grab textures, so the ref count can't tell us if they use it. Always check.
+	core::array<ISceneNode*> stack;
+	if (ISceneNode* root = i_smgr->getRootSceneNode()) stack.push_back(root);
 
-		// Scene
-		core::array<ISceneNode*> stack;
-		if (ISceneNode* root = i_smgr->getRootSceneNode()) stack.push_back(root);
+	while (!stack.empty()) {
+		ISceneNode* node = stack.getLast();
+		stack.erase(stack.size() - 1);
+		for (auto* c : node->getChildren()) stack.push_back(c);
 
-		while (!stack.empty()) {
-			ISceneNode* node = stack.getLast();
-			stack.erase(stack.size() - 1);
-			for (auto* c : node->getChildren()) stack.push_back(c);
-
-			if (!(node->getType() == ESNT_MESH || node->getType() == ESNT_SKY_DOME)) continue;
-
-			for (u32 i = 0; i < node->getMaterialCount(); ++i) {
-				irr::video::SMaterial& mat = node->getMaterial(i);
-				for (u32 l = 0; l < irr::video::MATERIAL_MAX_TEXTURES; ++l) {
-					if (mat.getTexture(l) == tex)
-						mat.setTexture(l, checkerTex);
+		for (u32 i = 0; i < node->getMaterialCount(); ++i) {
+			irr::video::SMaterial& mat = node->getMaterial(i);
+			bool used = false;
+			for (u32 l = 0; l < irr::video::MATERIAL_MAX_TEXTURES; ++l) {
+				if (mat.getTexture(l) == tex) {
+					mat.setTexture(l, swap);
+					used = true;
 				}
+			}
 
+			if (used && !replacement) {
 				mat.setFlag(irr::video::E_MATERIAL_FLAG::EMF_BILINEAR_FILTER, false);
 				mat.setFlag(irr::video::E_MATERIAL_FLAG::EMF_LIGHTING, false);
 				mat.setFlag(irr::video::E_MATERIAL_FLAG::EMF_FOG_ENABLE, false);
 			}
+		}
+	}
+
+	bool safe = tex->getReferenceCount() == 1; // Only the driver holds it
+
+	if (!safe) {
+		if (!replacement) {
+			std::string out = "UNSAFE TEXTURE REMOVAL: Texture is being called for purging but has ";
+			out += std::to_string(tex->getReferenceCount());
+			out += " reference(s)! (";
+			out += tex->getName().getPath().c_str();
+			out += ")";
+			d->Warn(out);
 		}
 
 		// GUI
@@ -782,8 +808,8 @@ bool Renderer::removeTexture(irr::video::ITexture* tex) {
 
 				auto* img = static_cast<irr::gui::IGUIImage*>(node);
 				if (img->getImage() == tex) {
-					img->setImage(checkerTex);
-					img->setScaleImage(true);
+					img->setImage(swap);
+					if (!replacement) img->setScaleImage(true);
 				}
 			}
 		}

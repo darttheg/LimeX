@@ -123,6 +123,8 @@ public:
 	void clearPostProcessingShaderGUI();
 	irr::scene::ICameraSceneNode* getActiveCameraNode();
 	irr::video::ITexture* createRenderTargetTexture(const Vec2& size, irr::scene::ICameraSceneNode* c, const std::string& name);
+	irr::video::ITexture* createLiveRenderTarget(const Vec2& size, const std::string& name);
+	bool renderSceneToTarget(irr::video::ITexture* target, irr::scene::ICameraSceneNode* c);
 	bool preloadMesh(const std::string path);
 	bool preloadTexture(const std::string path);
 	std::string getMeshName(irr::scene::IAnimatedMesh* msh);
@@ -137,7 +139,7 @@ public:
 
 	// Scene - Cleanup
 	void addToDeletionQueue(irr::scene::ISceneNode* node);
-	bool removeTexture(irr::video::ITexture* tex);
+	bool removeTexture(irr::video::ITexture* tex, irr::video::ITexture* replacement = nullptr);
 	bool removeMesh(irr::scene::IAnimatedMesh* mesh);
 	bool removeBuffer(irr::scene::IMeshBuffer* buf);
 	void clearScene(); // Dangerous, don't expose

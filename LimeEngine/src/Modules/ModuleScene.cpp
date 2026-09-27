@@ -178,7 +178,7 @@ void Module::Scene::bind(Application* app) {
 	// Returns boolean
 	module.set_function("preloadMesh", &Module::Scene::Bind::PreloadMesh);
 
-	// [+] Purges a mesh by `path` from the scene. Returns true on success or if the mesh at `path` has already been purged. `Mesh` objects referencing this mesh will use an engine-defined `Mesh` instead.
+	// [+] Purges a mesh by `path` from the scene. Returns true on success. `Mesh` objects referencing this mesh will use an engine-defined `Mesh` instead.
 	// Params string path
 	// Returns boolean
 	module.set_function("purgeMesh", &Module::Scene::Bind::PurgeMesh);
@@ -188,7 +188,7 @@ void Module::Scene::bind(Application* app) {
 	// Returns boolean
 	module.set_function("preloadTexture", &Module::Scene::Bind::PreloadTexture);
 
-	// [+] Purges a texture by `path` from the scene. Returns true on success or if the texture at `path` has already been purged. `Texture` objects referencing this texture will use an engine-defined `Texture` instead.
+	// [+] Purges a texture by `path` from the scene. Returns true on success. `Texture` objects referencing this texture will use an engine-defined `Texture` instead.
 	// Params string path
 	// Returns boolean
 	module.set_function("purgeTexture", &Module::Scene::Bind::PurgeTexture);

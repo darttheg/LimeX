@@ -812,10 +812,6 @@ function Lime.Scene.getErrorTexture() end
 --- @param dynamic boolean
 function Lime.Scene.setDynamicResolution(dynamic) end
 
---- If set to true and dynamic resolution is false, the render window is scaled strictly to whole-number multiples, avoiding jagged pixels. This may introduce larger letterbox borders, however.
---- @param intScaling boolean
-function Lime.Scene.setIntegerScaling(intScaling) end
-
 --- Sets the render size to `size`. If the render size is set to rescale to the window size then this change will not take effect. See `Lime.Scene.setDynamicResolution`.
 --- @param size Vec2
 function Lime.Scene.setSize(size) end
@@ -954,6 +950,9 @@ function Lime.Audio.setMainVolume(volume) end
 --- **This function cannot be run until window creation.** Sets all `Sound` objects to paused or unpaused.
 --- @param paused boolean
 function Lime.Audio.setAllSoundsPaused(paused) end
+
+--- **This function cannot be run until window creation.** Stops all `Sound` objects.
+function Lime.Audio.stopAllSounds() end
 
 --- **This function cannot be run until window creation.** Sets the default minimum listening distance for new sounds.
 --- @param distance number
@@ -1126,6 +1125,14 @@ function Lime.Window.setLockAspectRatio(locked) end
 --- @param size Vec2
 function Lime.Window.setMinimumSize(size) end
 
+--- If set to true and dynamic resolution is false, the render output is scaled strictly to whole-number multiples, avoiding jagged pixels. This may introduce larger letterbox borders, however.
+--- @param intScaling boolean
+function Lime.Window.setIntegerScaling(intScaling) end
+
+--- If set to true and dynamic resolution is false, the rendered output is letterboxed to retain the render size aspect ratio. If false, the rendered output is scaled to fit the window.
+--- @param letterboxing boolean
+function Lime.Window.setLetterboxing(letterboxing) end
+
 --- A plane that faces the active camera.
 --- @class Billboard
 --- @field size Vec2 The width and height of this Billboard.
@@ -1221,7 +1228,7 @@ function Billboard:addRotateAnimator(rot) end
 --- @field viewPlanes Vec2 The near and far clipping planes of this `Camera`.
 --- @field fieldOfView number The field of view of this `Camera` in degrees.
 --- @field aspectRatio number The aspect ratio of this `Camera`.
---- @field orthogonal boolean Whether or not this `Camera` renders orthographically or not. (NOTE: If this is true, `aspectRatio` modifies the zoom factor instead.)
+--- @field orthogonal boolean Whether or not this `Camera` renders orthographically or not.
 --- @field scale Vec3 The 3D scale of this object in the scene.
 --- @field visible boolean Determines the visibility of this object and its children.
 --- @field id number The identifier for this object to be used in raycasts and object selection.

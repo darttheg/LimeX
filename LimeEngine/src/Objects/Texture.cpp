@@ -38,6 +38,7 @@ Texture::Texture(const Vec2& wh, const std::string& name) : Texture() {
 sol::object Texture::purge() {
 	r->removeTexture(texture);
 	texture = nullptr;
+	live = false;
 	return sol::make_object(l, sol::nil);
 }
 
@@ -59,6 +60,7 @@ bool Texture::crop(const Vec2& tl, const Vec2& br) {
 	Vec2 dim = br - tl;
 
 	texture = rh->cropTexture(texture, pos, dim);
+	live = false;
 	return texture;
 }
 
@@ -69,6 +71,7 @@ bool Texture::append(const Texture& other, const Vec2& pos) {
 	if (!t) return false;
 
 	texture = t;
+	live = false;
 	return true;
 }
 
@@ -120,17 +123,33 @@ Texture Texture::toNineSlice(int cornerMargin, const Vec2& size, const std::stri
 	return Texture(out);
 }
 
+std::string Texture::renderLive(const Vec2& size, irr::scene::ICameraSceneNode* cam, const std::string& name) {
+	if (!cam) return "";
+	irr::core::dimension2du dim((irr::u32)size.getX(), (irr::u32)size.getY());
+
+	if (!live || !texture || texture->getOriginalSize() != dim) {
+		irr::video::ITexture* out = r->createLiveRenderTarget(size, name);
+		if (!out) return "";
+		r->renderSceneToTarget(out, cam);
+
+		// Point anything still using the old texture at the new one before it's freed
+		if (texture) r->removeTexture(texture, out);
+		texture = out;
+		live = true;
+		return getPath();
+	}
+
+	r->renderSceneToTarget(texture, cam);
+	return getPath();
+}
+
 std::string Texture::makeRenderTexture(const Vec2& size, const std::string& name) {
-	r->removeTexture(texture);
-	texture = r->createRenderTargetTexture(size, nullptr, name);
-	return texture ? texture->getName().getPath().c_str() : "";
+	return renderLive(size, r->getActiveCameraNode(), name);
 }
 
 #include "Objects/Camera.h"
 std::string Texture::makeRenderTexture(const Vec2& size, const Camera& c, const std::string& name) {
-	r->removeTexture(texture);
-	texture = r->createRenderTargetTexture(size, static_cast<irr::scene::ICameraSceneNode*>(c.getNode()), name);
-	return texture ? texture->getName().getPath().c_str() : "";
+	return renderLive(size, static_cast<irr::scene::ICameraSceneNode*>(c.getNode()), name);
 }
 
 void Texture::collected() {

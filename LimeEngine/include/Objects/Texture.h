@@ -13,6 +13,9 @@ namespace irr {
 	namespace video {
 		class ITexture;
 	}
+	namespace scene {
+		class ICameraSceneNode;
+	}
 }
 
 #include "sol/forward.hpp"
@@ -49,7 +52,10 @@ public:
 
 	irr::video::ITexture* getTexture() const { return texture; }
 private:
+	std::string renderLive(const Vec2& size, irr::scene::ICameraSceneNode* cam, const std::string& name);
+
 	irr::video::ITexture* texture = nullptr;
+	bool live = false;
 };
 
 namespace Object::TextureBind {

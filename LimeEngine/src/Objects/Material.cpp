@@ -24,6 +24,14 @@ Material::Material(const Texture& img) {
 
 Material::Material(const Material& other) {
 	material = std::make_unique<irr::video::SMaterial>(*other.material);
+	for (irr::u32 i = 0; i < irr::video::MATERIAL_MAX_TEXTURES; ++i)
+		if (irr::video::ITexture* t = material->getTexture(i)) t->grab();
+}
+
+// SMaterial doesn't grab its textures, so we hold them here to keep them alive while this Material uses them
+Material::~Material() {
+	for (irr::u32 i = 0; i < irr::video::MATERIAL_MAX_TEXTURES; ++i)
+		if (irr::video::ITexture* t = material->getTexture(i)) t->drop();
 }
 
 Material::Material(int quality) {
@@ -58,7 +66,10 @@ void Material::setTextureScroll(const Vec2& coords) {
 
 void Material::loadTexture(const Texture& img, int layer) {
 	if (layer < 0) layer = 0;
-	material->setTexture(layer, img.getTexture());
+	irr::video::ITexture* t = img.getTexture();
+	if (t) t->grab();
+	if (irr::video::ITexture* old = material->getTexture(layer)) old->drop();
+	material->setTexture(layer, t);
 }
 
 void Material::loadTexture(const Texture& img) {
@@ -67,6 +78,7 @@ void Material::loadTexture(const Texture& img) {
 
 void Material::clearTexture(int layer) {
 	if (layer < 0) layer = 0;
+	if (irr::video::ITexture* old = material->getTexture(layer)) old->drop();
 	material->setTexture(layer, nullptr);
 }
 

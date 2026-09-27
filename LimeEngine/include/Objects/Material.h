@@ -21,6 +21,7 @@ public:
 	Material(const Texture& img);
 	Material(const Material& other);
 	Material(int quality);
+	~Material();
 
 	int getID() const;
 	void setID(int v);
