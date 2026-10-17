@@ -185,52 +185,61 @@ async function createNewProject(context) {
 }
 const winVersionInfo = __importStar(require("win-version-info"));
 const getFileVersion = winVersionInfo.default ?? winVersionInfo;
-async function checkEngineVersion(context, workspaceFolder) {
-    const templateDll = path.join(context.extensionPath, "template/lib", "LimeEngine.dll");
-    const candidates = [
-        path.join(workspaceFolder, "LimeEngine.dll"),
-        path.join(workspaceFolder, "lib", "LimeEngine.dll"),
-    ];
-    const projectDll = candidates.find(p => fs.existsSync(p));
-    if (!projectDll) {
-        await checkMissingDlls(context, workspaceFolder);
-        return;
-    }
-    const projectVersion = getFileVersion(projectDll).ProductVersion;
-    const templateVersion = getFileVersion(templateDll).ProductVersion;
-    if (projectVersion === templateVersion) {
-        await checkMissingDlls(context, workspaceFolder);
-        return;
-    }
-    const choice = await vscode.window.showInformationMessage(`Lime: Update engine to ${templateVersion} (from ${projectVersion})?`, "Update", "Ignore");
-    if (choice === "Update") {
-        fs.copyFileSync(templateDll, projectDll);
-        vscode.window.showInformationMessage("Lime: LimeEngine.dll updated successfully.");
-        await checkMissingDlls(context, workspaceFolder);
-    }
+function sameFile(a, b) {
+    if (fs.statSync(a).size !== fs.statSync(b).size)
+        return false;
+    return fs.readFileSync(a).equals(fs.readFileSync(b));
 }
-async function checkMissingDlls(context, workspaceFolder) {
+// "Ignore" holds until the template DLLs change
+let ignoredDlls = "";
+// compares contents, not ProductVersion, so rebuilds without a version bump still get picked up
+async function syncDlls(context, workspaceFolder) {
     const templateDir = path.join(context.extensionPath, "template/lib");
-    const templateEntries = fs.readdirSync(templateDir, { withFileTypes: true });
-    const missingDlls = templateEntries
-        .filter(e => e.isFile() && e.name.endsWith(".dll"))
-        .map(e => e.name)
-        .filter(name => {
-        const inRoot = fs.existsSync(path.join(workspaceFolder, name));
-        const inLib = fs.existsSync(path.join(workspaceFolder, "lib", name));
-        return !(inRoot || inLib);
-    });
-    if (missingDlls.length === 0)
-        return;
-    const choice = await vscode.window.showInformationMessage(`Lime: Missing DLL(s): ${missingDlls.join(", ")}. Update?`, "Update", "Ignore");
-    if (choice === "Update") {
-        for (const name of missingDlls) {
-            const destDir = name.startsWith("ikp") ? workspaceFolder : path.join(workspaceFolder, "lib");
-            fs.mkdirSync(destDir, { recursive: true });
-            fs.copyFileSync(path.join(templateDir, name), path.join(destDir, name));
-        }
-        vscode.window.showInformationMessage(`Lime: Added ${missingDlls.length} DLL(s).`);
+    const stale = [];
+    for (const e of fs.readdirSync(templateDir, { withFileTypes: true })) {
+        if (!e.isFile() || !e.name.endsWith(".dll"))
+            continue;
+        const src = path.join(templateDir, e.name);
+        const inRoot = path.join(workspaceFolder, e.name);
+        const inLib = path.join(workspaceFolder, "lib", e.name);
+        const existing = [inRoot, inLib].find(p => fs.existsSync(p));
+        const dest = existing ?? (e.name.startsWith("ikp") ? inRoot : inLib);
+        if (!existing || !sameFile(src, dest))
+            stale.push({ src, dest, name: e.name });
     }
+    if (stale.length === 0)
+        return;
+    const key = stale.map(s => `${s.name}:${fs.statSync(s.src).mtimeMs}`).join("|");
+    if (key === ignoredDlls)
+        return;
+    const engine = stale.find(s => s.name === "LimeEngine.dll");
+    let message = `Lime: Update DLL(s): ${stale.map(s => s.name).join(", ")}?`;
+    if (engine && fs.existsSync(engine.dest)) {
+        const from = getFileVersion(engine.dest).ProductVersion;
+        const to = getFileVersion(engine.src).ProductVersion;
+        if (from !== to)
+            message = `Lime: Update engine to ${to} (from ${from})?`;
+    }
+    const choice = await vscode.window.showInformationMessage(message, "Update", "Ignore");
+    if (choice !== "Update") {
+        if (choice === "Ignore")
+            ignoredDlls = key;
+        return;
+    }
+    try {
+        for (const s of stale) {
+            fs.mkdirSync(path.dirname(s.dest), { recursive: true });
+            fs.copyFileSync(s.src, s.dest);
+        }
+    }
+    catch (err) {
+        if (err?.code === "EBUSY" || err?.code === "EPERM") {
+            vscode.window.showErrorMessage("Lime: Couldn't update the DLLs because they're in use. Close the game and try again.");
+            return;
+        }
+        throw err;
+    }
+    vscode.window.showInformationMessage(`Lime: Updated ${stale.length} DLL(s).`);
 }
 let platformItem;
 function getPlatform(context) {
@@ -357,11 +366,16 @@ const logLinkProvider = {
         vscode.window.showTextDocument(vscode.Uri.file(link.file));
     },
 };
+function checkDlls(context, workspaceFolder) {
+    return syncDlls(context, workspaceFolder).catch((err) => {
+        vscode.window.showWarningMessage(`Lime: Could not check engine DLLs: ${err}`);
+    });
+}
 async function activate(context) {
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
     if (workspaceFolder) {
         await injectLuaLibrary(context, workspaceFolder).catch((err) => vscode.window.showWarningMessage(`Lime: Could not configure Lua library path: ${err}`));
-        await checkEngineVersion(context, workspaceFolder).catch((err) => vscode.window.showWarningMessage(`Lime: Could not check engine version: ${err}`));
+        await checkDlls(context, workspaceFolder);
     }
     platformItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
     platformItem.command = "lime.selectPlatform";
@@ -375,11 +389,14 @@ async function activate(context) {
             if (terminal === closed)
                 terminals.delete(key);
         }
-    }), vscode.commands.registerCommand("lime.build", () => {
+    }), vscode.commands.registerCommand("lime.build", async () => {
         if (getPlatform(context) === "android") {
             runAndroid(context, "Lime: Build", "");
             return;
         }
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+        if (workspaceFolder)
+            await checkDlls(context, workspaceFolder);
         runBat(context, "build.bat", "Lime: Build");
     }), vscode.commands.registerCommand("lime.run", async () => {
         if (getPlatform(context) === "android") {
@@ -389,6 +406,8 @@ async function activate(context) {
             return;
         }
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
+        if (workspaceFolder)
+            await checkDlls(context, workspaceFolder);
         try {
             launchApp(workspaceFolder);
         }

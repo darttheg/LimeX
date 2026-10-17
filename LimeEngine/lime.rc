@@ -19,7 +19,7 @@ BEGIN
             VALUE "FileDescription", "Lime Engine"
             VALUE "FileVersion", "1.0.0.0"
             VALUE "ProductName", "Lime Engine"
-            VALUE "ProductVersion", "beta-1.0"
+            VALUE "ProductVersion", "beta-1.1"
         END
     END
     BLOCK "VarFileInfo"

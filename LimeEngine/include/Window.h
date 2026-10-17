@@ -45,7 +45,7 @@ public:
 	void setMouseType(int i);
 	int getMouseType();
 
-	void setTitle(std::string path);
+	void setTitle(const std::string& path);
 	void doFullscreen(bool v);
 	Vec2 getPosition();
 	void setPosition(const Vec2& pos);

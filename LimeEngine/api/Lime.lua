@@ -1073,7 +1073,7 @@ function Lime_Window_onResize:length() end
 --- @field onResize Lime_Window_onResize Event called by Lime once the window is resized in any way.
 Lime.Window = {}
 
---- **This function cannot be run until window creation.** Sets the window's title to `title`.
+--- Sets the window's title.
 --- @param title string
 function Lime.Window.setTitle(title) end
 

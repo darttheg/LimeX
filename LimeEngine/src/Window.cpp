@@ -250,8 +250,11 @@ void Window::setMinimumSize(const Vec2& size) {
 	setSizeLimit(x, y);
 }
 
-void Window::setTitle(std::string path) {
-	if (!guardEditCheck()) return;
+void Window::setTitle(const std::string& path) {
+	WindowConfig out = a->GetConfig();
+	out.title = path;
+	a->SetConfig(out);
+	if (!glfwWindow) return;
 	glfwSetWindowTitle(glfwWindow, path.c_str());
 }
 

@@ -880,7 +880,7 @@ function Lime.Scene.toScreenPosition(pos) end
 --- @return boolean
 function Lime.Scene.preloadMesh(path) end
 
---- **This function cannot be run until window creation.** Purges a mesh by `path` from the scene. Returns true on success or if the mesh at `path` has already been purged. `Mesh` objects referencing this mesh will use an engine-defined `Mesh` instead.
+--- **This function cannot be run until window creation.** Purges a mesh by `path` from the scene. Returns true on success. `Mesh` objects referencing this mesh will use an engine-defined `Mesh` instead.
 --- @param path string
 --- @return boolean
 function Lime.Scene.purgeMesh(path) end
@@ -890,7 +890,7 @@ function Lime.Scene.purgeMesh(path) end
 --- @return boolean
 function Lime.Scene.preloadTexture(path) end
 
---- **This function cannot be run until window creation.** Purges a texture by `path` from the scene. Returns true on success or if the texture at `path` has already been purged. `Texture` objects referencing this texture will use an engine-defined `Texture` instead.
+--- **This function cannot be run until window creation.** Purges a texture by `path` from the scene. Returns true on success. `Texture` objects referencing this texture will use an engine-defined `Texture` instead.
 --- @param path string
 --- @return boolean
 function Lime.Scene.purgeTexture(path) end

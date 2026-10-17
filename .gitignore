@@ -1,10 +1,27 @@
+# VS
 .vs/
 *.user
+*.aps
+*.ncb
+*.sdf
+*.suo
+*.VC.db
+*.opendb
+*.ipch
 Debug/
 Release/
 x64/
+RC[0-9a-fA-F]*
+
+# Build
+bin/
+build/
+*.log
+
+# LimeVS
 LimeVS/node_modules/
 *.vsix
 *.zip
-LimeEngine/LimeAndroid/build/
+
+# Android
 LimeEngine/LimeAndroid/local.properties

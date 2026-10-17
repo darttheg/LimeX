@@ -28,7 +28,7 @@ void Module::Window::bind(Application* app) {
 	// Module Lime.Window
 	sol::table module = lua["Lime"]["Window"].get_or_create<sol::table>();
 
-	// [+] Sets the window's title to `title`.
+	// Sets the window's title.
 	// Params string title
 	// Returns void
 	module.set_function("setTitle", &Module::Window::Bind::SetTitle);
