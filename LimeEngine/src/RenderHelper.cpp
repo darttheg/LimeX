@@ -113,7 +113,13 @@ irr::video::ITexture* RenderHelper::createTexture(int w, int h, const std::strin
 		customTexCount++;
 	}
 
+	bool was32 = i_driver->getTextureCreationFlag(irr::video::ETCF_ALWAYS_32_BIT);
+	bool wasSpeed = i_driver->getTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED);
+	i_driver->setTextureCreationFlag(irr::video::ETCF_ALWAYS_32_BIT, true);
+	i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED, false);
 	irr::video::ITexture* tex = i_driver->addTexture(irr::core::dimension2du(w, h), outName.c_str());
+	i_driver->setTextureCreationFlag(irr::video::ETCF_ALWAYS_32_BIT, was32);
+	i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED, wasSpeed);
 	if (!tex) {
 		d->Warn("Could not create texture " + outName + " of size " + std::to_string(w) + "x" + std::to_string(h));
 		return nullptr;
@@ -187,7 +193,6 @@ bool RenderHelper::setColor(irr::video::ITexture* tex, const Vec2& pos, const Ve
 	u32 h = tex->getSize().Height;
 
 	if (x < 0 || y < 0 || x >= w || y >= h) {
-		tex->unlock();
 		return false;
 	}
 
@@ -209,24 +214,20 @@ bool RenderHelper::setColorRect(irr::video::ITexture* tex, const Vec2& tl, const
 	if (!guardRenderingCheck()) return false;
 	if (!tex) return false;
 
-	void* pixels = tex->lock(irr::video::ETLM_WRITE_ONLY);
-	if (!pixels) return false;
-
 	u32 w = tex->getSize().Width;
 	u32 h = tex->getSize().Height;
 
 	if (tl.getX() >= w || tl.getY() >= h || br.getX() < 0 || br.getY() < 0) {
-		tex->unlock();
 		return false;
 	}
+
+	void* pixels = tex->lock(irr::video::ETLM_WRITE_ONLY);
+	if (!pixels) return false;
 
 	u32 x0 = (u32)std::clamp((int)tl.getX(), 0, (int)w - 1);
 	u32 y0 = (u32)std::clamp((int)tl.getY(), 0, (int)h - 1);
 	u32 x1 = (u32)std::clamp((int)br.getX(), 0, (int)w - 1);
 	u32 y1 = (u32)std::clamp((int)br.getY(), 0, (int)h - 1);
-
-	pixels = tex->lock(irr::video::ETLM_WRITE_ONLY);
-	if (!pixels) return false;
 
 	irr::video::ECOLOR_FORMAT fmt = tex->getColorFormat();
 	u32 bpp = bytesPerPixel(fmt);
@@ -261,16 +262,17 @@ void RenderHelper::clearTextureWithColor(irr::video::ITexture* tex, const Vec4& 
 
 	u32 w = tex->getSize().Width;
 	u32 h = tex->getSize().Height;
-	u32* buf = (u32*)pixels;
+	
+	irr::video::ECOLOR_FORMAT fmt = tex->getColorFormat();
+	u32 bpp = bytesPerPixel(fmt);
+	u32 pitch = tex->getPitch();
 
-	u32 c = irr::video::SColor(
-		(u32)color.getW(),
-		(u32)color.getX(),
-		(u32)color.getY(),
-		(u32)color.getZ()
-	).color;
-
-	std::fill(buf, buf + (w * h), c);
+	irr::video::SColor col((u32)color.getW(), (u32)color.getX(), (u32)color.getY(), (u32)color.getZ());
+	for (u32 y = 0; y < h; y++) {
+		u8* row = (u8*)pixels + y * pitch;
+		for (u32 x = 0; x < w; x++)
+			col.setData(row + x * bpp, fmt);
+	}
 
 	tex->unlock();
 }
