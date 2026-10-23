@@ -7,13 +7,6 @@
 Vec3::Vec3() : x(0), y(0), z(0) {}
 Vec3::Vec3(float x) : x(x), y(x), z(x) {}
 Vec3::Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
-Vec3::Vec3(Vec3&& v) noexcept : x(v.x), y(v.y), z(v.z), get(std::move(v.get)), set(std::move(v.set)) {}
-
-Vec3::Vec3(const Vec3& v) {
-	x = v.x;
-	y = v.y;
-	z = v.z;
-}
 
 Vec3 Vec3::operator+(const Vec3& other) const { return Vec3(getX() + other.getX(), getY() + other.getY(), getZ() + other.getZ()); }
 Vec3 Vec3::operator-(const Vec3& other) const { return Vec3(getX() - other.getX(), getY() - other.getY(), getZ() - other.getZ()); }
@@ -21,12 +14,6 @@ Vec3 Vec3::operator*(float scalar) const { return Vec3(getX() * scalar, getY() *
 Vec3 Vec3::operator*(const Vec3& scalar) const { return Vec3(getX() * scalar.getX(), getY() * scalar.getY(), getZ() * scalar.getZ()); }
 Vec3 Vec3::operator/(float scalar) const { return Vec3(getX() / scalar, getY() / scalar, getZ() / scalar); }
 Vec3 Vec3::operator/(const Vec3& scalar) const { return Vec3(getX() / scalar.getX(), getY() / scalar.getY(), getZ() / scalar.getZ()); }
-Vec3& Vec3::operator=(const Vec3& other) {
-	x = other.getX();
-	y = other.getY();
-	z = other.getZ();
-	return *this;
-}
 bool Vec3::operator==(const Vec3& other) const { return getX() == other.getX() && getY() == other.getY() && getZ() == other.getZ(); }
 
 float Vec3::getLength() const {
@@ -106,22 +93,24 @@ Vec3 Vec3::reflect(const Vec3& dir) const {
 }
 
 void Vec3::setTo(const Vec3& other) {
-	x = other.getX();
-	y = other.getY();
-	z = other.getZ();
+	setTo(other.getX(), other.getY(), other.getZ());
 }
 
 void Vec3::setTo(float tx, float ty, float tz) {
-	x = tx;
-	y = ty;
-	z = tz;
+	if (owner) setFn(owner, Vec3(tx, ty, tz));
+	else { x = tx; y = ty; z = tz; }
 }
 
 void Object::Vec3Bind::bind(lua_State* ls) {
 	sol::state_view view(ls);
 	sol::usertype<Vec3> obj = view.new_usertype<Vec3>(
 		"Vec3",
-		sol::constructors<Vec3(), Vec3(const Vec3&), Vec3(float), Vec3(float, float, float)>(),
+		sol::factories(
+			[] { return Vec3(); },
+			[](float a) { return Vec3(a); },
+			[](float x, float y, float z) { return Vec3(x, y, z); },
+			[](const Vec3& o) { return Vec3(o.getX(), o.getY(), o.getZ()); }
+		),
 		sol::meta_function::type, [](const Vec3&) { return "Vec3"; },
 
 		sol::meta_function::addition, &Vec3::operator+,

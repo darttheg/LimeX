@@ -269,7 +269,7 @@ void Object::MeshBind::bind(lua_State* ls, DebugConsole* dc, Renderer* rend, Ren
 
 		// Field Vec4 vertexColor, Sets the color of all vertexes in this `Mesh`. The `Material` of this `Mesh` must have type `VertexAlpha` to take effect.
 		"vertexColor", sol::property(
-			[](Mesh& c) { return Vec4( [&c]{ return c.getColor(); }, [&c](const Vec4& v){ c.setColor(v); } ); },
+			[](Mesh& c) { return VEC_LINK(Vec4, Color); },
 			[](Mesh& c, const Vec4& v) { c.setColor(v); }
 		),
 

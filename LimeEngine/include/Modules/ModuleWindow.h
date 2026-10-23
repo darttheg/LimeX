@@ -18,7 +18,7 @@ namespace Module {
 		void bind(Application* app);
 
 		namespace Bind {
-			void SetTitle(std::string title);
+			void SetTitle(const std::string& title);
 			void SetFullscreen(bool v);
 			Vec2 GetPosition();
 			void SetPosition(const Vec2& pos);

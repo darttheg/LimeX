@@ -341,25 +341,25 @@ void Object::MaterialBind::bind(lua_State* ls) {
 
 		// Field Vec4 ambientColor, Sets the ambient color for this `Material`, the base color.
 		"ambientColor", sol::property(
-			[](Material& c) { return Vec4( [&c]{ return c.getAmbientColor(); }, [&c](const Vec4& v){ c.setAmbientColor(v); } ); },
+			[](Material& c) { return VEC_LINK(Vec4, AmbientColor); },
 			[](Material& c, const Vec4& v) { c.setAmbientColor(v); }
 		),
 
 		// Field Vec4 diffuseColor, Sets the diffuse color for this `Material`, the light-affected base color.
 		"diffuseColor", sol::property(
-			[](Material& c) { return Vec4( [&c]{ return c.getDiffuseColor(); }, [&c](const Vec4& v){ c.setDiffuseColor(v); } ); },
+			[](Material& c) { return VEC_LINK(Vec4, DiffuseColor); },
 			[](Material& c, const Vec4& v) { c.setDiffuseColor(v); }
 		),
 
 		// Field Vec4 specularColor, Sets the specular color for this `Material`, the shine color.
 		"specularColor", sol::property(
-			[](Material& c) { return Vec4( [&c]{ return c.getSpecularColor(); }, [&c](const Vec4& v){ c.setSpecularColor(v); } ); },
+			[](Material& c) { return VEC_LINK(Vec4, SpecularColor); },
 			[](Material& c, const Vec4& v) { c.setSpecularColor(v); }
 		),
 
 		// Field Vec4 emissiveColor, Sets the emissive color for this `Material`, the color that is seen through shadows, lighting, and fog.
 		"emissiveColor", sol::property(
-			[](Material& c) { return Vec4( [&c]{ return c.getEmissiveColor(); }, [&c](const Vec4& v){ c.setEmissiveColor(v); } ); },
+			[](Material& c) { return VEC_LINK(Vec4, EmissiveColor); },
 			[](Material& c, const Vec4& v) { c.setEmissiveColor(v); }
 		)
 	);

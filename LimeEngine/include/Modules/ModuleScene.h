@@ -59,8 +59,7 @@ namespace Module {
 			bool PreloadTexture(const std::string path);
 			bool PurgeTexture(const std::string path);
 
-			void SetUserTexture(const Texture& tex);
-			void ClearUserTexture();
+			void SetUserTexture(sol::optional<Texture*> tex);
 			void SetViewModelCamera(sol::optional<Camera*> cam);
 
 			void SetStencilBuffer(bool v);

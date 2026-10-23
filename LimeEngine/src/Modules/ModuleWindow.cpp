@@ -106,7 +106,7 @@ void Module::Window::bind(Application* app) {
 
 // Functions
 
-void Module::Window::Bind::SetTitle(std::string title) {
+void Module::Window::Bind::SetTitle(const std::string& title) {
 	w->setTitle(title);
 }
 

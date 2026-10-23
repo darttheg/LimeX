@@ -63,32 +63,10 @@ Vec4::Vec4(float x) : x(x), y(x), z(x), w(x) {}
 Vec4::Vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 Vec4::Vec4(const std::string& hex) {
 	Vec4 out = fromHex(hex);
-
 	setX(out.getX());
 	setY(out.getY());
 	setZ(out.getZ());
 	setW(out.getW());
-}
-Vec4::Vec4(Vec4&& v) noexcept : x(v.x), y(v.y), z(v.z), w(v.w), get(std::move(v.get)), set(std::move(v.set)) {}
-Vec4::Vec4(const Vec4& v) {
-	x = v.x;
-	y = v.y;
-	z = v.z;
-	w = v.w;
-}
-
-void Vec4::setTo(const Vec4& other) {
-	x = other.getX();
-	y = other.getY();
-	z = other.getZ();
-	w = other.getW();
-}
-
-void Vec4::setTo(float tx, float ty, float tz, float tw) {
-	x = tx;
-	y = ty;
-	z = tz;
-	w = tw;
 }
 
 Vec4 Vec4::operator+(const Vec4& other) const { return Vec4(getX() + other.getX(), getY() + other.getY(), getZ() + other.getZ(), getW() + other.getW()); }
@@ -98,19 +76,27 @@ Vec4 Vec4::operator*(const Vec4& scalar) const { return Vec4(getX() * scalar.get
 Vec4 Vec4::operator/(float scalar) const { return Vec4(getX() / scalar, getY() / scalar, getZ() / scalar, getW() / scalar); }
 Vec4 Vec4::operator/(const Vec4& scalar) const { return Vec4(getX() / scalar.getX(), getY() / scalar.getY(), getZ() / scalar.getZ(), getW() / scalar.getW()); }
 bool Vec4::operator==(const Vec4& other) const { return getX() == other.getX() && getY() == other.getY() && getZ() == other.getZ() && getW() == other.getW(); }
-Vec4& Vec4::operator=(const Vec4& other) {
-	x = other.getX();
-	y = other.getY();
-	z = other.getZ();
-	w = other.getW();
-	return *this;
+
+void Vec4::setTo(const Vec4& other) {
+	setTo(other.getX(), other.getY(), other.getZ(), other.getW());
+}
+
+void Vec4::setTo(float tx, float ty, float tz, float tw) {
+	if (owner) setFn(owner, Vec4(tx, ty, tz, tw));
+	else { x = tx; y = ty; z = tz; w = tw; }
 }
 
 void Object::Vec4Bind::bind(lua_State* ls) {
 	sol::state_view view(ls);
 	sol::usertype<Vec4> obj = view.new_usertype<Vec4>(
 		"Vec4",
-		sol::constructors<Vec4(), Vec4(const Vec4&), Vec4(float), Vec4(float, float, float, float), Vec4(const std::string&)>(),
+		sol::factories(
+			[] { return Vec4(); },
+			[](float a) { return Vec4(a); },
+			[](float x, float y, float z, float w) { return Vec4(x, y, z, w); },
+			[](const std::string& hex) { return Vec4(hex); },
+			[](const Vec4& o) { return Vec4(o.getX(), o.getY(), o.getZ(), o.getW()); }
+		),
 		sol::meta_function::type, [](const Vec4&) { return "Vec4"; },
 
 		sol::meta_function::addition, &Vec4::operator+,

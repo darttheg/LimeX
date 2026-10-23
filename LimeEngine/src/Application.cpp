@@ -333,6 +333,8 @@ bool Application::Init(const void* data, size_t size, int argc, const char** arg
 		sol::lib::package
 	);
 
+	lua_gc(lua->lua_state(), LUA_GCGEN, 0, 0);
+
 	setSandboxFileIO();
 	InstallPackageFinder();
 	InstallExternalFinder();
@@ -493,8 +495,6 @@ bool Application::Run() {
 		updateFrameRate();
 		renderer->EndWholeScene();
 		receiver->endFrame();
-
-		lua_gc(GetLuaState(), LUA_GCSTEP, 10);
 
 		if (!windowCfg.vSync) limiter->endFrame();
 		window->EndFrame(); // Swap buffers

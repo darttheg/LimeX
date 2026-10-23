@@ -14,6 +14,8 @@
 #include "Objects/ShaderMaterial.h"
 #include "Objects/Camera.h"
 
+#include "ITexture.h"
+
 #include <sol/sol.hpp>
 
 static DebugConsole* d;
@@ -194,13 +196,9 @@ void Module::Scene::bind(Application* app) {
 	module.set_function("purgeTexture", &Module::Scene::Bind::PurgeTexture);
 
 	// [+] Sets a `Texture` to be drawn over the screen, under the GUI layer. This `Texture` will inherit post processing shaders, if post processing is enabled.
-	// Params Texture texture
+	// Params Texture? texture
 	// Returns void
 	module.set_function("setOverlayTexture", &Module::Scene::Bind::SetUserTexture);
-
-	// [+] Clears the user-defined `Texture` drawn over the screen, if any.
-	// Returns void
-	module.set_function("clearOverlayTexture", &Module::Scene::Bind::ClearUserTexture);
 
 	// [-] Sets whether or not the stencil buffer is used. `Shadow Volume` objects are not functional without use of the stencil buffer.
 	// Params boolean enable
@@ -401,12 +399,11 @@ bool Module::Scene::Bind::PurgeTexture(const std::string path) {
 	return r->purgeTexture(path);
 }
 
-void Module::Scene::Bind::SetUserTexture(const Texture& tex) {
-	r->setUserTexture(tex.getTexture());
-}
-
-void Module::Scene::Bind::ClearUserTexture() {
-	r->clearUserTexture();
+void Module::Scene::Bind::SetUserTexture(sol::optional<Texture*> tex) {
+	Texture* t = *tex;
+	if (!t) { r->clearUserTexture(); return; }
+	if (auto* outTex = dynamic_cast<irr::video::ITexture*>(t->getTexture()))
+		r->setUserTexture(outTex);
 }
 
 void Module::Scene::Bind::SetViewModelCamera(sol::optional<Camera*> cam) {

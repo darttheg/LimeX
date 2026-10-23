@@ -1,17 +1,21 @@
 #pragma once
 #include <string>
 #include <cmath>
-#include <functional>
+#include "Objects/VecLink.h"
 
 extern "C" { struct lua_State; }
 
 class Vec2 {
 public:
+    using GetFn = Vec2(*)(void*);
+    using SetFn = void(*)(void*, const Vec2&);
+
     Vec2();
     Vec2(float x, float y);
     Vec2(float x);
-    Vec2(Vec2&& v) noexcept;
-    Vec2(const Vec2& v);
+    
+    Vec2(const Vec2& v) : x(v.getX()), y(v.getY()) {}
+    Vec2(Vec2&& v) noexcept = default;
 
     Vec2 operator+(const Vec2& other) const;
     Vec2 operator-(const Vec2& other) const;
@@ -19,7 +23,12 @@ public:
     Vec2 operator/(float scalar) const;
     Vec2 operator*(const Vec2& scalar) const;
     Vec2 operator/(const Vec2& scalar) const;
-    Vec2& operator=(const Vec2& other);
+    Vec2& operator=(const Vec2& v) {
+        x = v.getX();
+        y = v.getY();
+        owner = nullptr;
+        return *this;
+    }
     bool operator==(const Vec2& other) const;
 
     float getLength() const;
@@ -36,18 +45,41 @@ public:
     void setTo(const Vec2& other);
     void setTo(float x, float y);
 
-    using Getter = std::function<Vec2()>;
-    using Setter = std::function<void(const Vec2&)>;
-    Getter get;
-    Setter set;
-    Vec2(Getter g, Setter s) : get(std::move(g)), set(std::move(s)) {}
+    static Vec2 link(void* o, GetFn g, SetFn s) {
+        Vec2 v;
+        v.owner = o;
+        v.getFn = g;
+        v.setFn = s;
+        return v;
+    }
 
-    float getX() const { if (get) return get().x; else return x; }
-    float getY() const { if (get) return get().y; else return y; }
-    void setX(float v) { if (get) { auto t = get(); t.x = v; set(t); } else x = v; }
-    void setY(float v) { if (get) { auto t = get(); t.y = v; set(t); } else y = v; }
+    float getX() const { return owner ? getFn(owner).x : x; }
+    float getY() const { return owner ? getFn(owner).y : y; }
+    void setX(float n) {
+        if (owner) {
+            Vec2 t = getFn(owner);
+            t.x = n;
+            setFn(owner, t);
+        }
+        else {
+            x = n;
+        }
+    }
+    void setY(float n) {
+        if (owner) {
+            Vec2 t = getFn(owner);
+            t.y = n;
+            setFn(owner, t);
+        }
+        else {
+            y = n;
+        }
+    }
 private:
-    float x, y = 0.0;
+    float x = 0, y = 0;
+    void* owner = nullptr;
+    GetFn getFn = nullptr;
+    SetFn setFn = nullptr;
 };
 
 namespace Object::Vec2Bind {

@@ -6,12 +6,6 @@
 Vec2::Vec2() : x(0), y(0) {}
 Vec2::Vec2(float x, float y) : x(x), y(y) {}
 Vec2::Vec2(float x) : x(x), y(x) {}
-Vec2::Vec2(Vec2&& v) noexcept : x(v.x), y(v.y), get(std::move(v.get)), set(std::move(v.set)) {}
-
-Vec2::Vec2(const Vec2& v) {
-	x = v.x;
-	y = v.y;
-}
 
 Vec2 Vec2::operator+(const Vec2& other) const { return Vec2(getX() + other.getX(), getY() + other.getY()); }
 Vec2 Vec2::operator-(const Vec2& other) const { return Vec2(getX() - other.getX(), getY() - other.getY()); }
@@ -20,11 +14,6 @@ Vec2 Vec2::operator/(float scalar) const { return Vec2(getX() / scalar, getY() /
 Vec2 Vec2::operator*(const Vec2& scalar) const { return Vec2(getX() * scalar.getX(), getY() * scalar.getY()); }
 Vec2 Vec2::operator/(const Vec2& scalar) const { return Vec2(getX() / scalar.getX(), getY() / scalar.getY()); }
 bool Vec2::operator==(const Vec2& other) const { return getX() == other.getX() && getY() == other.getY(); }
-Vec2& Vec2::operator=(const Vec2& other) {
-	x = other.getX();
-	y = other.getY();
-	return *this;
-}
 
 float Vec2::getLength() const {
 	return std::sqrt(getX() * getX() + getY() * getY());
@@ -81,20 +70,24 @@ Vec2 Vec2::clamp(const Vec2& min, const Vec2& max) const {
 }
 
 void Vec2::setTo(const Vec2& other) {
-	x = other.getX();
-	y = other.getY();
+	setTo(other.getX(), other.getY());
 }
 
 void Vec2::setTo(float tx, float ty) {
-	x = tx;
-	y = ty;
+	if (owner) setFn(owner, Vec2(tx, ty));
+	else { x = tx; y = ty; }
 }
 
 void Object::Vec2Bind::bind(lua_State* ls) {
 	sol::state_view view(ls);
 	sol::usertype<Vec2> obj = view.new_usertype<Vec2>(
 		"Vec2",
-		sol::constructors<Vec2(), Vec2(const Vec2&), Vec2(float), Vec2(float, float)>(),
+		sol::factories(
+			[] { return Vec2(); },
+			[](float a) { return Vec2(a); },
+			[](float x, float y) { return Vec2(x, y); },
+			[](const Vec2& o) { return Vec2(o.getX(), o.getY()); }
+		),
 		sol::meta_function::type, [](const Vec2&) { return "Vec2"; },
 
 		sol::meta_function::addition, &Vec2::operator+,
@@ -136,7 +129,7 @@ void Object::Vec2Bind::bind(lua_State* ls) {
 	// Operation boolean Vec2 ==
 
 	// Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
-	// Params Vec3 other
+	// Params Vec2 other
 	// Params number x, number y
 	// Returns void
 	obj.set_function("set",

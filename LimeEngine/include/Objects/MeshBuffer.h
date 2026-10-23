@@ -32,10 +32,13 @@ public:
 
 	bool loadMesh(const Mesh& m, int layer = 0);
 
-	void pushFace(const Vec3& v1, const Vec3& v2, const Vec3& v3,
+	bool pushFace(const Vec3& v1, const Vec3& v2, const Vec3& v3,
 		const Vec3& n1, const Vec3& n2, const Vec3& n3,
 		const Vec2& uvw1, const Vec2& uvw2, const Vec2& uvw3,
 		const Vec4& c1, const Vec4& c2, const Vec4& c3);
+	bool pushQuad(const Vec3& p1, const Vec3& p2, const Vec3& p3, const Vec3& p4,
+		const Vec3& n, const Vec2& uv1, const Vec2& uv2, const Vec2& uv3, const Vec2& uv4,
+		const Vec4& c);
 	void clear();
 	sol::object purge();
 

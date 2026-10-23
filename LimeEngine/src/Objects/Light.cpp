@@ -188,31 +188,31 @@ void Object::LightBind::bind(lua_State* ls, RenderHelper* renh) {
 
 		// Field Vec4 diffuseColor, Sets the diffuse color for this `Light`, the main light color.
 		"diffuseColor", sol::property(
-			[](Light& c) { return Vec4( [&c]{ return c.getDiffuseColor(); }, [&c](const Vec4& v){ c.setDiffuseColor(v); } ); },
+			[](Light& c) { return VEC_LINK(Vec4, DiffuseColor); },
 			[](Light& c, const Vec4& v) { c.setDiffuseColor(v); }
 		),
 
 		// Field Vec4 ambientColor, Sets the ambient color for this `Light`, the atmospheric color applied to all objects.
 		"ambientColor", sol::property(
-			[](Light& c) { return Vec4( [&c]{ return c.getAmbientColor(); }, [&c](const Vec4& v){ c.setAmbientColor(v); } ); },
+			[](Light& c) { return VEC_LINK(Vec4, AmbientColor); },
 			[](Light& c, const Vec4& v) { c.setAmbientColor(v); }
 		),
 
 		// Field Vec4 specularColor, Sets the specular color for this `Light`, the color that appears on shiny objects.
 		"specularColor", sol::property(
-			[](Light& c) { return Vec4( [&c]{ return c.getSpecularColor(); }, [&c](const Vec4& v){ c.setSpecularColor(v); } ); },
+			[](Light& c) { return VEC_LINK(Vec4, SpecularColor); },
 			[](Light& c, const Vec4& v) { c.setSpecularColor(v); }
 		),
 
 		// Field Vec3 attenuation, Sets the attenuation, or spread behavior, of this `Light`. Format is `(Constant, Linear, Quadratic)`, all ranging from 0.0 to 1.0. Not effective for directional light sources.
 		"attenuation", sol::property(
-			[](Light& c) { return Vec3( [&c]{ return c.getAttenuation(); }, [&c](const Vec3& v){ c.setAttenuation(v); } ); },
+			[](Light& c) { return VEC_LINK(Vec3, Attenuation); },
 			[](Light& c, const Vec3& v) { c.setAttenuation(v); }
 		),
 
 		// Field Vec2 cones, Sets the inner and outer cones of this `Light`. This is only used for spotlights.
 		"cones", sol::property(
-			[](Light& c) { return Vec2( [&c]{ return c.getCones(); }, [&c](const Vec2& v){ c.setCones(v); } ); },
+			[](Light& c) { return VEC_LINK(Vec2, Cones); },
 			[](Light& c, const Vec2& v) { c.setCones(v); }
 		)
 	);

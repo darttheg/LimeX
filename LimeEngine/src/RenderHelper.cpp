@@ -173,33 +173,35 @@ Vec4 RenderHelper::getColor(irr::video::ITexture* tex, const Vec2& pos) {
 	return Vec4(pCol.getRed(), pCol.getGreen(), pCol.getBlue(), pCol.getAlpha());
 }
 
+static u32 bytesPerPixel(irr::video::ECOLOR_FORMAT fmt) {
+	return irr::video::IImage::getBitsPerPixelFromFormat(fmt) / 8;
+}
+
 bool RenderHelper::setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color) {
 	if (!guardRenderingCheck()) return false;
 	if (!tex) return false;
 
-	void* pixels = tex->lock(irr::video::ETLM_WRITE_ONLY);
-	if (!pixels) return false;
-
+	int x = (int)pos.getX();
+	int y = (int)pos.getY();
 	u32 w = tex->getSize().Width;
 	u32 h = tex->getSize().Height;
-	u32* buf = (u32*)pixels;
-	u32 x = (u32)pos.getX();
-	u32 y = (u32)pos.getY();
 
 	if (x < 0 || y < 0 || x >= w || y >= h) {
 		tex->unlock();
 		return false;
 	}
 
-	buf[y * w + x] = irr::video::SColor(
-		(u32)color.getW(),
-		(u32)color.getX(),
-		(u32)color.getY(),
-		(u32)color.getZ()
-	).color;
+	void* pixels = tex->lock(irr::video::ETLM_WRITE_ONLY);
+	if (!pixels) return false;
+
+	irr::video::ECOLOR_FORMAT fmt = tex->getColorFormat();
+	u32 bpp = bytesPerPixel(fmt);
+	u32 pitch = tex->getPitch();
+
+	irr::video::SColor col((u32)color.getW(), (u32)color.getX(), (u32)color.getY(), (u32)color.getZ());
+	col.setData((u8*)pixels + y * pitch + x * bpp, fmt);
 
 	tex->unlock();
-
 	return true;
 }
 
@@ -223,22 +225,23 @@ bool RenderHelper::setColorRect(irr::video::ITexture* tex, const Vec2& tl, const
 	u32 x1 = (u32)std::clamp((int)br.getX(), 0, (int)w - 1);
 	u32 y1 = (u32)std::clamp((int)br.getY(), 0, (int)h - 1);
 
-	u32* buf = (u32*)pixels;
-	u32 c = irr::video::SColor(
-		(u32)color.getW(),
-		(u32)color.getX(),
-		(u32)color.getY(),
-		(u32)color.getZ()
-	).color;
+	pixels = tex->lock(irr::video::ETLM_WRITE_ONLY);
+	if (!pixels) return false;
+
+	irr::video::ECOLOR_FORMAT fmt = tex->getColorFormat();
+	u32 bpp = bytesPerPixel(fmt);
+	u32 pitch = tex->getPitch();
+
+	irr::video::SColor col((u32)color.getW(), (u32)color.getX(), (u32)color.getY(), (u32)color.getZ());
 
 	for (u32 y = y0; y <= y1; y++) {
+		u8* row = (u8*)pixels + y * pitch;
 		for (u32 x = x0; x <= x1; x++) {
-			buf[y * w + x] = c;
+			col.setData(row + x * bpp, fmt);
 		}
 	}
 
 	tex->unlock();
-
 	return true;
 }
 

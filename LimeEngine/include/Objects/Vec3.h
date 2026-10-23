@@ -1,17 +1,21 @@
 #pragma once
 #include <string>
 #include <cmath>
-#include <functional>
+#include "Objects/VecLink.h"
 
 extern "C" { struct lua_State; }
 
 class Vec3 {
 public:
+    using GetFn = Vec3(*)(void*);
+    using SetFn = void(*)(void*, const Vec3&);
+
     Vec3();
     Vec3(float x);
     Vec3(float x, float y, float z);
-    Vec3(Vec3&& v) noexcept;
-    Vec3(const Vec3& v);
+
+    Vec3(const Vec3& v) : x(v.getX()), y(v.getY()), z(v.getZ()) {}
+    Vec3(Vec3&& v) noexcept = default;
 
     Vec3 operator+(const Vec3& other) const;
     Vec3 operator-(const Vec3& other) const;
@@ -19,7 +23,13 @@ public:
     Vec3 operator*(const Vec3& scalar) const;
     Vec3 operator/(float scalar) const;
     Vec3 operator/(const Vec3& scalar) const;
-    Vec3& operator=(const Vec3& other);
+    Vec3& operator=(const Vec3& v) {
+        x = v.getX();
+        y = v.getY();
+        z = v.getZ();
+        owner = nullptr;
+        return *this;
+    }
     bool operator==(const Vec3& other) const;
 
     float getLength() const;
@@ -37,21 +47,52 @@ public:
     void setTo(const Vec3& other);
     void setTo(float x, float y, float z);
 
-    using Getter = std::function<Vec3()>;
-    using Setter = std::function<void(const Vec3&)>;
-    Getter get;
-    Setter set;
+    static Vec3 link(void* o, GetFn g, SetFn s) {
+        Vec3 v;
+        v.owner = o;
+        v.getFn = g;
+        v.setFn = s;
+        return v;
+    }
 
-    float getX() const { if (get) return get().x; else return x; }
-    float getY() const { if (get) return get().y; else return y; }
-    float getZ() const { if (get) return get().z; else return z; }
-    void setX(float v) { if (get) { auto t = get(); t.x = v; set(t); } else x = v; }
-    void setY(float v) { if (get) { auto t = get(); t.y = v; set(t); } else y = v; }
-    void setZ(float v) { if (get) { auto t = get(); t.z = v; set(t); } else z = v; }
-
-    Vec3(Getter g, Setter s) : get(std::move(g)), set(std::move(s)) {}
+    float getX() const { return owner ? getFn(owner).x : x; }
+    float getY() const { return owner ? getFn(owner).y : y; }
+    float getZ() const { return owner ? getFn(owner).z : z; }
+    void setX(float n) {
+        if (owner) {
+            Vec3 t = getFn(owner);
+            t.x = n;
+            setFn(owner, t);
+        }
+        else {
+            x = n;
+        }
+    }
+    void setY(float n) {
+        if (owner) {
+            Vec3 t = getFn(owner);
+            t.y = n;
+            setFn(owner, t);
+        }
+        else {
+            y = n;
+        }
+    }
+    void setZ(float n) {
+        if (owner) {
+            Vec3 t = getFn(owner);
+            t.z = n;
+            setFn(owner, t);
+        }
+        else {
+            z = n;
+        }
+    }
 private:
-    float x, y, z = 0.0;
+    float x = 0, y = 0, z = 0;
+    void* owner = nullptr;
+    GetFn getFn = nullptr;
+    SetFn setFn = nullptr;
 };
 
 namespace Object::Vec3Bind {

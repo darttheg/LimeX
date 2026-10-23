@@ -474,7 +474,7 @@ void Object::ParticleSystemBind::bind(lua_State* ls, RenderHelper* renh) {
 
 		// Field Vec2 particlesPerSecond, The minimum and maximum particles per second emitted.
 		"particlesPerSecond", sol::property(
-			[](ParticleSystem& c) { return Vec2( [&c]{ return c.getRates(); }, [&c](const Vec2& v){ c.setRates(v); } ); },
+			[](ParticleSystem& c) { return VEC_LINK(Vec2, Rates); },
 			[](ParticleSystem& c, const Vec2& v) { c.setRates(v); }
 		),
 
@@ -486,19 +486,19 @@ void Object::ParticleSystemBind::bind(lua_State* ls, RenderHelper* renh) {
 
 		// Field Vec2 scaleRange, The minimum and maximum range of scale for particles first being emitted.
 		"scaleRange", sol::property(
-			[](ParticleSystem& c) { return Vec2( [&c]{ return c.getMinMaxScale(); }, [&c](const Vec2& v){ c.setMinMaxScale(v); } ); },
+			[](ParticleSystem& c) { return VEC_LINK(Vec2, MinMaxScale); },
 			[](ParticleSystem& c, const Vec2& v) { c.setMinMaxScale(v); }
 		),
 
 		// Field Vec2 lifeRange, The minimum and maximum range of lifetime for particles first being emitted.
 		"lifeRange", sol::property(
-			[](ParticleSystem& c) { return Vec2( [&c]{ return c.getMinMaxLife(); }, [&c](const Vec2& v){ c.setMinMaxLife(v); } ); },
+			[](ParticleSystem& c) { return VEC_LINK(Vec2, MinMaxLife); },
 			[](ParticleSystem& c, const Vec2& v) { c.setMinMaxLife(v); }
 		),
 
 		// Field Vec3 boxSize, If the emitter type is **box**, this alters the size of the box.
 		"boxSize", sol::property(
-			[](ParticleSystem& c) { return Vec3( [&c]{ return c.getBoxSize(); }, [&c](const Vec3& v){ c.setBoxSize(v); } ); },
+			[](ParticleSystem& c) { return VEC_LINK(Vec3, BoxSize); },
 			[](ParticleSystem& c, const Vec3& v) { c.setBoxSize(v); }
 		),
 

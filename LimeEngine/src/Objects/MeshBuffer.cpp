@@ -28,28 +28,66 @@ bool MeshBuffer::loadMesh(const Mesh& m, int layer) {
 	return out;
 }
 
-void MeshBuffer::pushFace(const Vec3& v1, const Vec3& v2, const Vec3& v3, const Vec3& n1, const Vec3& n2, const Vec3& n3, const Vec2& uvw1, const Vec2& uvw2, const Vec2& uvw3, const Vec4& c1, const Vec4& c2, const Vec4& c3) {
-	if (!buffer) return;
-	irr::scene::SMeshBuffer* b = static_cast<irr::scene::SMeshBuffer*>(buffer);
-	if (!b) return;
+static irr::scene::SMeshBuffer* editable(irr::scene::IMeshBuffer* b) {
+	return dynamic_cast<irr::scene::SMeshBuffer*>(b);
+}
 
-    b->Vertices.reallocate(b->Vertices.size() + 3);
-    b->Vertices.set_used(b->Vertices.size() + 3);
+static irr::video::S3DVertex makeVertex(const Vec3& p, const Vec3& n, const Vec2& uv, const Vec4& c) {
+	return irr::video::S3DVertex(
+		irr::core::vector3df(p.getX(), p.getY(), p.getZ()),
+		irr::core::vector3df(n.getX(), n.getY(), n.getZ()),
+		irr::video::SColor(c.getW(), c.getX(), c.getY(), c.getZ()),
+		irr::core::vector2df(uv.getX(), uv.getY())
+	);
+}
 
-    b->Vertices[currentIndex] = irr::video::S3DVertex(irr::core::vector3df(v1.getX(), v1.getY(), v1.getZ()), irr::core::vector3df(n1.getX(), n1.getY(), n1.getZ()), irr::video::SColor(c1.getW(), c1.getX(), c1.getY(), c1.getZ()), irr::core::vector2df(uvw1.getX(), uvw1.getY()));
-    b->Vertices[currentIndex + 1] = irr::video::S3DVertex(irr::core::vector3df(v2.getX(), v2.getY(), v2.getZ()), irr::core::vector3df(n2.getX(), n2.getY(), n2.getZ()), irr::video::SColor(c2.getW(), c2.getX(), c2.getY(), c2.getZ()), irr::core::vector2df(uvw2.getX(), uvw2.getY()));
-    b->Vertices[currentIndex + 2] = irr::video::S3DVertex(irr::core::vector3df(v3.getX(), v3.getY(), v3.getZ()), irr::core::vector3df(n3.getX(), n3.getY(), n3.getZ()), irr::video::SColor(c3.getW(), c3.getX(), c3.getY(), c3.getZ()), irr::core::vector2df(uvw3.getX(), uvw3.getY()));
+static void addVertex(irr::scene::SMeshBuffer* b, const irr::video::S3DVertex& v) {
+	if (b->Vertices.empty()) b->BoundingBox.reset(v.Pos);
+	else b->BoundingBox.addInternalPoint(v.Pos);
+	b->Vertices.push_back(v);
+}
 
-    b->Indices.reallocate(b->Indices.size() + 3);
-    b->Indices.set_used(b->Indices.size() + 3);
+static bool addQuad(irr::scene::SMeshBuffer* b, const irr::video::S3DVertex v[4]) {
+	const irr::u32 base = b->Vertices.size();
+	if (base + 4 > 65536) return false;
+	for (int i = 0; i < 4; i++) addVertex(b, v[i]);
+	static const irr::u16 order[6] = { 0,1,2,0,2,3 };
+	for (irr::u16 i : order) b->Indices.push_back((irr::u16)(base + i));
+	b->setDirty();
+	return true;
+}
 
-    b->Indices[currentIndex] = currentIndex;
-    b->Indices[currentIndex + 1] = currentIndex + 1;
-    b->Indices[currentIndex + 2] = currentIndex + 2;
+bool MeshBuffer::pushFace(const Vec3& v1, const Vec3& v2, const Vec3& v3, const Vec3& n1, const Vec3& n2, const Vec3& n3, const Vec2& uvw1, const Vec2& uvw2, const Vec2& uvw3, const Vec4& c1, const Vec4& c2, const Vec4& c3) {
+	auto* b = editable(buffer);
+	if (!b) return false;
 
-    b->recalculateBoundingBox();
+	const irr::u32 base = b->Vertices.size();
+	if (base + 3 > 65536) return false;
 
-    currentIndex += 3;
+	addVertex(b, makeVertex(v1, n1, uvw1, c1));
+	addVertex(b, makeVertex(v2, n2, uvw2, c2));
+	addVertex(b, makeVertex(v3, n3, uvw3, c3));
+
+	b->Indices.push_back((irr::u16)(base));
+	b->Indices.push_back((irr::u16)(base + 1));
+	b->Indices.push_back((irr::u16)(base + 2));
+
+	b->setDirty();
+	return true;
+}
+
+bool MeshBuffer::pushQuad(const Vec3& p1, const Vec3& p2, const Vec3& p3, const Vec3& p4, const Vec3& n, const Vec2& uv1, const Vec2& uv2, const Vec2& uv3, const Vec2& uv4, const Vec4& c) {
+	auto* b = editable(buffer);
+	if (!b) return false;
+
+	const irr::video::S3DVertex v[4] = {
+		makeVertex(p1, n, uv1, c),
+		makeVertex(p2, n, uv2, c),
+		makeVertex(p3, n, uv3, c),
+		makeVertex(p4, n, uv4, c)
+	};
+
+	return addQuad(b, v);
 }
 
 void MeshBuffer::recalculateBoundingBox() {
@@ -63,14 +101,13 @@ int MeshBuffer::getVertexCount() const {
 }
 
 void MeshBuffer::clear() {
-	if (!buffer) return;
-	irr::scene::SMeshBuffer* b = static_cast<irr::scene::SMeshBuffer*>(buffer);
+	auto* b = editable(buffer);
 	if (!b) return;
 
 	b->Vertices.clear();
 	b->Indices.clear();
-	currentIndex = 0;
 	b->BoundingBox.reset(0, 0, 0);
+	b->setDirty();
 }
 
 sol::object MeshBuffer::purge() {
@@ -112,10 +149,15 @@ void Object::MeshBufferBind::bind(lua_State* ls, Renderer* rend) {
 	// Returns number
 	obj.set_function("getVertexCount", &MeshBuffer::getVertexCount);
 
-	// Pushes a face to this `MeshBuffer`.
+	// Pushes a triangle to this `MeshBuffer`.
 	// Params Vec3 pos1, Vec3 pos2, Vec3 pos3, Vec3 normal1, Vec3 normal2, Vec3 normal3, Vec3 uvw1, Vec3 uvw2, Vec3 uvw3, Vec4 color1, Vec4 color2, Vec4 color3
-	// Returns void
-	obj.set_function("pushFace", &MeshBuffer::pushFace);
+	// Returns boolean
+	obj.set_function("pushTri", &MeshBuffer::pushFace);
+
+	// Pushes a quad to this `MeshBuffer`.
+	// Params Vec3 pos1, Vec3 pos2, Vec3 pos3, Vec3 pos4, Vec3 normal, Vec2 uv1, Vec2 uv2, Vec2 uv3, Vec2 uv4, Vec4 color
+	// Returns boolean
+	obj.set_function("pushQuad", &MeshBuffer::pushQuad);
 
 	// Returns the reference count for this `MeshBuffer`.
 	// Returns number

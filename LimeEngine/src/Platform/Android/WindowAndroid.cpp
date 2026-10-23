@@ -114,7 +114,11 @@ void Window::syncMouse(double* mx, double* my) {
 
 void Window::setMinimumSize(const Vec2& size) { guardEditCheck(); } // Desktop only
 
-void Window::setTitle(std::string path) { guardEditCheck(); } // Desktop only
+void Window::setTitle(const std::string& path) {
+	WindowConfig out = a->GetConfig();
+	out.title = path;
+	a->SetConfig(out);
+}
 
 void Window::doFullscreen(bool v) { guardEditCheck(); } // Desktop only
 

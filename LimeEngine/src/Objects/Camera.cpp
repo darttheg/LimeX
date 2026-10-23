@@ -166,23 +166,23 @@ void Object::CameraBind::bind(lua_State* ls, RenderHelper* renh) {
 
 		// Field Vec3 position, The 3D position of this object in the scene.
 		"position", sol::property(
-			[](Camera& c) { return Vec3( [&c]{ return c.getPosition(); }, [&c](const Vec3& v){ c.setPosition(v); } ); },
+			[](Camera& c) { return VEC_LINK(Vec3, Position); },
 			[](Camera& c, const Vec3& v) { c.setPosition(v); }
 		),
 		// Field Vec3 rotation, The 3D rotation of this object in the scene in degrees.
 		"rotation", sol::property(
-			[](Camera& c) { return Vec3( [&c]{ return c.getRotation(); }, [&c](const Vec3& v){ c.setRotation(v); } ); },
+			[](Camera& c) { return VEC_LINK(Vec3, Rotation); },
 			[](Camera& c, const Vec3& v) { c.setRotation(v); }
 		),
 
 		// Field Vec3 up, The up vector of this `Camera`.
 		"up", sol::property(
-			[](Camera& c) { return Vec3( [&c]{ return c.getUp(); }, [&c](const Vec3& v){ c.setUp(v); } ); },
+			[](Camera& c) { return VEC_LINK(Vec3, Up); },
 			[](Camera& c, const Vec3& v) { c.setUp(v); }
 		),
 		// Field Vec2 viewPlanes, The near and far clipping planes of this `Camera`.
 		"viewPlanes", sol::property(
-			[](Camera& c) { return Vec2( [&c]{ return c.getViewPlanes(); }, [&c](const Vec2& v){ c.setViewPlanes(v); } ); },
+			[](Camera& c) { return VEC_LINK(Vec2, ViewPlanes); },
 			[](Camera& c, const Vec2& v) { c.setViewPlanes(v); }
 		),
 

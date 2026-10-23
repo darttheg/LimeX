@@ -1,18 +1,22 @@
 #pragma once
 #include <string>
 #include <cmath>
-#include <functional>
+#include "Objects/VecLink.h"
 
 extern "C" { struct lua_State; }
 
 class Vec4 {
 public:
+    using GetFn = Vec4(*)(void*);
+    using SetFn = void(*)(void*, const Vec4&);
+
     Vec4();
     Vec4(float x);
     Vec4(float x, float y, float z, float w);
     Vec4(const std::string& hex);
-    Vec4(Vec4&& v) noexcept;
-    Vec4(const Vec4& v);
+
+    Vec4(const Vec4& v) : x(v.getX()), y(v.getY()), z(v.getZ()), w(v.getW()) {}
+    Vec4(Vec4&& v) noexcept = default;
 
     Vec4 operator+(const Vec4& other) const;
     Vec4 operator-(const Vec4& other) const;
@@ -21,30 +25,77 @@ public:
     Vec4 operator*(const Vec4& scalar) const;
     Vec4 operator/(const Vec4& scalar) const;
     bool operator==(const Vec4& other) const;
-    Vec4& operator=(const Vec4& other);
-
+    Vec4& operator=(const Vec4& v) {
+        x = v.getX();
+        y = v.getY();
+        z = v.getZ();
+        w = v.getW();
+        owner = nullptr;
+        return *this;
+    }
     void setTo(const Vec4& other);
     void setTo(float x, float y, float z, float w);
 
-    using Getter = std::function<Vec4()>;
-    using Setter = std::function<void(const Vec4&)>;
-    Getter get;
-    Setter set;
+    static Vec4 link(void* o, GetFn g, SetFn s) {
+        Vec4 v;
+        v.owner = o;
+        v.getFn = g;
+        v.setFn = s;
+        return v;
+    }
 
-    float getX() const { if (get) return get().x; else return x; }
-    float getY() const { if (get) return get().y; else return y; }
-    float getZ() const { if (get) return get().z; else return z; }
-    float getW() const { if (get) return get().w; else return w; }
-    void setX(float v) { if (get) { auto t = get(); t.x = v; set(t); } else x = v; }
-    void setY(float v) { if (get) { auto t = get(); t.y = v; set(t); } else y = v; }
-    void setZ(float v) { if (get) { auto t = get(); t.z = v; set(t); } else z = v; }
-    void setW(float v) { if (get) { auto t = get(); t.w = v; set(t); } else w = v; }
-
-    Vec4(Getter g, Setter s) : get(std::move(g)), set(std::move(s)) {}
+    float getX() const { return owner ? getFn(owner).x : x; }
+    float getY() const { return owner ? getFn(owner).y : y; }
+    float getZ() const { return owner ? getFn(owner).z : z; }
+    float getW() const { return owner ? getFn(owner).w : w; }
+    void setX(float n) {
+        if (owner) {
+            Vec4 t = getFn(owner);
+            t.x = n;
+            setFn(owner, t);
+        }
+        else {
+            x = n;
+        }
+    }
+    void setY(float n) {
+        if (owner) {
+            Vec4 t = getFn(owner);
+            t.y = n;
+            setFn(owner, t);
+        }
+        else {
+            y = n;
+        }
+    }
+    void setZ(float n) {
+        if (owner) {
+            Vec4 t = getFn(owner);
+            t.z = n;
+            setFn(owner, t);
+        }
+        else {
+            z = n;
+        }
+    }
+    void setW(float n) {
+        if (owner) {
+            Vec4 t = getFn(owner);
+            t.w = n;
+            setFn(owner, t);
+        }
+        else {
+            w = n;
+        }
+    }
 
     std::string getHex();
+
 private:
-    float x, y, z, w = 0.0;
+    float x = 0, y = 0, z = 0, w = 0;
+    void* owner = nullptr;
+    GetFn getFn = nullptr;
+    SetFn setFn = nullptr;
 };
 
 namespace Object::Vec4Bind {
