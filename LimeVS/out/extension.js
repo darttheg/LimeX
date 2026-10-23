@@ -213,10 +213,11 @@ async function syncDlls(context, workspaceFolder) {
     if (key === ignoredDlls)
         return;
     const engine = stale.find(s => s.name === "LimeEngine.dll");
-    let message = `Lime: Update DLL(s): ${stale.map(s => s.name).join(", ")}?`;
+    const to = engine ? getFileVersion(engine.src).ProductVersion : "";
+    const names = stale.map(s => (s === engine ? `${s.name} (${to})` : s.name)).join(", ");
+    let message = `Lime: Update DLL(s): ${names}?`;
     if (engine && fs.existsSync(engine.dest)) {
         const from = getFileVersion(engine.dest).ProductVersion;
-        const to = getFileVersion(engine.src).ProductVersion;
         if (from !== to)
             message = `Lime: Update engine to ${to} (from ${from})?`;
     }

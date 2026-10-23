@@ -896,11 +896,8 @@ function Lime.Scene.preloadTexture(path) end
 function Lime.Scene.purgeTexture(path) end
 
 --- **This function cannot be run until window creation.** Sets a `Texture` to be drawn over the screen, under the GUI layer. This `Texture` will inherit post processing shaders, if post processing is enabled.
---- @param texture Texture
+--- @param texture Texture?
 function Lime.Scene.setOverlayTexture(texture) end
-
---- **This function cannot be run until window creation.** Clears the user-defined `Texture` drawn over the screen, if any.
-function Lime.Scene.clearOverlayTexture() end
 
 --- **This function can only be run before window creation.** Sets whether or not the stencil buffer is used. `Shadow Volume` objects are not functional without use of the stencil buffer.
 --- @param enable boolean
@@ -1950,7 +1947,7 @@ function MeshBuffer:recalculateBoundingBox() end
 --- @return number
 function MeshBuffer:getVertexCount() end
 
---- Pushes a face to this `MeshBuffer`.
+--- Pushes a triangle to this `MeshBuffer`.
 --- @param pos1 Vec3
 --- @param pos2 Vec3
 --- @param pos3 Vec3
@@ -1963,7 +1960,22 @@ function MeshBuffer:getVertexCount() end
 --- @param color1 Vec4
 --- @param color2 Vec4
 --- @param color3 Vec4
-function MeshBuffer:pushFace(pos1, pos2, pos3, normal1, normal2, normal3, uvw1, uvw2, uvw3, color1, color2, color3) end
+--- @return boolean
+function MeshBuffer:pushTri(pos1, pos2, pos3, normal1, normal2, normal3, uvw1, uvw2, uvw3, color1, color2, color3) end
+
+--- Pushes a quad to this `MeshBuffer`.
+--- @param pos1 Vec3
+--- @param pos2 Vec3
+--- @param pos3 Vec3
+--- @param pos4 Vec3
+--- @param normal Vec3
+--- @param uv1 Vec2
+--- @param uv2 Vec2
+--- @param uv3 Vec2
+--- @param uv4 Vec2
+--- @param color Vec4
+--- @return boolean
+function MeshBuffer:pushQuad(pos1, pos2, pos3, pos4, normal, uv1, uv2, uv3, uv4, color) end
 
 --- Returns the reference count for this `MeshBuffer`.
 --- @return number
@@ -2934,7 +2946,7 @@ Vec2 = {}
 function Vec2.new() end
 
 --- Sets the components of this vector to the components of `other`. This is useful for copying as a typical assignment may lead to unexpected results.
---- @overload fun(self, other: Vec3): nil
+--- @overload fun(self, other: Vec2): nil
 --- @param x number
 --- @param y number
 function Vec2:set(x, y) end

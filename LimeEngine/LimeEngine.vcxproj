@@ -83,6 +83,7 @@
     <ClInclude Include="include\Objects\Vec2.h" />
     <ClInclude Include="include\Objects\Vec3.h" />
     <ClInclude Include="include\Objects\Vec4.h" />
+    <ClInclude Include="include\Objects\VecLink.h" />
     <ClInclude Include="include\PhysicsManager.h" />
     <ClInclude Include="include\QuadRenderer.h" />
     <ClInclude Include="include\Receiver.h" />

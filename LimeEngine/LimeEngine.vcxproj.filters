@@ -292,6 +292,9 @@
     <ClInclude Include="include\External\SoundMini.h">
       <Filter>Engine\Runtime\External\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="include\Objects\VecLink.h">
+      <Filter>Engine\Runtime\Objects\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LimeEngine.cpp">
