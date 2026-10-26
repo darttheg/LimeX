@@ -113,13 +113,18 @@ irr::video::ITexture* RenderHelper::createTexture(int w, int h, const std::strin
 		customTexCount++;
 	}
 
-	bool was32 = i_driver->getTextureCreationFlag(irr::video::ETCF_ALWAYS_32_BIT);
-	bool wasSpeed = i_driver->getTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED);
+	const irr::video::E_TEXTURE_CREATION_FLAG fmtFlags[] = {
+		irr::video::ETCF_ALWAYS_16_BIT, irr::video::ETCF_ALWAYS_32_BIT,
+		irr::video::ETCF_OPTIMIZED_FOR_QUALITY, irr::video::ETCF_OPTIMIZED_FOR_SPEED
+	};
+	bool was[4];
+	for (int i = 0; i < 4; i++) was[i] = i_driver->getTextureCreationFlag(fmtFlags[i]);
 	i_driver->setTextureCreationFlag(irr::video::ETCF_ALWAYS_32_BIT, true);
-	i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED, false);
 	irr::video::ITexture* tex = i_driver->addTexture(irr::core::dimension2du(w, h), outName.c_str());
-	i_driver->setTextureCreationFlag(irr::video::ETCF_ALWAYS_32_BIT, was32);
-	i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED, wasSpeed);
+	i_driver->setTextureCreationFlag(irr::video::ETCF_ALWAYS_32_BIT, false);
+	for (int i = 0; i < 4; i++) if (was[i]) i_driver->setTextureCreationFlag(fmtFlags[i], true);
+
+
 	if (!tex) {
 		d->Warn("Could not create texture " + outName + " of size " + std::to_string(w) + "x" + std::to_string(h));
 		return nullptr;
@@ -169,6 +174,10 @@ irr::video::ITexture* RenderHelper::appendTexture(irr::video::ITexture* tex, irr
 	return out;
 }
 
+static u32 bytesPerPixel(irr::video::ECOLOR_FORMAT fmt) {
+	return irr::video::IImage::getBitsPerPixelFromFormat(fmt) / 8;
+}
+
 Vec4 RenderHelper::getColor(irr::video::ITexture* tex, const Vec2& pos) {
 	if (!guardRenderingCheck()) return Vec4();
 
@@ -177,10 +186,6 @@ Vec4 RenderHelper::getColor(irr::video::ITexture* tex, const Vec2& pos) {
 	img->drop();
 
 	return Vec4(pCol.getRed(), pCol.getGreen(), pCol.getBlue(), pCol.getAlpha());
-}
-
-static u32 bytesPerPixel(irr::video::ECOLOR_FORMAT fmt) {
-	return irr::video::IImage::getBitsPerPixelFromFormat(fmt) / 8;
 }
 
 bool RenderHelper::setColor(irr::video::ITexture* tex, const Vec2& pos, const Vec4& color) {
@@ -204,7 +209,7 @@ bool RenderHelper::setColor(irr::video::ITexture* tex, const Vec2& pos, const Ve
 	u32 pitch = tex->getPitch();
 
 	irr::video::SColor col((u32)color.getW(), (u32)color.getX(), (u32)color.getY(), (u32)color.getZ());
-	col.setData((u8*)pixels + y * pitch + x * bpp, fmt);
+	col.getData((u8*)pixels + y * pitch + x * bpp, fmt);
 
 	tex->unlock();
 	return true;
@@ -238,7 +243,7 @@ bool RenderHelper::setColorRect(irr::video::ITexture* tex, const Vec2& tl, const
 	for (u32 y = y0; y <= y1; y++) {
 		u8* row = (u8*)pixels + y * pitch;
 		for (u32 x = x0; x <= x1; x++) {
-			col.setData(row + x * bpp, fmt);
+			col.getData(row + x * bpp, fmt);
 		}
 	}
 
@@ -271,7 +276,7 @@ void RenderHelper::clearTextureWithColor(irr::video::ITexture* tex, const Vec4& 
 	for (u32 y = 0; y < h; y++) {
 		u8* row = (u8*)pixels + y * pitch;
 		for (u32 x = 0; x < w; x++)
-			col.setData(row + x * bpp, fmt);
+			col.getData(row + x * bpp, fmt);
 	}
 
 	tex->unlock();

@@ -1007,8 +1007,9 @@ void Renderer::setTextureCreationQuality(int q) {
 	if (!guardRenderingCheck()) return;
 
 	q = std::clamp<int>(q, 0, 2);
-	i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_QUALITY, q == 2);
-	i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED, q == 0);
+	if (q == 0) i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_SPEED, true);
+	else if (q == 2) i_driver->setTextureCreationFlag(irr::video::ETCF_OPTIMIZED_FOR_QUALITY, true);
+	else i_driver->setTextureCreationFlag(irr::video::ETCF_ALWAYS_32_BIT, true);
 }
 
 void Renderer::setDoMipmapGen(bool enable) {
